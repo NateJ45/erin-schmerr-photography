@@ -97,7 +97,6 @@ export const DEFAULT_HOME_SECTIONS: PageBuilderBlock[] = [
         ],
       },
     ],
-    cta: { _type: 'ctaBlock', label: 'See All Services', href: '/services/' }, // scaffold: services
     imageSide: 'right',
   },
   {

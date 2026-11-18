@@ -331,18 +331,6 @@ docs.push({
       cta: cta('Button label', '/process'),
     },
     // scaffold:end
-    // scaffold: services
-    {
-      _type: 'servicesGridSection',
-      _key: key(),
-      eyebrow: 'What We Offer.',
-      headline: 'Replace this headline.',
-      subhead: 'Replace this with a line introducing the list of services below.',
-      cta: cta('Button label', '/services'),
-      footnote: 'Optional small print under the list. Replace or clear it.',
-      variant: 'grid',
-    },
-    // scaffold:end
     {
       _type: 'serviceAreaSection',
       _key: key(),
@@ -524,152 +512,6 @@ docs.push({
       subhead: 'Replace this with what happens after someone gets in touch.',
       cta: cta('Button label', '/contact'),
     },
-  ],
-});
-// scaffold:end
-
-// scaffold: services
-// ── 4. servicesPage (singleton) ──────────────────────────────────────────
-// Fields: seoTitle, seoDescription, heroEyebrow, heroHeadline, heroSubhead,
-//         heroImage?, heroScriptAccent?, stickyCtaLabel?,
-//         servicesListEyebrow, servicesListHeadline, servicesListSubhead,
-//         serviceAreaSection{eyebrow, headline, description},
-//         finalCtaEyebrow, finalCtaHeadline, finalCtaSubhead, finalCta
-
-docs.push({
-  _id: 'servicesPage',
-  _type: 'servicesPage',
-  seoTitle: 'Services - Studio Starter',
-  seoDescription:
-    'Replace this with one sentence listing what this business sells, for search results.',
-
-  heroEyebrow: 'What We Offer.',
-  heroHeadline: 'Replace this headline.',
-  heroSubhead: 'Replace this with one or two sentences covering the range of what is on offer.',
-
-  servicesListEyebrow: 'The Tiers.',
-  servicesListHeadline: 'Replace this headline.',
-  servicesListSubhead:
-    'Replace this with a line introducing the list below, including how pricing works.',
-
-  serviceAreaSection: {
-    eyebrow: 'Service Area.',
-    headline: 'Replace this headline.',
-    description:
-      'Replace this with where this business works and what it charges to travel, if anything.',
-  },
-
-  finalCtaEyebrow: "Let's Talk.",
-  finalCtaHeadline: 'Replace this closing headline.',
-  finalCtaSubhead: 'Replace this with what to do when none of the options above is an obvious fit.',
-  finalCta: cta('Primary button label', '/contact'),
-
-  // ── pageBuilder (section-driven layout, Phase B) ─────────────────────────
-  // NOTE: Mirrors DEFAULT_SERVICES_SECTIONS in src/data/defaultSections.ts.
-  // Keep copy in sync between here and defaultSections.ts when updating.
-  pageBuilder: [
-    {
-      _type: 'heroSection',
-      _key: key(),
-      eyebrow: 'What We Offer.',
-      headline: 'Replace this headline.',
-      subhead: 'Replace this with one or two sentences covering the range of what is on offer.',
-      size: 'short',
-    },
-    {
-      _type: 'servicesGridSection',
-      _key: key(),
-      eyebrow: 'The Tiers.',
-      headline: 'Replace this headline.',
-      subhead: 'Replace this with a line introducing the list below, including how pricing works.',
-      variant: 'list',
-    },
-    {
-      _type: 'serviceAreaSection',
-      _key: key(),
-      eyebrow: 'Service Area.',
-      headline: 'Replace this headline.',
-      description:
-        'Replace this with where this business works and what it charges to travel, if anything.',
-      showTravelFees: true,
-    },
-    {
-      _type: 'guaranteeSection',
-      _key: key(),
-    },
-    {
-      _type: 'ctaBandSection',
-      _key: key(),
-      eyebrow: "Let's Talk.",
-      headline: 'Replace this closing headline.',
-      subhead: 'Replace this with what to do when none of the options above is an obvious fit.',
-      cta: cta('Primary button label', '/contact'),
-    },
-  ],
-});
-// scaffold:end
-
-// scaffold: services
-// ── 5. service docs (3 collection items) ─────────────────────────────────
-// Required fields: name, slug{_type,current}, price, shortDescription,
-//                  features, bestFor, displayOrder
-// Optional: priceNumeric, longDescription, showOnHomepage, ctaLabel
-
-docs.push({
-  _id: 'service-one',
-  _type: 'service',
-  name: 'Service one (replace me)',
-  slug: { _type: 'slug', current: 'service-one' },
-  price: 'Replace with a price',
-  shortDescription:
-    'Replace this with two sentences: what this service includes, and what someone walks away with.',
-  features: ['Replace this with what is included', 'One line per item', 'Four or five is plenty'],
-  bestFor: 'Replace this with the person this one is right for.',
-  displayOrder: 1,
-  showOnHomepage: true,
-  ctaLabel: 'Button label',
-});
-
-docs.push({
-  _id: 'service-two',
-  _type: 'service',
-  name: 'Service two (replace me)',
-  slug: { _type: 'slug', current: 'service-two' },
-  price: 'Replace with a price',
-  shortDescription:
-    'Replace this with two sentences: what this service includes, and what someone walks away with.',
-  features: ['Replace this with what is included', 'One line per item', 'Four or five is plenty'],
-  bestFor: 'Replace this with the person this one is right for.',
-  displayOrder: 2,
-  showOnHomepage: true,
-  ctaLabel: 'Button label',
-  longDescription: [
-    pt(
-      'Replace this with the longer version, for the people who want to know exactly how it goes before they commit.',
-    ),
-  ],
-});
-
-docs.push({
-  _id: 'service-three',
-  _type: 'service',
-  name: 'Service three (replace me)',
-  slug: { _type: 'slug', current: 'service-three' },
-  price: 'Custom quote',
-  shortDescription:
-    'Replace this with two sentences: what this service includes, and what someone walks away with.',
-  features: ['Replace this with what is included', 'One line per item', 'Four or five is plenty'],
-  bestFor: 'Replace this with the person this one is right for.',
-  displayOrder: 3,
-  showOnHomepage: true,
-  ctaLabel: 'Button label',
-  longDescription: [
-    pt(
-      'Replace this with the longer version, for the people who want to know exactly how it goes before they commit.',
-    ),
-    pt(
-      'Say plainly how pricing works. Vagueness about money costs more enquiries than a high number does.',
-    ),
   ],
 });
 // scaffold:end
@@ -994,39 +836,6 @@ docs.push({
 });
 // scaffold:end
 
-// scaffold: philosophy
-// ── 13. philosophyPoint docs (3 items) ───────────────────────────────────
-// Required fields: title, description
-// Optional: displayOrder, orderRank (managed by plugin, omit here)
-
-docs.push({
-  _id: 'philosophy-1',
-  _type: 'philosophyPoint',
-  title: 'First value (replace me)',
-  description:
-    'Replace this with something this business actually does differently. A value nobody would disagree with says nothing.',
-  displayOrder: 1,
-});
-
-docs.push({
-  _id: 'philosophy-2',
-  _type: 'philosophyPoint',
-  title: 'Second value (replace me)',
-  description:
-    'Replace this with something this business actually does differently. A value nobody would disagree with says nothing.',
-  displayOrder: 2,
-});
-
-docs.push({
-  _id: 'philosophy-3',
-  _type: 'philosophyPoint',
-  title: 'Third value (replace me)',
-  description:
-    'Replace this with something this business actually does differently. A value nobody would disagree with says nothing.',
-  displayOrder: 3,
-});
-// scaffold:end
-
 // scaffold: journal
 // ── 14. journalCategory docs (2 items) ───────────────────────────────────
 // Required fields: title, slug{_type,current}
@@ -1147,10 +956,6 @@ docs.push({
 
   primaryCtaLabel: 'Back home',
   primaryCtaHref: '/',
-  // scaffold: services
-  secondaryCtaLabel: 'See our services',
-  secondaryCtaHref: '/services',
-  // scaffold:end
   tertiaryCtaLabel: 'Get in touch',
   tertiaryCtaHref: '/contact',
 });

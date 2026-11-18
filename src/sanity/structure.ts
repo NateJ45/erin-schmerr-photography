@@ -42,7 +42,6 @@ const SINGLETON_TYPES = [
   // Core pages
   'homePage',
   'aboutPage', // scaffold: about
-  'servicesPage', // scaffold: services
   'processPage', // scaffold: process
   'faqPage', // scaffold: faq
   'contactPage',
@@ -54,8 +53,6 @@ const SINGLETON_TYPES = [
 ] as const;
 
 const ORDERABLE_TYPES = [
-  'service', // scaffold: services
-  'philosophyPoint', // scaffold: philosophy
   'processStep', // scaffold: process
 ] as const;
 
@@ -240,7 +237,6 @@ const fullDesk = (S: StructureBuilder, context: StructureResolverContext) =>
             .items([
               singletonWithPreview(S, 'homePage', 'Home'),
               singletonWithPreview(S, 'aboutPage', 'About'), // scaffold: about
-              singletonWithPreview(S, 'servicesPage', 'Services'), // scaffold: services
               singletonWithPreview(S, 'processPage', 'Process'), // scaffold: process
               singletonWithPreview(S, 'faqPage', 'FAQ'), // scaffold: faq
               singletonWithPreview(S, 'contactPage', 'Contact'),
@@ -328,24 +324,6 @@ const fullDesk = (S: StructureBuilder, context: StructureResolverContext) =>
 
               S.divider(),
 
-              // scaffold: services
-              orderableDocumentListDeskItem({
-                type: 'service',
-                title: 'Services',
-                icon: typeIcon('service'),
-                S,
-                context,
-              }),
-              // scaffold:end
-              // scaffold: philosophy
-              orderableDocumentListDeskItem({
-                type: 'philosophyPoint',
-                title: 'Philosophy Values',
-                icon: typeIcon('philosophyPoint'),
-                S,
-                context,
-              }),
-              // scaffold:end
               // scaffold: process
               orderableDocumentListDeskItem({
                 type: 'processStep',
