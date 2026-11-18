@@ -1,11 +1,11 @@
 {
-  "name": "Studio Starter",
-  "short_name": "Studio Starter",
-  "description": "Your tagline goes here.",
+  "name": "Erin Schmerr Photography",
+  "short_name": "Erin Schmerr Photography",
+  "description": "Fine-art portraits, Cincinnati and West Chester, Ohio.",
   "start_url": "/",
   "display": "browser",
-  "background_color": "#FBFBFA",
-  "theme_color": "#FBFBFA",
+  "background_color": "#F3EEE7",
+  "theme_color": "#F3EEE7",
   "icons": [
     {
       "src": "/icon-192.png",

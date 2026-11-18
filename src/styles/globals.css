@@ -6,9 +6,9 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
-@import '@fontsource/libre-baskerville/400.css';
-@import '@fontsource/libre-baskerville/700.css';
-@import '@fontsource-variable/inter';
+@import '@fontsource/instrument-serif/400.css';
+@import '@fontsource/instrument-serif/400-italic.css';
+@import '@fontsource-variable/instrument-sans';
 /* The photo viewer (src/components/Lightbox.astro), PORTABLE. */
 @import './lightbox.css';
 /* Metric-matched stand-ins for the display font while it loads (PORTS.md card 188), written by
@@ -39,22 +39,22 @@
 
 @theme {
   /* Brand palette — neutral Slate default. Swap per project. */
-  --color-primary: #586577; /* Slate */
-  --color-primary-dark: #434e5c; /* Slate Dark — body anchor text */
-  --color-accent: #2a2d31; /* Ink — headings + body */
-  --color-accent-dark: #1e2024; /* Ink Dark — dark surfaces */
-  --color-secondary: #aab0b8; /* Cool Gray — borders, eyebrows */
-  --color-tertiary: #9db0a6; /* Muted Sage — sparingly */
-  --color-bg: #fbfbfa; /* Paper — primary surface */
-  --color-bg-soft: #f3f4f2; /* Soft Paper — alternating surface */
-  --color-border-soft: #e6e7e5; /* Faint dividers */
+  --color-primary: #7a4a40; /* Slate */
+  --color-primary-dark: #633a31; /* Slate Dark — body anchor text */
+  --color-accent: #1f1b18; /* Ink — headings + body */
+  --color-accent-dark: #12100e; /* Ink Dark — dark surfaces */
+  --color-secondary: #b9a999; /* Cool Gray — borders, eyebrows */
+  --color-tertiary: #a89485; /* Muted Sage — sparingly */
+  --color-bg: #f3eee7; /* Paper — primary surface */
+  --color-bg-soft: #eae3d9; /* Soft Paper — alternating surface */
+  --color-border-soft: #d9cfc2; /* Faint dividers */
   --color-white-pure: #ffffff;
 
   /* Fonts */
   --font-display:
-    'Libre Baskerville', 'Libre Baskerville Fallback', 'Libre Baskerville Fallback Times', Georgia,
+    'Instrument Serif', 'Instrument Serif Fallback', 'Instrument Serif Fallback Times', Georgia,
     'Times New Roman', serif;
-  --font-body: 'Inter Variable', system-ui, -apple-system, sans-serif;
+  --font-body: 'Instrument Sans Variable', system-ui, -apple-system, sans-serif;
   --font-mono: ui-monospace, 'SF Mono', Consolas, monospace;
   --font-script: 'Snell Roundhand', 'Apple Chancery', cursive;
 
@@ -228,33 +228,33 @@
 
 :root {
   /* Surfaces */
-  --background: #fbfbfa;
-  --foreground: #2a2d31;
-  --card: #ffffff;
-  --card-foreground: #2a2d31;
-  --popover: #ffffff;
-  --popover-foreground: #2a2d31;
+  --background: #f3eee7;
+  --foreground: #1f1b18;
+  --card: #f7f3ee;
+  --card-foreground: #1f1b18;
+  --popover: #f7f3ee;
+  --popover-foreground: #1f1b18;
 
   /* Brand */
-  --primary: #586577;
-  --primary-foreground: #ffffff;
-  --secondary: #aab0b8;
-  --secondary-foreground: #2a2d31;
+  --primary: #7a4a40;
+  --primary-foreground: #f3eee7;
+  --secondary: #b9a999;
+  --secondary-foreground: #1f1b18;
 
   /* Quiet surfaces / muted text */
-  --muted: #f3f4f2;
-  --muted-foreground: #5f6469; /* ~5.6:1 on #FBFBFA — passes AA */
+  --muted: #eae3d9;
+  --muted-foreground: #5c534b; /* ~5.6:1 on #FBFBFA — passes AA */
 
   /* Accent */
-  --accent: #e8e9e7;
-  --accent-foreground: #2a2d31;
+  --accent: #e4dbcf;
+  --accent-foreground: #1f1b18;
 
   /* States */
   --destructive: oklch(0.577 0.245 27.325);
-  --border: #e6e7e5;
-  --input: #e6e7e5;
-  --ring: #586577;
-  --link: #434e5c; /* ~8:1 on #FBFBFA — passes AA */
+  --border: #d9cfc2;
+  --input: #d9cfc2;
+  --ring: #7a4a40;
+  --link: #7a4a40; /* ~8:1 on #FBFBFA — passes AA */
 
   /* The Feature look's band (src/lib/section-looks.ts, 2026-10-18). Brand tokens
      only, so apply-brand moves it with the palette; src/lib/surfaces.test.ts
@@ -273,25 +273,25 @@
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
 
-  --radius: 0.5rem;
+  --radius: 0rem;
 
   /* Sidebar (reserved for Studio-style admin contexts, not used on site) */
-  --sidebar: #fbfbfa;
-  --sidebar-foreground: #2a2d31;
-  --sidebar-primary: #586577;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f3f4f2;
-  --sidebar-accent-foreground: #2a2d31;
-  --sidebar-border: #e6e7e5;
-  --sidebar-ring: #586577;
+  --sidebar: #f3eee7;
+  --sidebar-foreground: #1f1b18;
+  --sidebar-primary: #7a4a40;
+  --sidebar-primary-foreground: #f3eee7;
+  --sidebar-accent: #eae3d9;
+  --sidebar-accent-foreground: #1f1b18;
+  --sidebar-border: #d9cfc2;
+  --sidebar-ring: #7a4a40;
 
-  --tint-rgb: 88, 101, 119;
+  --tint-rgb: 122, 74, 64;
 
   /* Starwind UI extra semantic tokens — not in shadcn's default set.
        Values are harmonized to the existing neutral palette so the starter
        renders sensibly out of the box. apply-brand rewrites these. */
-  --primary-accent: #434e5c; /* darker shade of --primary for hover states */
-  --secondary-accent: #2a2d31; /* dark ink — active/pressed secondary */
+  --primary-accent: #633a31; /* darker shade of --primary for hover states */
+  --secondary-accent: #1f1b18; /* dark ink — active/pressed secondary */
   --info: #93c5fd; /* soft blue, harmonized with slate primary */
   --info-foreground: #1e3a5f; /* deep blue for text on info surfaces */
   --success: #86efac; /* soft green */
@@ -300,7 +300,7 @@
   --warning-foreground: #713f12; /* deep amber for text on warning surfaces */
   --error: oklch(0.577 0.245 27.325); /* matches --destructive */
   --error-foreground: #ffffff;
-  --outline: #586577; /* matches --ring */
+  --outline: #7a4a40; /* matches --ring */
 }
 
 /* ---------- Dark mode --------------------------------------------------
@@ -308,29 +308,29 @@
    Slate and Ink hold their identity; surfaces flip to deep cool grays. */
 
 .dark {
-  --background: #17191c;
-  --foreground: #f2f3f2;
-  --card: #202327;
-  --card-foreground: #f2f3f2;
-  --popover: #202327;
-  --popover-foreground: #f2f3f2;
+  --background: #12100e;
+  --foreground: #eee7dd;
+  --card: #1c1916;
+  --card-foreground: #eee7dd;
+  --popover: #1c1916;
+  --popover-foreground: #eee7dd;
 
-  --primary: #8a96a6;
-  --primary-foreground: #17191c;
-  --secondary: #5a6068;
-  --secondary-foreground: #f2f3f2;
+  --primary: #d6a898;
+  --primary-foreground: #12100e;
+  --secondary: #5e544b;
+  --secondary-foreground: #eee7dd;
 
-  --muted: #202327;
-  --muted-foreground: #aab0b8;
+  --muted: #1c1916;
+  --muted-foreground: #a99f94;
 
-  --accent: #2c3036;
-  --accent-foreground: #f2f3f2;
+  --accent: #28231f;
+  --accent-foreground: #eee7dd;
 
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 12%);
   --input: oklch(1 0 0 / 15%);
-  --ring: #8a96a6;
-  --link: #8a96a6;
+  --ring: #d6a898;
+  --link: #d6a898;
 
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
@@ -338,20 +338,20 @@
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
 
-  --sidebar: #202327;
-  --sidebar-foreground: #f2f3f2;
-  --sidebar-primary: #8a96a6;
-  --sidebar-primary-foreground: #17191c;
-  --sidebar-accent: #2c3036;
-  --sidebar-accent-foreground: #f2f3f2;
+  --sidebar: #1c1916;
+  --sidebar-foreground: #eee7dd;
+  --sidebar-primary: #d6a898;
+  --sidebar-primary-foreground: #12100e;
+  --sidebar-accent: #28231f;
+  --sidebar-accent-foreground: #eee7dd;
   --sidebar-border: oklch(1 0 0 / 12%);
-  --sidebar-ring: #8a96a6;
+  --sidebar-ring: #d6a898;
 
-  --tint-rgb: 138, 150, 166;
+  --tint-rgb: 214, 168, 152;
 
   /* Starwind UI extra semantic tokens — dark mode variants. */
-  --primary-accent: #8a96a6; /* lifted primary for dark hover states */
-  --secondary-accent: #f2f3f2; /* near-white for dark active secondary */
+  --primary-accent: #d6a898; /* lifted primary for dark hover states */
+  --secondary-accent: #eee7dd; /* near-white for dark active secondary */
   --info: #93c5fd; /* same soft blue works on dark surfaces */
   --info-foreground: #1e3a5f;
   --success: #86efac;
@@ -360,7 +360,7 @@
   --warning-foreground: #713f12;
   --error: oklch(0.704 0.191 22.216); /* matches dark --destructive */
   --error-foreground: #ffffff;
-  --outline: #8a96a6; /* matches dark --ring */
+  --outline: #d6a898; /* matches dark --ring */
 }
 
 /* ---------- Base resets and defaults ---------------------------------- */
@@ -930,7 +930,7 @@ html:has(.mobile-menu[open]) {
    with the READER's page theme rather than with the band it is sitting on, so
    pin it to the lifted slate that reads on near-black in either theme. */
 .bg-accent-dark {
-  --section-accent: #8a96a6;
+  --section-accent: #d6a898;
 }
 
 /* The Feature look (src/lib/section-looks.ts). A band in the brand's deep colour.
