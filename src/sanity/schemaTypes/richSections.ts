@@ -16,10 +16,8 @@
 
 import { defineType, defineField, defineArrayMember } from 'sanity';
 import { UserIcon } from '@sanity/icons/User';
-import { ThLargeIcon } from '@sanity/icons/ThLarge';
 import { StarIcon } from '@sanity/icons/Star';
 import { DocumentTextIcon } from '@sanity/icons/DocumentText';
-import { BulbOutlineIcon } from '@sanity/icons/BulbOutline';
 import { OlistIcon } from '@sanity/icons/Olist';
 import { PinIcon } from '@sanity/icons/Pin';
 import { CheckmarkCircleIcon } from '@sanity/icons/CheckmarkCircle';
@@ -131,63 +129,6 @@ export const founderSection = defineType({
 });
 // scaffold:end
 
-// scaffold: services
-// ── 2. servicesGridSection ───────────────────────────────────────────────────
-// Services grid. Auto-populates from the service collection at query time.
-// Editor controls heading copy; service cards come from the service docs.
-// Manages its own surface-warm bg-background (SELF_CONTAINED).
-export const servicesGridSection = defineType({
-  name: 'servicesGridSection',
-  title: 'Services grid',
-  type: 'object',
-  icon: ThLargeIcon,
-  fields: [
-    defineField({ name: 'eyebrow', title: 'Eyebrow (optional)', type: 'string' }),
-    defineField({
-      name: 'headline',
-      title: 'Headline',
-      type: 'string',
-      validation: (R) => R.required(),
-    }),
-    scriptAccentField('headline'),
-    headingAccentField(),
-    defineField({
-      name: 'subhead',
-      title: 'Subhead (optional)',
-      type: 'text',
-      rows: 2,
-      hidden: hideWhenRich('subheadRich'),
-    }),
-    richTwin('subheadRich', 'Subhead'),
-    defineField({ name: 'cta', title: 'Button (optional)', type: 'ctaBlock' }),
-    defineField({
-      name: 'footnote',
-      title: 'Footnote (optional)',
-      type: 'string',
-      description:
-        'Small-print line under the grid. Example: "Final pricing is always discussed before any work begins."',
-    }),
-    defineField({
-      name: 'variant',
-      title: 'Layout variant',
-      type: 'string',
-      initialValue: 'grid',
-      options: {
-        list: [
-          { title: 'Compact grid (home page, up to 4)', value: 'grid' },
-          { title: 'Full list with anchors (services page)', value: 'list' },
-        ],
-        layout: 'radio',
-      },
-    }),
-  ],
-  preview: {
-    select: { title: 'headline' },
-    prepare: ({ title }) => ({ title: title || 'Services grid', subtitle: 'Services grid' }),
-  },
-});
-// scaffold:end
-
 // scaffold: testimonials
 // ── 3. testimonialsSection ───────────────────────────────────────────────────
 // Testimonial grid with an optional featured pull-quote above.
@@ -289,33 +230,6 @@ export const storySection = defineType({
       subtitle: 'Story / narrative',
       media,
     }),
-  },
-});
-// scaffold:end
-
-// scaffold: philosophy
-// ── 5. valuesSection ─────────────────────────────────────────────────────────
-// Numbered card grid of values or philosophy points.
-// Auto-populates from the philosophyPoint collection at query time.
-// Manages its own bg-muted surface (SELF_CONTAINED).
-export const valuesSection = defineType({
-  name: 'valuesSection',
-  title: 'Values / philosophy',
-  type: 'object',
-  icon: BulbOutlineIcon,
-  fields: [
-    defineField({ name: 'eyebrow', title: 'Eyebrow (optional)', type: 'string' }),
-    defineField({
-      name: 'headline',
-      title: 'Headline',
-      type: 'string',
-      validation: (R) => R.required(),
-    }),
-    columnsField('valuesSection'),
-  ],
-  preview: {
-    select: { title: 'headline' },
-    prepare: ({ title }) => ({ title: title || 'Values', subtitle: 'Values / philosophy' }),
   },
 });
 // scaffold:end
@@ -668,10 +582,8 @@ export const dynamicListSection = defineType({
 
 export const richSectionSchemas = [
   founderSection, // scaffold: about
-  servicesGridSection, // scaffold: services
   testimonialsSection, // scaffold: testimonials
   storySection, // scaffold: about
-  valuesSection, // scaffold: philosophy
   processSection, // scaffold: process
   serviceAreaSection,
   guaranteeSection,
@@ -694,7 +606,6 @@ export const RICH_SECTION_TYPES = richSectionSchemas.map((s) => ({ type: s.name 
 export const HOME_SECTION_TYPES = [
   ...SECTION_TYPES,
   { type: 'founderSection' }, // scaffold: about
-  { type: 'servicesGridSection' }, // scaffold: services
   { type: 'testimonialsSection' }, // scaffold: testimonials
   { type: 'processSection' }, // scaffold: process
   { type: 'faqSection' }, // scaffold: faq
@@ -705,7 +616,6 @@ export const HOME_SECTION_TYPES = [
 export const ABOUT_SECTION_TYPES = [
   ...SECTION_TYPES,
   { type: 'storySection' }, // scaffold: about
-  { type: 'valuesSection' }, // scaffold: philosophy
   { type: 'faqSection' }, // scaffold: faq
   { type: 'teamSection' },
   { type: 'dynamicListSection' },
@@ -713,7 +623,6 @@ export const ABOUT_SECTION_TYPES = [
 
 export const SERVICES_SECTION_TYPES = [
   ...SECTION_TYPES,
-  { type: 'servicesGridSection' }, // scaffold: services
   { type: 'serviceAreaSection' },
   { type: 'guaranteeSection' },
   { type: 'faqSection' }, // scaffold: faq

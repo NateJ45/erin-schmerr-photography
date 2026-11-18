@@ -43,7 +43,6 @@ import { slugify } from '../lib/slugify'; // scaffold: journal
 const SEO_TYPES = [
   'homePage',
   'aboutPage', // scaffold: about
-  'servicesPage', // scaffold: services
   'processPage', // scaffold: process
   'faqPage', // scaffold: faq
   'contactPage',
@@ -99,8 +98,6 @@ export const kitConfig: KitConfig = {
     faqCategory: 'Question group', // scaffold: faq
     journalEntry: 'Journal post', // scaffold: journal
     journalCategory: 'Journal category', // scaffold: journal
-    service: 'Service', // scaffold: services
-    philosophyPoint: 'Value', // scaffold: philosophy
     processStep: 'Process step', // scaffold: process
   },
 
@@ -126,7 +123,6 @@ export const kitConfig: KitConfig = {
         fixedPaths: [
           '/',
           '/about/', // scaffold: about
-          '/services/', // scaffold: services
           '/process/', // scaffold: process
           '/faq/', // scaffold: faq
           '/journal/', // scaffold: journal
@@ -169,7 +165,6 @@ export const kitConfig: KitConfig = {
       links: [
         { title: 'Home', target: { doc: 'homePage' } },
         { title: 'About', target: { doc: 'aboutPage' } }, // scaffold: about
-        { title: 'Services', target: { doc: 'servicesPage' } }, // scaffold: services
         { title: 'Process', target: { doc: 'processPage' } }, // scaffold: process
         { title: 'Questions', target: { doc: 'faqPage' } }, // scaffold: faq
         { title: 'Journal (the list page)', target: { doc: 'journalPage' } }, // scaffold: journal
