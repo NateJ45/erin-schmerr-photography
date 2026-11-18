@@ -69,8 +69,9 @@ Flat. Nothing floats except the lightbox and the phone menu. Depth comes from ph
 - **Focus image** (`FocusImage.astro`): every photo renders over its own LQIP blur and resolves to sharp as it loads and enters view. Reduced motion shows it sharp at once.
 - **Credit block** (`CreditBlock.astro`): a two-column definition list (role, then linked name), set like a magazine credit.
 - **Story index** (`StoryIndex.astro`): selected stories as a grid or a list, with a toggle; in list view, hovering a title reveals its cover.
-- **Published marquee** (`PublishedMarquee.astro`): the magazine names in a slow, pausable strip.
-- **Tear-sheet stack** (`TearSheetStack.astro`): publication tear sheets fanned like a stack of prints.
+- **Published marquee** (`PublishedMarquee.astro`): "As published in" on the left and the magazine names in one line beside it (stacked on phones). The slow, pausable scroll comes with the motion pass.
+- **Tear-sheet stack** (`TearSheetStack.astro`): the newest tear sheets fanned and overlapping like prints on a table, with the list of features beside them; pointing at a feature or a sheet lifts that sheet. Reduced motion keeps the overlap and drops the turn and lift.
+- **Press page** (`src/pages/press.astro`): an index by year. The year sits in a left rail that stays in view (from 1024 up) while its features pass; each feature is a row with its tear sheet, issue and date, the magazine large, the excerpt and a "Read the feature" link.
 - **Archive canvas** (`ArchiveCanvas.astro`): every photo on a draggable canvas; a plain grid on touch and under reduced motion.
 - **Buttons:** one family (rule 17). Text links with an underline that draws in; the single filled Dusk button is the inquiry.
 
