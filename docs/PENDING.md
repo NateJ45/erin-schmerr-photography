@@ -16,6 +16,12 @@ sequence).
 
 ## Waiting on a human
 
+- **Her words for the Studio's SEO fields and the three Sessions answers (2026-11-18).** The About, Contact, FAQ, Process, Journal and Privacy singletons still hold the starter's seeded "Replace this ..." SEO title and description. The site now skips them (`src/lib/page-meta.ts`) and uses a real line in her voice, so nothing placeholder reaches Google, but the Studio still shows the seeded text. When she writes her own, it wins. The Sessions FAQ answers on turnaround, prints and booking are still "Placeholder: ...", so the Sessions FAQPage carries only the two real answers until she fills them.
+
+- **The starter's FAQ, Process and Journal pages are still live (2026-11-18).** `/faq/`, `/process/` and `/journal/` (two placeholder posts) have real titles and descriptions now and send no placeholder FAQPage, but their bodies are starter text and nothing links to them. Nathan's call: remove them (`npm run scaffold -- --remove faq process journal`, then refresh the snapshot) or fill them. They are left out of `/llms.txt`.
+
+- **Search Console and GA4 Realtime after the next deploy (2026-11-18).** Check the Rich Results test on `/`, `/about/`, `/sessions/` and one story (ProfessionalService with sameAs, Person, FAQPage, CreativeWork with ImageObjects), and read GA4 Realtime for `book_click`, `social_click`, `press_click` and `generate_lead` in a real browser (`docs/agent/analytics.md`, "Verifying").
+
 - **The picked design, built in three PRs (picked 2026-11-18).** Decision and carry-forward list: `docs/design-directions/2026-11-18-tate/README.md` (PR #29). Home cover slides: done (this entry's first PR). Still to do, in order: the story page as a slideshow film with a hand-written WebGL film-burn between frames (Nathan, 2026-11-18: WebGL, no OGL), then `/stories/` as the pinned sideways reel. Update DESIGN.md's components as each lands.
 
 - **At domain cutover: add the real domain to the Sanity project's CORS origins (Nathan said yes, 2026-11-18).** The domain is not chosen yet. The film-burn's WebGL reads the photos from `cdn.sanity.io`, which only sends CORS headers to listed origins (today `localhost:4321` and the workers.dev address); without the entry the story film falls back to its crossfade. Run `npx sanity cors add https://<domain> --credentials` (or the manage page), then check a story's film in the browser console.

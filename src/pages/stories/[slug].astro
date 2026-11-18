@@ -22,6 +22,7 @@ import { formatExif, formatMonthYear, photoRatio, storySequence } from '@/lib/po
 import { breadcrumbSchema } from '@/lib/schemas';
 import { storySchema } from '@/lib/portfolio-schemas';
 import { site } from '@/data/site';
+import { pageDescription, pageTitle } from '@/lib/page-meta';
 import '@/styles/portfolio.css';
 
 export async function getStaticPaths() {
@@ -66,8 +67,13 @@ const sequence = storySequence(photos);
 // beside the title as the left page of a spread.
 const coverLandscape = photoRatio(story.cover) >= 1;
 const hasCredits = (story.credits ?? []).some((c) => c?.name);
-const title = story.seoTitle || `${story.title} | ${site.name}`;
-const description = story.seoDescription || story.dek || `${story.title}, a story by ${site.name}.`;
+// Real words only (src/lib/page-meta.ts): a placeholder dek falls through to the plain line.
+const title = pageTitle(story.seoTitle, `${story.title} | ${site.name}`);
+const description = pageDescription(
+  story.seoDescription,
+  story.dek,
+  `${story.title}, a portrait story by Erin Schmerr, ${site.name}.`,
+);
 // scaffold: press
 const pub = story.publication;
 const pubLine = pub?.magazine ? [pub.magazine, pub.issue].filter(Boolean).join(', ') : '';

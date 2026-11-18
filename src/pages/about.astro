@@ -10,14 +10,24 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import SectionRenderer from '@/components/SectionRenderer.astro';
 import { getAboutPage, getSiteSettings } from '@/lib/queries';
 import { breadcrumbSchema } from '@/lib/schemas';
-import { personSchema } from '@/lib/portfolio-schemas'; // scaffold: stories
+import { personSchema, type PressFeature } from '@/lib/site-graph';
+import { getPublications } from '@/lib/pressQueries'; // scaffold: press
+import { pageDescription, pageTitle } from '@/lib/page-meta';
 import { site } from '@/data/site';
 import { DEFAULT_ABOUT_SECTIONS } from '@/data/defaultSections';
 
 const [page, siteSettings] = await Promise.all([getAboutPage(), getSiteSettings()]);
+// Her press features, for the Person's subjectOf. Filled on its own line so removing
+// the press capability (npm run scaffold) leaves an empty list, not a broken import.
+const press: PressFeature[] = [];
+press.push(...(await getPublications())); // scaffold: press
 
-const title = page?.seoTitle ?? `About · ${site.name}`;
-const description = page?.seoDescription ?? `About ${site.name}.`;
+// The Studio's SEO fields win when they hold real words (src/lib/page-meta.ts).
+const title = pageTitle(page?.seoTitle, 'About Erin Schmerr');
+const description = pageDescription(
+  page?.seoDescription,
+  'How I started with my dad’s camera, and the vintage, story-led portraits I make around Cincinnati and West Chester, Ohio.',
+);
 
 const sections = page?.pageBuilder?.length ? page.pageBuilder : DEFAULT_ABOUT_SECTIONS;
 
@@ -26,7 +36,7 @@ const schemas = [
     { name: 'Home', url: site.url },
     { name: 'About', url: `${site.url}/about/` },
   ]),
-  personSchema(), // scaffold: stories
+  personSchema(press),
 ];
 ---
 
