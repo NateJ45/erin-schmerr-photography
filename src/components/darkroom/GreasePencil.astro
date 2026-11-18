@@ -1,0 +1,30 @@
+---
+// Safe to edit by hand
+// The grease-pencil ring: the loop a photographer draws round the keeper on a contact
+// sheet. Marks the page you are on in the header nav and the phone menu. Decorative
+// (aria-current carries the meaning), stretched to its box by the parent's CSS
+// (.dk-pencil), the stroke kept even with vector-effect so a wide label still reads as
+// one pencil line. The loop overshoots its start, as a hand-drawn one does.
+interface Props {
+  class?: string;
+}
+const { class: className } = Astro.props;
+---
+
+<svg
+  class:list={['dk-pencil', className]}
+  viewBox="0 0 120 48"
+  preserveAspectRatio="none"
+  aria-hidden="true"
+  focusable="false"
+>
+  <path
+    d="M70 5.5C42 3 9 9.5 5 23.5c-3.5 12.5 27 20 58 19.5 30-.5 53-7 52.5-19C115 12 92 4.5 61 6.5 45 7.5 30 10 22 13"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.75"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    vector-effect="non-scaling-stroke"
+  ></path>
+</svg>
