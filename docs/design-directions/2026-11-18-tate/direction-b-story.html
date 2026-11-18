@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A 1950s Halloween at home | Direction B, The Feature</title>
+<!-- Fonts: Bodoni Moda + Libre Franklin, same system as direction-b.html. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..700&family=Libre+Franklin:ital,wght@0,300..800;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#F5EEE1;--ink:#1A1611;--muted:#5B5246;--rule:#1A1611;--red:#B0261C;--teal:#1C5A57;--mustard:#D9A93A;--gut:clamp(16px,2.6vw,36px);--serif:"Bodoni Moda",Didot,serif;--sans:"Libre Franklin",system-ui,sans-serif}
+*{box-sizing:border-box;margin:0}
+html{background:var(--paper);color:var(--ink);font:400 16px/1.6 var(--sans);-webkit-text-size-adjust:100%}
+a{color:inherit}:focus-visible{outline:2px solid var(--red);outline-offset:3px}
+img{display:block;max-width:100%;height:auto}
+.wrap{max-width:1360px;margin:0 auto;padding:0 var(--gut)}
+.grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:var(--gut)}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:3px double var(--rule);padding:12px 0}
+.top a.name{text-decoration:none;font:900 34px/1 var(--serif);letter-spacing:-.03em}
+.top a.name i{font:italic 400 16px/1 var(--serif);letter-spacing:0;margin-left:6px}
+.top nav{display:flex;gap:clamp(12px,2vw,28px);font:600 12px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase}
+.top nav a{text-decoration:none;padding:14px 0}
+.kicker{font:700 11px/1 var(--sans);letter-spacing:.18em;text-transform:uppercase;color:var(--red)}
+/* Opener: the title runs across the page over the picture's top edge. */
+.opener{padding-top:clamp(20px,3vw,40px)}
+.opener .kicker{grid-column:1/-1}
+h1{grid-column:1/-1;font:400 clamp(56px,10.5vw,170px)/.86 var(--serif);font-variation-settings:"opsz" 96;letter-spacing:-.035em;margin-top:10px;position:relative;z-index:1}
+h1 em{font-style:italic;color:var(--red)}
+.opener figure{grid-column:5/13;margin-top:calc(-1 * clamp(20px,4vw,64px))}
+.opener figure img{width:100%;aspect-ratio:4/5;object-fit:cover}
+.opener .side{grid-column:1/5;grid-row:3;align-self:end}
+.dek{font:italic 400 clamp(22px,2.1vw,30px)/1.2 var(--serif)}
+.byline{margin-top:16px;font:600 12px/1.4 var(--sans);letter-spacing:.12em;text-transform:uppercase}
+.byline span{display:block;color:var(--muted);font-weight:500}
+/* Credits set like a magazine masthead box. */
+.credits{margin-top:22px;border:1px solid var(--rule);padding:14px 16px}
+.credits h2{font:700 11px/1 var(--sans);letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px}
+.credits dl{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:14px}
+.credits dt{font:italic 400 15px/1.4 var(--serif)}
+.credits dd{margin:0}
+/* Body copy: two columns with a drop cap. */
+.body{padding-top:clamp(40px,6vw,80px)}
+.body .cols{grid-column:3/11;columns:2;column-gap:calc(var(--gut)*1.4);font-size:17px}
+.body .cols p+p{margin-top:12px}
+.dropcap::first-letter{float:left;font:700 5.4em/.78 var(--serif);margin:.05em .08em 0 0;color:var(--teal)}
+/* Sequence: pictures in mixed column spans, numbered captions in the gutter. */
+.seq{padding-top:clamp(40px,6vw,80px);row-gap:clamp(28px,4vw,56px)}
+.seq figure img{width:100%;object-fit:cover;aspect-ratio:4/5}
+.seq figcaption{font-size:13px;color:var(--muted);margin-top:8px}
+.seq figcaption b{font:700 15px/1 var(--serif);color:var(--red);margin-right:6px}
+.a{grid-column:1/7}.b{grid-column:7/13;margin-top:clamp(40px,8vw,140px)}
+.c{grid-column:2/9}.d{grid-column:9/13;align-self:end}
+.e{grid-column:1/5}.f{grid-column:5/9}.g{grid-column:9/13}
+.pull{grid-column:3/11;text-align:center;font:italic 400 clamp(30px,3.8vw,58px)/1.06 var(--serif);border-top:3px double var(--rule);border-bottom:1px solid var(--rule);padding:clamp(18px,3vw,32px) 0}
+.pull cite{display:block;margin-top:12px;font:700 11px/1 var(--sans);font-style:normal;letter-spacing:.18em;text-transform:uppercase;color:var(--red)}
+.ran{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:var(--gut);align-items:center;background:var(--mustard);padding:clamp(18px,3vw,32px);border:2px solid var(--ink)}
+.ran p{font:400 clamp(22px,2.4vw,34px)/1.15 var(--serif)}
+.ran p em{font-style:italic}
+.ran img{width:100%;aspect-ratio:3/2;object-fit:cover;border:1px solid var(--ink)}
+.next{margin-top:clamp(48px,7vw,96px);border-top:3px double var(--rule);padding:18px 0 48px;display:grid;grid-template-columns:minmax(0,1fr) 140px;gap:var(--gut);align-items:center}
+.next a{text-decoration:none;font:400 clamp(36px,5vw,72px)/1 var(--serif);letter-spacing:-.02em}
+.next a:hover{color:var(--red)}
+.next img{width:140px;aspect-ratio:4/5;object-fit:cover}
+@media (prefers-reduced-motion:no-preference){
+  html.motion .wipe{clip-path:inset(0 100% 0 0);transition:clip-path 1s cubic-bezier(.22,1,.36,1)}
+  html.motion .wipe.in{clip-path:inset(0 0 0 0)}
+}
+@media (max-width:900px){
+  .opener figure,.opener .side,.body .cols,.a,.b,.c,.d,.pull,.ran{grid-column:1/-1}
+  .opener .side{grid-row:auto}
+  .opener figure{margin-top:0}
+  .b{margin-top:0}
+  .e,.f,.g{grid-column:span 6}
+  .g{grid-column:1/-1}
+  .body .cols{columns:1}
+  .ran{grid-template-columns:minmax(0,1fr)}
+  .top nav a:nth-child(n+3){display:none}
+}
+</style>
+<script>/* Hidden start states only with JS. The screenshot script (navigator.webdriver) gets the settled page. */ if(!navigator.webdriver)document.documentElement.classList.add('motion')</script>
+</head>
+<body>
+<div class="wrap">
+<header class="top"><a class="name" href="direction-b.html">Tate<i>Fine Art Photography</i></a><nav aria-label="Sections"><a href="direction-b.html#contents">Stories</a><a href="direction-b.html#seen">Press</a><a href="direction-b.html#feature">About</a><a href="direction-b.html#book">Sessions</a></nav></header>
+<main>
+<article>
+  <header class="grid opener">
+    <p class="kicker">The cover story · Halloween · page 04</p>
+    <h1>A 1950s Halloween <em>at home</em></h1>
+    <figure><img src="https://cdn.sanity.io/images/feuqkbki/production/89e44fc497a5bc621c7c1666ab80a4fd51b83f4d-1080x1350.jpg?w=1200&amp;q=72&amp;auto=format" alt="A 1950s living room at Halloween, guests in costume around a glowing television" width="1200" height="1500"></figure>
+    <div class="side">
+      <p class="dek">Grainy, overexposed in places, a little chaotic: the party as dad's old camera would have caught it.</p>
+      <p class="byline">Photographs by Erin Schmerr<span>Mid Century Modern Rescue, Cincinnati · October 2023</span></p>
+      <section class="credits" aria-labelledby="cr"><h2 id="cr">The cast</h2>
+        <dl><dt>Elvis</dt><dd><a href="#">Byron Hunnam</a></dd><dt>Pierrot</dt><dd><a href="#">the_lovely_luna__</a></dd><dt>The devil</dt><dd><a href="#">vampirebby</a></dd><dt>Beauty queen</dt><dd><a href="#">grep.schultz</a></dd><dt>The house</dt><dd><a href="#">Mid Century Modern Rescue</a></dd></dl>
+      </section>
+    </div>
+  </header>
+
+  <div class="grid body">
+    <div class="cols">
+      <p class="dropcap">VINTAGE + HALLOWEEN, my two favorite things in one living room. Mid Century Modern Rescue gave us a living room that already looked the part, and four very good sports came in costume.</p>
+      <p>I wanted these to look like the photos you find in a shoebox years later. So the set is intentionally grainy, the shutter speed is turned down, and the images are overexposed in places. It's the way dad's old camera would have seen the party.</p>
+      <p>For every photo I take, I tend to edit multiple variations. Some of these went to black and white and stayed there.</p>
+      <p>Thank you to my cast for playing along, and to Mid Century Modern Rescue for the room.</p>
+    </div>
+  </div>
+
+  <div class="grid seq">
+    <figure class="a wipe"><img src="https://cdn.sanity.io/images/feuqkbki/production/316a844610310cb55bbaf77237a371bef8d4ac56-1080x1350.jpg?w=900&amp;q=72&amp;auto=format" alt="Elvis on the sofa while a beauty queen and Pierrot sit behind him, in black and white" width="900" height="1125"><figcaption><b>1</b>Elvis holds court on the sofa.</figcaption></figure>
+    <figure class="b wipe"><img src="https://cdn.sanity.io/images/feuqkbki/production/c8e429012032c7a4d57524d415abbc2e35d3a39b-1080x1350.jpg?w=900&amp;q=72&amp;auto=format" alt="The devil in red tulle laughs on the floor beside a plate of spaghetti" width="900" height="1125"><figcaption><b>2</b>The devil, laughing at her own joke.</figcaption></figure>
+    <blockquote class="pull">Intentionally grainy, the shutter speed turned down, overexposed in places.<cite>On the look of this set</cite></blockquote>
+    <figure class="c wipe"><img src="https://cdn.sanity.io/images/feuqkbki/production/2693aa2f66f3c63a70d029a93d78381afbe02a12-1080x1343.jpg?w=1100&amp;q=72&amp;auto=format" alt="The whole party on the floor of the living room, cards and drinks between them" width="1100" height="1375"><figcaption><b>3</b>The whole party on the living room floor.</figcaption></figure>
+    <figure class="d wipe"><img src="https://cdn.sanity.io/images/feuqkbki/production/271b9bb7dbbc739e39329517eadcd1df91c0392b-1080x1350.jpg?w=700&amp;q=72&amp;auto=format" alt="Close portrait of the devil in red horns and dark curls, smiling" width="700" height="875"><figcaption><b>4</b>Red horns and dark curls.</figcaption></figure>
+    <figure class="e"><img src="https://cdn.sanity.io/images/feuqkbki/production/ffd25176ec74d142a015f1c52ea3eecae5c5681e-1080x1350.jpg?w=600&amp;q=72&amp;auto=format" alt="The beauty queen in a tiara, her shadow on the wall behind her" width="600" height="750"><figcaption><b>5</b>The beauty queen and her shadow.</figcaption></figure>
+    <figure class="f"><img src="https://cdn.sanity.io/images/feuqkbki/production/d5bf58ed97a778ec9aaf0be8a2e9a485ff8b6d3c-1080x1350.jpg?w=600&amp;q=72&amp;auto=format" alt="Pierrot in a silver party hat, holding a curl of hair" width="600" height="750"><figcaption><b>6</b>Pierrot in a silver party hat.</figcaption></figure>
+    <figure class="g"><img src="https://cdn.sanity.io/images/feuqkbki/production/6802c2ad3e34e9570a72b2a0fd9802fa29b7cdd6-1080x1350.jpg?w=600&amp;q=72&amp;auto=format" alt="Elvis in warm lamplight, hair falling across his face" width="600" height="750"><figcaption><b>7</b>Elvis in warm lamplight.</figcaption></figure>
+    <aside class="ran" aria-label="Published in"><p>This set ran in <em>Hollyway Magazine</em> in Tokyo as "Time Machine Halloween", November 2023. Always an honor.</p><img src="https://cdn.sanity.io/images/feuqkbki/production/bff853de7ba99ea6305630981b85ebac984e55a7-1080x1350.jpg?w=900&amp;q=72&amp;auto=format" alt="" width="900" height="600"></aside>
+  </div>
+</article>
+</main>
+<nav class="next" aria-label="Next story"><div><p class="kicker">Next in this issue · page 10</p><a href="direction-b.html">Sleepy Hollow</a></div><img src="https://cdn.sanity.io/images/feuqkbki/production/ce858e4c6e05d280b40acaa3aedc0419d3487628-1080x1350.jpg?w=300&amp;q=72&amp;auto=format" alt="" width="300" height="375"></nav>
+</div>
+<script>
+if (matchMedia('(prefers-reduced-motion: no-preference)').matches && 'IntersectionObserver' in window){
+  const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{rootMargin:'0px 0px -10% 0px'});
+  document.querySelectorAll('.wipe').forEach(el=>io.observe(el));
+} else document.querySelectorAll('.wipe').forEach(el=>el.classList.add('in'));
+</script>
+</body>
+</html>

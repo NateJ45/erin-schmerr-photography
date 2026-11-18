@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A 1950s Halloween at home | Direction H, Depth of Field</title>
+<!-- Font: EB Garamond, same as direction-h.html. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+/* The story in layers: the room stays behind you (sticky, soft), and the prints float up past it at three speeds,
+   coming into focus as they reach the middle of the screen. CSS scroll-driven; reduced motion and old browsers get
+   the same layout standing still. */
+:root{--paper:#F3EEE6;--ink:#1D1915;--muted:#5D554B;--serif:"EB Garamond",Georgia,serif}
+*{box-sizing:border-box;margin:0}
+html{background:var(--paper);color:var(--ink);font:400 18px/1.45 var(--serif)}
+a{color:inherit}:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+img{display:block}
+.chip{background:rgba(243,238,230,.94);padding:6px 12px;text-decoration:none;line-height:1.2}
+.bar{position:fixed;inset:14px 14px auto 14px;display:flex;justify-content:space-between;z-index:20}
+.room{position:relative}
+.room .back{position:sticky;top:0;height:100vh;height:100svh;width:100%;object-fit:cover}
+.opener{position:absolute;inset:0 0 auto 0;height:100vh;height:100svh;display:grid;place-items:center;text-align:center;z-index:3;pointer-events:none}
+.opener div{pointer-events:auto}
+h1{font:italic 400 clamp(36px,5vw,72px)/1 var(--serif);padding:10px 18px}
+.opener p{display:inline-block;margin-top:8px}
+.float{position:relative;margin-top:-30vh;padding:0 6vw 30vh;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));row-gap:22vh;z-index:2}
+.float figure{position:relative}
+.float img{width:100%;aspect-ratio:4/5;object-fit:cover;outline:8px solid var(--paper)}
+.float figcaption{margin-top:14px;display:inline-block}
+.s1{grid-column:2/6}.s2{grid-column:8/12}.s3{grid-column:4/9}.s4{grid-column:1/5}.s5{grid-column:7/11}.s6{grid-column:3/7}.s7{grid-column:8/13}
+@supports (animation-timeline: view()){
+  @media (prefers-reduced-motion:no-preference){
+    html.motion .float figure{animation:rise linear both;animation-timeline:view();animation-range:cover 0% cover 100%}
+    html.motion .float figure img{animation:focus linear both;animation-timeline:view();animation-range:entry 0% contain 30%}
+    html.motion .float .fast{--r:-22vh}html.motion .float .slow{--r:12vh}
+    html.motion .room .back{animation:soften linear both;animation-timeline:scroll();animation-range:0 120vh}
+    @keyframes rise{from{transform:translateY(calc(var(--r,0vh) * -1))}to{transform:translateY(var(--r,0vh))}}
+    @keyframes focus{from{filter:blur(8px)}to{filter:blur(0)}}
+    @keyframes soften{from{filter:none}to{filter:blur(10px) brightness(1.06)}}
+  }
+}
+@media (hover:none){html.motion .float figure img{animation:none!important}html.motion .room .back{animation:none!important;filter:blur(6px) brightness(1.05)}}
+.credits{position:relative;z-index:3;background:var(--paper);padding:80px 20px;text-align:center}
+.credits h2{font:italic 400 36px/1 var(--serif)}
+.credits dl{display:grid;grid-template-columns:1fr 1fr;gap:6px 22px;max-width:520px;margin:22px auto 0}
+.credits dt{text-align:right;color:var(--muted)}.credits dd{margin:0;text-align:left}
+.credits p{margin-top:22px;color:var(--muted)}
+.credits .next{display:inline-block;margin-top:26px;font:italic 400 30px/1 var(--serif);border-bottom:1px solid var(--ink);text-decoration:none}
+@media (max-width:700px){.float{grid-template-columns:minmax(0,1fr);row-gap:14vh;padding:0 8vw 20vh}.float figure{grid-column:1!important;width:82%}.float figure:nth-child(even){justify-self:end}}
+</style>
+<script>if(!navigator.webdriver)document.documentElement.classList.add('motion')</script>
+</head>
+<body>
+<header class="bar"><a class="chip" href="direction-h.html">Tate <i>Fine Art Photography</i></a><a class="chip" href="direction-h.html#book">Book a session</a></header>
+<main>
+  <div class="room">
+    <img class="back" src="https://cdn.sanity.io/images/feuqkbki/production/89e44fc497a5bc621c7c1666ab80a4fd51b83f4d-1080x1350.jpg?w=1600&amp;q=72&amp;auto=format" alt="A 1950s living room at Halloween, guests in costume around a glowing television" fetchpriority="high">
+    <div class="opener"><div><h1 class="chip">A 1950s Halloween at home</h1><br><p class="chip">Grainy, overexposed in places, a little chaotic: the party as dad's old camera would have caught it.</p></div></div>
+    <div class="float">
+      <figure class="s1 fast"><img src="https://cdn.sanity.io/images/feuqkbki/production/316a844610310cb55bbaf77237a371bef8d4ac56-1080x1350.jpg?w=800&amp;q=72&amp;auto=format" alt="Elvis on the sofa while a beauty queen and Pierrot sit behind him, in black and white"><figcaption class="chip">Elvis, holding court.</figcaption></figure>
+      <figure class="s2 slow"><img src="https://cdn.sanity.io/images/feuqkbki/production/c8e429012032c7a4d57524d415abbc2e35d3a39b-1080x1350.jpg?w=800&amp;q=72&amp;auto=format" alt="The devil in red tulle laughs on the floor beside a plate of spaghetti"><figcaption class="chip">The devil, laughing.</figcaption></figure>
+      <figure class="s3"><img src="https://cdn.sanity.io/images/feuqkbki/production/271b9bb7dbbc739e39329517eadcd1df91c0392b-1080x1350.jpg?w=800&amp;q=72&amp;auto=format" alt="Close portrait of the devil in red horns and dark curls, smiling"><figcaption class="chip">Red horns and dark curls.</figcaption></figure>
+      <figure class="s4 slow"><img src="https://cdn.sanity.io/images/feuqkbki/production/ffd25176ec74d142a015f1c52ea3eecae5c5681e-1080x1350.jpg?w=800&amp;q=72&amp;auto=format" alt="The beauty queen in a tiara, her shadow on the wall behind her"><figcaption class="chip">The beauty queen and her shadow.</figcaption></figure>
+      <figure class="s5 fast"><img src="https://cdn.sanity.io/images/feuqkbki/production/d5bf58ed97a778ec9aaf0be8a2e9a485ff8b6d3c-1080x1350.jpg?w=800&amp;q=72&amp;auto=format" alt="Pierrot in a silver party hat, holding a curl of hair"><figcaption class="chip">Pierrot, in a silver party hat.</figcaption></figure>
+      <figure class="s6"><img src="https://cdn.sanity.io/images/feuqkbki/production/6802c2ad3e34e9570a72b2a0fd9802fa29b7cdd6-1080x1350.jpg?w=800&amp;q=72&amp;auto=format" alt="Elvis in warm lamplight, hair falling across his face"><figcaption class="chip">Elvis in warm lamplight.</figcaption></figure>
+      <figure class="s7 fast"><img src="https://cdn.sanity.io/images/feuqkbki/production/a1b4c9ac82d25cd7f3828e7f4b12a3fc1f5d4879-1080x1350.jpg?w=800&amp;q=72&amp;auto=format" alt="The devil twirls her red tulle skirt beside a pumpkin"><figcaption class="chip">One more twirl.</figcaption></figure>
+    </div>
+  </div>
+  <section class="credits" aria-labelledby="cast"><h2 id="cast">Who was there</h2>
+    <dl><dt>Elvis</dt><dd><a href="#">Byron Hunnam</a></dd><dt>Pierrot</dt><dd><a href="#">the_lovely_luna__</a></dd><dt>The devil</dt><dd><a href="#">vampirebby</a></dd><dt>Beauty queen</dt><dd><a href="#">grep.schultz</a></dd><dt>The house</dt><dd><a href="#">Mid Century Modern Rescue</a></dd></dl>
+    <p>The set is intentionally grainy, the shutter speed is turned down, and the images are overexposed in places. It ran in Hollyway Magazine, Tokyo, November 2023.</p>
+    <a class="next" href="direction-h.html">Next: Sleepy Hollow</a></section>
+</main>
+</body>
+</html>

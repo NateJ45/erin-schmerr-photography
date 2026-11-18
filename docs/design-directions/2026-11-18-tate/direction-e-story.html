@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A 1950s Halloween at home | Direction E, Rack Focus</title>
+<!-- Font: Newsreader, same as direction-e.html. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<style>
+/* The story plays like a slideshow film: each frame racks into focus with a slow push-in, captions sit like subtitles,
+   segmented progress at the top. Without JS (or with reduced motion and no Play) it is a plain vertical run of frames. */
+:root{--paper:#F4EFE8;--ink:#1E1A16;--muted:#5A5148;--ease:cubic-bezier(.22,1,.36,1);--serif:"Newsreader",Georgia,serif;--hold:4800ms}
+*{box-sizing:border-box;margin:0}
+html{background:var(--paper);color:var(--ink);font:400 16px/1.5 var(--serif)}
+a,button{color:inherit;font:inherit}:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+img{display:block}
+.chip{background:rgba(244,239,232,.92);color:var(--ink);padding:7px 12px;text-decoration:none;line-height:1.2;border:0}
+.bar{position:fixed;inset:14px 14px auto 14px;display:flex;justify-content:space-between;gap:10px;z-index:10}
+.frames{list-style:none;padding:0}
+.frame{position:relative;height:100vh;height:100svh;overflow:hidden;background:#d9d1c6}
+.frame .bleed,.frame .pic{position:absolute;inset:0;width:100%;height:100%}
+.frame .bleed{object-fit:cover;filter:blur(38px);transform:scale(1.2);opacity:.85}
+.frame .pic{object-fit:contain}
+.sub{position:absolute;left:50%;bottom:clamp(60px,9vh,96px);transform:translateX(-50%);text-align:center;max-width:min(620px,calc(100% - 28px));font-size:clamp(17px,1.5vw,21px)}
+.title{position:absolute;left:14px;bottom:14px;max-width:calc(100% - 28px)}
+.title h1{font:500 18px/1.2 var(--serif);display:inline}
+.title span{color:var(--muted);font-style:italic;margin-left:8px}
+.credits{background:var(--paper);padding:70px 20px 80px;text-align:center}
+.credits h2{font:italic 400 30px/1.1 var(--serif)}
+.credits dl{display:grid;grid-template-columns:1fr 1fr;gap:6px 22px;max-width:520px;margin:24px auto 0}
+.credits dt{text-align:right;color:var(--muted)}.credits dd{margin:0;text-align:left}
+.credits p{margin-top:26px;color:var(--muted)}
+.credits .next{display:inline-block;margin-top:30px;font-size:24px;font-style:italic;border-bottom:1px solid var(--ink);text-decoration:none}
+
+/* Film mode (JS on): frames stack in one screen and play. */
+html.film body{overflow:hidden}
+html.film .frames{position:fixed;inset:0}
+html.film .frame{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity 1.2s var(--ease),visibility 0s linear 1.2s}
+html.film .frame.on{opacity:1;visibility:visible;transition:opacity 1.2s var(--ease)}
+html.film .frame.on .pic{animation:push var(--hold) linear both,focus 1.1s var(--ease) both}
+html.film .frame.on .sub{animation:subin .9s var(--ease) .35s both}
+@keyframes push{from{transform:scale(1)}to{transform:scale(1.06)}}
+@keyframes focus{from{filter:blur(12px)}to{filter:blur(0)}}
+@keyframes subin{from{opacity:0;transform:translate(-50%,10px)}to{opacity:1;transform:translate(-50%,0)}}
+.controls{display:none}
+html.film .controls{display:flex;position:fixed;right:14px;bottom:14px;gap:6px;z-index:11}
+.controls button{cursor:pointer;min-width:44px;min-height:40px}
+.progress{display:none}
+html.film .progress{display:flex;position:fixed;left:14px;right:14px;top:60px;gap:4px;z-index:11}
+.progress i{flex:1;height:2px;background:rgba(244,239,232,.5);position:relative;overflow:hidden}
+.progress i b{position:absolute;inset:0;background:var(--paper);transform-origin:left;transform:scaleX(0)}
+.progress i.done b{transform:scaleX(1)}
+.progress i.now b{animation:fill var(--hold) linear both}
+html.paused .progress i.now b{animation-play-state:paused}
+html.paused .frame.on .pic{animation-play-state:paused}
+@keyframes fill{to{transform:scaleX(1)}}
+html.film .credits-wrap{display:none}
+html.film.ended .credits-wrap{display:block;position:fixed;inset:0;overflow:auto;z-index:12;background:var(--paper);animation:subin2 .8s var(--ease) both}
+@keyframes subin2{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){html.film .frame,html.film .frame.on{transition:none}html.film .frame.on .pic,html.film .frame.on .sub{animation:none}}
+@media (max-width:600px){.title span{display:none}}
+</style>
+<script>if(!navigator.webdriver)document.documentElement.classList.add('film')</script>
+</head>
+<body>
+<header class="bar"><a class="chip" href="direction-e.html">Tate <i>Fine Art Photography</i></a><a class="chip" href="direction-e.html#book">Book a session</a></header>
+<div class="progress" aria-hidden="true"></div>
+<main>
+  <div class="title chip" style="z-index:11;position:fixed"><h1>A 1950s Halloween at home</h1><span>Mid Century Modern Rescue, October 2023</span></div>
+  <ol class="frames" aria-label="The story, frame by frame">
+    <li class="frame on"><img class="bleed" src="https://cdn.sanity.io/images/feuqkbki/production/89e44fc497a5bc621c7c1666ab80a4fd51b83f4d-1080x1350.jpg?w=400&amp;q=72&amp;auto=format" alt=""><img class="pic" src="https://cdn.sanity.io/images/feuqkbki/production/89e44fc497a5bc621c7c1666ab80a4fd51b83f4d-1080x1350.jpg?w=1600&amp;q=72&amp;auto=format" alt="A 1950s living room at Halloween, guests in costume around a glowing television" fetchpriority="high"><p class="sub chip">Grainy, overexposed in places, a little chaotic: the party as dad's old camera would have caught it.</p></li>
+    <li class="frame"><img class="bleed" src="https://cdn.sanity.io/images/feuqkbki/production/316a844610310cb55bbaf77237a371bef8d4ac56-1080x1350.jpg?w=400&amp;q=72&amp;auto=format" alt=""><img class="pic" src="https://cdn.sanity.io/images/feuqkbki/production/316a844610310cb55bbaf77237a371bef8d4ac56-1080x1350.jpg?w=1600&amp;q=72&amp;auto=format" alt="Elvis on the sofa while a beauty queen and Pierrot sit behind him, in black and white"><p class="sub chip">Elvis, making cool guy at the party look easy.</p></li>
+    <li class="frame"><img class="bleed" src="https://cdn.sanity.io/images/feuqkbki/production/c8e429012032c7a4d57524d415abbc2e35d3a39b-1080x1350.jpg?w=400&amp;q=72&amp;auto=format" alt=""><img class="pic" src="https://cdn.sanity.io/images/feuqkbki/production/c8e429012032c7a4d57524d415abbc2e35d3a39b-1080x1350.jpg?w=1600&amp;q=72&amp;auto=format" alt="The devil in red tulle laughs on the floor beside a plate of spaghetti"><p class="sub chip">The devil, laughing at her own joke.</p></li>
+    <li class="frame"><img class="bleed" src="https://cdn.sanity.io/images/feuqkbki/production/271b9bb7dbbc739e39329517eadcd1df91c0392b-1080x1350.jpg?w=400&amp;q=72&amp;auto=format" alt=""><img class="pic" src="https://cdn.sanity.io/images/feuqkbki/production/271b9bb7dbbc739e39329517eadcd1df91c0392b-1080x1350.jpg?w=1600&amp;q=72&amp;auto=format" alt="Close portrait of the devil in red horns and dark curls, smiling"><p class="sub chip">Red horns and dark curls.</p></li>
+    <li class="frame"><img class="bleed" src="https://cdn.sanity.io/images/feuqkbki/production/ffd25176ec74d142a015f1c52ea3eecae5c5681e-1080x1350.jpg?w=400&amp;q=72&amp;auto=format" alt=""><img class="pic" src="https://cdn.sanity.io/images/feuqkbki/production/ffd25176ec74d142a015f1c52ea3eecae5c5681e-1080x1350.jpg?w=1600&amp;q=72&amp;auto=format" alt="The beauty queen in a tiara, her shadow on the wall behind her"><p class="sub chip">The beauty queen and her shadow.</p></li>
+    <li class="frame"><img class="bleed" src="https://cdn.sanity.io/images/feuqkbki/production/d5bf58ed97a778ec9aaf0be8a2e9a485ff8b6d3c-1080x1350.jpg?w=400&amp;q=72&amp;auto=format" alt=""><img class="pic" src="https://cdn.sanity.io/images/feuqkbki/production/d5bf58ed97a778ec9aaf0be8a2e9a485ff8b6d3c-1080x1350.jpg?w=1600&amp;q=72&amp;auto=format" alt="Pierrot in a silver party hat, holding a curl of hair"><p class="sub chip">Pierrot, in a silver party hat.</p></li>
+    <li class="frame"><img class="bleed" src="https://cdn.sanity.io/images/feuqkbki/production/2693aa2f66f3c63a70d029a93d78381afbe02a12-1080x1343.jpg?w=400&amp;q=72&amp;auto=format" alt=""><img class="pic" src="https://cdn.sanity.io/images/feuqkbki/production/2693aa2f66f3c63a70d029a93d78381afbe02a12-1080x1343.jpg?w=1600&amp;q=72&amp;auto=format" alt="The whole party on the floor of the living room, cards and drinks between them"><p class="sub chip">Cards and drinks on the floor, and everyone talking at once.</p></li>
+    <li class="frame"><img class="bleed" src="https://cdn.sanity.io/images/feuqkbki/production/a1b4c9ac82d25cd7f3828e7f4b12a3fc1f5d4879-1080x1350.jpg?w=400&amp;q=72&amp;auto=format" alt=""><img class="pic" src="https://cdn.sanity.io/images/feuqkbki/production/a1b4c9ac82d25cd7f3828e7f4b12a3fc1f5d4879-1080x1350.jpg?w=1600&amp;q=72&amp;auto=format" alt="The devil twirls her red tulle skirt beside a pumpkin"><p class="sub chip">One more twirl before the lights come up.</p></li>
+  </ol>
+  <div class="credits-wrap"><section class="credits" aria-labelledby="cast">
+    <h2 id="cast">Starring</h2>
+    <dl><dt>Elvis</dt><dd><a href="#">Byron Hunnam</a></dd><dt>Pierrot</dt><dd><a href="#">the_lovely_luna__</a></dd><dt>The devil</dt><dd><a href="#">vampirebby</a></dd><dt>Beauty queen</dt><dd><a href="#">grep.schultz</a></dd><dt>The house</dt><dd><a href="#">Mid Century Modern Rescue</a></dd></dl>
+    <p>The set is intentionally grainy, the shutter speed is turned down, and the images are overexposed in places. It ran in Hollyway Magazine in Tokyo, November 2023. Always an honor.</p>
+    <a class="next" href="direction-e.html">Next: Sleepy Hollow</a>
+  </section></div>
+</main>
+<div class="controls"><button class="chip" id="prev" aria-label="Previous frame">&#8592;</button><button class="chip" id="play" aria-label="Pause">Pause</button><button class="chip" id="next" aria-label="Next frame">&#8594;</button></div>
+<script>
+// The player. Native scrolling is off only while the film plays full screen; it is a slideshow, not a scroll effect.
+if (document.documentElement.classList.contains('film')) {
+  const H=document.documentElement, frames=[...document.querySelectorAll('.frame')], bar=document.querySelector('.progress');
+  const hold=4800, reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  frames.forEach(()=>{const i=document.createElement('i');i.innerHTML='<b></b>';bar.appendChild(i)});
+  const ticks=[...bar.children]; let at=0, timer=null, playing=!reduce;
+  const show=n=>{H.classList.remove('ended');at=(n+frames.length)%frames.length;frames.forEach((f,i)=>f.classList.toggle('on',i===at));
+    ticks.forEach((t,i)=>{t.className=i<at?'done':i===at?'now':'';t.firstChild.style.animation='none';t.firstChild.offsetWidth;t.firstChild.style.animation=''});
+    const p=frames[at].querySelector('.pic');p.style.animation='none';p.offsetWidth;p.style.animation='';schedule()};
+  const schedule=()=>{clearTimeout(timer);if(playing)timer=setTimeout(()=>at===frames.length-1?H.classList.add('ended'):show(at+1),hold)};
+  const setPlay=v=>{playing=v;H.classList.toggle('paused',!v);play.textContent=v?'Pause':'Play';play.setAttribute('aria-label',v?'Pause':'Play');schedule()};
+  prev.onclick=()=>show(at-1); next.onclick=()=>at===frames.length-1?H.classList.add('ended'):show(at+1); play.onclick=()=>setPlay(!playing);
+  addEventListener('keydown',e=>{if(e.key==='ArrowRight')next.onclick();if(e.key==='ArrowLeft')prev.onclick();if(e.key===' '){e.preventDefault();setPlay(!playing)}});
+  let x0=null; addEventListener('touchstart',e=>x0=e.touches[0].clientX,{passive:true});
+  addEventListener('touchend',e=>{if(x0==null)return;const dx=e.changedTouches[0].clientX-x0;if(Math.abs(dx)>40)(dx<0?next:prev).onclick();x0=null});
+  setPlay(playing); show(0);
+}
+</script>
+</body>
+</html>
