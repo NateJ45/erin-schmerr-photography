@@ -22,11 +22,11 @@ const names = magazineNames(await getPublications());
 
 {names.length > 0 && (
   <section class="border-y border-border bg-background" aria-labelledby={headingId}>
-    <div class="mx-auto max-w-content px-m py-section-md text-center">
+    <div class="published-strip mx-auto max-w-content px-m">
       <h2 id={headingId} class="portfolio-label">
         {heading}
       </h2>
-      <ul class="published-marquee mt-6">
+      <ul class="published-marquee">
         {names.map((name) => (
           <li>
             <a

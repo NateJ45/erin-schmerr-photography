@@ -82,6 +82,7 @@
 
 /* Captions, credits and the small type around photos. */
 .portfolio-label {
+  font-family: var(--font-body);
   font-size: var(--text-xs);
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -149,36 +150,213 @@
   text-underline-offset: 0.2em;
 }
 
-/* Published marquee: the names in one wrapping line, divided by a small rule.
-   A static strip for now; the slow, pausable scroll comes with the motion pass. */
+/* Published strip: a label on the left and the magazine names in one line
+   beside it, like a masthead's "as seen in". On a phone the label sits above.
+   A static wrapping line for now; the slow, pausable scroll comes with the
+   motion pass and this line stays its reduced-motion form. */
+.published-strip {
+  display: grid;
+  gap: 1rem 3rem;
+  padding-block: clamp(2.5rem, 5vw, 4rem);
+}
+@media (min-width: 48rem) {
+  .published-strip {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: baseline;
+  }
+}
 .published-marquee {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
   gap: 0.5rem 2.5rem;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-/* Tear sheets: a row of prints, each slightly turned, so they read as a stack.
-   Turned only when motion is welcome; flat under reduced motion. */
-.tear-sheets {
+/* TEAR-SHEET STACK (home): the sheets fanned on the left like prints dropped
+   on a table, the features listed on the right. Each sheet overlaps the one
+   before it and turns a little; pointing at a feature (or a sheet) lifts its
+   sheet to the top. Reduced motion keeps the overlap, drops the turn and lift. */
+.tear-stack {
   display: grid;
-  gap: 2rem 1.5rem;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2.5rem;
 }
-@media (min-width: 64rem) {
-  .tear-sheets {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+@media (min-width: 48rem) {
+  .tear-stack {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: clamp(2rem, 6vw, 6rem);
+    align-items: center;
   }
+}
+.tear-stack__sheets {
+  display: flex;
+  margin: 0;
+  padding: 1.5rem 0 1.5rem;
+}
+.tear-stack__sheets > li {
+  position: relative;
+  z-index: calc(10 - var(--i));
+  flex: 0 0 min(52%, 18rem);
+  transition:
+    transform 500ms var(--ease-focus, ease),
+    z-index 0s;
+}
+.tear-stack__sheets > li + li {
+  margin-left: calc(min(52%, 18rem) * -0.5);
+}
+.tear-stack__sheets .focus-image {
+  box-shadow: 0 1px 0 var(--color-border);
 }
 @media (prefers-reduced-motion: no-preference) {
-  .tear-sheets > :nth-child(odd) .focus-image {
-    transform: rotate(-1.25deg);
+  .tear-stack__sheets > li:nth-child(4n + 1) {
+    transform: rotate(-3deg);
   }
-  .tear-sheets > :nth-child(even) .focus-image {
-    transform: rotate(1deg);
+  .tear-stack__sheets > li:nth-child(4n + 2) {
+    transform: rotate(2deg) translateY(0.75rem);
+  }
+  .tear-stack__sheets > li:nth-child(4n + 3) {
+    transform: rotate(-1deg) translateY(-0.5rem);
+  }
+  .tear-stack__sheets > li:nth-child(4n + 4) {
+    transform: rotate(3deg) translateY(0.5rem);
+  }
+  .tear-stack:has([data-sheet='0']:is(:hover, :focus-within)) .tear-stack__sheets [data-sheet='0'],
+  .tear-stack:has([data-sheet='1']:is(:hover, :focus-within)) .tear-stack__sheets [data-sheet='1'],
+  .tear-stack:has([data-sheet='2']:is(:hover, :focus-within)) .tear-stack__sheets [data-sheet='2'],
+  .tear-stack:has([data-sheet='3']:is(:hover, :focus-within)) .tear-stack__sheets [data-sheet='3'],
+  .tear-stack:has([data-sheet='4']:is(:hover, :focus-within)) .tear-stack__sheets [data-sheet='4'],
+  .tear-stack:has([data-sheet='5']:is(:hover, :focus-within)) .tear-stack__sheets [data-sheet='5'],
+  .tear-stack:has([data-sheet='6']:is(:hover, :focus-within)) .tear-stack__sheets [data-sheet='6'],
+  .tear-stack:has([data-sheet='7']:is(:hover, :focus-within)) .tear-stack__sheets [data-sheet='7'] {
+    z-index: 20;
+    transform: rotate(0deg) translateY(-1rem);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tear-stack:has([data-sheet='0']:is(:hover, :focus-within)) .tear-stack__sheets [data-sheet='0'],
+  .tear-stack:has([data-sheet='1']:is(:hover, :focus-within)) .tear-stack__sheets [data-sheet='1'],
+  .tear-stack:has([data-sheet='2']:is(:hover, :focus-within)) .tear-stack__sheets [data-sheet='2'],
+  .tear-stack:has([data-sheet='3']:is(:hover, :focus-within)) .tear-stack__sheets [data-sheet='3'],
+  .tear-stack:has([data-sheet='4']:is(:hover, :focus-within)) .tear-stack__sheets [data-sheet='4'],
+  .tear-stack:has([data-sheet='5']:is(:hover, :focus-within)) .tear-stack__sheets [data-sheet='5'],
+  .tear-stack:has([data-sheet='6']:is(:hover, :focus-within)) .tear-stack__sheets [data-sheet='6'],
+  .tear-stack:has([data-sheet='7']:is(:hover, :focus-within)) .tear-stack__sheets [data-sheet='7'] {
+    z-index: 20;
+  }
+}
+.tear-stack__list {
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--color-border);
+}
+.tear-stack__list > li {
+  border-bottom: 1px solid var(--color-border);
+}
+.tear-stack__item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.25rem 1.5rem;
+  min-height: 44px;
+  padding-block: 1rem;
+  color: var(--color-foreground);
+  text-decoration: none;
+}
+.tear-stack__name {
+  font-size: var(--text-h4);
+  transition: color 300ms var(--ease-focus, ease);
+}
+.tear-stack:has([data-sheet='0']:is(:hover, :focus-within))
+  .tear-stack__list
+  [data-sheet='0']
+  .tear-stack__name,
+.tear-stack:has([data-sheet='1']:is(:hover, :focus-within))
+  .tear-stack__list
+  [data-sheet='1']
+  .tear-stack__name,
+.tear-stack:has([data-sheet='2']:is(:hover, :focus-within))
+  .tear-stack__list
+  [data-sheet='2']
+  .tear-stack__name,
+.tear-stack:has([data-sheet='3']:is(:hover, :focus-within))
+  .tear-stack__list
+  [data-sheet='3']
+  .tear-stack__name,
+.tear-stack:has([data-sheet='4']:is(:hover, :focus-within))
+  .tear-stack__list
+  [data-sheet='4']
+  .tear-stack__name,
+.tear-stack:has([data-sheet='5']:is(:hover, :focus-within))
+  .tear-stack__list
+  [data-sheet='5']
+  .tear-stack__name,
+.tear-stack:has([data-sheet='6']:is(:hover, :focus-within))
+  .tear-stack__list
+  [data-sheet='6']
+  .tear-stack__name,
+.tear-stack:has([data-sheet='7']:is(:hover, :focus-within))
+  .tear-stack__list
+  [data-sheet='7']
+  .tear-stack__name {
+  color: var(--color-link, var(--primary));
+}
+
+/* PRESS PAGE: an index by year. The year sits in a left rail that stays in view
+   while its features pass; each feature is a row with its tear sheet. */
+.press-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+}
+.press-year {
+  display: grid;
+  gap: 1.5rem;
+  margin-top: clamp(3rem, 7vw, 6rem);
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color-border);
+}
+.press-year__label {
+  font-size: var(--text-h2);
+  line-height: 1;
+}
+.press-list {
+  display: grid;
+  gap: clamp(2.5rem, 5vw, 4rem);
+  margin: 0;
+  padding: 0;
+}
+.press-entry {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  gap: 1.25rem clamp(1.25rem, 4vw, 3.5rem);
+  align-items: start;
+}
+.press-entry__title {
+  margin-top: 0.5rem;
+  font-size: clamp(1.75rem, 4vw, 3.25rem);
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+.press-entry__excerpt {
+  margin-top: 1rem;
+  max-width: 32em;
+}
+@media (min-width: 64rem) {
+  .press-year {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 9fr);
+    gap: clamp(2rem, 5vw, 5rem);
+  }
+  .press-year__label {
+    position: sticky;
+    top: 7rem;
+    align-self: start;
+  }
+  .press-entry {
+    grid-template-columns: minmax(0, 18rem) minmax(0, 1fr);
   }
 }
 
@@ -508,4 +686,145 @@ html.motion .cover-hero.is-running .cover-hero__slide.is-active .focus-image__im
 .cover-hero__pause:focus-visible {
   outline: 2px solid #f3eee7;
   outline-offset: 3px;
+}
+
+/* =============================================================================
+   STORY PAGE (/stories/<slug>/). A magazine feature: an opener, a sequence with
+   a rhythm, and a closing "Next story". Square corners, no card chrome.
+   ============================================================================= */
+
+/* A landscape cover runs full bleed above the opener, held under the fold line
+   so the title still shows on a laptop. */
+.story-cover--wide .focus-image {
+  aspect-ratio: auto !important;
+  height: min(78svh, 56.25vw);
+}
+@media (max-width: 47.99rem) {
+  /* On a phone a 16:9 band is a sliver; give the cover a 4:3 frame. */
+  .story-cover--wide .focus-image {
+    height: 75vw;
+  }
+}
+
+.story-opener {
+  display: grid;
+  gap: 2rem;
+  padding-top: clamp(1.5rem, 4vw, 3rem);
+}
+.story-opener--plain {
+  padding-top: var(--spacing-section-md);
+}
+.story-title {
+  margin-top: 1rem;
+  font-size: clamp(3rem, 7vw, 6.5rem);
+  line-height: 0.95;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+.story-dek {
+  margin-top: 1.25rem;
+  max-width: 34em;
+  font-size: var(--text-lg, 1.125rem);
+  line-height: 1.5;
+}
+.story-opener__credits {
+  margin-top: 2.5rem;
+  max-width: 36em;
+}
+/* Credits in the opener run one column: they sit beside the cover. */
+.story-opener--spread .credit-block {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* From the large breakpoint the portrait cover and the words are the two pages
+   of a spread: the cover on the left, the words bottom-aligned on the right. */
+@media (min-width: 64rem) {
+  .story-opener--spread {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: clamp(2rem, 5vw, 5rem);
+    align-items: end;
+  }
+  .story-opener--plain {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .story-opener--plain .story-opener__credits .credit-block {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .story-opener--plain .story-opener__credits {
+    max-width: none;
+  }
+}
+
+/* The sequence: rows spaced like turned pages. */
+.story-sequence {
+  display: grid;
+  gap: clamp(4rem, 10vw, 9rem);
+  margin-top: clamp(4rem, 10vw, 9rem);
+}
+.story-row {
+  display: grid;
+  gap: clamp(1rem, 2.5vw, 2rem);
+}
+@media (min-width: 48rem) {
+  .story-row--pair {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+  /* A lone portrait is set off to one side, not centred, alternating. */
+  .story-row--single {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+  .story-row--single figure {
+    grid-column: 1 / span 7;
+  }
+  .story-row--end figure {
+    grid-column: 6 / span 7;
+  }
+}
+
+/* Closing: the next story as a turned page, title large, its cover beside. */
+.story-next {
+  margin-top: clamp(5rem, 12vw, 10rem);
+  padding-top: var(--spacing-section-md);
+  padding-bottom: var(--spacing-section-md);
+  /* A hairline the width of the content, not of the padded box. */
+  background: linear-gradient(var(--color-border), var(--color-border)) top center /
+    calc(100% - 2 * var(--spacing-m)) 1px no-repeat;
+}
+.story-next__link {
+  display: grid;
+  gap: 1.5rem;
+  color: var(--color-foreground);
+  text-decoration: none;
+}
+.story-next__title {
+  display: block;
+  margin-top: 0.75rem;
+  font-size: clamp(2.5rem, 6vw, 5.5rem);
+  line-height: 0.95;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+.story-next__cover {
+  display: block;
+  max-width: 16rem;
+}
+@media (min-width: 48rem) {
+  .story-next__link {
+    grid-template-columns: minmax(0, 1fr) minmax(12rem, 22rem);
+    align-items: end;
+    gap: clamp(2rem, 6vw, 6rem);
+  }
+  .story-next__cover {
+    max-width: none;
+  }
+}
+.story-next__title {
+  text-decoration: underline 1px transparent;
+  text-underline-offset: 0.12em;
+  transition: text-decoration-color 300ms var(--ease-focus, ease);
+}
+.story-next__link:hover .story-next__title,
+.story-next__link:focus-visible .story-next__title {
+  text-decoration-color: currentColor;
 }

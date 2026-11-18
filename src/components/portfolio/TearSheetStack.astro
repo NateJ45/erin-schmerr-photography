@@ -2,14 +2,16 @@
 // scaffold-file: press
 // Safe to edit by hand
 // Page-builder block `tearSheetStack` (pressSections.ts): the newest tear sheets
-// from Publications as a row of prints, each turned a touch (flat under reduced
-// motion; portfolio.css). The fanned stack (DESIGN.md "Tear-sheet stack") comes
-// with the motion pass. Reads the publications itself, so it shows the
+// from Publications fanned like a stack of prints on a table, with the list of
+// features beside it (DESIGN.md "Tear-sheet stack"). Pointing at a feature in
+// the list, or at a sheet, lifts that sheet to the top of the stack; under
+// reduced motion the sheets still overlap but never turn or move (portfolio.css). Reads the publications itself, so it shows the
 // placeholder tear sheets with no Sanity data.
 //
 // SELF_CONTAINED: draws on the plain page ground, no surface prop.
 import FocusImage from '@/components/portfolio/FocusImage.astro';
 import { getPublications } from '@/lib/pressQueries';
+import { formatMonthYear } from '@/lib/portfolio';
 import '@/styles/portfolio.css';
 
 interface Props {
@@ -33,21 +35,33 @@ const sheets = (await getPublications()).filter((p) => p.tearSheet).slice(0, Mat
           All press
         </a>
       </div>
-      <ul class="tear-sheets mt-8 list-none">
-        {sheets.map((pub) => (
-          <li>
-            <FocusImage
-              photo={pub.tearSheet}
-              width={600}
-              crop={4 / 5}
-              sizes="(min-width: 64rem) 20rem, 50vw"
-            />
-            <p class="portfolio-label mt-3">
-              {[pub.magazine, pub.issue].filter(Boolean).join(', ')}
-            </p>
-          </li>
-        ))}
-      </ul>
+      <div class="tear-stack mt-10">
+        <ul class="tear-stack__sheets list-none" aria-hidden="true">
+          {sheets.map((pub, i) => (
+            <li style={`--i: ${i}`} data-sheet={i}>
+              <FocusImage
+                photo={pub.tearSheet}
+                width={600}
+                crop={4 / 5}
+                sizes="(min-width: 64rem) 18rem, 45vw"
+                alt=""
+              />
+            </li>
+          ))}
+        </ul>
+        <ol class="tear-stack__list list-none">
+          {sheets.map((pub, i) => (
+            <li data-sheet={i}>
+              <a href="/press/" class="tear-stack__item">
+                <span class="tear-stack__name font-display">{pub.magazine}</span>
+                <span class="portfolio-label">
+                  {[pub.issue, formatMonthYear(pub.date)].filter(Boolean).join(', ')}
+                </span>
+              </a>
+            </li>
+          ))}
+        </ol>
+      </div>
     </div>
   </section>
 )}

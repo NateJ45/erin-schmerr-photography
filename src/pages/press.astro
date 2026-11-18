@@ -2,7 +2,9 @@
 // scaffold-file: press
 // Safe to edit by hand
 // /press/: every publication, grouped by the year of its date (newest first,
-// undated last), each with its tear sheet, issue, excerpt and link. The year is
+// undated last), set as an index: the year in a left rail that stays in view
+// while its features scroll past, each feature a row with its tear sheet,
+// issue and date, the magazine large, its excerpt and a link to the piece. The year is
 // worked out from `date`, never typed (rule 15). With no Sanity data it shows
 // the placeholder publications from src/lib/pressQueries.ts.
 import BaseLayout from '@/layouts/BaseLayout.astro';
@@ -35,9 +37,14 @@ const schemas = [
 >
   <section class="bg-background" aria-labelledby="press-heading">
     <div class="mx-auto max-w-content px-m py-section-md">
-      <h1 id="press-heading" class="font-display text-h1 leading-headline-tight">
-        Press
-      </h1>
+      <header class="press-head">
+        <h1 id="press-heading" class="font-display text-h1 leading-headline-tight">
+          Press
+        </h1>
+        <p class="portfolio-label">
+          {publications.length} {publications.length === 1 ? 'feature' : 'features'}, newest first
+        </p>
+      </header>
       {placeholder && (
         <p class="portfolio-label mt-4">
           Placeholder publications, shown until the first one is added.
@@ -47,34 +54,41 @@ const schemas = [
       {years.map((group) => {
         const yearId = `press-${group.year ?? 'undated'}`;
         return (
-          <section class="mt-section-md border-t border-border pt-6" aria-labelledby={yearId}>
-            <h2 id={yearId} class="font-display text-h2">
+          <section class="press-year" aria-labelledby={yearId}>
+            <h2 id={yearId} class="press-year__label font-display">
               {group.year ?? 'Undated'}
             </h2>
-            <ul class="tear-sheets mt-8 list-none">
+            <ul class="press-list list-none">
               {group.items.map((pub) => (
-                <li>
-                  <article>
+                <li class="press-entry">
+                  <div class="press-entry__sheet">
                     <FocusImage
                       photo={pub.tearSheet}
                       width={700}
                       crop={4 / 5}
-                      sizes="(min-width: 64rem) 20rem, 50vw"
+                      sizes="(min-width: 64rem) 18rem, 40vw"
                     />
-                    <h3 class="font-display mt-4 text-h5">
-                      {pub.url ? (
-                        <a class="portfolio-link text-foreground" href={pub.url} rel="noopener">
-                          {pub.magazine}
-                        </a>
-                      ) : (
-                        pub.magazine
-                      )}
-                    </h3>
-                    <p class="portfolio-label mt-1">
+                  </div>
+                  <div class="press-entry__text">
+                    <p class="portfolio-label">
                       {[pub.issue, formatMonthYear(pub.date)].filter(Boolean).join(', ')}
                     </p>
-                    {pub.excerpt && <p class="mt-2 text-sm text-muted-foreground">{pub.excerpt}</p>}
-                  </article>
+                    <h3 class="press-entry__title font-display">{pub.magazine}</h3>
+                    {pub.excerpt && (
+                      <p class="press-entry__excerpt text-muted-foreground">{pub.excerpt}</p>
+                    )}
+                    {pub.url && (
+                      <p class="mt-6">
+                        <a
+                          class="portfolio-label portfolio-link text-foreground"
+                          href={pub.url}
+                          rel="noopener"
+                        >
+                          Read the feature
+                        </a>
+                      </p>
+                    )}
+                  </div>
                 </li>
               ))}
             </ul>

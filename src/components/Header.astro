@@ -235,12 +235,6 @@ function isGroupActive(items: { href: string }[]) {
             )}
           </div>
         )}
-        {/* Hydrate when idle, not on load — the anti-FOUC inline script in
-            BaseLayout already applies the correct theme class before first
-            paint, so this React island only needs to be live by the time the
-            visitor moves to click it. Demoting from client:load shaves real
-            TBT off mobile Lighthouse runs. */}
-        <ThemeToggle client:idle />
       </div>
     </div>
   </div>
@@ -435,6 +429,10 @@ function isGroupActive(items: { href: string }[]) {
       </nav>
       {/* Visitor search (card 126). Renders nothing when search is off. */}
       <SearchButton class="inline-flex h-9 w-9 items-center justify-center rounded-md text-foreground transition-colors hover:bg-accent hover:text-link focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none" />
+      {/* Theme toggle lives in the nav row: this site hides the eyebrow strip
+          (erin.css), so the one desktop row carries everything. Hydrates when
+          idle; the anti-FOUC script in BaseLayout already set the theme. */}
+      <ThemeToggle client:idle />
       <span class="h-6 w-px bg-border-soft" aria-hidden="true"></span>
       {headerSecondary && (
         <a
