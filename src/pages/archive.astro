@@ -1,0 +1,65 @@
+---
+// scaffold-file: stories
+// Safe to edit by hand
+// /archive/: every photo kept in the archive (Show in the archive ticked, the
+// default), from every story, as a plain responsive grid. Each photo links to
+// its story. The draggable canvas (DESIGN.md "Archive canvas") replaces this
+// grid on pointer devices in a later pass; this grid stays as its touch and
+// reduced-motion fallback.
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import FocusImage from '@/components/portfolio/FocusImage.astro';
+import { getSiteSettings } from '@/lib/queries';
+import { getArchivePhotos } from '@/lib/storyQueries';
+import { breadcrumbSchema } from '@/lib/schemas';
+import { site } from '@/data/site';
+import '@/styles/portfolio.css';
+
+const [photos, siteSettings] = await Promise.all([getArchivePhotos(), getSiteSettings()]);
+const placeholder = photos.length > 0 && photos.every((p) => !p.asset);
+
+const schemas = [
+  breadcrumbSchema([
+    { name: 'Home', url: site.url },
+    { name: 'Archive', url: `${site.url}/archive/` },
+  ]),
+];
+---
+
+<BaseLayout
+  title={`Archive | ${site.name}`}
+  description="Every photograph from every story, in one place."
+  {schemas}
+  {siteSettings}
+  ogCard={{ kicker: 'Archive' }}
+>
+  <section class="bg-background" aria-labelledby="archive-heading">
+    <div class="mx-auto max-w-content px-m py-section-md">
+      <h1 id="archive-heading" class="font-display text-h1 leading-headline-tight">
+        Archive
+      </h1>
+      <p class="portfolio-label mt-4">
+        {photos.length} photographs{placeholder ? ', all placeholders for now' : ''}
+      </p>
+      <ul class="archive-grid mt-section-md list-none">
+        {photos.map((photo, i) => (
+          <li>
+            <a
+              href={`/stories/${photo.storySlug}/`}
+              class="block no-underline"
+              aria-label={`${photo.alt || 'Photo'}, from ${photo.storyTitle}`}
+            >
+              <FocusImage
+                photo={photo}
+                width={700}
+                crop={4 / 5}
+                sizes="(min-width: 80rem) 20rem, (min-width: 48rem) 33vw, 50vw"
+                loading={i < 8 ? 'eager' : 'lazy'}
+                alt=""
+              />
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+</BaseLayout>

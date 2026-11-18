@@ -70,7 +70,7 @@ export type HubCardImage = {
   _type: 'image';
 };
 
-export type Photo = {
+export type TeamMemberPhoto = {
   asset?: SanityImageAssetReference;
   media?: unknown; // Unable to locate the referenced type "photo.media" in schema
   hotspot?: SanityImageHotspot;
@@ -344,6 +344,113 @@ export type Newsletter = {
   showOnWebsite?: boolean;
 };
 
+export type PublicationReference = {
+  _ref: string;
+  _type: 'reference';
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: 'publication';
+};
+
+export type CollaboratorReference = {
+  _ref: string;
+  _type: 'reference';
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: 'collaborator';
+};
+
+export type Story = {
+  _id: string;
+  _type: 'story';
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  title?: string;
+  slug?: Slug;
+  dek?: string;
+  date?: string;
+  location?: string;
+  cover?: Photo;
+  featured?: boolean;
+  publication?: PublicationReference;
+  photos?: Array<
+    {
+      _key: string;
+    } & Photo
+  >;
+  credits?: Array<{
+    role?: string;
+    collaborator?: CollaboratorReference;
+    _type: 'credit';
+    _key: string;
+  }>;
+  orderRank?: string;
+  seoPreview?: string;
+  seoTitle?: string;
+  seoDescription?: string;
+  seoImage?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: 'image';
+  };
+  hideFromSearch?: boolean;
+};
+
+export type SanityImageCrop = {
+  _type: 'sanity.imageCrop';
+  top?: number;
+  bottom?: number;
+  left?: number;
+  right?: number;
+};
+
+export type SanityImageHotspot = {
+  _type: 'sanity.imageHotspot';
+  x?: number;
+  y?: number;
+  height?: number;
+  width?: number;
+};
+
+export type Collaborator = {
+  _id: string;
+  _type: 'collaborator';
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  name?: string;
+  defaultRole?: string;
+  url?: string;
+  instagram?: string;
+};
+
+export type Publication = {
+  _id: string;
+  _type: 'publication';
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  magazine?: string;
+  issue?: string;
+  date?: string;
+  url?: string;
+  tearSheet?: Photo;
+  excerpt?: string;
+};
+
+export type Photo = {
+  _type: 'photo';
+  asset?: SanityImageAssetReference;
+  media?: unknown;
+  hotspot?: SanityImageHotspot;
+  crop?: SanityImageCrop;
+  alt?: string;
+  caption?: string;
+  inArchive?: boolean;
+};
+
 export type JournalCategory = {
   _id: string;
   _type: 'journalCategory';
@@ -481,22 +588,6 @@ export type Popup = {
   >;
   frequency?: 'visitor' | 'visit';
   enabled?: boolean;
-};
-
-export type SanityImageCrop = {
-  _type: 'sanity.imageCrop';
-  top?: number;
-  bottom?: number;
-  left?: number;
-  right?: number;
-};
-
-export type SanityImageHotspot = {
-  _type: 'sanity.imageHotspot';
-  x?: number;
-  y?: number;
-  height?: number;
-  width?: number;
 };
 
 export type Announcement = {
@@ -1237,6 +1328,24 @@ export type NavLink = {
   href?: string;
 };
 
+export type TearSheetStack = {
+  _type: 'tearSheetStack';
+  heading?: string;
+  limit?: number;
+};
+
+export type PublishedMarquee = {
+  _type: 'publishedMarquee';
+  heading?: string;
+};
+
+export type StoryIndex = {
+  _type: 'storyIndex';
+  heading?: string;
+  layout?: 'grid' | 'list';
+  limit?: number;
+};
+
 export type JournalPostsSection = {
   _type: 'journalPostsSection';
   showCategories?: boolean;
@@ -1319,7 +1428,7 @@ export type TeamSection = {
   members?: Array<{
     name?: string;
     role?: string;
-    photo?: Photo;
+    photo?: TeamMemberPhoto;
     bio?: string;
     socialLinks?: Array<{
       label?: string;
@@ -4022,6 +4131,15 @@ export type HomePage = {
     | ({
         _key: string;
       } & DynamicListSection)
+    | ({
+        _key: string;
+      } & StoryIndex)
+    | ({
+        _key: string;
+      } & PublishedMarquee)
+    | ({
+        _key: string;
+      } & TearSheetStack)
   >;
   seoTitle?: string;
   seoDescription?: string;
@@ -4330,7 +4448,7 @@ export type AllSanitySchemaTypes =
   | PhotoCardImage
   | IconCardImage
   | HubCardImage
-  | Photo
+  | TeamMemberPhoto
   | PageReference
   | HomePageReference
   | AboutPageReference
@@ -4345,6 +4463,14 @@ export type AllSanitySchemaTypes =
   | PrivatePage
   | Slug
   | Newsletter
+  | PublicationReference
+  | CollaboratorReference
+  | Story
+  | SanityImageCrop
+  | SanityImageHotspot
+  | Collaborator
+  | Publication
+  | Photo
   | JournalCategory
   | ProcessStep
   | FaqCategoryReference
@@ -4353,8 +4479,6 @@ export type AllSanitySchemaTypes =
   | SanityFileAssetReference
   | LibraryDocument
   | Popup
-  | SanityImageCrop
-  | SanityImageHotspot
   | Announcement
   | StudioNotes
   | StudioGuide
@@ -4362,6 +4486,9 @@ export type AllSanitySchemaTypes =
   | BusinessInfo
   | SiteSettings
   | NavLink
+  | TearSheetStack
+  | PublishedMarquee
+  | StoryIndex
   | JournalPostsSection
   | PrivacyPolicySection
   | ContactFormSection

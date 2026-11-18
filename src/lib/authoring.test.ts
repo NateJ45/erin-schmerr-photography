@@ -331,6 +331,10 @@ const PAGE_BLOCKS = [
   ...(existsSync(new URL('../sanity/schemaTypes/journalPostsSection.ts', import.meta.url))
     ? declaredTypes('journalPostsSection.ts')
     : []),
+  // The portfolio's home page blocks. declaredTypes() reads [] once a scaffold
+  // removal (stories, press) has deleted the file.
+  ...declaredTypes('storyIndexSection.ts'),
+  ...declaredTypes('pressSections.ts'),
 ];
 
 describe('page templates (src/sanity/pageTemplates.ts)', () => {

@@ -208,6 +208,8 @@ jobs:
           ROUTES="$ROUTES /process/" # scaffold: process
           ROUTES="$ROUTES /faq/" # scaffold: faq
           ROUTES="$ROUTES /journal/" # scaffold: journal
+          ROUTES="$ROUTES /stories/ /archive/" # scaffold: stories
+          ROUTES="$ROUTES /press/" # scaffold: press
           for path in $ROUTES; do
             CODE=$(curl -sL -o /dev/null -w '%{http_code}' "$BASE$path")
             echo "$CODE $path"

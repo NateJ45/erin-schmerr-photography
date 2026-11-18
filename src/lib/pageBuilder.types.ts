@@ -496,6 +496,31 @@ export interface ProjectedJournalPostsSection {
   showNewsletter?: boolean;
 }
 // scaffold:end
+// scaffold: stories
+/** storyIndex: the featured stories; the block reads them itself (StoryIndex.astro). */
+export interface ProjectedStoryIndexSection {
+  _type: 'storyIndex';
+  _key: string;
+  heading?: string;
+  layout?: 'grid' | 'list';
+  limit?: number;
+}
+// scaffold:end
+// scaffold: press
+/** publishedMarquee: magazine names, read from Publications by the component. */
+export interface ProjectedPublishedMarqueeSection {
+  _type: 'publishedMarquee';
+  _key: string;
+  heading?: string;
+}
+/** tearSheetStack: publication tear sheets, read from Publications by the component. */
+export interface ProjectedTearSheetStackSection {
+  _type: 'tearSheetStack';
+  _key: string;
+  heading?: string;
+  limit?: number;
+}
+// scaffold:end
 
 // ---------------------------------------------------------------------------
 // Discriminated union
@@ -532,5 +557,9 @@ export type PageBuilderBlock =
   | ProjectedContactFormSection
   | ProjectedPrivacyPolicySection
   | ProjectedJournalPostsSection // scaffold: journal
+  // The portfolio
+  | ProjectedStoryIndexSection // scaffold: stories
+  | ProjectedPublishedMarqueeSection // scaffold: press
+  | ProjectedTearSheetStackSection // scaffold: press
   // The builder kit (builderBlocks.types.ts, PORTS.md card 173)
   | BuilderPageBlock;

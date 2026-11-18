@@ -1,0 +1,86 @@
+---
+// scaffold-file: press
+// Safe to edit by hand
+// /press/: every publication, grouped by the year of its date (newest first,
+// undated last), each with its tear sheet, issue, excerpt and link. The year is
+// worked out from `date`, never typed (rule 15). With no Sanity data it shows
+// the placeholder publications from src/lib/pressQueries.ts.
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import FocusImage from '@/components/portfolio/FocusImage.astro';
+import { getSiteSettings } from '@/lib/queries';
+import { getPublications } from '@/lib/pressQueries';
+import { formatMonthYear, groupByYear } from '@/lib/portfolio';
+import { breadcrumbSchema } from '@/lib/schemas';
+import { site } from '@/data/site';
+import '@/styles/portfolio.css';
+
+const [publications, siteSettings] = await Promise.all([getPublications(), getSiteSettings()]);
+const years = groupByYear(publications);
+const placeholder = publications.every((p) => p.isPlaceholder);
+
+const schemas = [
+  breadcrumbSchema([
+    { name: 'Home', url: site.url },
+    { name: 'Press', url: `${site.url}/press/` },
+  ]),
+];
+---
+
+<BaseLayout
+  title={`Press | ${site.name}`}
+  description="Where the work has been published, with the tear sheets."
+  {schemas}
+  {siteSettings}
+  ogCard={{ kicker: 'Press' }}
+>
+  <section class="bg-background" aria-labelledby="press-heading">
+    <div class="mx-auto max-w-content px-m py-section-md">
+      <h1 id="press-heading" class="font-display text-h1 leading-headline-tight">
+        Press
+      </h1>
+      {placeholder && (
+        <p class="portfolio-label mt-4">
+          Placeholder publications, shown until the first one is added.
+        </p>
+      )}
+
+      {years.map((group) => {
+        const yearId = `press-${group.year ?? 'undated'}`;
+        return (
+          <section class="mt-section-md border-t border-border pt-6" aria-labelledby={yearId}>
+            <h2 id={yearId} class="font-display text-h2">
+              {group.year ?? 'Undated'}
+            </h2>
+            <ul class="tear-sheets mt-8 list-none">
+              {group.items.map((pub) => (
+                <li>
+                  <article>
+                    <FocusImage
+                      photo={pub.tearSheet}
+                      width={700}
+                      crop={4 / 5}
+                      sizes="(min-width: 64rem) 20rem, 50vw"
+                    />
+                    <h3 class="font-display mt-4 text-h5">
+                      {pub.url ? (
+                        <a class="portfolio-link text-foreground" href={pub.url} rel="noopener">
+                          {pub.magazine}
+                        </a>
+                      ) : (
+                        pub.magazine
+                      )}
+                    </h3>
+                    <p class="portfolio-label mt-1">
+                      {[pub.issue, formatMonthYear(pub.date)].filter(Boolean).join(', ')}
+                    </p>
+                    {pub.excerpt && <p class="mt-2 text-sm text-muted-foreground">{pub.excerpt}</p>}
+                  </article>
+                </li>
+              ))}
+            </ul>
+          </section>
+        );
+      })}
+    </div>
+  </section>
+</BaseLayout>

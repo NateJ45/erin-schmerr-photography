@@ -164,6 +164,11 @@
         "story": "post",
         "testimonials": "testimonial",
         "visibility": "preview"
+      },
+      "types": {
+        "story": "image",
+        "collaborator": "person",
+        "publication": "post"
       }
     }
   }

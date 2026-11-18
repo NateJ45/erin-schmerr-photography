@@ -611,6 +611,10 @@ export const HOME_SECTION_TYPES = [
   { type: 'faqSection' }, // scaffold: faq
   { type: 'teamSection' },
   { type: 'dynamicListSection' },
+  // The portfolio's home page blocks (storyIndexSection.ts, pressSections.ts).
+  { type: 'storyIndex' }, // scaffold: stories
+  { type: 'publishedMarquee' }, // scaffold: press
+  { type: 'tearSheetStack' }, // scaffold: press
 ];
 
 export const ABOUT_SECTION_TYPES = [

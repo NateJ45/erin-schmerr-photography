@@ -663,6 +663,20 @@ const SECTIONS: Record<string, unknown>[] = [
   { _type: 'contactFormSection', _key: 'contact-form', sidebar: true },
   { _type: 'privacyPolicySection', _key: 'privacy-policy', lastUpdated: '2026-01-15' },
   { _type: 'journalPostsSection', _key: 'journal-posts', showCategories: true }, // scaffold: journal
+  // ── The portfolio (stories and press) ──────────────────────────────────────
+  // These read their stories and publications themselves; with no Sanity data
+  // they draw the labelled placeholders, which is what the thumbnails show.
+  // scaffold: stories
+  {
+    _type: 'storyIndex',
+    _key: 'story-index',
+    heading: 'Selected stories',
+    layout: 'grid',
+    limit: 3,
+  },
+  // scaffold:end
+  { _type: 'publishedMarquee', _key: 'published-marquee', heading: 'As published in' }, // scaffold: press
+  { _type: 'tearSheetStack', _key: 'tear-sheets', heading: 'In print', limit: 4 }, // scaffold: press
   // ── Hours and location (card 196) ──────────────────────────────────────────
   // These two fill themselves from Business info; on the wall they carry the
   // made-up facts below instead (the `facts` key exists only for fixtures).
