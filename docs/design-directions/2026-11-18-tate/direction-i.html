@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Direction I, the pick (E with G and F) | Tate Fine Art Photography</title>
+<!-- Font: Newsreader (one serif, roman and italic, small). The photographs carry the page. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="https://cdn.sanity.io/images/feuqkbki/production/89e44fc497a5bc621c7c1666ab80a4fd51b83f4d-1080x1350.jpg?w=1600&amp;q=72&amp;auto=format" fetchpriority="high">
+<style>
+/* Direction E: full-screen story slides that stack as you scroll; each one pulls into focus as it arrives.
+   Motion measured from references: ease cubic-bezier(.22,1,.36,1) (MORROW), ~1s reveals (Gallery Play median 1000ms),
+   portrait shown whole over a blurred bleed of itself (Almira Kho). Native scroll, CSS scroll-driven, no library. */
+:root{--paper:#F4EFE8;--ink:#1E1A16;--muted:#5A5148;--ease:cubic-bezier(.22,1,.36,1);--serif:"Newsreader",Georgia,serif}
+*{box-sizing:border-box;margin:0}
+html{background:var(--paper);color:var(--ink);font:400 16px/1.5 var(--serif)}
+a{color:inherit}:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+img{display:block}
+/* Chrome: one quiet line, on a paper chip so it reads over any photograph. */
+.chip{background:rgba(244,239,232,.92);color:var(--ink);padding:7px 12px;text-decoration:none;font-size:15px;line-height:1.2}
+.bar{position:fixed;inset:14px 14px auto 14px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;z-index:10;pointer-events:none}
+.bar>*{pointer-events:auto}
+.bar .name i{font-style:italic}
+.bar nav{display:flex;gap:6px}
+.bar nav a{min-height:36px;display:inline-flex;align-items:center}
+/* A slide: the photo fills the screen. Portraits show whole over a soft, blurred bleed of the same picture. */
+.slide{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;background:#d9d1c6}
+.slide .bleed,.slide .pic{position:absolute;inset:0;width:100%;height:100%}
+.slide .bleed{object-fit:cover;filter:blur(38px) saturate(1.1);transform:scale(1.2);opacity:.85}
+.slide .pic{object-fit:contain}
+.slide.cover .pic{object-fit:cover}
+.slide .cap{position:absolute;left:14px;bottom:14px;display:flex;align-items:baseline;gap:12px;max-width:min(560px,calc(100% - 28px))}
+.slide .cap a{text-decoration:none}
+.slide .cap .n{font-variant-numeric:tabular-nums;color:var(--muted)}
+.slide .cap b{font-weight:500}
+.slide .cap em{color:var(--muted)}
+h1{font:italic 400 clamp(18px,1.6vw,22px)/1.2 var(--serif);position:absolute;left:14px;bottom:62px;max-width:min(440px,calc(100% - 28px))}
+.index{position:absolute;right:14px;bottom:14px;font-variant-numeric:tabular-nums}
+/* The rack focus: as a slide scrolls up over the last, it starts soft and a little large and settles sharp.
+   Only where scroll-driven animations exist. */
+@supports (animation-timeline: view()){
+  @media (prefers-reduced-motion:no-preference){
+    html.motion .slide:not(:first-of-type) .pic{animation:rack linear both;animation-timeline:view();animation-range:entry 0% entry 100%}
+    html.motion .slide:not(:first-of-type) .cap{animation:lift linear both;animation-timeline:view();animation-range:entry 60% entry 100%}
+    @keyframes rack{from{filter:blur(16px);transform:scale(1.08)}to{filter:blur(0);transform:none}}
+    @keyframes lift{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  }
+}
+/* Phones: blur is the costly part, so a touch screen gets the scale and fade only. */
+@media (hover:none){html.motion .slide .pic{animation-name:rack-lite!important}@keyframes rack-lite{from{opacity:.4;transform:scale(1.06)}to{opacity:1;transform:none}}}
+.end{position:relative;background:var(--paper);min-height:80vh;display:grid;place-items:center;padding:60px 20px;text-align:center}
+.end p{max-width:30ch;margin:0 auto;font-size:clamp(24px,3vw,38px);line-height:1.15}
+.end p em{font-style:italic}
+.end a.book{display:inline-block;margin-top:26px;border-bottom:1px solid var(--ink);padding:10px 0 4px;text-decoration:none;font-size:18px}
+.end small{display:block;margin-top:40px;color:var(--muted);font-size:14px}
+.dir{position:relative;background:var(--paper);padding:24px 14px 40px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;font-size:15px;border-top:1px solid #cfc5b8}
+.dir b{display:block;font-weight:500;font-style:italic}
+@media (max-width:700px){.dir{grid-template-columns:minmax(0,1fr)}.bar nav a:nth-child(2){display:none}h1{bottom:58px}}
+</style>
+<script>/* Motion only with JS and for visitors; the still-screenshot browser (navigator.webdriver) gets the settled page. */ if(!navigator.webdriver)document.documentElement.classList.add('motion')</script>
+</head>
+<body>
+<header class="bar"><a class="chip name" href="direction-i.html">Tate <i>Fine Art Photography</i></a><nav aria-label="Pages"><a class="chip" href="direction-i-stories.html">All stories</a><a class="chip" href="#about">About</a><a class="chip" href="#book">Book a session</a></nav></header>
+<main>
+  <section class="slide cover" aria-label="A 1950s Halloween at home">
+    <img class="pic" src="https://cdn.sanity.io/images/feuqkbki/production/89e44fc497a5bc621c7c1666ab80a4fd51b83f4d-1080x1350.jpg?w=1600&amp;q=72&amp;auto=format" alt="A 1950s living room at Halloween, guests in costume around a glowing television" width="1600" height="2000" fetchpriority="high">
+    <h1 class="chip">Portraits that look like they were found in an old album.</h1>
+    <p class="cap chip"><span class="n">01</span><a href="direction-i-story.html"><b>A 1950s Halloween at home</b> <em>October 2023</em></a></p>
+    <span class="index chip" aria-hidden="true">01 / 07</span>
+  </section>
+  <section class="slide" aria-label="Sleepy Hollow">
+    <img class="bleed" src="https://cdn.sanity.io/images/feuqkbki/production/ce858e4c6e05d280b40acaa3aedc0419d3487628-1080x1350.jpg?w=400&amp;q=72&amp;auto=format" alt="" width="400" height="500"><img class="pic" src="https://cdn.sanity.io/images/feuqkbki/production/ce858e4c6e05d280b40acaa3aedc0419d3487628-1080x1350.jpg?w=1600&amp;q=72&amp;auto=format" alt="A woman in black lace in a field at dusk, looking up" width="1600" height="2000">
+    <p class="cap chip"><span class="n">02</span><a href="#"><b>Sleepy Hollow</b> <em>with my favorite Tim Burton character</em></a></p>
+    <span class="index chip" aria-hidden="true">02 / 07</span>
+  </section>
+  <section class="slide" aria-label="A Midsummer Night's Dream">
+    <img class="bleed" src="https://cdn.sanity.io/images/feuqkbki/production/898f65f91792769481299578c0a3a70e92ea2aa5-1080x1350.jpg?w=400&amp;q=72&amp;auto=format" alt="" width="400" height="500"><img class="pic" src="https://cdn.sanity.io/images/feuqkbki/production/898f65f91792769481299578c0a3a70e92ea2aa5-1080x1350.jpg?w=1600&amp;q=72&amp;auto=format" alt="A fairy with lavender hair and pale wings, her back to the camera, among leaves" width="1600" height="2000">
+    <p class="cap chip"><span class="n">03</span><a href="#"><b>A Midsummer Night's Dream</b> <em>love looks not with the eyes</em></a></p>
+    <span class="index chip" aria-hidden="true">03 / 07</span>
+  </section>
+  <section class="slide" aria-label="A 1970s Valentine">
+    <img class="bleed" src="https://cdn.sanity.io/images/feuqkbki/production/e14d50acf5bb10164001a8ebfb71476d07ca4648-1440x1440.jpg?w=400&amp;q=72&amp;auto=format" alt="" width="400" height="400"><img class="pic" src="https://cdn.sanity.io/images/feuqkbki/production/e14d50acf5bb10164001a8ebfb71476d07ca4648-1440x1440.jpg?w=1600&amp;q=72&amp;auto=format" alt="A woman in red lace kneels on a checkered rug among paper hearts, 1970s colour" width="1600" height="1600">
+    <p class="cap chip"><span class="n">04</span><a href="#"><b>A 1970s Valentine</b> <em>January 2026</em></a></p>
+    <span class="index chip" aria-hidden="true">04 / 07</span>
+  </section>
+  <section class="slide" aria-label="Pink, 1960s">
+    <img class="bleed" src="https://cdn.sanity.io/images/feuqkbki/production/a707cb65592c05af9a3cb1e8d8fcbbfd8525d9cc-1440x1440.jpg?w=400&amp;q=72&amp;auto=format" alt="" width="400" height="400"><img class="pic" src="https://cdn.sanity.io/images/feuqkbki/production/a707cb65592c05af9a3cb1e8d8fcbbfd8525d9cc-1440x1440.jpg?w=1600&amp;q=72&amp;auto=format" alt="A woman in a pink 1960s jumpsuit and glasses behind a dark glass door" width="1600" height="1600">
+    <p class="cap chip"><span class="n">05</span><a href="#"><b>Pink, 1960s</b> <em>a little old Hollywood</em></a></p>
+    <span class="index chip" aria-hidden="true">05 / 07</span>
+  </section>
+  <section class="slide" aria-label="American Sign Museum">
+    <img class="bleed" src="https://cdn.sanity.io/images/feuqkbki/production/29cba897d6dec25210cb15085ef13ef589993a92-1080x1350.jpg?w=400&amp;q=72&amp;auto=format" alt="" width="400" height="500"><img class="pic" src="https://cdn.sanity.io/images/feuqkbki/production/29cba897d6dec25210cb15085ef13ef589993a92-1080x1350.jpg?w=1600&amp;q=72&amp;auto=format" alt="A woman in profile against red and blue neon letters" width="1600" height="2000">
+    <p class="cap chip"><span class="n">06</span><a href="#"><b>American Sign Museum</b> <em>neon and old marquees</em></a></p>
+    <span class="index chip" aria-hidden="true">06 / 07</span>
+  </section>
+  <section class="slide" aria-label="Spooky in August">
+    <img class="bleed" src="https://cdn.sanity.io/images/feuqkbki/production/4852a6d931b6d09a64829bb965c53db6dbc96f36-1080x1350.jpg?w=400&amp;q=72&amp;auto=format" alt="" width="400" height="500"><img class="pic" src="https://cdn.sanity.io/images/feuqkbki/production/4852a6d931b6d09a64829bb965c53db6dbc96f36-1080x1350.jpg?w=1600&amp;q=72&amp;auto=format" alt="A woman in a white lace skirt holds a lantern at dusk" width="1600" height="2000">
+    <p class="cap chip"><span class="n">07</span><a href="#"><b>Spooky in August</b> <em>Halloween, early</em></a></p>
+    <span class="index chip" aria-hidden="true">07 / 07</span>
+  </section>
+  <section class="end" id="about" aria-label="About and booking">
+    <div id="book">
+      <p>My dad's camera started all of this. Now I chase the look of a real <em>vintage photograph</em>, one story at a time.</p>
+      <a class="book" href="#">Bring me a decade, a character or a story</a><br><a class="book" href="direction-i-stories.html" style="margin-top:10px">See all sixteen stories</a>
+      <small>As seen in Hollyway, Elysium, PhotoVogue, BleachFilm, Fienfh, Cornerstone Press and CanvasRebel.</small>
+    </div>
+  </section>
+</main>
+<aside class="dir" aria-label="About this direction">
+  <div><b>The pick</b>E's full-screen slides as the home page: one story at a time, racking into focus as it arrives.</div>
+  <div><b>Borrowed</b>G's film-burn as the change between frames in the story film; F's sideways reel as the page of all stories.</div>
+  <div><b>Still to settle</b>The WebGL burn needs the real domain on the Sanity CORS list, and a yes on hand-written WebGL or OGL.</div>
+</aside>
+</body>
+</html>

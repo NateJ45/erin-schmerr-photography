@@ -18,7 +18,38 @@ before any reskin. Nothing here touches `src/`, `brand/brand.config.json` or the
 
 ## Decision
 
-Waiting on Nathan's pick.
+### 2026-11-18: picked the round-two recommendation, E with G and F (mocked up as direction I)
+
+Why: Nathan, on the round-two recommendation: "Do your recommendations". Rejected: A to D (round one;
+not photo-first enough), F as the home page (sideways scrolling is divisive; kept for the archive
+only), G as the home page (heaviest build, WebGL on every visit; kept for the story transition only),
+H (weakest on a phone, where most visitors are).
+
+The hybrid is mocked up as `direction-i.html` (home), `direction-i-story.html` (the story film with
+the film-burn) and `direction-i-stories.html` (all sixteen stories as the reel).
+
+Carry forward:
+
+- **Home:** one story per screen, full-bleed, sticky slides that stack as you scroll; each arriving
+  slide racks from soft and slightly large to sharp (CSS scroll-driven, `view()` entry range). Portraits
+  show whole (`object-fit: contain`) over a blurred, enlarged copy of themselves; landscape covers run
+  `cover`. Chrome is one line on paper chips: wordmark, three links, a caption per slide, a counter.
+  The first slide's image is preloaded and is the LCP; the rest lazy-load.
+- **Story page:** a slideshow film. Full-screen frames, a slow 1.06 push-in over a 4.8s hold, captions
+  as subtitles, segmented progress, pause, arrows, keys and swipe, cast as end credits. Between frames,
+  G's film-burn (noise-edged dissolve with a warm glow, 1.6s) where WebGL and CORS allow; otherwise a
+  1.2s crossfade with a focus pull. Reduced motion: no autoplay and no effects. No JS: a vertical run of
+  full-bleed frames with captions.
+- **Stories archive (`/stories/`):** F's reel. A pinned horizontal track driven by native vertical scroll
+  (CSS scroll-driven `translateX`, rAF fallback), chapters by decade between frames, each picture
+  drifting in its frame; touch, reduced motion and no JS get a swipe strip with snap.
+- **Type and colour:** keep the brand as it is (Instrument Serif and Sans, warm paper, Dusk; the
+  wordmark is already set in it). The mockups' Newsreader and DM fonts are not carried forward.
+- **Motion rules:** native scrolling only, no scroll-hijack library; ease `cubic-bezier(.22,1,.36,1)`;
+  reveals around 1s (measured from MORROW and Gallery Play); every effect has a reduced-motion, touch
+  and no-JS fallback; nothing in the first viewport starts hidden.
+- **Before building the burn:** decide hand-written WebGL (about 60 lines, no dependency) or OGL (ask
+  first), and add the production domain to the Sanity CORS list at cutover.
 
 ## Round two (E to H): photo-first, motion-led
 

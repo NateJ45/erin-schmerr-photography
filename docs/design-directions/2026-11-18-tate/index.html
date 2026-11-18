@@ -35,6 +35,12 @@ header p{color:var(--muted);margin-top:10px;max-width:70ch}
   <p>Home page and one story page per direction, built with her own photographs (hot-linked from the public dataset) and draft copy in her voice. Shots are the top of each page at 390, 768 and 1280; open a page to see the whole thing. Details, references and the divergence table are in README.md.</p>
 </header>
 <main>
+  <section class="card" aria-labelledby="i">
+    <h2 id="i">I. The pick (2026-11-18) <span>E's home, G's film-burn in the story film, F's reel for all stories</span></h2>
+    <div class="notes"><div><b>Home</b>One story per screen, full-bleed, racking into focus as it arrives.</div><div><b>Story</b>A slideshow film with a film-burn between frames (needs <code>node serve.mjs</code>; otherwise a crossfade).</div><div><b>All stories</b>The sideways reel, by decade, all sixteen.</div></div>
+    <p class="links"><a href="direction-i.html">Open home</a><a href="direction-i-story.html">Open story</a><a href="direction-i-stories.html">Open all stories</a></p>
+    <div class="shots"><figure><figcaption>Story film, motion capture</figcaption><video src="captures/direction-i-story.mp4" controls muted loop playsinline style="width:100%"></video></figure><figure><figcaption>All stories, motion capture</figcaption><video src="captures/direction-i-stories.mp4" controls muted loop playsinline style="width:100%"></video></figure><figure><figcaption>Home, motion capture</figcaption><video src="captures/direction-i.mp4" controls muted loop playsinline style="width:100%"></video></figure></div>
+  </section>
   <h2 style="margin-top:28px">Round two: photo-first, motion-led</h2>
   <p style="color:var(--muted);max-width:70ch;margin-top:6px">The motion is the point, so each card shows the home page capture (captures/, local only, like the shots). Direction G needs <code>node serve.mjs</code> in this folder and <code>http://localhost:4321/</code>, because the photo CDN only allows that origin for WebGL.</p>
   <section class="card" aria-labelledby="e">
