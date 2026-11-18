@@ -8,13 +8,23 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import SectionRenderer from '@/components/SectionRenderer.astro';
 import { getHomePage, getSiteSettings } from '@/lib/queries';
+import { getPublications } from '@/lib/pressQueries'; // scaffold: press
+import { personSchema, type PressFeature } from '@/lib/site-graph';
+import { pageDescription, pageTitle } from '@/lib/page-meta';
 import { site } from '@/data/site';
 import { DEFAULT_HOME_SECTIONS } from '@/data/defaultSections';
 
 const [page, siteSettings] = await Promise.all([getHomePage(), getSiteSettings()]);
 
-const title = page?.seoTitle ?? site.name;
-const description = page?.seoDescription ?? 'Your tagline goes here.';
+// The Studio's SEO fields win when they hold real words; otherwise the site's own
+// description (src/data/site.ts), never a placeholder (src/lib/page-meta.ts).
+const title = pageTitle(page?.seoTitle, site.name);
+const description = pageDescription(page?.seoDescription, site.description);
+
+// The photographer, linked to the business by @id, with her press features.
+const press: PressFeature[] = [];
+press.push(...(await getPublications())); // scaffold: press
+const schemas = [personSchema(press)];
 
 const sections = page?.pageBuilder?.length ? page.pageBuilder : DEFAULT_HOME_SECTIONS;
 ---
@@ -22,6 +32,7 @@ const sections = page?.pageBuilder?.length ? page.pageBuilder : DEFAULT_HOME_SEC
 <BaseLayout
   {title}
   {description}
+  {schemas}
   {siteSettings}
   seoImage={page?.seoImage}
   ogCard={{ home: true }}

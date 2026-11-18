@@ -13,7 +13,9 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import SectionRenderer from '@/components/SectionRenderer.astro';
 import { getPage, getAllPageSlugs, getSiteSettings } from '@/lib/queries';
 import { breadcrumbSchema } from '@/lib/schemas';
+import { questionsSchema } from '@/lib/site-graph';
 import { site } from '@/data/site';
+import { pageDescription, pageTitle, sectionFaqs } from '@/lib/page-meta';
 
 export async function getStaticPaths() {
   // Defined inside getStaticPaths, and it has to be: CLAUDE.md rule 10. Astro
@@ -66,8 +68,9 @@ if (!pageDoc && import.meta.env.PROD) {
 }
 if (!pageDoc) return Astro.redirect('/404');
 
-const title = (pageDoc as any).seoTitle ?? (pageDoc as any).title ?? site.name;
-const description = (pageDoc as any).seoDescription ?? '';
+// Real words only (src/lib/page-meta.ts): an empty or placeholder field falls through.
+const title = pageTitle((pageDoc as any).seoTitle, (pageDoc as any).title, site.name);
+const description = pageDescription((pageDoc as any).seoDescription);
 const seoImage = (pageDoc as any).seoImage ?? undefined;
 // "Keep this page out of Google" (page.hideFromSearch). The other half of that
 // switch is the sitemap filter in astro.config.mjs, which drops the same page.
@@ -79,6 +82,10 @@ const schemas = [
     { name: (pageDoc as any).title ?? 'Page', url: `${site.url}/${slug}/` },
   ]),
 ];
+// A page with fold-out questions (Sessions) offers them as an FAQPage, real answers only
+// (a "Placeholder: ..." answer is left out until she writes it; src/lib/page-meta.ts).
+const pageFaqs = sectionFaqs((pageDoc as any).pageBuilder);
+if (pageFaqs.length) schemas.push(questionsSchema(pageFaqs));
 ---
 
 <BaseLayout {title} {description} {schemas} {siteSettings} {noindex} seoImage={seoImage}>

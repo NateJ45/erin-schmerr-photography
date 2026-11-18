@@ -22,6 +22,7 @@ import { breadcrumbSchema, blogPostingSchema } from '@/lib/schemas';
 import { readingTimeFromPortableText, formatReadingTime } from '@/lib/reading-time';
 import { extractHeadings } from '@/lib/portable-text-headings';
 import { site } from '@/data/site';
+import { pageDescription, pageTitle } from '@/lib/page-meta';
 import { urlFor } from '@/lib/sanity';
 
 import SanityImage from '@/components/SanityImage.astro';
@@ -88,8 +89,9 @@ if (!entry) {
 }
 
 // Meta
-const title = entry.seoTitle ?? `${entry.title} · Studio Journal`;
-const description = entry.seoDescription ?? entry.excerpt ?? 'A post from the journal.';
+// Real words only (src/lib/page-meta.ts): a seeded placeholder in the Studio is skipped.
+const title = pageTitle(entry.seoTitle, entry.title && `${entry.title} · Journal`, 'Journal');
+const description = pageDescription(entry.seoDescription, entry.excerpt);
 const coverOg = entry.coverImage?.asset
   ? urlFor(entry.coverImage).width(1200).height(630).fit('crop').quality(80).format('webp').url()
   : undefined;
