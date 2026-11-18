@@ -418,7 +418,10 @@ html.motion .cover-hero.is-running .cover-hero__slide.is-active .focus-image__im
   text-transform: uppercase;
 }
 .cover-hero__title {
-  max-width: 14ch;
+  /* In em, not ch: ch is the width of the CURRENT font's zero, so it changed
+     when Instrument Serif replaced its fallback and the title re-wrapped (CLS on
+     Linux CI). 6.5em is what 14ch measures in Instrument Serif. */
+  max-width: 6.5em;
   margin-top: 0.75rem;
   font-size: clamp(2.75rem, 8vw, 7.5rem);
   line-height: 0.95;
