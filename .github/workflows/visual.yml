@@ -77,7 +77,9 @@ jobs:
 
       # Cache apt's downloaded .deb files so a throttled Ubuntu mirror cannot time the
       # install out (see the e2e job in ci.yml, 2026-11-18). Chromium alone needs fewer
-      # packages than ci.yml's chromium + webkit, so it has its own key.
+      # packages than ci.yml's chromium + webkit, so it has its own key. The key leaves out
+      # the runner image build number (it differs between runners of one release) and the
+      # save step runs even when the install fails.
       - name: Point apt at a cacheable archive folder
         id: apt-prep
         run: |
@@ -86,9 +88,10 @@ jobs:
           sudo rm -f /etc/apt/apt.conf.d/docker-clean
           { echo 'Dir::Cache::Archives "'"$HOME"'/apt-debs/";'; echo 'APT::Keep-Downloaded-Packages "true";'; } | sudo tee /etc/apt/apt.conf.d/98-ci-archive-cache > /dev/null
           echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
-          echo "image=${ImageOS:-unknown}-${ImageVersion:-unknown}" >> "$GITHUB_OUTPUT"
+          echo "image=${ImageOS:-unknown}" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/cache@v6
+      - uses: actions/cache/restore@v6
+        id: apt-cache
         with:
           path: ~/apt-debs/*.deb
           key: apt-debs-${{ runner.os }}-${{ steps.apt-prep.outputs.image }}-pw${{ steps.apt-prep.outputs.version }}-chromium
@@ -116,6 +119,12 @@ jobs:
             grep -qv azure /etc/apt/apt-mirrors.txt && sudo sed -i '/azure/d' /etc/apt/apt-mirrors.txt
             timeout 480 npx playwright install --with-deps chromium
           }
+
+      - uses: actions/cache/save@v6
+        if: always() && steps.apt-cache.outputs.cache-hit != 'true'
+        with:
+          path: ~/apt-debs/*.deb
+          key: apt-debs-${{ runner.os }}-${{ steps.apt-prep.outputs.image }}-pw${{ steps.apt-prep.outputs.version }}-chromium
 
       - name: Generate Sanity types
         run: npm run typegen

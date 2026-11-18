@@ -281,7 +281,6 @@ jobs:
         run: |
           echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
           echo "image=${ImageOS:-unknown}" >> "$GITHUB_OUTPUT"
-          echo "imgver=${ImageVersion:-unknown}" >> "$GITHUB_OUTPUT"
 
       - uses: actions/cache@v6
         id: pw-cache
@@ -295,9 +294,13 @@ jobs:
       # served one 7 MB package in over two minutes, and the Azure-drop fallback below does
       # not help when the slow one is the ec2 mirror. apt's archive cache is pointed at a
       # folder the runner user can restore and save; on a hit `apt-get install` still runs but
-      # fetches nothing. Keyed on the runner image build (packages move with it) and the
-      # Playwright version (it decides which libraries are needed). The timeouts below stay
-      # as the safety net for a miss.
+      # fetches nothing. Keyed on the Ubuntu release and the Playwright version (it decides
+      # which libraries are needed), NOT on the runner image build number: runners of one
+      # release report different build numbers (20261111.127.1 and 20261111.370.1 on the
+      # same run), so that key never matched. Saved by a separate step with `if: always()`,
+      # because a plain cache step saves only when the job passes and the runs that need
+      # the cache most are the ones whose install timed out. The timeouts below stay as the
+      # safety net for a miss.
       - name: Point apt at a cacheable archive folder
         run: |
           mkdir -p "$HOME/apt-debs/partial"
@@ -305,11 +308,11 @@ jobs:
           sudo rm -f /etc/apt/apt.conf.d/docker-clean
           { echo 'Dir::Cache::Archives "'"$HOME"'/apt-debs/";'; echo 'APT::Keep-Downloaded-Packages "true";'; } | sudo tee /etc/apt/apt.conf.d/98-ci-archive-cache > /dev/null
 
-      - uses: actions/cache@v6
+      - uses: actions/cache/restore@v6
         id: apt-cache
         with:
           path: ~/apt-debs/*.deb
-          key: apt-debs-${{ runner.os }}-${{ steps.pw.outputs.image }}-${{ steps.pw.outputs.imgver }}-pw${{ steps.pw.outputs.version }}-chromium-webkit
+          key: apt-debs-${{ runner.os }}-${{ steps.pw.outputs.image }}-pw${{ steps.pw.outputs.version }}-chromium-webkit
 
       # `--with-deps` runs `apt-get update`, which fails outright when the
       # runner's third-party Chrome/Microsoft apt sources are mid-sync and
@@ -351,6 +354,12 @@ jobs:
             grep -qv azure /etc/apt/apt-mirrors.txt && sudo sed -i '/azure/d' /etc/apt/apt-mirrors.txt
             timeout 240 npx playwright install-deps chromium webkit
           }
+
+      - uses: actions/cache/save@v6
+        if: always() && steps.apt-cache.outputs.cache-hit != 'true'
+        with:
+          path: ~/apt-debs/*.deb
+          key: apt-debs-${{ runner.os }}-${{ steps.pw.outputs.image }}-pw${{ steps.pw.outputs.version }}-chromium-webkit
 
       # smoke (every route 200s and carries the site name in its title), axe in
       # light, axe in dark as a separate sweep plus a focus-indicator check, and
