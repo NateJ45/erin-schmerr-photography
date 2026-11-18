@@ -31,13 +31,13 @@ components:
 
 # Design System: Soft Focus Editorial
 
-Direction chosen 2026-11-17 for the build on placeholder content. Two answers from the client can still move it: the brand name (wordmark only) and whether she prefers a dark site (both themes ship, so that is a default swap). The CSS wins if this file and the code disagree: tokens live in `brand/brand.config.json`, written into `src/styles/globals.css` by `npm run apply-brand`; the site's own layer is `src/styles/erin.css`.
+Direction chosen 2026-11-17 for the build on placeholder content. Two answers from the client can still move it: the brand name (wordmark only) and whether she would rather have a dark site (the site is light only since 2026-11-18; the dark tokens are still in the code, so bringing dark back is a small change). The CSS wins if this file and the code disagree: tokens live in `brand/brand.config.json`, written into `src/styles/globals.css` by `npm run apply-brand`; the site's own layer is `src/styles/erin.css`.
 
 ## 1. Overview
 
 **Creative North Star: everything comes into focus.** A fine-art portrait portfolio that feels like a printed art book: warm paper, a large editorial serif, photos given room, and motion that behaves like a lens pulling focus.
 
-- **Light is the default, dark ships too** (rule 3). Dark is a deep warm black, not grey, so prints read like a gallery wall.
+- **Light only** (2026-11-18, rule 3). Warm paper is the one ground; there is no theme toggle and the system dark setting is ignored. The dark column below is kept for reference and for the shared dark test suites.
 - **No polish-layer chrome.** No brand stripe, no card lift, no tinted bands around photos. Sections separate by space and hairline rules.
 - **Square corners.** Radius 0 on photos, buttons and fields.
 - **One left edge, one row of chrome** (2026-11-17). The header has no eyebrow strip (its tagline already sits in the hero and the footer); the theme toggle lives in the nav row, and the row uses the page gutter so the wordmark lines up with every heading below it. Content bands all sit on paper: the starter's paper-soft cadence, sunburst ornaments and testimonial glow are switched off in `src/styles/erin.css`, and sections part with a content-width hairline. The footer defaults to the compact style (brand row on top, left-aligned at every width); an editor's choice in Site settings still wins.

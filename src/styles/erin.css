@@ -22,7 +22,7 @@
 /* Quiet chrome: no brand stripe and no eyebrow strip. The strip repeated the
    tagline that the hero eyebrow and the footer already carry, and it squeezed
    the wordmark and five nav items into one crowded row; the theme toggle it
-   held now sits in the nav row (Header.astro). */
+   held is gone too (the site is light only, 2026-11-18). */
 .site-header > .h-1.bg-primary,
 .site-header__eyebrow {
   display: none;
@@ -49,7 +49,7 @@
   text-transform: uppercase;
 }
 /* The wordmark scales with the viewport so the full row (wordmark, five nav
-   items, theme toggle, the inquiry button) fits from 1024 up without touching;
+   items, search, the inquiry button) fits from 1024 up without touching;
    the button label never wraps. */
 @media (min-width: 1024px) {
   .site-header__logo img {

@@ -36,7 +36,6 @@
 
 import { Menu, Mail, Phone, ChevronRight, Search, X } from 'lucide-react';
 import { IconBrandInstagram, IconBrandFacebook } from '@tabler/icons-react';
-import ThemeToggle from './ThemeToggle';
 import { telHref } from '@/lib/phone';
 import type { NavItem } from '@/lib/siteSettings';
 import type { PhoneMenuGroup } from '@/lib/wayfinding';
@@ -288,11 +287,6 @@ const fb = siteSettings?.socialFacebook;
               <IconBrandFacebook size={20} stroke={1.5} />
             </a>
           )}
-          <div class="ml-auto">
-            {/* The same React toggle the desktop eyebrow strip hydrates, so the
-                theme behaviour is identical on every width. */}
-            <ThemeToggle client:idle />
-          </div>
         </div>
       </div>
 

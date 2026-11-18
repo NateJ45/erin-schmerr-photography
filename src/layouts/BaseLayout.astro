@@ -206,8 +206,8 @@ const announcementStyle = ANNOUNCEMENT_STYLES[announcement?.style ?? 'info'] ?? 
         apply-brand did not touch them, so every fork painted its phone browser
         chrome in a palette it had otherwise replaced, and the values did not
         even match the starter's own brand.config.json. */}
-    <meta name="theme-color" content="#F3EEE7" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#12100E" media="(prefers-color-scheme: dark)" />
+    {/* Light only (decided 2026-11-18): one browser-chrome colour, the paper. */}
+    <meta name="theme-color" content="#F3EEE7" />
 
     {/* THE ICON SET, all rendered from public/favicon.svg by `npm run favicon`.
         The SVG is what modern browsers take; the .ico answers the bare
@@ -278,11 +278,12 @@ const announcementStyle = ANNOUNCEMENT_STYLES[announcement?.style ?? 'info'] ?? 
           );
           let dark = false;
           try {
-            const stored = localStorage.getItem(key) ?? 'system';
-            dark =
-              stored === 'dark' ||
-              (stored === 'system' &&
-                window.matchMedia('(prefers-color-scheme: dark)').matches);
+            // Light only (decided 2026-11-18): there is no theme toggle and the
+            // system setting is ignored. A stored 'dark' still applies so the
+            // shared dark-mode test suites (a11y-dark, contrast, visual), which
+            // seed this key, keep running; no visitor can set it.
+            const stored = localStorage.getItem(key) ?? 'light';
+            dark = stored === 'dark';
             document.documentElement.classList.toggle('dark', dark);
             document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
           } catch (_) { /* localStorage unavailable, default light */ }
