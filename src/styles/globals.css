@@ -1514,7 +1514,7 @@ body::before {
 
   /* Print-only header + footer injected into every page. */
   body::after {
-    content: 'Studio Starter · example.com';
+    content: 'Erin Schmerr Photography · erin-schmerr-photography.nathanjnixon86.workers.dev';
     display: block;
     margin-top: 0.5in;
     padding-top: 0.25in;
