@@ -2,22 +2,27 @@
 // scaffold-file: stories
 // Safe to edit by hand
 // Page-builder block `coverHero` (storyIndexSection.ts): the home page's
-// opening. The featured stories' covers fill the frame and crossfade one into
-// the next; each one eases from blur to sharp as it arrives (DESIGN.md, the
-// signature). The headline, a sentence and two buttons sit over a soft scrim,
-// and a caption names the story on screen and links to it.
+// opening, as full-screen slides (picked 2026-11-18, design-directions
+// "direction I"). Each featured story gets the whole screen. The slides are
+// sticky, so the next one slides up over the last as you scroll, and each one
+// racks from soft and slightly large to sharp as it arrives (CSS scroll-driven,
+// in portfolio.css). A portrait shows whole over its own blurred LQIP (the
+// focus-image frame already paints that blur); a landscape cover fills the
+// screen.
 //
-// Motion is src/scripts/cover-hero.ts. Without it (JavaScript off, reduced
-// motion, a single cover) the first cover simply shows, sharp. While it runs
-// there is a Pause button, because anything that moves on its own for more than
-// five seconds needs one (WCAG 2.2.2).
+// Nothing moves on its own, so there is no Pause button. The first slide never
+// animates and its image is the LCP (eager, fetchpriority high); the rest load
+// lazily. JavaScript plays no part: no JS, reduced motion, touch, or a browser
+// without scroll-driven animations all get the same slides standing still
+// (touch keeps a lighter scale-and-fade). Words sit on paper chips, so they
+// read over any photograph in the light-only theme.
 //
-// The buttons are outlines on dark (secondary, onDark): the page's one filled
-// accent button belongs to the booking band further down (card 158).
+// The buttons are secondary outlines: the page's one filled accent button
+// belongs to the booking band further down (card 158).
 import FocusImage from '@/components/portfolio/FocusImage.astro';
 import CtaLink from '@/components/CtaLink.astro';
 import { getFeaturedStories } from '@/lib/storyQueries';
-import { formatMonthYear } from '@/lib/portfolio';
+import { formatMonthYear, photoRatio } from '@/lib/portfolio';
 import '@/styles/portfolio.css';
 
 type CtaProp = Parameters<typeof CtaLink>[0]['cta'];
@@ -45,71 +50,66 @@ const stories = (await getFeaturedStories(limit)).filter((s) => s.cover);
 const pad = (n: number) => String(n).padStart(2, '0');
 ---
 
-<section class="cover-hero" aria-labelledby={headingId} data-cover-hero>
-  <div class="cover-hero__slides">
-    {stories.map((story, i) => (
-      <div
-        class:list={['cover-hero__slide', i === 0 && 'is-active']}
-        data-slide
-        data-first-viewport-exempt={i === 0 ? undefined : ''}
-      >
-        <FocusImage
-          photo={story.cover}
-          width={2400}
-          sizes="100vw"
-          loading={i === 0 ? 'eager' : 'lazy'}
-          fetchpriority={i === 0 ? 'high' : 'low'}
-          alt={story.cover?.alt ?? ''}
-          class="cover-hero__frame"
-          pull={false}
-        />
+<section class="cover-hero" aria-labelledby={headingId}>
+  {stories.length === 0 && (
+    <div class="cover-slide cover-slide--empty">
+      <div class="cover-slide__intro cover-chip">
+        {eyebrow && <p class="cover-slide__eyebrow">{eyebrow}</p>}
+        <h1 id={headingId} class="cover-slide__title font-display">
+          {headline}
+        </h1>
+        {subhead && <p class="cover-slide__subhead">{subhead}</p>}
       </div>
-    ))}
-  </div>
-  <div class="cover-hero__scrim" aria-hidden="true"></div>
-  <div class="cover-hero__body mx-auto max-w-content px-m">
-    {eyebrow && <p class="cover-hero__eyebrow">{eyebrow}</p>}
-    <h1 id={headingId} class="cover-hero__title font-display">
-      {headline}
-    </h1>
-    {subhead && <p class="cover-hero__subhead">{subhead}</p>}
-    {(primaryCta || secondaryCta) && (
-      <div class="cover-hero__ctas">
-        {primaryCta && <CtaLink cta={primaryCta} variant="secondary" onDark />}
-        {secondaryCta && <CtaLink cta={secondaryCta} variant="secondary" onDark />}
+    </div>
+  )}
+  {stories.map((story, i) => (
+    <article
+      class:list={[
+        'cover-slide',
+        i === 0 && 'cover-slide--first',
+        photoRatio(story.cover) < 0.95 && 'cover-slide--portrait',
+      ]}
+      aria-label={i === 0 ? undefined : story.title}
+      data-first-viewport-exempt={i === 0 ? undefined : ''}
+    >
+      <FocusImage
+        photo={story.cover}
+        width={2400}
+        sizes="100vw"
+        loading={i === 0 ? 'eager' : 'lazy'}
+        fetchpriority={i === 0 ? 'high' : 'low'}
+        alt={story.cover?.alt ?? ''}
+        class="cover-slide__frame"
+        pull={false}
+      />
+      {i === 0 && (
+        <div class="cover-slide__intro cover-chip">
+          {eyebrow && <p class="cover-slide__eyebrow">{eyebrow}</p>}
+          <h1 id={headingId} class="cover-slide__title font-display">
+            {headline}
+          </h1>
+          {subhead && <p class="cover-slide__subhead">{subhead}</p>}
+          {(primaryCta || secondaryCta) && (
+            <div class="cover-slide__ctas">
+              {primaryCta && <CtaLink cta={primaryCta} variant="secondary" />}
+              {secondaryCta && <CtaLink cta={secondaryCta} variant="secondary" />}
+            </div>
+          )}
+        </div>
+      )}
+      <div class="cover-slide__foot">
+        <p class="cover-slide__caption cover-chip">
+          <a href={`/stories/${story.slug}/`}>
+            <span class="cover-slide__story">{story.title}</span>
+            <span class="cover-slide__where">
+              {[story.location, formatMonthYear(story.date)].filter(Boolean).join(', ')}
+            </span>
+          </a>
+        </p>
+        <span class="cover-slide__count cover-chip" aria-hidden="true">
+          {pad(i + 1)} / {pad(stories.length)}
+        </span>
       </div>
-    )}
-    {stories.length > 0 && (
-      <div class="cover-hero__meta">
-        <ol class="cover-hero__captions" aria-label="Featured stories">
-          {stories.map((story, i) => (
-            <li class:list={['cover-hero__caption', i === 0 && 'is-active']} data-caption>
-              <a href={`/stories/${story.slug}/`}>
-                <span class="cover-hero__count">
-                  {pad(i + 1)} / {pad(stories.length)}
-                </span>
-                <span class="cover-hero__story">{story.title}</span>
-                <span class="cover-hero__where">
-                  {[story.location, formatMonthYear(story.date)].filter(Boolean).join(', ')}
-                </span>
-              </a>
-            </li>
-          ))}
-        </ol>
-        <button
-          type="button"
-          class="cover-hero__pause"
-          data-cover-pause
-          hidden
-          aria-pressed="false"
-        >
-          Pause
-        </button>
-      </div>
-    )}
-  </div>
+    </article>
+  ))}
 </section>
-
-<script>
-  import '@/scripts/cover-hero';
-</script>
