@@ -150,15 +150,6 @@ const SECTION_ARMS = `
       }
     },
     // scaffold:end
-    // scaffold: process
-    _type == "processSection" => {
-      ...,
-      cta${CTA_PROJECTION},
-      "steps": *[_type == "processStep"] | order(orderRank asc, stepNumber asc){
-        stepNumber, title, timeEstimate, shortDescription, features, tierNote
-      }
-    },
-    // scaffold:end
     _type == "serviceAreaSection" => {
       ...,
       "travelFees": *[_type == "businessInfo"][0].travelFees
@@ -167,17 +158,6 @@ const SECTION_ARMS = `
       ...,
       "siteSettingsText": *[_type == "siteSettings"][0].satisfactionGuarantee
     },
-    // scaffold: faq
-    _type == "faqSection" => {
-      ...,
-      cta${CTA_PROJECTION},
-      "items": items[]->{
-        _id, _type, question, answer,
-        "category": coalesce(categoryRef->title, category),
-        displayOrder
-      }
-    },
-    // scaffold:end
     _type == "logoStripSection" => {
       ...,
       logos[]${IMAGE_PROJECTION}
@@ -204,22 +184,9 @@ const SECTION_ARMS = `
       // this comment. It lives inside a template literal, so one would
       // terminate the query string.
       "items": select(
-        // scaffold: journal
-        source == "journal" => *[_type == "journalEntry"] | order(publishedAt desc)[0...12]{
-          _id, "title": title, "meta": publishedAt, "summary": excerpt,
-          "href": "/journal/" + slug.current + "/",
-          "coverImage": coverImage${IMAGE_PROJECTION}
-        },
-        // scaffold:end
         // scaffold: testimonials
         source == "testimonials" => *[_type == "testimonial"] | order(_createdAt desc)[0...12]{
           _id, "title": attribution, "meta": detail, "summary": quote, "href": null
-        },
-        // scaffold:end
-        // scaffold: faq
-        source == "faqs" => *[_type == "faqItem"] | order(displayOrder asc, _createdAt asc)[0...12]{
-          _id, "title": question, "summary": null, "meta": coalesce(categoryRef->title, category), "href": null,
-          "answer": answer
         },
         // scaffold:end
         // 2026-09-18: the trailing [] is the select's DEFAULT arm, and it is
@@ -494,52 +461,6 @@ export async function getAboutPage() {
 
 // Minimal service list for JSON-LD on the services page.
 
-// scaffold: process
-// ---- Process page -----------------------------------------------------------
-
-export async function getProcessPage() {
-  return sanityFetch(
-    `*[_type == "processPage"][0]{
-    seoTitle,
-    seoDescription,
-    seoImage${IMAGE_PROJECTION},
-    ${sectionsProjection('pageBuilder')}
-  }`,
-    {},
-    null,
-  );
-}
-// scaffold:end
-
-// scaffold: faq
-// ---- FAQ page -------------------------------------------------------------
-
-export async function getFaqPage() {
-  return sanityFetch(
-    `*[_type == "faqPage"][0]{
-    seoTitle,
-    seoDescription,
-    seoImage${IMAGE_PROJECTION},
-    heroEyebrow, heroHeadline, heroSubhead,
-    heroImage${IMAGE_PROJECTION},
-    heroScriptAccent,
-    categoryOrder,
-    "faqs": *[_type == "faqItem"] | order(category asc, displayOrder asc){
-      question, answer,
-      "category": coalesce(categoryRef->title, category),
-      displayOrder
-    },
-    finalCtaEyebrow, finalCtaHeadline, finalCtaScriptAccent, finalCtaSubhead,
-    finalCtaBackgroundImage${IMAGE_PROJECTION},
-    finalCta${CTA_PROJECTION},
-    secondaryCta${CTA_PROJECTION}
-  }`,
-    {},
-    null,
-  );
-}
-// scaffold:end
-
 // ---- Contact page ---------------------------------------------------------
 
 export async function getContactPage() {
@@ -625,121 +546,7 @@ export async function getAllProjects(): Promise<CoreProjectCard[]> {
 
 // ---- Journal --------------------------------------------------------------
 
-// scaffold: journal
-// Projection for a journal card (index page) — small surface, no body.
-const JOURNAL_CARD_PROJECTION = `{
-  _id,
-  title,
-  slug,
-  excerpt,
-  publishedAt,
-  featured,
-  coverImage${IMAGE_PROJECTION},
-  "categories": categories[]->{ _id, title, slug, description }
-}`;
-// scaffold:end
-
-// scaffold: journal
-export async function getJournalPage() {
-  return sanityFetch(
-    `*[_type == "journalPage"][0]{
-    ${sectionsProjection('pageBuilder')},
-    seoTitle,
-    seoDescription,
-    seoImage${IMAGE_PROJECTION},
-    heroEyebrow, heroHeadline, heroSubhead,
-    heroImage${IMAGE_PROJECTION},
-    heroScriptAccent,
-    stickyCtaLabel,
-    finalCtaHeadline, finalCtaScriptAccent, finalCtaSubhead,
-    finalCtaBackgroundImage${IMAGE_PROJECTION},
-    finalCta${CTA_PROJECTION}
-  }`,
-    {},
-    null,
-  );
-}
-// scaffold:end
-
-// scaffold: journal
-export async function getAllJournalEntries() {
-  // Featured first, then newest first. Excerpt + cover only (no body).
-  return sanityFetch(
-    `*[_type == "journalEntry"] | order(featured desc, publishedAt desc) ${JOURNAL_CARD_PROJECTION}`,
-    {},
-    [],
-  );
-}
-// scaffold:end
-
-// scaffold: journal
-export async function getAllJournalCategories() {
-  return sanityFetch(
-    `*[_type == "journalCategory"] | order(title asc){
-    _id, title, slug, description,
-    "postCount": count(*[_type == "journalEntry" && references(^._id)])
-  }`,
-    {},
-    [],
-  );
-}
-// scaffold:end
-
-// scaffold: journal
-export async function getJournalEntryBySlug(slug: string) {
-  // Full doc including body. The body's inline image blocks get their asset
-  // resolved + alt fallback at the GROQ layer so the renderer doesn't have to
-  // chase asset refs for every block. Image gallery items + beforeAfter pairs
-  // + sourceCard images + inline images all get the same treatment.
-  return sanityFetch(
-    `*[_type == "journalEntry" && slug.current == $slug][0]{
-      _id, title, slug, excerpt, author, publishedAt, updatedAt, featured,
-      seoTitle, seoDescription,
-      coverImage${IMAGE_PROJECTION},
-      "categories": categories[]->{ _id, title, slug, description },
-      "relatedProject": relatedProject->{ _id, title, slug, location, year, heroImage${IMAGE_PROJECTION} },
-      body[]{
-        ...,
-        _type == "inlineImage" => ${IMAGE_PROJECTION},
-        _type == "beforeAfter" => {
-          ...,
-          beforeImage${IMAGE_PROJECTION},
-          afterImage${IMAGE_PROJECTION}
-        },
-        _type == "sourceCard" => {
-          ...,
-          image${IMAGE_PROJECTION}
-        },
-        _type == "imageGallery" => {
-          ...,
-          images[]${IMAGE_PROJECTION}
-        }
-      },
-      // Explicit relatedPosts if set; otherwise auto-pick 3 most recent in the
-      // same primary category, excluding this post itself.
-      "relatedPosts": coalesce(
-        relatedPosts[]->${JOURNAL_CARD_PROJECTION},
-        *[_type == "journalEntry" && _id != ^._id && count(categories[@._ref in ^.^.categories[]._ref]) > 0]
-          | order(publishedAt desc)[0..2] ${JOURNAL_CARD_PROJECTION}
-      )
-    }`,
-    { slug },
-    null,
-  );
-}
-// scaffold:end
-
 // Static path generation for /journal/[slug]. Returns just the slugs.
-// scaffold: journal
-export async function getAllJournalSlugs(): Promise<string[]> {
-  const list: Array<{ slug: { current: string } }> = await sanityFetch(
-    `*[_type == "journalEntry" && defined(slug.current)]{ slug }`,
-    {},
-    [],
-  );
-  return list.map((e) => e.slug?.current).filter(Boolean);
-}
-// scaffold:end
 
 // ---- Privacy page ---------------------------------------------------------
 

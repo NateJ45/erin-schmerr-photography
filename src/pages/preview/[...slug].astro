@@ -82,10 +82,7 @@ const slug = (Astro.params.slug as string | undefined) || '';
 const SINGLETON_BY_PATH: Record<string, string> = {
   '': 'homePage',
   about: 'aboutPage', // scaffold: about
-  process: 'processPage', // scaffold: process
-  faq: 'faqPage', // scaffold: faq
   contact: 'contactPage',
-  journal: 'journalPage', // scaffold: journal
   privacy: 'privacyPage',
   '404': 'notFoundPage',
 };
@@ -96,15 +93,10 @@ const SINGLETON_BY_PATH: Record<string, string> = {
 const BUILDER_SINGLETONS = new Set([
   'homePage',
   'aboutPage', // scaffold: about
-  'processPage', // scaffold: process
 ]);
 
 // Pages that are a page builder only while their Page layout is filled (card 190).
-const HYBRID_SINGLETONS = new Set([
-  'contactPage',
-  'privacyPage',
-  'journalPage', // scaffold: journal
-]);
+const HYBRID_SINGLETONS = new Set(['contactPage', 'privacyPage']);
 
 // The heading-id prefix each live page passes to SectionRenderer. Matching it
 // here keeps generated ids identical to the live page, so an in-page anchor an
@@ -112,10 +104,8 @@ const HYBRID_SINGLETONS = new Set([
 const ID_PREFIX: Record<string, string> = {
   homePage: 'home',
   aboutPage: 'about',
-  processPage: 'process', // scaffold: process
   contactPage: 'contact', // card 190
   privacyPage: 'privacy', // card 190
-  journalPage: 'journal', // card 190, scaffold: journal
 };
 
 // Every hero / builder / CTA field any of the page types may carry. Absent

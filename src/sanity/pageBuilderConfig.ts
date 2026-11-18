@@ -32,9 +32,7 @@ export const SECTION_HOST_TYPES: Readonly<Record<string, string>> = {
   // Every main page a page builder (card 190).
   contactPage: 'pageBuilder',
   privacyPage: 'pageBuilder',
-  journalPage: 'pageBuilder', // scaffold: journal
   aboutPage: 'pageBuilder', // scaffold: about
-  processPage: 'pageBuilder', // scaffold: process
 };
 
 /** The same list as a set, for the document-actions resolver. */
@@ -61,19 +59,16 @@ const SELF_FILLING_SECTIONS = [
   // policy built into the site, and the Journal list.
   'contactFormSection',
   'privacyPolicySection',
-  'journalPostsSection', // scaffold: journal
   // The portfolio blocks fill themselves from Stories and Publications.
   'storyIndex', // scaffold: stories
   'coverHero', // scaffold: stories
   'publishedMarquee', // scaffold: press
   'tearSheetStack', // scaffold: press
   'dynamicListSection',
-  'faqSection', // scaffold: faq
   'guaranteeSection',
   // Its words are the channel's newest video, read at build time (card 197).
   'latestVideoSection',
   'logoStripSection',
-  'processSection', // scaffold: process
   // Card 193: filled from Site settings (the phone, the email, the newsletter box), so a fresh one
   // is already complete.
   'contactCardSection',

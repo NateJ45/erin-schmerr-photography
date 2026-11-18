@@ -7,17 +7,10 @@ import { popup } from './popup';
 import { businessInfo } from './businessInfo';
 import { contactPage } from './contactPage';
 import { ctaBlock } from './ctaBlock';
-import { faqCategory } from './faqCategory'; // scaffold: faq
-import { faqItem } from './faqItem'; // scaffold: faq
-import { faqPage } from './faqPage'; // scaffold: faq
 import { formQuestion } from './formQuestion';
 import { form } from './form';
 import { formDateQuestion, formTickQuestion } from './formQuestionMore';
 import { homePage } from './homePage';
-import { journalCategory } from './journalCategory'; // scaffold: journal
-import { journalEntry } from './journalEntry'; // scaffold: journal
-import { journalPage } from './journalPage'; // scaffold: journal
-import { journalPostsSection } from './journalPostsSection'; // scaffold: journal
 import { mainPageSectionSchemas } from './mainPageSections';
 import { navLink } from './navLink';
 import { newsletter } from './newsletter';
@@ -33,8 +26,6 @@ import { storyIndex, coverHero } from './storyIndexSection'; // scaffold: storie
 import { publication } from './publication'; // scaffold: press
 import { pressSectionSchemas } from './pressSections'; // scaffold: press
 import { privacyPage } from './privacyPage';
-import { processPage } from './processPage'; // scaffold: process
-import { processStep } from './processStep'; // scaffold: process
 import { redirect } from './redirect';
 import { sectionPreset } from './sectionPreset';
 import { shortLink } from './shortLink';
@@ -61,7 +52,6 @@ export const schemaTypes = [
   ...richSectionSchemas,
   // Every main page a page builder (card 190): blocks offered on their own page only.
   ...mainPageSectionSchemas,
-  journalPostsSection, // scaffold: journal
   // The portfolio's home page blocks (the stories and press capabilities).
   storyIndex, // scaffold: stories
   coverHero, // scaffold: stories
@@ -74,10 +64,7 @@ export const schemaTypes = [
   businessInfo, // Content-side singleton: service areas, travel fees, availability, geo
   homePage,
   aboutPage, // scaffold: about
-  processPage, // scaffold: process
-  faqPage, // scaffold: faq
   contactPage,
-  journalPage, // scaffold: journal
   notFoundPage,
   privacyPage,
   // Start Here editable singletons
@@ -89,11 +76,6 @@ export const schemaTypes = [
   popup, // popups (card 170): one at a time, date-windowed, src/lib/popup.ts
   testimonial, // scaffold: testimonials
   libraryDocument, // scaffold: documents
-  faqCategory, // scaffold: faq
-  faqItem, // scaffold: faq
-  processStep, // scaffold: process
-  journalCategory, // scaffold: journal
-  journalEntry, // scaffold: journal
   // The portfolio: stories, the people credited on them, and the press list.
   story, // scaffold: stories
   collaborator, // scaffold: stories

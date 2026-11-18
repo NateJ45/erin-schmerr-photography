@@ -100,39 +100,11 @@ export type AboutPageReference = {
   [internalGroqTypeReferenceTo]?: 'aboutPage';
 };
 
-export type ProcessPageReference = {
-  _ref: string;
-  _type: 'reference';
-  _weak?: boolean;
-  [internalGroqTypeReferenceTo]?: 'processPage';
-};
-
-export type FaqPageReference = {
-  _ref: string;
-  _type: 'reference';
-  _weak?: boolean;
-  [internalGroqTypeReferenceTo]?: 'faqPage';
-};
-
 export type ContactPageReference = {
   _ref: string;
   _type: 'reference';
   _weak?: boolean;
   [internalGroqTypeReferenceTo]?: 'contactPage';
-};
-
-export type JournalPageReference = {
-  _ref: string;
-  _type: 'reference';
-  _weak?: boolean;
-  [internalGroqTypeReferenceTo]?: 'journalPage';
-};
-
-export type JournalEntryReference = {
-  _ref: string;
-  _type: 'reference';
-  _weak?: boolean;
-  [internalGroqTypeReferenceTo]?: 'journalEntry';
 };
 
 export type PrivacyPageReference = {
@@ -154,11 +126,7 @@ export type ShortLink = {
     | PageReference
     | HomePageReference
     | AboutPageReference
-    | ProcessPageReference
-    | FaqPageReference
     | ContactPageReference
-    | JournalPageReference
-    | JournalEntryReference
     | PrivacyPageReference;
   url?: string;
   lasting?: 'temporary' | 'permanent';
@@ -325,11 +293,6 @@ export type Newsletter = {
   slug?: Slug;
   preheader?: string;
   intro?: string;
-  posts?: Array<
-    {
-      _key: string;
-    } & JournalEntryReference
-  >;
   notices?: Array<{
     title?: string;
     text?: string;
@@ -451,82 +414,6 @@ export type Photo = {
   inArchive?: boolean;
 };
 
-export type JournalCategory = {
-  _id: string;
-  _type: 'journalCategory';
-  _createdAt: string;
-  _updatedAt: string;
-  _rev: string;
-  title?: string;
-  slug?: Slug;
-  description?: string;
-};
-
-export type ProcessStep = {
-  _id: string;
-  _type: 'processStep';
-  _createdAt: string;
-  _updatedAt: string;
-  _rev: string;
-  stepNumber?: number;
-  title?: string;
-  timeEstimate?: string;
-  shortDescription?: string;
-  features?: Array<string>;
-  tierNote?: string;
-  orderRank?: string;
-};
-
-export type FaqCategoryReference = {
-  _ref: string;
-  _type: 'reference';
-  _weak?: boolean;
-  [internalGroqTypeReferenceTo]?: 'faqCategory';
-};
-
-export type FaqItem = {
-  _id: string;
-  _type: 'faqItem';
-  _createdAt: string;
-  _updatedAt: string;
-  _rev: string;
-  question?: string;
-  answer?: Array<{
-    children?: Array<{
-      marks?: Array<string>;
-      text?: string;
-      _type: 'span';
-      _key: string;
-    }>;
-    style?: 'normal' | 'h4';
-    listItem?: 'bullet' | 'number';
-    markDefs?: Array<{
-      href?: string;
-      openInNewTab?: boolean;
-      _type: 'link';
-      _key: string;
-    }>;
-    level?: number;
-    _type: 'block';
-    _key: string;
-  }>;
-  category?: 'Pricing & Cost' | 'The Process' | 'Logistics' | 'Service Area' | 'Getting Started';
-  categoryRef?: FaqCategoryReference;
-  displayOrder?: number;
-  alsoShowOnProcessPage?: boolean;
-};
-
-export type FaqCategory = {
-  _id: string;
-  _type: 'faqCategory';
-  _createdAt: string;
-  _updatedAt: string;
-  _rev: string;
-  title?: string;
-  slug?: Slug;
-  displayOrder?: number;
-};
-
 export type SanityFileAssetReference = {
   _ref: string;
   _type: 'reference';
@@ -580,10 +467,7 @@ export type Popup = {
     | PageReference
     | HomePageReference
     | AboutPageReference
-    | ProcessPageReference
-    | FaqPageReference
     | ContactPageReference
-    | JournalPageReference
     | PrivacyPageReference
   >;
   frequency?: 'visitor' | 'visit';
@@ -1180,14 +1064,7 @@ export type SiteSettings = {
   }>;
   actionBars?: Array<{
     everyPage?: boolean;
-    page?:
-      | HomePageReference
-      | AboutPageReference
-      | ProcessPageReference
-      | FaqPageReference
-      | ContactPageReference
-      | JournalPageReference
-      | PageReference;
+    page?: HomePageReference | AboutPageReference | ContactPageReference | PageReference;
     text?: string;
     action?: NavLink;
     _type: 'actionBar';
@@ -1318,10 +1195,7 @@ export type NavLink = {
   internalPage?:
     | HomePageReference
     | AboutPageReference
-    | ProcessPageReference
-    | FaqPageReference
     | ContactPageReference
-    | JournalPageReference
     | PrivacyPageReference
     | PageReference;
   externalUrl?: string;
@@ -1354,12 +1228,6 @@ export type StoryIndex = {
   heading?: string;
   layout?: 'grid' | 'list';
   limit?: number;
-};
-
-export type JournalPostsSection = {
-  _type: 'journalPostsSection';
-  showCategories?: boolean;
-  showNewsletter?: boolean;
 };
 
 export type PrivacyPolicySection = {
@@ -1451,41 +1319,6 @@ export type TeamSection = {
   }>;
 };
 
-export type FaqItemReference = {
-  _ref: string;
-  _type: 'reference';
-  _weak?: boolean;
-  [internalGroqTypeReferenceTo]?: 'faqItem';
-};
-
-export type FaqSection = {
-  _type: 'faqSection';
-  eyebrow?: string;
-  headline?: string;
-  headingAccent?: string;
-  subhead?: string;
-  subheadRich?: Array<{
-    children?: Array<{
-      marks?: Array<string>;
-      text?: string;
-      _type: 'span';
-      _key: string;
-    }>;
-    style?: 'normal';
-    listItem?: never;
-    markDefs?: null;
-    level?: number;
-    _type: 'block';
-    _key: string;
-  }>;
-  items?: Array<
-    {
-      _key: string;
-    } & FaqItemReference
-  >;
-  cta?: CtaBlock;
-};
-
 export type GuaranteeSection = {
   _type: 'guaranteeSection';
   text?: string;
@@ -1497,15 +1330,6 @@ export type ServiceAreaSection = {
   headline?: string;
   description?: string;
   showTravelFees?: boolean;
-};
-
-export type ProcessSection = {
-  _type: 'processSection';
-  eyebrow?: string;
-  headline?: string;
-  subhead?: string;
-  variant?: 'preview' | 'full';
-  cta?: CtaBlock;
 };
 
 export type StorySection = {
@@ -1753,16 +1577,10 @@ export type SectionPreset = {
       } & StorySection)
     | ({
         _key: string;
-      } & ProcessSection)
-    | ({
-        _key: string;
       } & ServiceAreaSection)
     | ({
         _key: string;
       } & GuaranteeSection)
-    | ({
-        _key: string;
-      } & FaqSection)
     | ({
         _key: string;
       } & TeamSection)
@@ -2873,9 +2691,6 @@ export type PrivacyPage = {
       } & StorySection)
     | ({
         _key: string;
-      } & FaqSection)
-    | ({
-        _key: string;
       } & TeamSection)
     | ({
         _key: string;
@@ -2890,15 +2705,7 @@ export type CtaBlock = {
   _type: 'ctaBlock';
   label?: string;
   linkType?: 'internal' | 'external' | 'email' | 'phone';
-  internalLink?:
-    | HomePageReference
-    | AboutPageReference
-    | ProcessPageReference
-    | FaqPageReference
-    | ContactPageReference
-    | JournalPageReference
-    | JournalEntryReference
-    | PageReference;
+  internalLink?: HomePageReference | AboutPageReference | ContactPageReference | PageReference;
   externalUrl?: string;
   emailAddress?: string;
   phoneNumber?: string;
@@ -3044,354 +2851,6 @@ export type Page = {
   };
   hideFromSearch?: boolean;
   publishAt?: string;
-};
-
-export type JournalCategoryReference = {
-  _ref: string;
-  _type: 'reference';
-  _weak?: boolean;
-  [internalGroqTypeReferenceTo]?: 'journalCategory';
-};
-
-export type JournalEntry = {
-  _id: string;
-  _type: 'journalEntry';
-  _createdAt: string;
-  _updatedAt: string;
-  _rev: string;
-  title?: string;
-  slug?: Slug;
-  excerpt?: string;
-  coverImage?: {
-    asset?: SanityImageAssetReference;
-    media?: unknown;
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    alt?: string;
-    caption?: string;
-    _type: 'image';
-  };
-  categories?: Array<
-    {
-      _key: string;
-    } & JournalCategoryReference
-  >;
-  author?: string;
-  publishedAt?: string;
-  updatedAt?: string;
-  featured?: boolean;
-  body?: Array<
-    | {
-        children?: Array<{
-          marks?: Array<string>;
-          text?: string;
-          _type: 'span';
-          _key: string;
-        }>;
-        style?: 'normal' | 'lead' | 'h2' | 'h3' | 'h4' | 'blockquote';
-        listItem?: 'bullet' | 'number';
-        markDefs?: Array<
-          | {
-              href?: string;
-              openInNewTab?: boolean;
-              _type: 'link';
-              _key: string;
-            }
-          | {
-              vendor?: string;
-              url?: string;
-              _type: 'sourcedFrom';
-              _key: string;
-            }
-        >;
-        level?: number;
-        _type: 'block';
-        _key: string;
-      }
-    | {
-        asset?: SanityImageAssetReference;
-        media?: unknown;
-        hotspot?: SanityImageHotspot;
-        crop?: SanityImageCrop;
-        alt?: string;
-        caption?: string;
-        size?: 'standard' | 'wide' | 'full';
-        _type: 'inlineImage';
-        _key: string;
-      }
-    | {
-        quote?: string;
-        attribution?: string;
-        _type: 'pullQuote';
-        _key: string;
-      }
-    | {
-        beforeImage?: {
-          asset?: SanityImageAssetReference;
-          media?: unknown;
-          hotspot?: SanityImageHotspot;
-          crop?: SanityImageCrop;
-          alt?: string;
-          _type: 'image';
-        };
-        afterImage?: {
-          asset?: SanityImageAssetReference;
-          media?: unknown;
-          hotspot?: SanityImageHotspot;
-          crop?: SanityImageCrop;
-          alt?: string;
-          _type: 'image';
-        };
-        caption?: string;
-        _type: 'beforeAfter';
-        _key: string;
-      }
-    | {
-        image?: {
-          asset?: SanityImageAssetReference;
-          media?: unknown;
-          hotspot?: SanityImageHotspot;
-          crop?: SanityImageCrop;
-          alt?: string;
-          _type: 'image';
-        };
-        itemName?: string;
-        vendor?: string;
-        price?: string;
-        url?: string;
-        notes?: string;
-        _type: 'sourceCard';
-        _key: string;
-      }
-    | {
-        label?: string;
-        content?: Array<{
-          children?: Array<{
-            marks?: Array<string>;
-            text?: string;
-            _type: 'span';
-            _key: string;
-          }>;
-          style?: 'normal';
-          listItem?: 'bullet';
-          markDefs?: Array<{
-            href?: string;
-            openInNewTab?: boolean;
-            _type: 'link';
-            _key: string;
-          }>;
-          level?: number;
-          _type: 'block';
-          _key: string;
-        }>;
-        _type: 'tipCallout';
-        _key: string;
-      }
-    | {
-        images?: Array<{
-          asset?: SanityImageAssetReference;
-          media?: unknown;
-          hotspot?: SanityImageHotspot;
-          crop?: SanityImageCrop;
-          alt?: string;
-          caption?: string;
-          _type: 'image';
-          _key: string;
-        }>;
-        layout?: 'grid2' | 'grid3' | 'row';
-        caption?: string;
-        _type: 'imageGallery';
-        _key: string;
-      }
-    | {
-        style?: 'line' | 'ornament' | 'space';
-        _type: 'divider';
-        _key: string;
-      }
-    | {
-        url?: string;
-        caption?: string;
-        _type: 'videoEmbed';
-        _key: string;
-      }
-  >;
-  seoTitle?: string;
-  seoDescription?: string;
-  relatedPosts?: Array<
-    {
-      _key: string;
-    } & JournalEntryReference
-  >;
-};
-
-export type JournalPage = {
-  _id: string;
-  _type: 'journalPage';
-  _createdAt: string;
-  _updatedAt: string;
-  _rev: string;
-  seoTitle?: string;
-  seoDescription?: string;
-  seoImage?: {
-    asset?: SanityImageAssetReference;
-    media?: unknown;
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    alt?: string;
-    _type: 'image';
-  };
-  heroEyebrow?: string;
-  heroHeadline?: string;
-  heroSubhead?: string;
-  heroImage?: {
-    asset?: SanityImageAssetReference;
-    media?: unknown;
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    alt?: string;
-    _type: 'image';
-  };
-  heroScriptAccent?: string;
-  stickyCtaLabel?: string;
-  finalCtaHeadline?: string;
-  finalCtaScriptAccent?: string;
-  finalCtaSubhead?: string;
-  finalCta?: CtaBlock;
-  finalCtaBackgroundImage?: {
-    asset?: SanityImageAssetReference;
-    media?: unknown;
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    _type: 'image';
-  };
-  pageBuilder?: Array<
-    | ({
-        _key: string;
-      } & HeroSection)
-    | ({
-        _key: string;
-      } & RichTextSection)
-    | ({
-        _key: string;
-      } & ImageTextSection)
-    | ({
-        _key: string;
-      } & GallerySection)
-    | ({
-        _key: string;
-      } & QuoteSection)
-    | ({
-        _key: string;
-      } & StatSection)
-    | ({
-        _key: string;
-      } & CtaBandSection)
-    | ({
-        _key: string;
-      } & VideoSection)
-    | ({
-        _key: string;
-      } & SpacerSection)
-    | ({
-        _key: string;
-      } & LogoStripSection)
-    | ({
-        _key: string;
-      } & EmbedSection)
-    | ({
-        _key: string;
-      } & RsvpSection)
-    | ({
-        _key: string;
-      } & LatestVideoSection)
-    | ({
-        _key: string;
-      } & DocumentsSection)
-    | ({
-        _key: string;
-      } & FormSection)
-    | ({
-        _key: string;
-      } & ColumnsSection)
-    | ({
-        _key: string;
-      } & ButtonRowSection)
-    | ({
-        _key: string;
-      } & PhotoSection)
-    | ({
-        _key: string;
-      } & AccordionSection)
-    | ({
-        _key: string;
-      } & TabsSection)
-    | ({
-        _key: string;
-      } & CountdownSection)
-    | ({
-        _key: string;
-      } & NoticeSection)
-    | ({
-        _key: string;
-      } & TimelineSection)
-    | ({
-        _key: string;
-      } & LetterSection)
-    | ({
-        _key: string;
-      } & EventDetailsSection)
-    | ({
-        _key: string;
-      } & ScheduleSection)
-    | ({
-        _key: string;
-      } & PhotoCardsSection)
-    | ({
-        _key: string;
-      } & ContactCardSection)
-    | ({
-        _key: string;
-      } & ProgressSection)
-    | ({
-        _key: string;
-      } & NewsletterSection)
-    | ({
-        _key: string;
-      } & CalendarSubscribeSection)
-    | ({
-        _key: string;
-      } & IconCardsSection)
-    | ({
-        _key: string;
-      } & StepsRailSection)
-    | ({
-        _key: string;
-      } & HubSection)
-    | ({
-        _key: string;
-      } & HoursSection)
-    | ({
-        _key: string;
-      } & MapSection)
-    | ({
-        _key: string;
-      } & SyncedSection)
-    | ({
-        _key: string;
-      } & StorySection)
-    | ({
-        _key: string;
-      } & FaqSection)
-    | ({
-        _key: string;
-      } & TeamSection)
-    | ({
-        _key: string;
-      } & DynamicListSection)
-    | ({
-        _key: string;
-      } & JournalPostsSection)
-  >;
 };
 
 export type ContactPage = {
@@ -3576,9 +3035,6 @@ export type ContactPage = {
       } & StorySection)
     | ({
         _key: string;
-      } & FaqSection)
-    | ({
-        _key: string;
       } & TeamSection)
     | ({
         _key: string;
@@ -3588,188 +3044,6 @@ export type ContactPage = {
       } & ContactFormSection)
   >;
   note?: string;
-};
-
-export type FaqPage = {
-  _id: string;
-  _type: 'faqPage';
-  _createdAt: string;
-  _updatedAt: string;
-  _rev: string;
-  seoTitle?: string;
-  seoDescription?: string;
-  seoImage?: {
-    asset?: SanityImageAssetReference;
-    media?: unknown;
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    alt?: string;
-    _type: 'image';
-  };
-  heroEyebrow?: string;
-  heroHeadline?: string;
-  heroSubhead?: string;
-  heroImage?: {
-    asset?: SanityImageAssetReference;
-    media?: unknown;
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    alt?: string;
-    _type: 'image';
-  };
-  heroScriptAccent?: string;
-  categoryOrder?: Array<string>;
-  finalCtaEyebrow?: string;
-  finalCtaHeadline?: string;
-  finalCtaScriptAccent?: string;
-  finalCtaSubhead?: string;
-  finalCta?: CtaBlock;
-  finalCtaBackgroundImage?: {
-    asset?: SanityImageAssetReference;
-    media?: unknown;
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    _type: 'image';
-  };
-  secondaryCta?: CtaBlock;
-  note?: string;
-};
-
-export type ProcessPage = {
-  _id: string;
-  _type: 'processPage';
-  _createdAt: string;
-  _updatedAt: string;
-  _rev: string;
-  pageBuilder?: Array<
-    | ({
-        _key: string;
-      } & HeroSection)
-    | ({
-        _key: string;
-      } & RichTextSection)
-    | ({
-        _key: string;
-      } & ImageTextSection)
-    | ({
-        _key: string;
-      } & GallerySection)
-    | ({
-        _key: string;
-      } & QuoteSection)
-    | ({
-        _key: string;
-      } & StatSection)
-    | ({
-        _key: string;
-      } & CtaBandSection)
-    | ({
-        _key: string;
-      } & VideoSection)
-    | ({
-        _key: string;
-      } & SpacerSection)
-    | ({
-        _key: string;
-      } & LogoStripSection)
-    | ({
-        _key: string;
-      } & EmbedSection)
-    | ({
-        _key: string;
-      } & RsvpSection)
-    | ({
-        _key: string;
-      } & LatestVideoSection)
-    | ({
-        _key: string;
-      } & DocumentsSection)
-    | ({
-        _key: string;
-      } & FormSection)
-    | ({
-        _key: string;
-      } & ColumnsSection)
-    | ({
-        _key: string;
-      } & ButtonRowSection)
-    | ({
-        _key: string;
-      } & PhotoSection)
-    | ({
-        _key: string;
-      } & AccordionSection)
-    | ({
-        _key: string;
-      } & TabsSection)
-    | ({
-        _key: string;
-      } & CountdownSection)
-    | ({
-        _key: string;
-      } & NoticeSection)
-    | ({
-        _key: string;
-      } & TimelineSection)
-    | ({
-        _key: string;
-      } & LetterSection)
-    | ({
-        _key: string;
-      } & EventDetailsSection)
-    | ({
-        _key: string;
-      } & ScheduleSection)
-    | ({
-        _key: string;
-      } & PhotoCardsSection)
-    | ({
-        _key: string;
-      } & ContactCardSection)
-    | ({
-        _key: string;
-      } & ProgressSection)
-    | ({
-        _key: string;
-      } & NewsletterSection)
-    | ({
-        _key: string;
-      } & CalendarSubscribeSection)
-    | ({
-        _key: string;
-      } & IconCardsSection)
-    | ({
-        _key: string;
-      } & StepsRailSection)
-    | ({
-        _key: string;
-      } & HubSection)
-    | ({
-        _key: string;
-      } & HoursSection)
-    | ({
-        _key: string;
-      } & MapSection)
-    | ({
-        _key: string;
-      } & SyncedSection)
-    | ({
-        _key: string;
-      } & ProcessSection)
-    | ({
-        _key: string;
-      } & FaqSection)
-  >;
-  seoTitle?: string;
-  seoDescription?: string;
-  seoImage?: {
-    asset?: SanityImageAssetReference;
-    media?: unknown;
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    alt?: string;
-    _type: 'image';
-  };
 };
 
 export type AboutPage = {
@@ -3893,9 +3167,6 @@ export type AboutPage = {
     | ({
         _key: string;
       } & StorySection)
-    | ({
-        _key: string;
-      } & FaqSection)
     | ({
         _key: string;
       } & TeamSection)
@@ -4129,12 +3400,6 @@ export type HomePage = {
     | ({
         _key: string;
       } & TestimonialsSection)
-    | ({
-        _key: string;
-      } & ProcessSection)
-    | ({
-        _key: string;
-      } & FaqSection)
     | ({
         _key: string;
       } & TeamSection)
@@ -4465,11 +3730,7 @@ export type AllSanitySchemaTypes =
   | PageReference
   | HomePageReference
   | AboutPageReference
-  | ProcessPageReference
-  | FaqPageReference
   | ContactPageReference
-  | JournalPageReference
-  | JournalEntryReference
   | PrivacyPageReference
   | ShortLink
   | Redirect
@@ -4484,11 +3745,6 @@ export type AllSanitySchemaTypes =
   | Collaborator
   | Publication
   | Photo
-  | JournalCategory
-  | ProcessStep
-  | FaqCategoryReference
-  | FaqItem
-  | FaqCategory
   | SanityFileAssetReference
   | LibraryDocument
   | Popup
@@ -4503,16 +3759,12 @@ export type AllSanitySchemaTypes =
   | PublishedMarquee
   | CoverHero
   | StoryIndex
-  | JournalPostsSection
   | PrivacyPolicySection
   | ContactFormSection
   | DynamicListSection
   | TeamSection
-  | FaqItemReference
-  | FaqSection
   | GuaranteeSection
   | ServiceAreaSection
-  | ProcessSection
   | StorySection
   | TestimonialReference
   | TestimonialsSection
@@ -4564,12 +3816,7 @@ export type AllSanitySchemaTypes =
   | PrivacyPage
   | CtaBlock
   | Page
-  | JournalCategoryReference
-  | JournalEntry
-  | JournalPage
   | ContactPage
-  | FaqPage
-  | ProcessPage
   | AboutPage
   | HomePage
   | Testimonial

@@ -28,7 +28,6 @@ import type {
   FounderSection as _FounderSection, // scaffold: about
   TestimonialsSection as _TestimonialsSection, // scaffold: testimonials
   StorySection as _StorySection, // scaffold: about
-  ProcessSection as _ProcessSection, // scaffold: process
   ServiceAreaSection as _ServiceAreaSection,
   GuaranteeSection as _GuaranteeSection,
   // U7 new blocks — hand-authored below since typegen has not run yet
@@ -213,21 +212,6 @@ export type ProjectedStorySection = { _key: string } & Omit<_StorySection, 'port
   };
 // scaffold:end
 
-// scaffold: process
-/** processSection adds a `steps` array resolved from the collection + cta projection. */
-export type ProjectedProcessSection = { _key: string } & Omit<_ProcessSection, 'cta'> & {
-    cta?: ProjectedCtaBlock | null;
-    steps?: Array<{
-      stepNumber?: number;
-      title?: string;
-      timeEstimate?: string;
-      shortDescription?: string;
-      features?: string[];
-      tierNote?: string;
-    }>;
-  };
-// scaffold:end
-
 /** serviceAreaSection adds `travelFees` resolved from businessInfo. */
 export type ProjectedServiceAreaSection = { _key: string } & _ServiceAreaSection & {
     travelFees?: Array<{ distanceLabel?: string; fee?: string }>;
@@ -243,38 +227,6 @@ export type ProjectedGuaranteeSection = { _key: string } & _GuaranteeSection & {
 // sanity.types.ts after this unit lands; at that point the orchestrator should
 // verify these align with the generated shapes and update the imports above).
 // ---------------------------------------------------------------------------
-
-// scaffold: faq
-/** A dereffed faqItem projected inside faqSection.items. */
-export interface ProjectedFaqItem {
-  _id?: string;
-  _type?: string;
-  question?: string;
-  answer?: any;
-  category?: string;
-  displayOrder?: number;
-}
-
-/**
- * faqSection — references faqItem documents, dereffed at query time.
- * SELF_CONTAINED (no surface prop).
- * NOTE: does not emit FAQPage JSON-LD (Google penalises duplicate markup).
- */
-export interface ProjectedFaqSection {
-  _type: 'faqSection';
-  _key: string;
-  eyebrow?: string;
-  headline?: string;
-  /** Word in `headline` rendered in the script accent face. */
-  headingAccent?: string;
-  subhead?: string;
-  /** Portable Text twin of `subhead` (bold / italic only). */
-  subheadRich?: unknown;
-  /** faqItem refs resolved to { question, answer, category, displayOrder }. */
-  items?: ProjectedFaqItem[];
-  cta?: ProjectedCtaBlock | null;
-}
-// scaffold:end
 
 /** A single logo image inside logoStripSection, after asset-> projection. */
 export type ProjectedLogoStripLogo = ProjectedImage;
@@ -487,15 +439,6 @@ export interface ProjectedPrivacyPolicySection {
   lastUpdated?: string | null;
   body?: PortableTextBlock[] | null;
 }
-// scaffold: journal
-/** journalPostsSection: the category chips, every post and the newsletter. */
-export interface ProjectedJournalPostsSection {
-  _type: 'journalPostsSection';
-  _key: string;
-  showCategories?: boolean;
-  showNewsletter?: boolean;
-}
-// scaffold:end
 // scaffold: stories
 /** coverHero: the home page's opening; the covers come from the featured stories (CoverHero.astro). */
 export interface ProjectedCoverHeroSection {
@@ -550,11 +493,9 @@ export type PageBuilderBlock =
   | ProjectedFounderSection // scaffold: about
   | ProjectedTestimonialsSection // scaffold: testimonials
   | ProjectedStorySection // scaffold: about
-  | ProjectedProcessSection // scaffold: process
   | ProjectedServiceAreaSection
   | ProjectedGuaranteeSection
   // U7 new blocks
-  | ProjectedFaqSection // scaffold: faq
   | ProjectedLogoStripSection
   | ProjectedTeamSection
   | ProjectedEmbedSection
@@ -567,7 +508,6 @@ export type PageBuilderBlock =
   // Every main page a page builder (card 190)
   | ProjectedContactFormSection
   | ProjectedPrivacyPolicySection
-  | ProjectedJournalPostsSection // scaffold: journal
   // The portfolio
   | ProjectedCoverHeroSection // scaffold: stories
   | ProjectedStoryIndexSection // scaffold: stories
