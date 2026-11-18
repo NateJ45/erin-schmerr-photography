@@ -67,6 +67,15 @@ export const story = defineType({
       description: 'Optional. A town, a studio, a landscape.',
     }),
     defineField({
+      name: 'startedFrom',
+      title: 'Where the idea came from',
+      type: 'string',
+      group: 'story',
+      description:
+        'Optional. The decade, book, film or character the shoot started from, like "A 1950s Halloween party" or "Sleepy Hollow". Shown under "How this was made" at the end of the story.',
+      validation: (Rule) => Rule.max(80),
+    }),
+    defineField({
       name: 'cover',
       title: 'Cover photo',
       type: 'photo',

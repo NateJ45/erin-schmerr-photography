@@ -507,6 +507,10 @@ export interface ProjectedCoverHeroSection {
   primaryCta?: ProjectedCtaBlock | null;
   secondaryCta?: ProjectedCtaBlock | null;
   limit?: number;
+  /** A small portrait set inside the headline; nothing changes when empty. */
+  portrait?: SanityImageObject | null;
+  /** The headline word the portrait follows (1 = the first). */
+  portraitAfterWord?: number;
 }
 /** storyIndex: the featured stories; the block reads them itself (StoryIndex.astro). */
 export interface ProjectedStoryIndexSection {
@@ -515,6 +519,36 @@ export interface ProjectedStoryIndexSection {
   heading?: string;
   layout?: 'grid' | 'list';
   limit?: number;
+}
+/** craftNotes: numbered notes on the craft (CraftNotes.astro). */
+export interface ProjectedCraftNotesSection {
+  _type: 'craftNotes';
+  _key: string;
+  eyebrow?: string;
+  heading?: string;
+  intro?: string;
+  notes?: { _key: string; title?: string; body?: string }[] | null;
+}
+/** crewSection: a paragraph beside a crew list set like a credit (CrewList.astro). */
+export interface ProjectedCrewSection {
+  _type: 'crewSection';
+  _key: string;
+  eyebrow?: string;
+  heading?: string;
+  body?: PortableTextBlock[] | null;
+  crewHeading?: string;
+  crew?: { _key: string; role?: string; name?: string }[] | null;
+  link?: ProjectedCtaBlock | null;
+}
+/** signedClose: the page's closing ask, signed (SignedClose.astro). */
+export interface ProjectedSignedCloseSection {
+  _type: 'signedClose';
+  _key: string;
+  eyebrow?: string;
+  heading?: string;
+  body?: string;
+  cta?: ProjectedCtaBlock | null;
+  signature?: string;
 }
 // scaffold:end
 // scaffold: press
@@ -530,6 +564,14 @@ export interface ProjectedTearSheetStackSection {
   _key: string;
   heading?: string;
   limit?: number;
+}
+/** proofStrip: press features from Publications between short quotes (ProofStrip.astro). */
+export interface ProjectedProofStripSection {
+  _type: 'proofStrip';
+  _key: string;
+  heading?: string;
+  showPress?: boolean;
+  quotes?: { _key: string; text?: string; credit?: string }[] | null;
 }
 // scaffold:end
 
@@ -571,7 +613,11 @@ export type PageBuilderBlock =
   // The portfolio
   | ProjectedCoverHeroSection // scaffold: stories
   | ProjectedStoryIndexSection // scaffold: stories
+  | ProjectedCraftNotesSection // scaffold: stories
+  | ProjectedCrewSection // scaffold: stories
+  | ProjectedSignedCloseSection // scaffold: stories
   | ProjectedPublishedMarqueeSection // scaffold: press
   | ProjectedTearSheetStackSection // scaffold: press
+  | ProjectedProofStripSection // scaffold: press
   // The builder kit (builderBlocks.types.ts, PORTS.md card 173)
   | BuilderPageBlock;

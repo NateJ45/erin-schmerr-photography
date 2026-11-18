@@ -1,0 +1,112 @@
+---
+// scaffold-file: press
+// Safe to edit by hand
+// Page-builder block `proofStrip` (pressSections.ts): one slow line of credited
+// proof under the cover slides. The press features come from Publications (the
+// magazine, and what ran when the issue is named), with the block's own quotes
+// spread between them (proofItems in portfolio.ts), each quote with where it
+// was said.
+//
+// It moves the way the Published marquee does (DESIGN.md "Published marquee"):
+// with four items or more the line is drawn twice and slides left slowly (at
+// least 60s a lap, more for a longer line, so it never speeds up), pausing on
+// hover, keyboard focus and its Pause button. The copy is aria-hidden. Fewer
+// items, JS off or reduced motion: one still, wrapping line. The marquee CSS
+// and the Pause script are PublishedMarquee's, shared through portfolio.css
+// and the `[data-marquee]` hook, so the two cannot drift apart.
+//
+// SELF_CONTAINED: draws on the plain page ground, no surface prop.
+import { getPublications } from '@/lib/pressQueries';
+import { proofItems } from '@/lib/portfolio';
+import '@/styles/portfolio.css';
+
+interface Props {
+  heading?: string;
+  showPress?: boolean;
+  quotes?: { text?: string | null; credit?: string | null }[] | null;
+  headingId?: string;
+}
+
+const {
+  heading = 'Press and interviews',
+  showPress = true,
+  quotes,
+  headingId = 'proof-strip-heading',
+} = Astro.props;
+const items = proofItems(showPress ? await getPublications() : [], quotes ?? []);
+const MARQUEE_MIN = 4;
+const scrolls = items.length >= MARQUEE_MIN;
+// Quotes are longer than names, so the lap is slower per item than the
+// Published strip's.
+const duration = Math.max(60, items.length * 11);
+---
+
+{items.length > 0 && (
+  <section class="proof-strip border-b border-border bg-background" aria-labelledby={headingId}>
+    <h2 id={headingId} class="sr-only">
+      {heading}
+    </h2>
+    <div class="proof-strip__inner mx-auto max-w-content px-m">
+      <div
+        class="published-marquee-wrap"
+        data-marquee={scrolls ? '' : undefined}
+        style={scrolls ? `--marquee-duration: ${duration}s` : undefined}
+      >
+        {(scrolls ? [false, true] : [false]).map((copy) => (
+          <ul class="published-marquee proof-strip__line" aria-hidden={copy ? 'true' : undefined}>
+            {items.map((item) => (
+              <li class:list={['proof-item', `proof-item--${item.kind}`]}>
+                {item.kind === 'quote' ? (
+                  <span class="proof-item__text font-display">&ldquo;{item.text}&rdquo;</span>
+                ) : (
+                  <a
+                    class="proof-item__text font-display text-foreground no-underline hover:underline"
+                    href="/press/"
+                    tabindex={copy ? -1 : undefined}
+                  >
+                    {item.text}
+                  </a>
+                )}
+                {item.credit && <span class="portfolio-label">{item.credit}</span>}
+              </li>
+            ))}
+          </ul>
+        ))}
+      </div>
+      {scrolls && (
+        <button
+          type="button"
+          class="published-marquee__pause portfolio-label"
+          aria-pressed="false"
+          hidden
+        >
+          Pause
+        </button>
+      )}
+    </div>
+  </section>
+)}
+
+<script>
+  // Same contract as PublishedMarquee: the Pause button only shows under
+  // html.motion, where the line actually moves. Bound once per button.
+  function initProofStrip() {
+    if (!document.documentElement.classList.contains('motion')) return;
+    document.querySelectorAll<HTMLElement>('.proof-strip [data-marquee]').forEach((wrap) => {
+      const button = wrap.parentElement?.querySelector<HTMLButtonElement>(
+        '.published-marquee__pause',
+      );
+      if (!button || button.dataset.bound) return;
+      button.dataset.bound = '1';
+      button.hidden = false;
+      button.addEventListener('click', () => {
+        const paused = button.getAttribute('aria-pressed') !== 'true';
+        button.setAttribute('aria-pressed', String(paused));
+        button.textContent = paused ? 'Play' : 'Pause';
+        wrap.toggleAttribute('data-paused', paused);
+      });
+    });
+  }
+  initProofStrip();
+  document.addEventListener('astro:page-load', initProofStrip);
+</script>

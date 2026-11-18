@@ -67,6 +67,8 @@ const SELF_FILLING_SECTIONS = [
   'coverHero', // scaffold: stories
   'publishedMarquee', // scaffold: press
   'tearSheetStack', // scaffold: press
+  // Its line is the press features; the quotes are extra.
+  'proofStrip', // scaffold: press
   'dynamicListSection',
   'faqSection', // scaffold: faq
   'guaranteeSection',

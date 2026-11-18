@@ -911,6 +911,10 @@ const SITE_INSERT_GROUPS: InsertGroup[] = [
       'storyIndex', // scaffold: stories
       'publishedMarquee', // scaffold: press
       'tearSheetStack', // scaffold: press
+      'proofStrip', // scaffold: press
+      'craftNotes', // scaffold: stories
+      'crewSection', // scaffold: stories
+      'signedClose', // scaffold: stories
     ],
   },
 ];

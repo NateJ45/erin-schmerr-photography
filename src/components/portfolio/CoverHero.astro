@@ -17,12 +17,20 @@
 // (touch keeps a lighter scale-and-fade). Words sit on paper chips, so they
 // read over any photograph in the light-only theme.
 //
+// An optional small portrait of her sits inside the headline, after word
+// `portraitAfterWord` (splitAfterWord in portfolio.ts), so the page opens on a
+// person. Empty, the headline is plain words exactly as before. The picture is
+// decorative (empty alt, aria-hidden): inside the h1 any words it carried would
+// be read in the middle of the headline.
+//
 // The buttons are secondary outlines: the page's one filled accent button
 // belongs to the booking band further down (card 158).
 import FocusImage from '@/components/portfolio/FocusImage.astro';
 import CtaLink from '@/components/CtaLink.astro';
+import SanityImage from '@/components/SanityImage.astro';
 import { getFeaturedStories } from '@/lib/storyQueries';
-import { formatMonthYear, photoRatio } from '@/lib/portfolio';
+import { formatMonthYear, photoRatio, splitAfterWord } from '@/lib/portfolio';
+import type { SanityImageObject } from '@/lib/pageBuilder.types';
 import '@/styles/portfolio.css';
 
 type CtaProp = Parameters<typeof CtaLink>[0]['cta'];
@@ -34,6 +42,8 @@ interface Props {
   primaryCta?: CtaProp;
   secondaryCta?: CtaProp;
   limit?: number;
+  portrait?: SanityImageObject | null;
+  portraitAfterWord?: number;
   headingId?: string;
 }
 
@@ -44,10 +54,16 @@ const {
   primaryCta,
   secondaryCta,
   limit = 5,
+  portrait,
+  portraitAfterWord = 1,
   headingId = 'cover-hero-heading',
 } = Astro.props;
 const stories = (await getFeaturedStories(limit)).filter((s) => s.cover);
 const pad = (n: number) => String(n).padStart(2, '0');
+const hasPortrait = !!portrait?.asset;
+const [headBefore, headAfter] = hasPortrait
+  ? splitAfterWord(headline, portraitAfterWord)
+  : [headline, ''];
 ---
 
 <section class="cover-hero" aria-labelledby={headingId}>
@@ -56,7 +72,24 @@ const pad = (n: number) => String(n).padStart(2, '0');
       <div class="cover-slide__intro cover-chip">
         {eyebrow && <p class="cover-slide__eyebrow">{eyebrow}</p>}
         <h1 id={headingId} class="cover-slide__title font-display">
-          {headline}
+          {hasPortrait ? (
+            <>
+              {headBefore}{' '}
+              <span class="cover-portrait" aria-hidden="true">
+                <SanityImage
+                  source={portrait}
+                  width={240}
+                  height={192}
+                  sizes="7rem"
+                  loading="eager"
+                  alt=""
+                />
+              </span>{' '}
+              {headAfter}
+            </>
+          ) : (
+            headline
+          )}
         </h1>
         {subhead && <p class="cover-slide__subhead">{subhead}</p>}
       </div>
@@ -86,7 +119,24 @@ const pad = (n: number) => String(n).padStart(2, '0');
         <div class="cover-slide__intro cover-chip">
           {eyebrow && <p class="cover-slide__eyebrow">{eyebrow}</p>}
           <h1 id={headingId} class="cover-slide__title font-display">
-            {headline}
+            {hasPortrait ? (
+              <>
+                {headBefore}{' '}
+                <span class="cover-portrait" aria-hidden="true">
+                  <SanityImage
+                    source={portrait}
+                    width={240}
+                    height={192}
+                    sizes="7rem"
+                    loading="eager"
+                    alt=""
+                  />
+                </span>{' '}
+                {headAfter}
+              </>
+            ) : (
+              headline
+            )}
           </h1>
           {subhead && <p class="cover-slide__subhead">{subhead}</p>}
           {(primaryCta || secondaryCta) && (

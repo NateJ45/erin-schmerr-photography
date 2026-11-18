@@ -155,12 +155,18 @@ try {
       }
     });
 
-  const types = await page.$$eval('[data-section-type]', (els) =>
-    els.map((el) => el.getAttribute('data-section-type')),
-  );
+  // A type can sit on the wall twice (two fixtures showing two settings); the
+  // picture is the first one, so each type is shot once.
+  const types = [
+    ...new Set(
+      await page.$$eval('[data-section-type]', (els) =>
+        els.map((el) => el.getAttribute('data-section-type')),
+      ),
+    ),
+  ];
   let shot = 0;
   for (const type of types) {
-    const box = page.locator(`[data-section-type="${type}"]`);
+    const box = page.locator(`[data-section-type="${type}"]`).first();
     await box.scrollIntoViewIfNeeded();
     await page.waitForTimeout(150);
     await hidePinned();

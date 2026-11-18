@@ -8,7 +8,10 @@
 // wide, portraits paired as a spread, a lone portrait set off to one side),
 // each with its caption and the camera line read from the file's EXIF, and a
 // closing "Next story" with its cover (the first story follows the last), plus
-// a quiet link back to the previous story.
+// a quiet link back to the previous story. Before it, a case-study close:
+// "How this was made" (where the idea came from, the place, the cast, derived
+// from the credits by storyCast) beside "Want a session like this?" and a
+// link to the contact page.
 //
 // getStaticPaths reads every story once and hands each page its own story and
 // its neighbours as props, so a page never re-queries. With no Sanity data it
@@ -16,9 +19,10 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import FocusImage from '@/components/portfolio/FocusImage.astro';
 import CreditBlock from '@/components/portfolio/CreditBlock.astro';
+import CtaLink from '@/components/CtaLink.astro';
 import { getSiteSettings } from '@/lib/queries';
 import { getStories, type Story } from '@/lib/storyQueries';
-import { formatExif, formatMonthYear, photoRatio, storySequence } from '@/lib/portfolio';
+import { formatExif, formatMonthYear, photoRatio, storyCast, storySequence } from '@/lib/portfolio';
 import { breadcrumbSchema } from '@/lib/schemas';
 import { storySchema } from '@/lib/portfolio-schemas';
 import { site } from '@/data/site';
@@ -66,6 +70,13 @@ const sequence = storySequence(photos);
 // beside the title as the left page of a spread.
 const coverLandscape = photoRatio(story.cover) >= 1;
 const hasCredits = (story.credits ?? []).some((c) => c?.name);
+// "How this was made": only the facts this story has.
+const cast = storyCast(story.credits, story.location);
+const made = [
+  { label: 'Started from', value: story.startedFrom ?? '' },
+  { label: 'Place', value: story.location ?? '' },
+  { label: 'The cast', value: cast.join(', ') },
+].filter((row) => row.value);
 const title = story.seoTitle || `${story.title} | ${site.name}`;
 const description = story.seoDescription || story.dek || `${story.title}, a story by ${site.name}.`;
 // scaffold: press
@@ -199,6 +210,36 @@ const shareImage = story.seoImage ?? (story.cover?.asset ? story.cover : undefin
         ))}
       </ol>
     )}
+
+    <section
+      class="story-made split mx-auto max-w-content px-m"
+      aria-labelledby="story-made-heading"
+    >
+      <div>
+        <h2 id="story-made-heading" class="portfolio-label mb-4">
+          How this was made
+        </h2>
+        {made.length > 0 && (
+          <dl class="credit-block">
+            {made.map((row) => (
+              <div>
+                <dt class="portfolio-label">{row.label}</dt>
+                <dd class="text-foreground">{row.value}</dd>
+              </div>
+            ))}
+          </dl>
+        )}
+      </div>
+      <div>
+        <p class="story-made__ask font-display">Want a session like this?</p>
+        <p class="mt-3 text-muted-foreground">
+          Bring me a decade, a character or a story, and I will plan the rest with you.
+        </p>
+        <p class="mt-6">
+          <CtaLink cta={{ label: 'Get in touch', href: '/contact/' }} variant="secondary" />
+        </p>
+      </div>
+    </section>
 
     <nav class="story-next mx-auto max-w-content px-m" aria-label="More stories">
       {next && (

@@ -11,6 +11,9 @@ import {
   groupByYear,
   photoRatio,
   placeholderPhoto,
+  proofItems,
+  splitAfterWord,
+  storyCast,
   storySequence,
   withoutSeedPlaceholders,
   yearOf,
@@ -125,4 +128,51 @@ test('withoutSeedPlaceholders: seeded placeholders step aside once one real docu
   ];
   assert.deepEqual(withoutSeedPlaceholders(mixed), [{ _id: 'ig-story-abc' }]);
   assert.deepEqual(withoutSeedPlaceholders([]), []);
+});
+
+test('splitAfterWord puts the portrait after the named word', () => {
+  assert.deepEqual(splitAfterWord('Portraits, slowly brought into focus.', 1), [
+    'Portraits,',
+    'slowly brought into focus.',
+  ]);
+  assert.deepEqual(splitAfterWord('One two three', 2), ['One two', 'three']);
+  // Past the last word, or one word only: everything before, nothing after.
+  assert.deepEqual(splitAfterWord('One two', 5), ['One two', '']);
+  assert.deepEqual(splitAfterWord('Alone', 1), ['Alone', '']);
+  assert.deepEqual(splitAfterWord('One two', 0), ['One', 'two']);
+});
+
+test('storyCast drops a venue already named as the place', () => {
+  const credits = [
+    { name: 'vampirebby' },
+    { name: 'American Sign Museum' },
+    { name: 'vampirebby' },
+    { name: '' },
+  ];
+  assert.deepEqual(storyCast(credits, 'American Sign Museum, Cincinnati'), ['vampirebby']);
+  assert.deepEqual(storyCast(credits, null), ['vampirebby', 'American Sign Museum']);
+  assert.deepEqual(storyCast(null, 'Anywhere'), []);
+});
+
+test('proofItems lists each feature once and spreads the quotes between them', () => {
+  const pubs = [
+    { magazine: 'A', issue: 'One' },
+    { magazine: 'B', issue: null },
+    { magazine: 'B', issue: null },
+    { magazine: 'C', issue: 'Three' },
+    { magazine: 'D' },
+  ];
+  const quotes = [{ text: 'First', credit: 'Me' }, { text: 'Second' }, { text: '  ' }];
+  const items = proofItems(pubs, quotes);
+  assert.deepEqual(
+    items.map((i) => i.text),
+    ['A', 'B', 'First', 'C', 'D', 'Second'],
+  );
+  assert.equal(items[0].credit, 'One');
+  assert.equal(items[2].credit, 'Me');
+  assert.deepEqual(
+    proofItems([], quotes).map((i) => i.kind),
+    ['quote', 'quote'],
+  );
+  assert.deepEqual(proofItems(pubs, []).length, 4);
 });

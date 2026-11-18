@@ -99,7 +99,9 @@ const SECTION_ARMS = `
       ...,
       groups[]{ ..., cards[]{ ..., image${IMAGE_PROJECTION}, link${CTA_PROJECTION} } }
     },
-    _type == "coverHero" => { ..., primaryCta${CTA_PROJECTION}, secondaryCta${CTA_PROJECTION} }, // scaffold: stories
+    _type == "coverHero" => { ..., portrait${IMAGE_PROJECTION}, primaryCta${CTA_PROJECTION}, secondaryCta${CTA_PROJECTION} }, // scaffold: stories
+    _type == "crewSection" => { ..., link${CTA_PROJECTION} }, // scaffold: stories
+    _type == "signedClose" => { ..., cta${CTA_PROJECTION} }, // scaffold: stories
     _type == "heroSection" => {
       ...,
       backgroundImage${IMAGE_PROJECTION},

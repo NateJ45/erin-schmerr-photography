@@ -16,6 +16,8 @@ sequence).
 
 ## Waiting on a human
 
+- **The selling home page: data write and her words (2026-11-18).** The code ships the blocks; the home page only changes when `scripts/set-home-sections.mjs` writes the new `pageBuilder` to production (write protocol, `.claude/rules/data-scripts.md`), which goes together with the merge. All of its copy is a draft for Erin (from her captions, interviews, the Sessions and About pages); she approves or rewrites it. Stories' "Where the idea came from" (`startedFrom`) is empty everywhere until she or Nathan fills it, so "How this was made" shows the place and the cast only.
+
 - **The picked design, built in three PRs (picked 2026-11-18).** Decision and carry-forward list: `docs/design-directions/2026-11-18-tate/README.md` (PR #29). Home cover slides: done (this entry's first PR). Still to do, in order: the story page as a slideshow film with a hand-written WebGL film-burn between frames (Nathan, 2026-11-18: WebGL, no OGL), then `/stories/` as the pinned sideways reel. Update DESIGN.md's components as each lands.
 
 - **At domain cutover: add the real domain to the Sanity project's CORS origins (Nathan said yes, 2026-11-18).** The domain is not chosen yet. The film-burn's WebGL reads the photos from `cdn.sanity.io`, which only sends CORS headers to listed origins (today `localhost:4321` and the workers.dev address); without the entry the story film falls back to its crossfade. Run `npx sanity cors add https://<domain> --credentials` (or the manage page), then check a story's film in the browser console.
