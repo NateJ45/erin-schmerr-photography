@@ -2,10 +2,14 @@
 // scaffold-file: press
 // Safe to edit by hand
 // Page-builder block `publishedMarquee` (pressSections.ts): each magazine name
-// from Publications, once, in a strip. Static for now: the slow, pausable
-// scroll (DESIGN.md "Published marquee") comes with the motion pass, and this
-// wrapping line stays as its reduced-motion form. Reads the publications
-// itself, so it shows the placeholder names with no Sanity data.
+// from Publications, once, beside an "As published in" label. With four names
+// or more it becomes a slow marquee (DESIGN.md "Published marquee"): the list
+// is drawn twice and scrolls left slowly (at least 40s a lap, nine seconds a name beyond that, so a longer list
+// does not speed up), pausing on hover,
+// on keyboard focus and with its Pause button. The copy is aria-hidden and out
+// of the tab order. With fewer names, JS off or reduced motion, it is one
+// still, wrapping line (portfolio.css). Reads the publications itself, so it
+// shows the placeholder names with no Sanity data.
 //
 // SELF_CONTAINED: draws on the plain page ground, no surface prop.
 import { getPublications, magazineNames } from '@/lib/pressQueries';
@@ -18,6 +22,10 @@ interface Props {
 
 const { heading = 'As published in', headingId = 'published-marquee-heading' } = Astro.props;
 const names = magazineNames(await getPublications());
+// Below this many names a scrolling strip would show the same two words chasing
+// each other; it stays a still line.
+const MARQUEE_MIN = 4;
+const scrolls = names.length >= MARQUEE_MIN;
 ---
 
 {names.length > 0 && (
@@ -26,18 +34,61 @@ const names = magazineNames(await getPublications());
       <h2 id={headingId} class="portfolio-label">
         {heading}
       </h2>
-      <ul class="published-marquee">
-        {names.map((name) => (
-          <li>
-            <a
-              class="font-display text-h3 text-foreground no-underline hover:underline"
-              href="/press/"
-            >
-              {name}
-            </a>
-          </li>
+      <div
+        class="published-marquee-wrap"
+        data-marquee={scrolls ? '' : undefined}
+        style={scrolls ? `--marquee-duration: ${Math.max(40, names.length * 9)}s` : undefined}
+      >
+        {(scrolls ? [false, true] : [false]).map((copy) => (
+          <ul class="published-marquee" aria-hidden={copy ? 'true' : undefined}>
+            {names.map((name) => (
+              <li>
+                <a
+                  class="font-display text-h3 text-foreground no-underline hover:underline"
+                  href="/press/"
+                  tabindex={copy ? -1 : undefined}
+                >
+                  {name}
+                </a>
+              </li>
+            ))}
+          </ul>
         ))}
-      </ul>
+      </div>
+      {scrolls && (
+        <button
+          type="button"
+          class="published-marquee__pause portfolio-label"
+          aria-pressed="false"
+          hidden
+        >
+          Pause
+        </button>
+      )}
     </div>
   </section>
 )}
+
+<script>
+  // The Pause button only means something when the strip is moving, so it
+  // stays hidden until this runs, and only under html.motion.
+  function initMarquee() {
+    if (!document.documentElement.classList.contains('motion')) return;
+    document.querySelectorAll<HTMLElement>('[data-marquee]').forEach((wrap) => {
+      const button = wrap.parentElement?.querySelector<HTMLButtonElement>(
+        '.published-marquee__pause',
+      );
+      if (!button || button.dataset.bound) return;
+      button.dataset.bound = '1';
+      button.hidden = false;
+      button.addEventListener('click', () => {
+        const paused = button.getAttribute('aria-pressed') !== 'true';
+        button.setAttribute('aria-pressed', String(paused));
+        button.textContent = paused ? 'Play' : 'Pause';
+        wrap.toggleAttribute('data-paused', paused);
+      });
+    });
+  }
+  initMarquee();
+  document.addEventListener('astro:page-load', initMarquee);
+</script>
