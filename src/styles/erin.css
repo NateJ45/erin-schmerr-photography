@@ -19,46 +19,682 @@
   line-gap-override: 0%;
 }
 
-/* Quiet chrome: no brand stripe and no eyebrow strip. The strip repeated the
-   tagline that the hero eyebrow and the footer already carry, and it squeezed
-   the wordmark and five nav items into one crowded row; the theme toggle it
-   held is gone too (the site is light only, 2026-11-18). */
-.site-header > .h-1.bg-primary,
-.site-header__eyebrow {
-  display: none;
+/* ==== The darkroom chrome (2026-11-18; DESIGN.md, Components) =================
+   Header (film-leader strip), phone menu (contact sheet) and footer (end credits).
+   Static styling here; the motion (hover prints, frames developing, credits
+   rolling, the nav's weight shift) is in erin-motion.css. Square corners, one
+   accent (Dusk), the brand faces. The film ground and its edge-print colour are
+   the dark palette's ground and accent, so the sheet's text keeps AA (9:1). */
+:root {
+  --dk-film: #12100e;
+  --dk-film-ink: #eee7dd;
+  --dk-edge: #d6a898;
+  --dk-hole: #eae3d9;
+  --dk-safelight: #e5483b;
 }
 
-/* One left edge (rule 17): the header row uses the page gutter (px-m), so the
-   wordmark lines up with every heading and photo under it. The starter's row
-   uses px-l, which put the header 24px inside the content at 1440. */
-.site-header__row {
-  border-color: transparent;
-  padding-inline: var(--spacing-m);
+/* ---- Header ---------------------------------------------------------------- */
+.dk-header {
+  --dk-leader-h: 12px;
 }
-
-/* Masthead nav: small, uppercase, tracked, like a magazine's section labels.
-   Gaps tighten from the starter's spacing-l so the wordmark keeps its air at
-   1024 to 1280. */
-.site-header__nav {
-  column-gap: clamp(0.75rem, 1.8vw, 2rem);
-}
-.site-header__nav a,
-.site-header__nav button {
-  font-size: 0.75rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-/* The wordmark scales with the viewport so the full row (wordmark, five nav
-   items, search, the inquiry button) fits from 1024 up without touching;
-   the button label never wraps. */
 @media (min-width: 1024px) {
+  .dk-header {
+    --dk-leader-h: 18px;
+  }
+}
+/* Scrolling down slims the bar to the leader strip (BaseLayout sets data-state).
+   Transforms only, so nothing under it reflows. */
+.site-header.dk-header[data-state='hidden'] {
+  transform: translateY(calc(-100% + var(--dk-leader-h)));
+}
+.site-header.dk-header[data-scrolled] {
+  box-shadow: none;
+}
+
+/* One left edge (rule 17): the row uses the page gutter, like every heading below. */
+.dk-header__row {
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.5rem var(--spacing-m);
+}
+@media (min-width: 1024px) {
+  .dk-header__row {
+    padding-block: 1rem;
+  }
   .site-header__logo img {
-    height: clamp(1.625rem, 2.9vw, 2.75rem);
+    height: clamp(1.5rem, 2.5vw, 2.5rem);
     width: auto;
   }
-  .site-header__row a {
-    white-space: nowrap;
+}
+@media (max-width: 1023.98px) {
+  .site-header__logo {
+    max-width: min(16rem, calc(100% - 8.5rem));
   }
+  .site-header__logo img {
+    width: 100%;
+    height: auto;
+  }
+}
+.dk-header__phone {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+@media (min-width: 1024px) {
+  .dk-header__phone {
+    display: none;
+  }
+}
+
+/* The leader: a strip of film with sprocket holes punched along it and, from lg up,
+   edge printing under them. Decorative (aria-hidden). */
+.dk-leader {
+  position: relative;
+  height: var(--dk-leader-h);
+  overflow: hidden;
+  background-color: var(--dk-film);
+  background-image: linear-gradient(to right, var(--dk-hole) 0 6px, transparent 6px);
+  background-size: 16px 5px;
+  background-repeat: repeat-x;
+  background-position: 5px 3.5px;
+}
+.dk-leader__print {
+  display: none;
+}
+@media (min-width: 1024px) {
+  .dk-leader {
+    background-position: 5px 2px;
+  }
+  .dk-leader__print {
+    position: absolute;
+    inset: auto 0 1px;
+    display: flex;
+    gap: clamp(2rem, 5vw, 4.5rem);
+    padding-inline: var(--spacing-m);
+    font-family: var(--font-body);
+    font-size: 0.5625rem;
+    font-weight: 600;
+    line-height: 9px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--dk-edge);
+    background: var(--dk-film);
+  }
+}
+
+/* The nav, set like the printed edge of a negative. */
+.dk-header__nav {
+  gap: clamp(0.75rem, 1.6vw, 1.5rem);
+}
+.dk-nav {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.875rem, 1.9vw, 2rem);
+}
+.dk-nav__item {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7em;
+  min-height: 44px;
+  font-size: 0.6875rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--foreground);
+  text-decoration: none;
+  cursor: pointer;
+  list-style: none;
+}
+.dk-nav__item::-webkit-details-marker {
+  display: none;
+}
+.dk-nav__num {
+  font-size: 0.625rem;
+  letter-spacing: 0.06em;
+  font-variant-numeric: tabular-nums;
+  color: var(--primary);
+}
+.dk-nav__item:hover .dk-nav__label {
+  color: var(--primary);
+}
+.dk-nav__item:focus-visible,
+.dk-frame__link:focus-visible,
+.dk-button:focus-visible,
+.dk-menu-button:focus-visible,
+.dk-icon-button:focus-visible,
+.dk-footer a:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+}
+.dk-nav__item .site-nav__chevron {
+  align-self: center;
+}
+.dk-nav__menu {
+  display: none;
+  padding: 0.5rem;
+  background: var(--background);
+  border: 1px solid var(--foreground);
+}
+.site-nav__group[open] > .dk-nav__menu {
+  display: grid;
+}
+.dk-nav__sub {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding-inline: 0.75rem;
+  font-size: 0.6875rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--foreground);
+}
+.dk-nav__sub:hover,
+.dk-nav__sub[aria-current='page'] {
+  color: var(--primary);
+}
+
+/* The grease-pencil ring round the page you are on. */
+.dk-pencil {
+  position: absolute;
+  pointer-events: none;
+  overflow: visible;
+  color: var(--primary);
+}
+.dk-nav__label {
+  position: relative;
+}
+.dk-nav__label .dk-pencil {
+  left: -0.95em;
+  top: 50%;
+  width: calc(100% + 1.9em);
+  height: 2.9em;
+  translate: 0 -50%;
+}
+
+/* The hover print: hidden until a fine pointer hovers (erin-motion.css shows it). */
+.dk-print {
+  position: absolute;
+  top: calc(100% + 0.9rem);
+  left: 50%;
+  z-index: 60;
+  display: none;
+  width: 8.5rem;
+  aspect-ratio: 4 / 5;
+  translate: -50% 0;
+  rotate: -2deg;
+  border: 5px solid var(--background);
+  outline: 1px solid var(--border);
+  box-shadow: 0 18px 30px -22px rgb(31 27 24 / 0.6);
+  pointer-events: none;
+}
+.dk-nav__item:nth-child(even) .dk-print {
+  rotate: 1.5deg;
+}
+.dk-print img,
+.dk-frame__photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Tonal stand-ins for a frame with no photo yet (placeholders read as placeholders). */
+.dk-tone--dusk {
+  background: linear-gradient(160deg, #8c5d51, #3a2420);
+}
+.dk-tone--sand {
+  background: linear-gradient(160deg, #d9c8b2, #8f7a63);
+}
+.dk-tone--ink {
+  background: linear-gradient(160deg, #4a423b, #15120f);
+}
+.dk-tone--paper {
+  background: linear-gradient(160deg, #efe7dc, #bfb2a2);
+}
+
+/* Buttons: one family (rule 17). The Dusk one is the inquiry, with its safelight. */
+.dk-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  min-height: 44px;
+  padding-inline: 1.1rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition:
+    background-color 300ms var(--ease-focus),
+    color 300ms var(--ease-focus);
+}
+.dk-button--safelight {
+  background: var(--primary);
+  color: var(--background);
+}
+.dk-button--safelight:hover {
+  background: #5e3830;
+}
+.dk-button--line {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+.dk-button--paper {
+  background: var(--background);
+  color: var(--foreground);
+}
+.dk-safelight {
+  width: 7px;
+  height: 7px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--dk-safelight);
+  box-shadow: 0 0 0 2px rgb(229 72 59 / 0.28);
+}
+.dk-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  color: var(--foreground);
+}
+.dk-icon-button:hover {
+  color: var(--primary);
+}
+.dk-menu-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding-inline: 0.9rem;
+  border: 1px solid currentColor;
+  background: transparent;
+  color: var(--foreground);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* ---- Phone menu: the contact sheet ----------------------------------------------- */
+.mobile-menu.dk-sheet {
+  inset: 0;
+  width: 100%;
+  height: 100dvh;
+}
+.dk-sheet::backdrop {
+  background: var(--dk-film);
+}
+.dk-sheet .mobile-menu__panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+  padding-bottom: 2.5rem;
+  background: var(--dk-film);
+  color: var(--dk-film-ink);
+  box-shadow: none;
+}
+.dk-sheet[open] .mobile-menu__panel {
+  animation: dk-sheet-in 220ms ease-out both;
+}
+@keyframes dk-sheet-in {
+  from {
+    opacity: 0;
+  }
+}
+.dk-sheet__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.5rem var(--spacing-m);
+}
+.dk-sheet__title,
+.dk-sheet__edge,
+.dk-sheet__group-label,
+.dk-frame__num {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--dk-edge);
+}
+.dk-sheet__edge {
+  flex: 1;
+  text-align: center;
+}
+@media (max-width: 359.98px) {
+  .dk-sheet__edge {
+    display: none;
+  }
+}
+.dk-menu-button--close {
+  color: var(--dk-film-ink);
+}
+.dk-sheet__nav {
+  padding-top: 0.5rem;
+}
+.dk-sheet__group + .dk-sheet__group {
+  margin-top: 1rem;
+}
+.dk-sheet__group-label {
+  padding: 0.5rem calc(var(--spacing-m) + 1.25rem) 0.25rem;
+}
+.dk-sheet__frames {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem 0.75rem;
+  margin: 0;
+  padding: 0.75rem calc(var(--spacing-m) + 1.25rem);
+  list-style: none;
+  /* Sprocket holes down both edges of the strip. */
+  background-image:
+    linear-gradient(to bottom, var(--dk-hole) 0 7px, transparent 7px),
+    linear-gradient(to bottom, var(--dk-hole) 0 7px, transparent 7px);
+  background-size:
+    9px 16px,
+    9px 16px;
+  background-repeat: repeat-y;
+  background-position:
+    calc(var(--spacing-m) * 0.5) 6px,
+    right calc(var(--spacing-m) * 0.5) top 6px;
+}
+@media (min-width: 560px) {
+  .dk-sheet__frames {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+.dk-frame {
+  min-width: 0;
+}
+.dk-frame__link {
+  position: relative;
+  display: grid;
+  gap: 0.4rem;
+  color: inherit;
+  text-decoration: none;
+}
+.dk-frame__photo {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+}
+.dk-frame__chip {
+  position: absolute;
+  left: 0.4rem;
+  bottom: calc(0.625rem + 0.4rem + 0.4rem);
+  max-width: calc(100% - 0.8rem);
+  padding: 0.2rem 0.5rem 0.3rem;
+  background: var(--background);
+  color: var(--foreground);
+  transition:
+    background-color 300ms var(--ease-focus),
+    color 300ms var(--ease-focus);
+}
+.dk-frame__label {
+  display: block;
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 7.5vw, 2.125rem);
+  line-height: 1;
+  overflow-wrap: anywhere;
+}
+.dk-frame__link:hover .dk-frame__chip {
+  background: var(--primary);
+  color: var(--background);
+}
+.dk-frame__chip .dk-pencil {
+  left: -0.55rem;
+  top: -0.5rem;
+  width: calc(100% + 1.1rem);
+  height: calc(100% + 1rem);
+  color: var(--dk-edge);
+}
+.dk-frame__chip .dk-pencil path {
+  stroke-width: 2.25;
+}
+.dk-frame__num {
+  display: flex;
+  justify-content: space-between;
+  line-height: 0.625rem;
+  font-variant-numeric: tabular-nums;
+}
+.dk-sheet__actions {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1.25rem var(--spacing-m) 0;
+}
+.dk-sheet__cta {
+  min-height: 48px;
+}
+.dk-sheet__search {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 44px;
+  padding-inline: 1rem;
+  border: 1px solid rgb(238 231 221 / 0.4);
+  color: var(--dk-film-ink);
+}
+.dk-sheet__tagline {
+  margin: 0;
+  padding: 1.5rem var(--spacing-m) 0;
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  font-style: italic;
+  line-height: 1.2;
+  color: var(--dk-film-ink);
+}
+.dk-sheet__contact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.25rem;
+  padding: 0.75rem var(--spacing-m) 0;
+}
+.dk-sheet__contact a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  font-size: 0.875rem;
+  color: var(--dk-edge);
+}
+
+/* ---- Footer: end credits ------------------------------------------------------------- */
+.dk-footer {
+  overflow: hidden;
+  padding-top: clamp(4rem, 9vw, 7rem);
+  border-top: 1px solid var(--border);
+  text-align: center;
+}
+.dk-credits {
+  display: grid;
+  gap: clamp(2rem, 4vw, 3rem);
+  max-width: 46rem;
+  margin-inline: auto;
+  padding-inline: var(--spacing-m);
+}
+.dk-credits__lead {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0;
+}
+.dk-credits__role {
+  margin: 0 0 0.5rem;
+  font-size: 0.6875rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+.dk-credits__lead .dk-credits__role {
+  margin: 0;
+}
+.dk-credits__star {
+  font-family: var(--font-display);
+  font-size: clamp(2.75rem, 7vw, 5rem);
+  line-height: 0.95;
+  letter-spacing: -0.01em;
+  color: var(--foreground);
+}
+.dk-credit__names {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0 1.1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 2.4vw, 1.625rem);
+  line-height: 1.2;
+}
+.dk-credit__names > li {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.dk-credit__names a,
+.dk-credit__names span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--foreground);
+}
+.dk-credit__names a {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  text-decoration-color: color-mix(in oklab, var(--primary) 35%, transparent);
+  transition:
+    color 300ms var(--ease-focus),
+    text-decoration-color 300ms var(--ease-focus);
+}
+.dk-credit__names a:hover {
+  color: var(--primary);
+  text-decoration-color: currentColor;
+}
+.dk-credit__names--stack {
+  flex-direction: column;
+  align-items: center;
+}
+/* The site's pages, side by side (two by two on a phone, card 191's compact footer). */
+.dk-footer.site-footer--compact .site-footer__links {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 32rem;
+  margin-inline: auto;
+  padding: 0;
+}
+.dk-footer.site-footer--compact .site-footer__links > :last-child {
+  grid-column: auto;
+}
+@media (max-width: 767px) {
+  .dk-footer.site-footer--compact .site-footer__links {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+  .dk-footer.site-footer--compact .site-footer__links > :only-child {
+    grid-column: 1 / -1;
+  }
+}
+.dk-footer__booking {
+  display: grid;
+  justify-items: center;
+  gap: 0.5rem;
+  margin-top: clamp(3rem, 6vw, 4.5rem);
+  padding-inline: var(--spacing-m);
+}
+.dk-footer__line {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.6;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--foreground);
+}
+/* Fixed width, so the swap from the zone's name to the time moves nothing. */
+.dk-clock {
+  display: inline-block;
+  inline-size: 6.25em;
+  text-align: start;
+  font-variant-numeric: tabular-nums;
+  color: var(--primary);
+}
+.dk-footer__reach,
+.dk-footer__small {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.dk-footer__reach a,
+.dk-footer__reach button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 44px;
+  font-size: 0.875rem;
+  color: var(--link);
+}
+.dk-footer__small {
+  margin-top: 1rem;
+  padding-inline: var(--spacing-m);
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+}
+.dk-footer__small > * {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin: 0;
+}
+.dk-footer__small a {
+  color: var(--muted-foreground);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.dk-footer__small a:hover {
+  color: var(--primary);
+}
+/* The giant name, cropped by the bottom edge of the page. */
+.site-footer__brand.dk-footer__bleed {
+  display: block;
+  height: 0.56em;
+  margin-top: clamp(1.5rem, 4vw, 3rem);
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-size: clamp(8rem, 40vw, 36rem);
+  line-height: 0.9;
+  letter-spacing: -0.035em;
+  color: var(--foreground);
+  text-decoration: none;
+  transition: color 300ms var(--ease-focus);
+}
+.site-footer__brand.dk-footer__bleed:hover {
+  color: var(--primary);
+}
+.site-footer__brand.dk-footer__bleed:focus-visible {
+  outline-offset: -4px;
+}
+.dk-footer__bleed > span {
+  display: block;
 }
 
 /* The display face is a tall, narrow serif; it wants tight leading and a touch
@@ -82,22 +718,6 @@ h2 em {
 /* Optical easing shared by the focus-pull and reveal effects. */
 :root {
   --ease-focus: cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-/* The wordmark is wide (about 9:1). Below lg the header centres it with the
-   menu button absolutely placed at the right, so cap its width to leave the
-   button its 44px plus a gutter at 320px. */
-@media (max-width: 1023.98px) {
-  .site-header__row {
-    justify-content: flex-start;
-  }
-  .site-header__logo {
-    max-width: min(18rem, calc(100% - 4.5rem));
-  }
-  .site-header__logo img {
-    width: 100%;
-    height: auto;
-  }
 }
 
 /* Paper and hairlines, not bands (DESIGN.md: "sections separate by space and

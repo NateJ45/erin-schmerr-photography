@@ -1,24 +1,30 @@
 ---
 // Foundation, edit with care
-// Site header. Two structural rows on desktop, one on mobile:
-//   ┌─────────────────────────────────────── 4px accent stripe
-//   │ ─────────────────────────────────────── eyebrow strip (desktop-only)
-//   │   [site tagline]           email  · IG · FB · theme
-//   ├─────────────────────────────────────── main row
-//   │   [logo]                  [nav]  │  [Get in touch CTA]
-//   └───────────────────────────────────────
-// On mobile the eyebrow strip is hidden (its info lives in the MobileNav.astro
-// drawer, a native <dialog>) and the main row centers the logo with the
-// hamburger pinned absolute to the right. Once the page scrolls past 64px the
-// bar compacts with transforms only (data-scrolled, script at the bottom).
+// Site header: "the darkroom" film-leader strip (DESIGN.md, Components; 2026-11-18).
 //
-// siteSettings is optional. Defaults render cleanly so the header works
-// even before Sanity content is wired up.
+//   ┌──────────────────────────────────────────────── paper row
+//   │ [Tate wordmark]   01 STORIES 02 ARCHIVE …  (search)  [● Book a session]
+//   ├──────────────────────────────────────────────── the leader
+//   │ ▯ ▯ ▯ ▯ ▯ ▯  TATE 400  ▸ 1  1A  2  2A …  ▯ ▯ ▯ ▯  (sprockets, edge print)
+//   └────────────────────────────────────────────────
+// The nav is set like the printed edge of a negative: tiny tracked uppercase with
+// frame numbers. The page you are on is ringed in grease pencil (GreasePencil.astro).
+// "Book a session" is the one Dusk-filled button, with a red safelight dot.
+// Hovering an item with a mouse (fine pointer, motion allowed) shows a small print
+// beside it that pulls from blur to sharp: a picture the site already shows for that
+// page (src/components/darkroom/chrome-data.ts). Touch, keyboard and reduced motion
+// get no print; the image is lazy and display:none until hovered, so it costs nothing.
+//
+// Rule 4: every link is server-rendered here, dropdown groups are native <details>.
+// Scrolling down slims the header to the leader strip (BaseLayout sets
+// data-state="hidden", erin.css translates the bar up by all but the strip);
+// scrolling up brings it back. Transforms only, so nothing under it moves.
+// Below lg the row is the wordmark, search and the "Menu" button (MobileNav.astro).
+//
+// siteSettings is optional. Defaults render cleanly before Sanity is wired up.
 
 import { getImage } from 'astro:assets';
 import { site } from '@/data/site';
-import { Mail, Phone } from 'lucide-react';
-import { IconBrandInstagram, IconBrandFacebook } from '@tabler/icons-react';
 import MobileNav from './MobileNav.astro';
 import { ChevronDown } from 'lucide-react';
 import logoLightAsset from '@/assets/logo-light.svg';
@@ -27,15 +33,14 @@ import { publicPath } from '@/lib/page-path';
 import { mergePageSwitches } from '@/lib/page-switches';
 import { getNavPages } from '@/lib/queries';
 import { resolveSiteSettings, type RawChromeSettings } from '@/lib/siteSettings';
-import { telHref } from '@/lib/phone';
 import { phoneMenuGroups } from '@/lib/wayfinding';
 import { urlFor } from '@/lib/sanity';
 import SearchButton from './search/SearchButton.astro';
 import SiteSearch from './search/SiteSearch.astro';
+import GreasePencil from './darkroom/GreasePencil.astro';
+import { frameNumber, getDarkroomData, printFor } from './darkroom/chrome-data';
 
-// SVG logos are passed through Astro's image pipeline for cache-busted URLs.
-// SVGs are resolution-independent so no 1x/2x variants are needed — one URL
-// serves all pixel densities. The same URL is used for both desktop and mobile.
+// SVG logos go through Astro's image pipeline for cache-busted URLs.
 const logoLightImg = await getImage({ src: logoLightAsset });
 const logoDarkImg = await getImage({ src: logoDarkAsset });
 const logoLightSrcset = logoLightImg.src;
@@ -59,25 +64,23 @@ interface Props {
 const { siteSettings } = Astro.props as Props;
 
 const brandName = siteSettings?.siteName ?? siteSettings?.title ?? site.name;
-const availability = siteSettings?.availabilityStatus ?? '';
 
-// The chrome (menu, header button, logo, the show/hide switches) resolves
-// through one shared helper (see src/lib/siteSettings.ts) so the header, the
-// drawer, and the footer can never disagree about what the menu is.
+// The chrome resolves through one shared helper so header, menu and footer agree.
 const chrome = resolveSiteSettings(siteSettings);
-const headerCta = chrome.headerCta;
-// Card 191: Site settings > Phone menu groups. Empty (the default) keeps the phone menu's usual list.
-// The menu's own button is left out of the rows, so the same page is not offered twice.
+// The inquiry button. This site's own default reads "Book a session"; a label typed
+// in Site settings still wins.
+const headerCta = {
+  ...chrome.headerCta,
+  label: siteSettings?.headerCta?.label?.trim() ? chrome.headerCta.label : 'Book a session',
+};
+// Card 191: Site settings > Phone menu groups. Empty keeps the menu's usual frames.
 const phoneGroups = phoneMenuGroups(
   siteSettings?.phoneMenuGroups,
   headerCta.show ? headerCta.href : undefined,
 );
 const headerSecondary = chrome.headerSecondary;
 const logo = chrome.logo;
-// The logo box is 48px tall (h-12), so 280w covers a wide wordmark at 1x and
-// 560w covers it at 2x. Built with urlFor() rather than <SanityImage> because
-// the header renders on EVERY page: importing that component would pull its
-// module into the always-loaded chunk and rename the site-wide CSS bundle.
+// Built with urlFor() rather than <SanityImage>: the header renders on every page.
 const logoSrc = logo ? urlFor(logo).width(280).quality(80).auto('format').url() : undefined;
 const logoSrcset = logo
   ? [280, 560]
@@ -85,16 +88,6 @@ const logoSrcset = logo
       .join(', ')
   : undefined;
 
-// Utility toggles (Site Settings -> Navigation). Both read "unset means yes",
-// so an untouched site is unchanged. Turning one off is expressed by handing
-// the markup an empty value rather than a new flag, which keeps the existing
-// `{email && ...}` guards as the single place that decides.
-const email = chrome.showEmail ? (siteSettings?.email ?? '') : '';
-const phone = siteSettings?.phone ?? '';
-const ig = chrome.showSocials ? (siteSettings?.socialInstagram ?? '') : '';
-const fb = chrome.showSocials ? (siteSettings?.socialFacebook ?? '') : '';
-
-// Subset of siteSettings the mobile menu needs.
 const mobileNavSettings = siteSettings
   ? {
       tagline: siteSettings.tagline,
@@ -105,199 +98,32 @@ const mobileNavSettings = siteSettings
     }
   : null;
 
-// Core nav structure. Flat items render as plain anchor links; dropdown
-// items render as native <details>/<summary> disclosure groups on desktop
-// (server-rendered, see the nav markup below) and as indented expandable
-// groups in MobileNav.
-//
-// Why <details> and not a React island: the desktop nav must exist in the
-// server-rendered HTML so search-engine crawlers see every internal link and
-// so there is no flash-of-missing-nav (or CLS) before hydration. A native
-// <details> disclosure is crawlable, keyboard-accessible, and works with zero
-// JS. A tiny progressive-enhancement script (further down) adds the niceties
-// browsers don't give us for free: open-on-hover, close-on-outside-click,
-// close-on-Escape, and close-on-navigation. The links work without it.
-//
-// "Contact" is intentionally NOT in the primary nav — the "Get in touch"
-// CTA at the right of the nav row does that job, and the MobileNav drawer also
-// surfaces the CTA at the top.
-//
-// Core nav: /, /about, /services, /faq, /journal, /contact (CTA button).
-// /process is core too and is linked from the footer rather than the nav row.
-// Module routes (/events, /resources) are opt-in via modules/ and are NOT
-// linked from the core nav.
-
-// The menu comes from Sanity (Site Settings -> Navigation). Both the mapping
-// and the built-in safety-net menu live in src/lib/siteSettings.ts, so the
-// header, the drawer, and the footer read one source. Empty in Sanity = the
-// built-in menu, so a fresh clone is byte-identical to the old behavior.
-// Pages whose "Show in the top menu" switch is on are added after the editor's own order
-// (src/lib/page-switches.ts, card 187).
+// The menu from Sanity (Site settings > Navigation), plus pages switched into it (card 187).
 const NAV_ITEMS = mergePageSwitches(chrome.headerNav, [], await getNavPages()).nav;
 
-// MobileNav takes the same NavItem[] shape (flat links and dropdown groups).
-const NAV_LINKS = NAV_ITEMS;
+// The prints (hover previews and the phone menu's frames).
+const darkroom = await getDarkroomData();
 
-// publicPath: the draft preview serves Home at /preview/, which would otherwise never match "/"
-// (PORTS.md card 187).
 const pathname = publicPath(Astro.url.pathname);
 function isActive(href: string) {
   if (href === '/') return pathname === '/';
   return pathname.startsWith(href.endsWith('/') ? href : `${href}/`);
 }
-// A dropdown group is "active" (its trigger underline locks wide + aria-current
-// is set) when the current route matches any of its child links.
 function isGroupActive(items: { href: string }[]) {
   return items.some((item) => isActive(item.href));
 }
 ---
 
-<header class="site-header bg-background">
-  {/* Brand accent stripe — same visual signature used at the top of the
-      mobile menu drawer. Visible on every viewport. */}
-  <div class="h-1 bg-primary" aria-hidden="true"></div>
-
-  {/* Eyebrow strip (desktop only). Carries the locked positioning line and
-      utility controls (email + social icons + theme toggle). Mobile gets
-      the same info through the MobileNav drawer. Breakpoint bumped from
-      md (768 px) to lg (1024 px) so the eyebrow strip + nav row only
-      appear once there's room for the full nav + CTA without squishing
-      the logo. */}
-  <div class="site-header__eyebrow hidden border-b border-border-soft bg-muted lg:block">
-    <div class="mx-auto flex max-w-content items-center justify-between px-l py-2">
-      <div class="flex items-center gap-m">
-        <p class="text-xs tracking-eyebrow text-foreground/80 uppercase">
-          {siteSettings?.tagline ?? site.name}
-        </p>
-        {/* Availability status, mirroring the mobile pill. Same pulsing dot
-            and link to /contact, so the trust signal is consistent at every
-            width (compact "Open" on phones, full status from md up). */}
-        {availability && (
-          <>
-            <span class="h-3 w-px bg-border-soft" aria-hidden="true" />
-            <a
-              href="/contact/"
-              class="inline-flex items-center gap-1.5 text-xs font-semibold tracking-eyebrow text-foreground uppercase transition-colors hover:text-link"
-              aria-label={`${availability}. Get in touch.`}
-            >
-              <span class="relative flex h-2 w-2 shrink-0" aria-hidden="true">
-                <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-tertiary opacity-60" />
-                <span class="relative inline-flex h-2 w-2 rounded-full bg-tertiary" />
-              </span>
-              {availability}
-            </a>
-          </>
-        )}
-      </div>
-      <div class="flex items-center gap-m">
-        {email && (
-          <a
-            href={`mailto:${email}`}
-            class="inline-flex items-center gap-xs text-xs text-foreground transition-colors hover:text-link"
-          >
-            <Mail size={12} aria-hidden="true" />
-            {email}
-          </a>
-        )}
-        {phone && (
-          <a
-            href={telHref(phone)}
-            class="inline-flex items-center gap-xs text-xs text-foreground transition-colors hover:text-link"
-          >
-            <Phone size={12} aria-hidden="true" />
-            {phone}
-          </a>
-        )}
-        {(ig || fb) && (
-          <div class="flex items-center gap-1">
-            {ig && (
-              <a
-                href={ig}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Instagram"
-                class="inline-flex h-7 w-7 items-center justify-center rounded-full text-foreground transition-colors hover:bg-accent hover:text-link"
-              >
-                <IconBrandInstagram size={14} stroke={1.5} />
-              </a>
-            )}
-            {fb && (
-              <a
-                href={fb}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Facebook"
-                class="inline-flex h-7 w-7 items-center justify-center rounded-full text-foreground transition-colors hover:bg-accent hover:text-link"
-              >
-                <IconBrandFacebook size={14} stroke={1.5} />
-              </a>
-            )}
-          </div>
-        )}
-      </div>
-    </div>
-  </div>
-
-  {/* Main nav row. Mobile (and tablet) center the logo; desktop ≥1024 px
-      justifies logo left, nav+CTA grouped right. Breakpoint matches the
-      eyebrow strip above — at viewports between md and lg the desktop
-      layout would squish, so mobile-style header stays in use. */}
-  <div class="site-header__row relative mx-auto flex max-w-content items-center justify-center border-b border-border px-l py-m lg:justify-between">
-    {/* Mobile-only availability pill, mirroring the hamburger menu's
-        absolute-right placement. Gives mobile visitors an at-a-glance trust
-        signal ("Open / accepting new clients") and a single-tap path to
-        /contact — meaningfully conversion-positive in a tiny footprint. Renders
-        nothing when siteSettings.availabilityStatus is empty so the slot just
-        stays empty negative space. */}
-    {availability && (
-      <a
-        href="/contact/"
-        class="site-header__pill absolute top-1/2 left-m inline-flex h-9 -translate-y-1/2 items-center gap-1.5 rounded-full border border-border-soft bg-muted pr-2.5 pl-2 text-foreground transition-colors hover:border-primary hover:text-primary-dark lg:hidden"
-        aria-label={`${availability}. Tap to start a conversation.`}
-      >
-        <span class="relative flex h-2 w-2 shrink-0" aria-hidden="true">
-          {/* Soft pulsing halo — kills under prefers-reduced-motion via the
-              global rule that flattens all animations. */}
-          <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-tertiary opacity-60" />
-          <span class="relative inline-flex h-2 w-2 rounded-full bg-tertiary" />
-        </span>
-        {/* On the narrowest phones the centered logo leaves room only for a
-            compact "Open". From md up, where the pill has space before the
-            logo, show the full availabilityStatus so the roomy header doesn't
-            read as half-empty. The complete status is always in the aria-label
-            and on the Contact page. */}
-        <span class="text-xs font-semibold tracking-eyebrow whitespace-nowrap uppercase md:hidden">
-          Open
-        </span>
-        <span class="hidden text-xs font-semibold tracking-eyebrow whitespace-nowrap uppercase md:inline">
-          {availability}
-        </span>
-      </a>
-    )}
-
+<header class="site-header dk-header bg-background" data-dk-header>
+  <div class="site-header__row dk-header__row relative mx-auto flex max-w-content items-center">
     <a
       href="/"
       class="site-header__logo inline-flex items-center transition-opacity hover:opacity-80"
       aria-label={`${brandName} home`}
     >
-      {/*
-        Single theme-aware logo. The img ships with NO src/srcset so the
-        browser doesn't start fetching anything; the inline script below
-        sets the right variant synchronously before paint based on the
-        current html.dark state, then re-applies on theme-toggle and
-        astro:after-swap (handled in the anti-FOUC script in BaseLayout).
-        Net result: only one logo file is ever fetched per page load, and
-        Lighthouse no longer sees a dark-variant in light-mode DOM (or
-        vice-versa).
-
-        Dimensions and aspect ratio (100×106) match the source 378:400,
-        so the browser reserves the right layout box before the file lands
-        — no CLS.
-      */}
+      {/* One theme-aware logo: no src until the inline script below picks the
+          variant, so only one file is fetched. 280x60 reserves the box (no CLS). */}
       {logo ? (
-        /* An uploaded Site Settings logo replaces the pair above. It carries no
-           data-theme-logo attribute, so the inline swap script below skips it
-           and the one image serves both themes. */
         <img
           src={logoSrc}
           srcset={logoSrcset}
@@ -322,12 +148,7 @@ function isGroupActive(items: { href: string }[]) {
           data-logo-dark-srcset={logoDarkSrcset}
         />
       )}
-      {/* No-JS fallback (card 108). The swap img above has no src until the
-          inline script runs, so with JS off it would show only its alt text.
-          The noscript copy carries the light variant (no-JS never gets
-          html.dark) and the scoped rule below hides the src-less swap img.
-          A noscript img is not fetched when JS is on, so the single-fetch
-          behaviour is unchanged. */}
+      {/* No-JS fallback (card 108): the light variant. */}
       {!logo && (
         <noscript>
           <img
@@ -341,10 +162,6 @@ function isGroupActive(items: { href: string }[]) {
         </noscript>
       )}
     </a>
-    {/* Synchronous inline setup — runs immediately after the img element
-        is parsed, so the src is set before the browser begins any image
-        fetch. Re-applied across View Transitions navs by the anti-FOUC
-        listener in BaseLayout. */}
     <script is:inline>
       (function () {
         const img = document.querySelector('header img[data-theme-logo]');
@@ -354,68 +171,68 @@ function isGroupActive(items: { href: string }[]) {
         img.srcset = dark ? img.dataset.logoDarkSrcset : img.dataset.logoLightSrcset;
       })();
     </script>
-    {/* Nav + CTA grouped on the right (lg+ only).
 
-        The desktop nav is server-rendered as real <a> tags (flat links) plus
-        native <details> disclosure groups (the two dropdowns). Everything is in
-        the HTML at build time — crawlable, keyboard-usable, and present before
-        any JS runs (no flash, no CLS). The progressive-enhancement script at the
-        bottom of this file layers on hover-to-open + outside-click/Escape/
-        navigation close; the nav is fully functional without it. */}
-    <div class="site-header__nav hidden items-center gap-l lg:flex">
-      <nav class="site-nav flex items-center gap-l" aria-label="Primary">
-        {NAV_ITEMS.map((item) =>
+    {/* Desktop (lg+): the edge-printed nav, search and the inquiry button. */}
+    <div class="site-header__nav dk-header__nav hidden items-center lg:flex">
+      <nav class="site-nav dk-nav" aria-label="Primary">
+        {NAV_ITEMS.map((item, i) =>
           item.kind === 'flat' ? (
             <a
               href={item.href}
-              class:list={[
-                'nav-underline text-sm tracking-wide transition-colors',
-                isActive(item.href) ? 'font-semibold text-link' : 'text-foreground hover:text-link',
-              ]}
+              class="dk-nav__item"
               aria-current={isActive(item.href) ? 'page' : undefined}
-              data-label={item.label}
             >
-              {item.label}
+              <span class="dk-nav__num" aria-hidden="true">
+                {frameNumber(i)}
+              </span>
+              <span class="dk-nav__label" data-label={item.label}>
+                {item.label}
+                {isActive(item.href) && <GreasePencil />}
+              </span>
+
+              {(() => {
+                const p = printFor(darkroom, item.href, i);
+                return (
+                  <span class={`dk-print dk-tone--${p.tone}`} aria-hidden="true">
+                    {p.src && (
+                      <img
+                        src={p.src}
+                        srcset={p.srcset}
+                        alt=""
+                        width="160"
+                        height="200"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    )}
+                  </span>
+                );
+              })()}
             </a>
           ) : (
-            <details class="site-nav__group relative">
-              {/* <summary> is the disclosure toggle. It carries .nav-underline
-                  so it gets the same bronze underline as flat links, and
-                  aria-current="page" (which locks the underline wide) when one
-                  of its children is the active route. role/aria-expanded are
-                  managed natively by <details>. */}
+            <details class="site-nav__group dk-nav__group relative">
               <summary
-                class:list={[
-                  'nav-underline text-sm tracking-wide transition-colors',
-                  'inline-flex cursor-pointer list-none items-center gap-0.5 select-none',
-                  'rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-                  isGroupActive(item.items)
-                    ? 'font-semibold text-link'
-                    : 'text-foreground hover:text-link',
-                ]}
+                class="dk-nav__item"
                 aria-current={isGroupActive(item.items) ? 'page' : undefined}
               >
-                {item.label}
+                <span class="dk-nav__num" aria-hidden="true">
+                  {frameNumber(i)}
+                </span>
+                <span class="dk-nav__label" data-label={item.label}>
+                  {item.label}
+                  {isGroupActive(item.items) && <GreasePencil />}
+                </span>
                 <ChevronDown
-                  size={14}
-                  className="site-nav__chevron mt-px transition-transform duration-150"
+                  size={12}
+                  className="site-nav__chevron transition-transform duration-150"
                   aria-hidden="true"
                 />
               </summary>
-
-              {/* Menu panel. Absolutely positioned under the summary so it
-                  doesn't shift layout. Uses popover tokens to match the mobile
-                  drawer + shadcn dropdowns, and the bronze ring + shadow of the
-                  card rhythm. */}
-              <div class="site-nav__menu absolute top-full left-0 z-50 mt-2 min-w-[200px] rounded-lg bg-popover p-1 text-popover-foreground shadow-md ring-1 ring-foreground/10">
+              <div class="site-nav__menu dk-nav__menu absolute top-full left-0 z-50 mt-3 min-w-[200px]">
                 {item.items.map((sub) => (
                   <a
                     href={sub.href}
-                    class:list={[
-                      'block rounded-md px-2.5 py-1.5 text-sm transition-colors',
-                      'outline-none hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground',
-                      isActive(sub.href) ? 'font-semibold text-link' : 'text-foreground',
-                    ]}
+                    class="dk-nav__sub"
                     aria-current={isActive(sub.href) ? 'page' : undefined}
                   >
                     {sub.label}
@@ -427,18 +244,12 @@ function isGroupActive(items: { href: string }[]) {
         )}
       </nav>
       {/* Visitor search (card 126). Renders nothing when search is off. */}
-      <SearchButton class="inline-flex h-9 w-9 items-center justify-center rounded-md text-foreground transition-colors hover:bg-accent hover:text-link focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none" />
-      {/* No theme toggle: the site is light only (decided 2026-11-18, CLAUDE.md rule 3). */}
-      <span class="h-6 w-px bg-border-soft" aria-hidden="true"></span>
+      <SearchButton class="dk-icon-button" size={18} />
       {headerSecondary && (
         <a
           href={headerSecondary.href}
-          class:list={[
-            'press-tactile inline-flex items-center rounded-md border px-m py-2 text-xs font-semibold tracking-eyebrow uppercase transition-colors',
-            isActive(headerSecondary.href)
-              ? 'border-primary bg-accent text-link'
-              : 'border-primary text-link hover:bg-accent',
-          ]}
+          class="dk-button dk-button--line"
+          aria-current={isActive(headerSecondary.href) ? 'page' : undefined}
         >
           {headerSecondary.label}
         </a>
@@ -446,36 +257,45 @@ function isGroupActive(items: { href: string }[]) {
       {headerCta.show && (
         <a
           href={headerCta.href}
-          class:list={[
-            'press-tactile inline-flex items-center rounded-md px-m py-2 text-xs font-semibold tracking-eyebrow uppercase',
-            isActive(headerCta.href)
-              ? 'bg-accent-dark text-white'
-              : 'bg-primary-dark text-white hover:bg-accent-dark',
-          ]}
+          class="dk-button dk-button--safelight"
+          aria-current={isActive(headerCta.href) ? 'page' : undefined}
         >
+          <span class="dk-safelight" aria-hidden="true"></span>
           {headerCta.label}
         </a>
       )}
     </div>
 
-    {/* The phone menu is server markup on a native <dialog> (MobileNav.astro,
-        card 157): no React island, the hamburger and every link are in the
-        server HTML. See docs/agent/components.md. */}
-    {/* Mobile search button, just left of the hamburger (card 126). */}
-    <SearchButton class="absolute top-1/2 right-[calc(var(--spacing-m)+2.75rem)] inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-md text-foreground transition-colors hover:bg-accent lg:hidden" />
+    {/* Below lg: search and the "Menu" button, at the right of the row. */}
+    <div class="dk-header__phone lg:hidden">
+      <SearchButton class="dk-icon-button" />
+      <MobileNav
+        search={site.search.enabled}
+        links={NAV_ITEMS}
+        siteSettings={mobileNavSettings}
+        brandName={brandName}
+        cta={headerCta}
+        secondary={headerSecondary}
+        groups={phoneGroups}
+        current={pathname}
+        frames={darkroom.covers}
+        pagePrints={darkroom.pagePrints}
+      />
+    </div>
+  </div>
 
-    <MobileNav
-      search={site.search.enabled}
-      links={NAV_LINKS}
-      siteSettings={mobileNavSettings}
-      logoLightUrl={logoLightImg.src}
-      logoDarkUrl={logoDarkImg.src}
-      brandName={brandName}
-      cta={headerCta}
-      secondary={headerSecondary}
-      groups={phoneGroups}
-      current={pathname}
-    />
+  {/* The film leader: sprocket holes and edge printing. Decorative. When the page
+      scrolls down, this strip is all of the header that stays on screen. */}
+  <div class="dk-leader" aria-hidden="true">
+    <span class="dk-leader__print">
+      <span>Tate 400</span>
+      {NAV_ITEMS.map((_, i) => (
+        <span>
+          {'▸'} {i + 1} &nbsp; {i + 1}A
+        </span>
+      ))}
+      <span>Safety film</span>
+    </span>
   </div>
   {site.search.enabled && <SiteSearch />}
 </header>

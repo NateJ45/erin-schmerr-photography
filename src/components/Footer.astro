@@ -1,82 +1,42 @@
 ---
 // Foundation, edit with care
-// Site footer. Compact layout that reads as a SEPARATE zone from the FinalCta
-// section that sits above it on most pages.
+// Site footer: "end credits" (DESIGN.md, Components; 2026-11-18).
 //
-// Color decoupling: the footer uses bg-muted (Cream in light, dark warm in
-// dark) so it doesn't visually merge with the Charcoal Dark FinalCta. The
-// 4px accent stripe at the top is the same brand signature
-// used in the header and mobile menu drawer.
-//
-// Structure (top to bottom):
-//   1. Accent stripe
-//   2. Optional newsletter signup (only when siteSettings.newsletter.enabled)
-//   3. Compact brand bar: logo + tagline side by side (one short row, not a
-//      tall stacked block) so the footer stays roughly half its old height.
-//   4. Five-column link grid: Explore / More / Tools / Latest projects /
-//      Get in touch (email, phone, location, socials).
-//   5. Thin bottom bar: auto-year copyright, privacy link, optional "Site
-//      by..." credit, all on one line.
-//
-// Wayfinding (PORTS.md card 191, from FBC Auburn), all opt-in from Site
-// settings and drawing nothing until filled in:
-//   - Where next rows (WhereNext.astro) above everything else.
-//   - Footer style "compact": the logo, tagline and second header button in
-//     one brand row on top, the link groups 2 by 2 on phones with Get in
-//     touch across the width, and no logo block at the foot. CSS in
-//     globals.css ("Compact footer").
-//   - The phone action bar (ActionBar.astro), docked to the bottom of the
-//     screen, rendered here so it sits in the footer landmark.
-//
-// Tailwind v4 gotcha: max-w-xs/s/m/l are shadowed by this project's custom
-// --spacing-* tokens (they resolve to a few px, not the container scale). Use
-// max-w-md / max-w-2xl / arbitrary values like max-w-[28rem] for text widths.
-//
-// Latest projects pull from Sanity. Gracefully degrades to a "see portfolio"
-// message when nothing is published yet.
+// Set on paper and centred like the credits at the end of a film:
+//   1. Where next rows and the newsletter, when Site settings switch them on (card 191).
+//   2. The credits: "Photographs by Erin Schmerr", then "Starring" (the people credited on
+//      her stories), "On location at" (the stories' places and credited venues) and "As
+//      published in" (the press magazines), each a short list linking where the data has a
+//      page (src/components/darkroom/chrome-data.ts). Then the site's pages, from Site
+//      settings > Footer columns (or the top menu when there are none), two by two on a
+//      phone. This list is also where the "Menu" button lands with JavaScript off.
+//   3. "Booking sessions in Cincinnati and West Chester · 11:02 AM": the service areas and
+//      her local time on site.timeZone. The build writes the zone's short name (EST); the
+//      small script below swaps in the time, in a fixed-width box so nothing moves.
+//   4. Email, phone and social links when Site settings has them, then the small print
+//      (copyright, privacy or the legal links, Studio, the optional credit).
+//   5. A huge "Tate" (the first word of the site name), cropped by the footer's bottom edge.
+//   6. The phone action bar (card 191), when this page has one.
+// Where the credits come into view they roll up a little on a CSS scroll-driven timeline
+// (erin-motion.css); reduced motion, touch-free fallbacks and browsers without support
+// show them still.
 
-import { getImage } from 'astro:assets';
 import { site } from '@/data/site';
 import { resolveSocialLinks, socialLabel, type SocialLink } from '@/lib/social-links';
 import { socialIcon } from '@/lib/social-icons';
-import { Mail, Phone } from 'lucide-react';
+import { Phone } from 'lucide-react';
 import CopyEmailButton from '@/components/CopyEmailButton.astro';
 import NewsletterSignup from '@/components/NewsletterSignup';
-import { getAllProjects, getNavPages, type CoreProjectCard } from '@/lib/queries';
-// THE SVG, NOT A PNG, and the same files the header uses.
-//
-// Until 2026-09-08 this imported logo-{light,dark}.png, which were a REAL
-// CLIENT'S wordmark left in the starter from the build it was forked from.
-// Every project made from this starter therefore shipped somebody else's logo
-// in its footer, and at least one of them reached a live site that way. The
-// header had always used the neutral placeholder SVGs; only the footer was
-// wrong, because nobody scrolls to the bottom of a page they are building.
-//
-// Keep both chrome components on the SAME asset. If they ever diverge again,
-// this is the failure mode.
-import logoLightAsset from '@/assets/logo-light.svg';
-import logoDarkAsset from '@/assets/logo-dark.svg';
-import { getSectionVisibility } from '@/lib/sectionVisibility';
+import { getNavPages, getAllPageSlugs } from '@/lib/queries';
 import { resolveSiteSettings, type RawChromeSettings } from '@/lib/siteSettings';
 import { mergePageSwitches } from '@/lib/page-switches';
-import { telHref } from '@/lib/phone';
-import { getAllPageSlugs } from '@/lib/queries';
 import { publicPath } from '@/lib/page-path';
-import { footerStyle, pickActionBar, whereNextRows } from '@/lib/wayfinding';
+import { pickActionBar, whereNextRows } from '@/lib/wayfinding';
 import WhereNext from '@/components/WhereNext.astro';
 import ActionBar from '@/components/ActionBar.astro';
 import { resolveBusinessFacts, todayBarLine, type RawBusinessFacts } from '@/lib/business-facts';
 import ToConfirm from '@/components/business/ToConfirm.astro';
-import OpenStatus from '@/components/business/OpenStatus.astro';
-import BusinessAddress from '@/components/business/BusinessAddress.astro';
-
-// One themed pair, passed through Astro's pipeline for a cache-busted URL. No
-// width variants and no webp conversion: these are SVGs, so one file is sharp
-// at every size and asking the optimizer to rasterise them would be a
-// downgrade. The BaseLayout anti-FOUC script swaps src on a theme change, the
-// same as it does for the header.
-const footerLogoLight = await getImage({ src: logoLightAsset });
-const footerLogoDark = await getImage({ src: logoDarkAsset });
+import { getDarkroomData, type ChromeCredit } from './darkroom/chrome-data';
 
 interface NewsletterConfig {
   enabled?: boolean;
@@ -109,102 +69,75 @@ interface Props {
 }
 
 const { siteSettings } = Astro.props as Props;
-
-// The chrome (footer columns, the small-print row, the social switch) resolves
-// through one shared helper (see src/lib/siteSettings.ts) so the footer can't
-// drift from the header. Both menus come back EMPTY when Sanity is empty, and
-// the built-in markup below renders instead.
 const chrome = resolveSiteSettings(siteSettings);
 
-// Normalize section visibility. Unset => visible (safe default for live site).
-const visible = getSectionVisibility(siteSettings?.sectionVisibility);
-
 const brandName = siteSettings?.title ?? site.name;
+// The photographer the credits roll for. Her name, not the business name.
+const PHOTOGRAPHER = 'Erin Schmerr';
+// The giant word at the foot: the first word of the site name ("Tate").
+const bigWord = brandName.trim().split(/\s+/)[0] ?? brandName;
+
+const facts = resolveBusinessFacts(siteSettings as RawBusinessFacts | null | undefined);
 const email = siteSettings?.email ?? '';
 const phone = siteSettings?.phone ?? '';
-// The business facts (card 196): the street address and today's hours join Get in
-// touch only when Business info has them, and a fact still to confirm wears the tag.
-const facts = resolveBusinessFacts(siteSettings as RawBusinessFacts | null | undefined);
+const socialLinks: SocialLink[] = chrome.showFooterSocials ? resolveSocialLinks(siteSettings) : [];
 
-// Social links: the one shared list (src/lib/social-links.ts, PORTS.md card 167). The editor
-// pastes a link in Site settings > Social links and the icon and button name are read from its
-// address; an empty list falls back to the legacy socialInstagram / socialFacebook fields so
-// existing datasets keep working, and older rows keep the platform they picked.
-// The footer's own "show social buttons" switch (Site Settings -> Navigation).
-// Unset means yes, so an untouched site is unchanged.
-const socialLinksToRender: SocialLink[] = chrome.showFooterSocials
-  ? resolveSocialLinks(siteSettings)
-  : [];
+const { starring, locations, publishedIn } = await getDarkroomData();
+const creditLines: { id: string; role: string; names: ChromeCredit[] }[] = [
+  { id: 'credits-starring', role: 'Starring', names: starring },
+  { id: 'credits-location', role: 'On location at', names: locations },
+  { id: 'credits-published', role: 'As published in', names: publishedIn },
+].filter((line) => line.names.length > 0);
 
-// Copyright auto-updates every build via new Date(). The "Site by..." line
-// (siteCredit + siteCreditUrl) is a SEPARATE concept that sits next to the
-// auto-year copyright in the thin bottom bar.
+// The site's pages: the editor's footer columns (with switched-on pages, card 187), else the
+// top menu and the inquiry, so the no-JS "Menu" link always lands on every page.
+const columns =
+  chrome.footerColumns.length > 0
+    ? mergePageSwitches([], chrome.footerColumns, await getNavPages()).footer
+    : [
+        {
+          title: 'Pages',
+          links: chrome.headerNav.flatMap((item) =>
+            item.kind === 'flat' ? [{ label: item.label, href: item.href }] : item.items,
+          ),
+        },
+        {
+          title: 'Get in touch',
+          links: [
+            { label: chrome.headerCta.show ? 'Book a session' : 'Contact', href: '/contact/' },
+          ],
+        },
+      ];
+
+// "Cincinnati and West Chester"
+const areas = (siteSettings?.serviceAreas ?? []).map((a) => a.trim()).filter(Boolean);
+const areaLine =
+  areas.length > 1 ? `${areas.slice(0, -1).join(', ')} and ${areas.at(-1)}` : (areas[0] ?? '');
+// The zone's short name ("EST") until the script writes the time.
+const zoneShort =
+  new Intl.DateTimeFormat('en-US', { timeZone: site.timeZone, timeZoneName: 'short' })
+    .formatToParts(new Date())
+    .find((p) => p.type === 'timeZoneName')?.value ?? '';
+
 const currentYear = new Date().getFullYear();
-
-// The built-in More and Tools columns list opt-in modules, so on a fresh clone
-// they can be empty; an empty one draws a blank grid cell, not a lone heading.
-const hasMoreLinks = [
-  visible.portfolio,
-  visible.journal, // scaffold: journal
-  visible.shop,
-  visible.giftCertificates,
-].some(Boolean);
-const hasToolLinks =
-  visible.styleQuiz || visible.budgetCalculator || visible.guides || visible.resources;
+const LEGAL_LINKS = chrome.legalNav;
 const siteCredit = siteSettings?.footerCredit;
 const siteCreditUrl = siteSettings?.footerCreditUrl;
 
-// Optional editor-managed footer columns. When non-empty, these replace the
-// built-in Explore / More / Tools columns. "Get in touch" always renders
-// as the last column regardless. Additive: empty = built-in defaults.
-// Pages whose "Show in the footer" switch is on join the LAST custom column (card 187). With
-// the built-in footer there is no column list to add to, so they are not merged: that would
-// swap the bespoke built-in columns for one "More" column.
-const useCustomFooterColumns = chrome.footerColumns.length > 0;
-const sanityFooterColumns = useCustomFooterColumns
-  ? mergePageSwitches([], chrome.footerColumns, await getNavPages()).footer
-  : chrome.footerColumns;
-
-// The small-print row at the very bottom. EMPTY means "keep the built-in
-// privacy link", which is rendered as its own markup below.
-const LEGAL_LINKS = chrome.legalNav;
-
-// Pull the three most recent projects for the Latest Projects column.
-// Falls back to an empty array when Sanity isn't reachable (build won't fail).
-const allProjects: CoreProjectCard[] = (await getAllProjects().catch(() => [])) ?? [];
-const latestProjects = allProjects.slice(0, 3);
-
-// Wayfinding (card 191). The live path, so the draft preview draws the footer of the page it
-// previews. The published-page list is only fetched when there are rows to check against it.
 const here = publicPath(Astro.url.pathname);
 const whereNext = siteSettings?.whereNext?.length
   ? whereNextRows(siteSettings.whereNext, here, await getAllPageSlugs())
   : [];
-// This site defaults to the compact footer (card 191): brand row on top, columns
-// left-aligned at every width, matching the left-aligned pages above it. An
-// editor's explicit choice in Site settings still wins.
-const compact = footerStyle(siteSettings?.footerStyle ?? 'compact') === 'compact';
-const secondary = chrome.headerSecondary;
 const pickedBar = pickActionBar(siteSettings?.actionBars, here);
-// A bar with no line of its own shows today's hours from the business facts (card 198).
 const actionBar =
   pickedBar && !pickedBar.text
     ? { ...pickedBar, text: todayBarLine(facts, new Date(), site.timeZone) }
     : pickedBar;
 ---
 
-<footer
-  id="site-footer"
-  class={compact ? 'site-footer--compact bg-muted text-foreground' : 'bg-muted text-foreground'}
->
-  {/* Brand accent stripe — matches header + mobile drawer. */}
-  <div class="h-1 bg-primary" aria-hidden="true"></div>
-
-  {/* Where next (card 191): nothing unless Site settings > Where next rows is filled in. */}
+<footer id="site-footer" class="site-footer--compact dk-footer bg-background text-foreground">
   {whereNext.length > 0 && <WhereNext rows={whereNext} />}
 
-  {/* Newsletter signup — renders only when siteSettings.newsletter.enabled is
-       true. Island hydrates when scrolled into view. */}
   {siteSettings?.newsletter?.enabled && (
     <div class="mx-auto max-w-content px-m pt-l">
       <div class="mx-auto max-w-md">
@@ -213,434 +146,144 @@ const actionBar =
     </div>
   )}
 
-  {/* Five-column link grid. Single centered column on mobile, five columns
-       at md+ (left-aligned). The fifth column carries contact details.
-       When siteSettings.footerColumns is non-empty, the custom Sanity columns
-       replace the built-in Explore / More / Tools columns. The Latest
-       Projects column and Get in touch column always render. */}
-  {/* Compact (card 191): the brand row on top; the logo block at the foot is left out. */}
-  {compact && (
-    <div class="site-footer__brand mx-auto max-w-content px-m pt-l">
-      <a
-        href="/"
-        aria-label={`${brandName} home`}
-        class="site-footer__brand-logo inline-block transition-opacity hover:opacity-80"
-      >
-        <img
-          alt={brandName}
-          width={280}
-          height={60}
-          class="h-10 w-auto"
-          loading="lazy"
-          decoding="async"
-          data-theme-logo
-          src={footerLogoLight.src}
-          data-logo-light-src={footerLogoLight.src}
-          data-logo-light-srcset={footerLogoLight.src}
-          data-logo-dark-src={footerLogoDark.src}
-          data-logo-dark-srcset={footerLogoDark.src}
-        />
-      </a>
-      {siteSettings?.tagline && (
-        <p class="site-footer__tagline text-sm text-foreground/80 italic">{siteSettings.tagline}</p>
-      )}
-      {secondary && (
-        <a
-          href={secondary.href}
-          class="site-footer__brand-action inline-flex min-h-11 items-center rounded-md border border-primary px-m text-xs font-semibold tracking-eyebrow text-link uppercase transition-colors hover:bg-accent"
-        >
-          {secondary.label}
-        </a>
-      )}
-    </div>
-  )}
+  <div class="dk-credits">
+    <p class="dk-credits__lead">
+      <span class="dk-credits__role">Photographs by</span>
+      <span class="dk-credits__star">{PHOTOGRAPHER}</span>
+    </p>
 
-  <div
-    class={
-      compact
-        ? 'site-footer__links mx-auto grid max-w-content gap-l px-m pt-l pb-m text-left'
-        : 'mx-auto grid max-w-content grid-cols-1 gap-l px-m pt-l pb-m text-center sm:grid-cols-2 md:grid-cols-3 md:text-left lg:grid-cols-5'
-    }
-  >
-    {/* --- Editor-managed columns (from Sanity siteSettings.footerColumns) --- */}
-    {useCustomFooterColumns ? (
-      sanityFooterColumns.map((col, colIdx) => (
-        <nav aria-labelledby={`footer-custom-${colIdx}`}>
-          <p
-            id={`footer-custom-${colIdx}`}
-            class="mb-s text-xs tracking-eyebrow text-foreground/80 uppercase"
-          >
+    {creditLines.map((line) => (
+      <div class="dk-credit">
+        <p id={line.id} class="dk-credits__role">
+          {line.role}
+        </p>
+        <ul class="dk-credit__names" aria-labelledby={line.id}>
+          {line.names.map((c) => (
+            <li>
+              {c.href ? (
+                <a
+                  href={c.href}
+                  {...(c.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                >
+                  {c.name}
+                </a>
+              ) : (
+                <span>{c.name}</span>
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))}
+
+    <div class="site-footer__links dk-footer__pages">
+      {columns.map((col, ci) => (
+        <nav aria-labelledby={`footer-col-${ci}`}>
+          <p id={`footer-col-${ci}`} class="dk-credits__role">
             {col.title}
           </p>
-          <ul class="list-none p-0 text-sm">
+          <ul class="dk-credit__names dk-credit__names--stack">
             {col.links.map((link) => (
               <li>
-                <a
-                  href={link.href}
-                  class="inline-flex min-h-[44px] min-w-[44px] items-center justify-center text-foreground/85 transition-colors hover:text-link md:justify-start"
-                >
-                  {link.label}
-                </a>
+                <a href={link.href}>{link.label}</a>
               </li>
             ))}
           </ul>
         </nav>
-      ))
-    ) : (
-      <>
-        {/* --- Built-in columns (default when footerColumns is empty) --- */}
+      ))}
+    </div>
+  </div>
 
-        {/* EXPLORE */}
-        <nav aria-labelledby="footer-studio">
-          <p id="footer-studio" class="mb-s text-xs tracking-eyebrow text-foreground/80 uppercase">
-            Explore
-          </p>
-          <ul class="list-none p-0 text-sm">
-            {/* scaffold: about */}
-            <li>
-              <a
-                href="/about/"
-                class="inline-flex min-h-[44px] min-w-[44px] items-center justify-center text-foreground/85 transition-colors hover:text-link md:justify-start"
-              >
-                About
-              </a>
-            </li>
-            {/* scaffold:end */}
-            {/* scaffold: process */}
-            <li>
-              <a
-                href="/process/"
-                class="inline-flex min-h-[44px] min-w-[44px] items-center justify-center text-foreground/85 transition-colors hover:text-link md:justify-start"
-              >
-                Process
-              </a>
-            </li>
-            {/* scaffold:end */}
-            {/* scaffold: faq */}
-            <li>
-              <a
-                href="/faq/"
-                class="inline-flex min-h-[44px] min-w-[44px] items-center justify-center text-foreground/85 transition-colors hover:text-link md:justify-start"
-              >
-                FAQ
-              </a>
-            </li>
-            {/* scaffold:end */}
-            {visible.press && (
-              <li>
-                <a
-                  href="/press/"
-                  class="inline-flex min-h-[44px] min-w-[44px] items-center justify-center text-foreground/85 transition-colors hover:text-link md:justify-start"
-                >
-                  Press
-                </a>
-              </li>
-            )}
-          </ul>
-        </nav>
-
-        {/* MORE. A column with no visible link draws an empty grid cell, not a bare heading. */}
-        {hasMoreLinks ? (
-          <nav aria-labelledby="footer-work">
-            <p id="footer-work" class="mb-s text-xs tracking-eyebrow text-foreground/80 uppercase">
-              More
-            </p>
-            <ul class="list-none p-0 text-sm">
-              {visible.portfolio && (
-                <li>
-                  <a
-                    href="/portfolio/"
-                    class="inline-flex min-h-[44px] min-w-[44px] items-center justify-center text-foreground/85 transition-colors hover:text-link md:justify-start"
-                  >
-                    Portfolio
-                  </a>
-                </li>
-              )}
-              {visible.portfolio && (
-                <li>
-                  <a
-                    href="/portfolio/before-after/"
-                    class="inline-flex min-h-[44px] min-w-[44px] items-center justify-center text-foreground/85 transition-colors hover:text-link md:justify-start"
-                  >
-                    Before &amp; After
-                  </a>
-                </li>
-              )}
-              {/* scaffold: journal */}
-              {visible.journal && (
-                <li>
-                  <a
-                    href="/journal/"
-                    class="inline-flex min-h-[44px] min-w-[44px] items-center justify-center text-foreground/85 transition-colors hover:text-link md:justify-start"
-                  >
-                    Journal
-                  </a>
-                </li>
-              )}
-              {/* scaffold:end */}
-              {visible.shop && (
-                <li>
-                  <a
-                    href="/shop/"
-                    class="inline-flex min-h-[44px] min-w-[44px] items-center justify-center text-foreground/85 transition-colors hover:text-link md:justify-start"
-                  >
-                    Shop
-                  </a>
-                </li>
-              )}
-              {visible.giftCertificates && (
-                <li>
-                  <a
-                    href="/gift-certificates/"
-                    class="inline-flex min-h-[44px] min-w-[44px] items-center justify-center text-foreground/85 transition-colors hover:text-link md:justify-start"
-                  >
-                    Gift Certificates
-                  </a>
-                </li>
-              )}
-            </ul>
-          </nav>
-        ) : (
-          <div aria-hidden="true" />
-        )}
-
-        {/* TOOLS */}
-        {hasToolLinks ? (
-          <nav aria-labelledby="footer-tools">
-            <p id="footer-tools" class="mb-s text-xs tracking-eyebrow text-foreground/80 uppercase">
-              Tools and guides
-            </p>
-            <ul class="list-none p-0 text-sm">
-              {visible.styleQuiz && (
-                <li>
-                  <a
-                    href="/quiz/"
-                    class="inline-flex min-h-[44px] min-w-[44px] items-center justify-center text-foreground/85 transition-colors hover:text-link md:justify-start"
-                  >
-                    Style Quiz
-                  </a>
-                </li>
-              )}
-              {visible.budgetCalculator && (
-                <li>
-                  <a
-                    href="/calculator/"
-                    class="inline-flex min-h-[44px] min-w-[44px] items-center justify-center text-foreground/85 transition-colors hover:text-link md:justify-start"
-                  >
-                    Cost Calculator
-                  </a>
-                </li>
-              )}
-              {visible.guides && (
-                <li>
-                  <a
-                    href="/guides/"
-                    class="inline-flex min-h-[44px] min-w-[44px] items-center justify-center text-foreground/85 transition-colors hover:text-link md:justify-start"
-                  >
-                    Guides
-                  </a>
-                </li>
-              )}
-              {visible.resources && (
-                <li>
-                  <a
-                    href="/resources/"
-                    class="inline-flex min-h-[44px] min-w-[44px] items-center justify-center text-foreground/85 transition-colors hover:text-link md:justify-start"
-                  >
-                    Resources
-                  </a>
-                </li>
-              )}
-            </ul>
-          </nav>
-        ) : (
-          <div aria-hidden="true" />
-        )}
-      </>
-    )}
-
-    {/* LATEST PROJECTS — only when portfolio is visible. */}
-    {visible.portfolio ? (
-      <nav aria-labelledby="footer-latest">
-        <p id="footer-latest" class="mb-s text-xs tracking-eyebrow text-foreground/80 uppercase">
-          Latest projects
-        </p>
-        {latestProjects.length > 0 ? (
-          <ul class="list-none p-0 text-sm">
-            {latestProjects.map((p) => (
-              <li>
-                <a
-                  href={`/portfolio/${p.slug?.current ?? ''}/`}
-                  class="inline-flex min-h-[44px] min-w-[44px] items-center justify-center text-foreground/85 transition-colors hover:text-link md:justify-start"
-                >
-                  {p.title}
-                </a>
-              </li>
-            ))}
-            <li class="pt-xs">
-              <a
-                href="/portfolio/"
-                class="inline-flex min-h-[44px] items-center gap-xs text-xs font-semibold tracking-eyebrow text-link uppercase transition-colors hover:text-primary-dark"
-              >
-                View all <span aria-hidden="true">→</span>
-              </a>
-            </li>
-          </ul>
-        ) : (
-          <p class="text-sm text-foreground/85 italic">
-            Case studies are coming soon.{' '}
-            <a
-              href="/portfolio/"
-              class="text-link underline underline-offset-2 hover:text-primary-dark"
-            >
-              See the portfolio →
-            </a>
-          </p>
-        )}
-      </nav>
-    ) : (
-      <div aria-hidden="true" />
-    )}
-
-    {/* GET IN TOUCH — email, phone, location, socials. */}
-    <div>
-      <p class="mb-s text-xs tracking-eyebrow text-foreground/80 uppercase">Get in touch</p>
-      <div class="space-y-1 text-sm">
+  <div class="dk-footer__booking">
+    <p class="dk-footer__line">
+      {areaLine ? `Booking sessions in ${areaLine}` : 'Booking sessions'}
+      <span aria-hidden="true"> · </span>
+      <time class="dk-clock" data-dk-clock data-tz={site.timeZone}>
+        {zoneShort}
+      </time>
+    </p>
+    {(email || phone || socialLinks.length > 0) && (
+      <ul class="dk-footer__reach">
         {email && (
-          <p>
+          <li>
             <CopyEmailButton email={email} variant="link" />
             <ToConfirm confirmed={facts.email?.confirmed} />
-          </p>
+          </li>
         )}
         {phone && (
-          <p>
-            <a
-              href={telHref(phone)}
-              class="inline-flex min-h-[44px] items-center gap-xs text-link transition-colors hover:text-primary-dark"
-            >
+          <li>
+            <a href={facts.phone?.href ?? `tel:${phone}`}>
               <Phone size={14} aria-hidden="true" />
               {phone}
             </a>
             <ToConfirm confirmed={facts.phone?.confirmed} />
-          </p>
+          </li>
         )}
-        {facts.address && (
-          <BusinessAddress address={facts.address} findUs={false} class="biz-center-sm pt-xs" />
-        )}
-        <OpenStatus facts={facts} class="biz-center-sm pt-xs" />
-      </div>
-      {/* The inquiry is the one action this column always offers; the business
-          name already sits in the brand row and the copyright line. */}
-      <p class="mt-s text-sm">
-        <a
-          href="/contact/"
-          class="inline-flex min-h-[44px] items-center text-link underline underline-offset-4 transition-colors hover:text-primary-dark"
-        >
-          Send an inquiry
+        {socialLinks.map((link) => {
+          const Icon = socialIcon(link.platform);
+          return (
+            <li>
+              <a href={link.url} target="_blank" rel="noopener noreferrer">
+                <Icon size={16} stroke={1.5} aria-hidden="true" />
+                {socialLabel(link)}
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    )}
+  </div>
+
+  <div class="dk-footer__small">
+    <p>
+      © {currentYear} {brandName}
+    </p>
+    {LEGAL_LINKS.length > 0 ? (
+      LEGAL_LINKS.map((l) => <a href={l.href}>{l.label}</a>)
+    ) : (
+      <a href="/privacy/">Privacy policy</a>
+    )}
+    <a href="/studio" rel="nofollow">
+      Studio
+    </a>
+    {siteCredit &&
+      (siteCreditUrl ? (
+        <a href={siteCreditUrl} target="_blank" rel="noopener noreferrer">
+          {siteCredit}
         </a>
-      </p>
-      {socialLinksToRender.length > 0 && (
-        <ul class="mt-m flex list-none flex-wrap justify-center gap-s p-0 text-sm md:justify-start">
-          {socialLinksToRender.map((link) => {
-            const Icon = socialIcon(link.platform);
-            const ariaLabel = socialLabel(link);
-            return (
-              <li>
-                <a
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={ariaLabel}
-                  class="inline-flex h-11 w-11 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:border-primary-dark hover:bg-primary-dark hover:text-white"
-                >
-                  <Icon size={20} stroke={1.5} />
-                </a>
-              </li>
-            );
-          })}
-        </ul>
-      )}
-    </div>
+      ) : (
+        <span>{siteCredit}</span>
+      ))}
   </div>
 
-  {/* Logo + tagline — sits below the nav grid as a centered brand signature.
-      The compact footer has them in its brand row on top instead. */}
-  {!compact && (
-    <div class="mx-auto flex max-w-content flex-col items-center gap-s px-m pb-l text-center">
-      <a
-        href="/"
-        aria-label={`${brandName} home`}
-        class="inline-block transition-opacity hover:opacity-80"
-      >
-        {/* Sized by WIDTH: the placeholder mark is a wide lockup (280x60), not
-          the square badge the old PNG was. An unloaded lazy image with
-          width:auto shrink-wraps to 0x0, never intersects the viewport and so
-          never loads, which is a real bug this family has hit more than once.
-          Give it real dimensions. */}
-        <img
-          alt={brandName}
-          width={280}
-          height={60}
-          class="h-14 w-auto"
-          loading="lazy"
-          decoding="async"
-          data-theme-logo
-          src={footerLogoLight.src}
-          data-logo-light-src={footerLogoLight.src}
-          data-logo-light-srcset={footerLogoLight.src}
-          data-logo-dark-src={footerLogoDark.src}
-          data-logo-dark-srcset={footerLogoDark.src}
-        />
-      </a>
-      {siteSettings?.tagline && (
-        <p class="max-w-[28rem] text-sm text-foreground/80 italic">{siteSettings.tagline}</p>
-      )}
-    </div>
-  )}
+  {/* The giant name, cropped by the footer's bottom edge. A link home, named in full. */}
+  <a href="/" class="site-footer__brand dk-footer__bleed" aria-label={`${brandName} home`}>
+    <span aria-hidden="true">{bigWord}</span>
+  </a>
 
-  {/* Thin bottom bar — copyright, privacy, optional "Site by..." credit on one
-       line so they don't add a tall block to a footer column. */}
-  <div class="border-t border-border">
-    <div class="mx-auto flex max-w-content flex-col items-center justify-center gap-xs px-m py-m text-center text-xs text-foreground/80 sm:flex-row sm:justify-between">
-      <p>
-        © {currentYear} {brandName}
-      </p>
-      <div class="flex items-center gap-m">
-        {LEGAL_LINKS.length > 0 ? (
-          LEGAL_LINKS.map((l) => (
-            <a
-              href={l.href}
-              class="hit-44 relative underline underline-offset-2 transition-colors hover:text-link"
-            >
-              {l.label}
-            </a>
-          ))
-        ) : (
-          <a
-            href="/privacy/"
-            class="hit-44 relative underline underline-offset-2 transition-colors hover:text-link"
-          >
-            Privacy policy
-          </a>
-        )}
-        {siteCredit &&
-          (siteCreditUrl ? (
-            <a
-              href={siteCreditUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="hit-44 relative underline underline-offset-2 transition-colors hover:text-link"
-            >
-              {siteCredit}
-            </a>
-          ) : (
-            <span>{siteCredit}</span>
-          ))}
-      </div>
-    </div>
-  </div>
-
-  {/* The phone action bar (card 191): nothing unless this page has a bar in Site settings. Only
-      rendered when there is a bar, so a page without one carries none of its script. */}
   {actionBar && <ActionBar bar={actionBar} />}
 </footer>
+
+<script>
+  // Her local time in the booking line, on site.timeZone. Fixed-width box (erin.css), so the
+  // swap from "EST" to "11:02 AM" moves nothing. Re-runs after View Transitions swaps.
+  function tick() {
+    for (const el of document.querySelectorAll<HTMLTimeElement>('time[data-dk-clock]')) {
+      const timeZone = el.dataset.tz;
+      if (!timeZone) continue;
+      try {
+        el.textContent = new Intl.DateTimeFormat('en-US', {
+          hour: 'numeric',
+          minute: '2-digit',
+          timeZone,
+        }).format(new Date());
+      } catch {
+        // An unknown zone keeps the build's text.
+      }
+    }
+  }
+  const w = window as typeof window & { __dkClock?: number };
+  tick();
+  if (!w.__dkClock) w.__dkClock = window.setInterval(tick, 30_000);
+  document.addEventListener('astro:page-load', tick);
+</script>
