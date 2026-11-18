@@ -6,14 +6,17 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   collaboratorHref,
+  decadeNamed,
   formatExif,
   formatShutter,
   groupByYear,
   photoRatio,
   placeholderPhoto,
   proofItems,
+  reelChapters,
   splitAfterWord,
   storyCast,
+  storyDecade,
   storyFrames,
   storySequence,
   withoutSeedPlaceholders,
@@ -188,4 +191,55 @@ test('proofItems lists each feature once and spreads the quotes between them', (
     ['quote', 'quote'],
   );
   assert.deepEqual(proofItems(pubs, []).length, 4);
+});
+
+test('decadeNamed reads long and short decades, and nothing else', () => {
+  assert.equal(decadeNamed('A 1950s Halloween at home'), 1950);
+  assert.equal(decadeNamed('Pink, 1960s'), 1960);
+  assert.equal(decadeNamed("the 1970's"), 1970);
+  assert.equal(decadeNamed("A '60s look"), 1960);
+  assert.equal(decadeNamed('Modeling a vintage ’60s look.'), 1960);
+  assert.equal(decadeNamed('Set in the 2020s'), 2020);
+  assert.equal(decadeNamed('Shot in 1964, not a decade'), null);
+  assert.equal(decadeNamed('Mint'), null);
+  assert.equal(decadeNamed(null), null);
+});
+
+test('storyDecade checks Started from, then the title, then the line, then the date', () => {
+  assert.equal(
+    storyDecade({ startedFrom: 'a 1940s film', title: 'A 1950s party', date: '2023-10-07' }),
+    1940,
+  );
+  assert.equal(
+    storyDecade({ title: 'A 1950s party', dek: "a '70s rug", date: '2023-10-07' }),
+    1950,
+  );
+  assert.equal(storyDecade({ title: 'Valentine', dek: "a '70s rug", date: '2026-01-21' }), 1970);
+  assert.equal(storyDecade({ title: 'Mint', dek: 'A dream', date: '2023-11-25' }), 2020);
+  assert.equal(storyDecade({ title: 'Undated' }), null);
+});
+
+test('reelChapters groups by decade, oldest first, undated last, order kept inside', () => {
+  const stories = [
+    { title: 'Mint', date: '2023-11-25' },
+    { title: 'A 1970s Valentine', date: '2026-01-21' },
+    { title: 'Undated' },
+    { title: "A '60s look", date: '2025-03-29' },
+    { title: 'Pink, 1960s', date: '2024-02-01' },
+    { title: 'Graffiti alley', date: '2023-10-27' },
+  ];
+  const chapters = reelChapters(stories);
+  assert.deepEqual(
+    chapters.map((c) => c.decade),
+    [1960, 1970, 2020, null],
+  );
+  assert.deepEqual(
+    chapters[0].stories.map((s) => s.title),
+    ["A '60s look", 'Pink, 1960s'],
+  );
+  assert.deepEqual(
+    chapters[2].stories.map((s) => s.title),
+    ['Mint', 'Graffiti alley'],
+  );
+  assert.deepEqual(reelChapters([]), []);
 });
