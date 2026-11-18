@@ -777,6 +777,23 @@ function rewriteBaseLayout(config) {
   rewriteFile(resolve(root, 'src/layouts/BaseLayout.astro'), function (text, filePath) {
     const light = config.palette.light['--background'];
     const dark = config.palette.dark['--background'];
+    // A light-only site (this one since 2026-11-18, CLAUDE.md rule 3) carries
+    // ONE theme-color meta with no media query; rewrite that one alone.
+    if (!/<meta name="theme-color"[^>]*prefers-color-scheme/.test(text)) {
+      return applySubstitutions(
+        text,
+        [
+          {
+            label: 'theme-color (light only)',
+            pattern: /(<meta name="theme-color" content=")([^"]*)(")/,
+            replacer: function (_, g1, _old, g3) {
+              return g1 + light + g3;
+            },
+          },
+        ],
+        filePath,
+      );
+    }
     const subs = [
       {
         label: 'theme-color (light)',

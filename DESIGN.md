@@ -1,5 +1,5 @@
 ---
-name: Erin Schmerr Photography, Soft Focus Editorial
+name: Tate Fine Art Photography, Soft Focus Editorial
 description: Warm paper, a big editorial serif, almost no chrome; photos resolve from blur into focus.
 colors:
   paper: '#F3EEE7'
@@ -31,7 +31,7 @@ components:
 
 # Design System: Soft Focus Editorial
 
-Direction chosen 2026-11-17 for the build on placeholder content. Two answers from the client can still move it: the brand name (wordmark only) and whether she would rather have a dark site (the site is light only since 2026-11-18; the dark tokens are still in the code, so bringing dark back is a small change). The CSS wins if this file and the code disagree: tokens live in `brand/brand.config.json`, written into `src/styles/globals.css` by `npm run apply-brand`; the site's own layer is `src/styles/erin.css`.
+Direction chosen 2026-11-17 for the build on placeholder content. The brand name is settled as Tate Fine Art Photography (2026-11-18; the wordmark sets "Tate" in Instrument Serif roman and "Fine Art Photography" in its italic, in Dusk). One answer from the client can still move it: whether she would rather have a dark site (the site is light only since 2026-11-18; the dark tokens are still in the code, so bringing dark back is a small change). The CSS wins if this file and the code disagree: tokens live in `brand/brand.config.json`, written into `src/styles/globals.css` by `npm run apply-brand`; the site's own layer is `src/styles/erin.css`.
 
 ## 1. Overview
 

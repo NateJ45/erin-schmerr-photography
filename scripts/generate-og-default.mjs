@@ -11,7 +11,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, '..');
 
 const result = await renderOg({
-  wordmark: 'Erin Schmerr Photography',
+  wordmark: 'Tate Fine Art Photography',
   tagline: ['Fine-art portraits, Cincinnati and West Chester, Ohio.'],
   outPath: resolve(root, 'public/og-default.png'),
   theme: OG_THEME,

@@ -1,6 +1,6 @@
 # Product
 
-Design context for the Erin Schmerr Photography site. Visual system: `DESIGN.md`. Facts that are still waiting on the client are marked **[open]**; do not design around a guess for them.
+Design context for the Tate Fine Art Photography site (Erin Schmerr). Visual system: `DESIGN.md`. Facts that are still waiting on the client are marked **[open]**; do not design around a guess for them.
 
 ## Register
 
@@ -21,7 +21,7 @@ A credits-first editorial portfolio for Erin Schmerr, a fine-art portrait photog
 
 Dreamy, crafted, quiet. The voice is warm and first person, short sentences, no hard sell. The work does the impressing; the copy says who, where and how to book.
 
-Brand name and domain are **[open]** (the business has traded as Stellina Fine Art Photography; the site may use her own name). Every place the name appears reads from `brand/brand.config.json` and Site settings, so the choice is a config change.
+Brand name: **Tate Fine Art Photography** (decided 2026-11-18; she renamed the business from Stellina Fine Art Photography in 2022, after her dad). Her own name, Erin Schmerr, stays on the About page and in the Person structured data. Domain is **[open]**. Every place the name appears reads from `brand/brand.config.json` and Site settings; the drawn wordmark comes from `node scripts/build-wordmark.mjs`.
 
 ## Content model, in plain words
 
