@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Direction G, Darkroom | Tate Fine Art Photography</title>
+<!-- Fonts: Italiana (thin display) + Manrope (small labels). -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Italiana&family=Manrope:wght@400;600&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="https://cdn.sanity.io/images/feuqkbki/production/89e44fc497a5bc621c7c1666ab80a4fd51b83f4d-1080x1350.jpg?w=1600&amp;q=72&amp;auto=format" fetchpriority="high">
+<style>
+/* Direction G: the darkroom. A full-screen WebGL layer moves between her covers with a warm film-burn dissolve and a
+   short rack of lens blur; below, each story opens through an aperture (a clip-path iris) as it scrolls in.
+   Measured from references: HOLMCHROME's aperture iris and viewfinder framing, Ruth Griffioen's slow 2.8s WebGL
+   transitions, Gallery Play's reveals at "top 80%". The hero <img> is the real LCP and stays visible without JS;
+   the canvas only fades in over it once its first texture is ready. Mockup uses raw WebGL (no library). */
+:root{--paper:#F5F1EA;--ink:#1C1915;--muted:#5C544A;--ease:cubic-bezier(.22,1,.36,1);--disp:"Italiana",Georgia,serif;--sans:"Manrope",system-ui,sans-serif}
+*{box-sizing:border-box;margin:0}
+html{background:var(--paper);color:var(--ink);font:400 15px/1.5 var(--sans)}
+a,button{color:inherit;font:inherit}:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+img{display:block}
+.chip{background:rgba(245,241,234,.94);padding:7px 12px;text-decoration:none;border:0;line-height:1.2}
+.label{font:600 11px/1.3 var(--sans);letter-spacing:.16em;text-transform:uppercase}
+.bar{position:fixed;inset:14px 14px auto 14px;display:flex;justify-content:space-between;gap:10px;z-index:10}
+.bar .name{font:400 22px/1 var(--disp)}
+.bar nav{display:flex;gap:6px}
+.hero{position:relative;height:100vh;height:100svh;overflow:hidden;background:#e6ded2}
+.hero img,.hero canvas{position:absolute;inset:0;width:100%;height:100%}
+.hero img{object-fit:cover}
+.hero canvas{opacity:0;transition:opacity 1s var(--ease)}
+.hero canvas.ready{opacity:1}
+.hero .now{position:absolute;left:14px;bottom:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;max-width:calc(100% - 28px)}
+.hero h1{font:400 clamp(30px,4.6vw,64px)/1 var(--disp);padding:10px 14px}
+.hero .now a{transition:opacity .4s}
+.hero .pause{position:absolute;right:14px;bottom:14px;cursor:pointer;min-height:40px}
+/* The iris: each story opens from a small aperture to the full frame as it scrolls into view. */
+.irises{display:grid;gap:0}
+.iris{position:relative;height:100vh;height:100svh;overflow:hidden}
+.iris img{width:100%;height:100%;object-fit:cover}
+.iris .cap{position:absolute;left:14px;bottom:14px}
+.iris .cap b{font:400 26px/1 var(--disp);font-weight:400;margin-right:10px}
+@supports (animation-timeline: view()){
+  @media (prefers-reduced-motion:no-preference){
+    html.motion .iris img{animation:aperture linear both;animation-timeline:view();animation-range:entry 10% cover 50%}
+    @keyframes aperture{from{clip-path:circle(6% at 50% 50%);transform:scale(1.15)}to{clip-path:circle(75% at 50% 50%);transform:none}}
+  }
+}
+.end{min-height:70vh;display:grid;place-items:center;text-align:center;padding:60px 20px}
+.end p{font:400 clamp(28px,3.4vw,46px)/1.1 var(--disp);max-width:22ch;margin:0 auto}
+.end a{display:inline-block;margin-top:24px;border-bottom:1px solid var(--ink);text-decoration:none;padding:8px 0 3px}
+.end small{display:block;margin-top:30px;color:var(--muted)}
+.dir{padding:22px 14px 40px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;font-size:14px;border-top:1px solid #d3c9bb}
+.dir b{display:block}
+@media (max-width:700px){.dir{grid-template-columns:minmax(0,1fr)}.bar nav a:nth-child(-n+1){display:none}}
+</style>
+<script>if(!navigator.webdriver)document.documentElement.classList.add('motion')</script>
+</head>
+<body>
+<header class="bar"><a class="chip name" href="direction-g.html">Tate Fine Art Photography</a><nav aria-label="Pages"><a class="chip label" href="#stories">Stories</a><a class="chip label" href="#book">Book a session</a></nav></header>
+<main>
+  <section class="hero" aria-label="Her covers, one after another">
+    <img id="first" src="https://cdn.sanity.io/images/feuqkbki/production/89e44fc497a5bc621c7c1666ab80a4fd51b83f4d-1080x1350.jpg?w=1600&amp;q=72&amp;auto=format" alt="A 1950s living room at Halloween, guests in costume around a glowing television" fetchpriority="high">
+    <canvas id="gl" aria-hidden="true"></canvas>
+    <div class="now"><h1 class="chip">Developed slowly, by hand.</h1><a class="chip label" id="now" href="direction-g-story.html">01 · A 1950s Halloween at home</a></div>
+    <button class="chip label pause" id="pause" hidden>Pause</button>
+  </section>
+  <section class="irises" id="stories" aria-label="Stories">
+    <a class="iris" href="direction-g-story.html"><img src="https://cdn.sanity.io/images/feuqkbki/production/ce858e4c6e05d280b40acaa3aedc0419d3487628-1080x1350.jpg?w=1600&amp;q=72&amp;auto=format" alt="A woman in black lace in a field at dusk, looking up"><span class="cap chip"><b>Sleepy Hollow</b><span class="label">2024</span></span></a>
+    <a class="iris" href="#"><img src="https://cdn.sanity.io/images/feuqkbki/production/e14d50acf5bb10164001a8ebfb71476d07ca4648-1440x1440.jpg?w=1600&amp;q=72&amp;auto=format" alt="A woman in red lace kneels on a checkered rug among paper hearts, 1970s colour"><span class="cap chip"><b>A 1970s Valentine</b><span class="label">2026</span></span></a>
+    <a class="iris" href="#"><img src="https://cdn.sanity.io/images/feuqkbki/production/898f65f91792769481299578c0a3a70e92ea2aa5-1080x1350.jpg?w=1600&amp;q=72&amp;auto=format" alt="A fairy with lavender hair and pale wings, her back to the camera, among leaves"><span class="cap chip"><b>A Midsummer Night's Dream</b><span class="label">2023</span></span></a>
+    <a class="iris" href="#"><img src="https://cdn.sanity.io/images/feuqkbki/production/29cba897d6dec25210cb15085ef13ef589993a92-1080x1350.jpg?w=1600&amp;q=72&amp;auto=format" alt="A woman in profile against red and blue neon letters"><span class="cap chip"><b>American Sign Museum</b><span class="label">2025</span></span></a>
+  </section>
+  <section class="end" id="book" aria-label="About and booking">
+    <div><p>I've spent years trying to perfect the look of an authentic vintage photograph.</p><a class="label" href="#">Book a session</a><small>As seen in Hollyway, Elysium, PhotoVogue, BleachFilm and Fienfh.</small></div>
+  </section>
+</main>
+<aside class="dir" aria-label="About this direction">
+  <div><b>Bet</b>The transition between two of her photographs can itself feel like a darkroom: warm light burning one print into the next.</div>
+  <div><b>Rejects</b>No grid, no slider arrows, no type over the faces. One live picture, then apertures.</div>
+  <div><b>Costs</b>WebGL adds a layer to build and test (OGL in the real build). The canvas must never hold up the first paint; it sits behind a real image.</div>
+</aside>
+<script>
+// Film-burn dissolve between covers. Raw WebGL1 for the mockup; the hero <img> stays as the LCP and the fallback.
+(function(){
+  const H=document.documentElement; if(!H.classList.contains('motion'))return;
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const urls=["https://cdn.sanity.io/images/feuqkbki/production/89e44fc497a5bc621c7c1666ab80a4fd51b83f4d-1080x1350.jpg?w=1600&amp;q=72&amp;auto=format","https://cdn.sanity.io/images/feuqkbki/production/ce858e4c6e05d280b40acaa3aedc0419d3487628-1080x1350.jpg?w=1600&amp;q=72&amp;auto=format","https://cdn.sanity.io/images/feuqkbki/production/e14d50acf5bb10164001a8ebfb71476d07ca4648-1440x1440.jpg?w=1600&amp;q=72&amp;auto=format","https://cdn.sanity.io/images/feuqkbki/production/898f65f91792769481299578c0a3a70e92ea2aa5-1080x1350.jpg?w=1600&amp;q=72&amp;auto=format","https://cdn.sanity.io/images/feuqkbki/production/a707cb65592c05af9a3cb1e8d8fcbbfd8525d9cc-1440x1440.jpg?w=1600&amp;q=72&amp;auto=format","https://cdn.sanity.io/images/feuqkbki/production/4852a6d931b6d09a64829bb965c53db6dbc96f36-1080x1350.jpg?w=1600&amp;q=72&amp;auto=format"].map(u=>u.replace(/&amp;/g,'&'));
+  const names=["A 1950s Halloween at home","Sleepy Hollow","A 1970s Valentine","A Midsummer Night's Dream","Pink, 1960s","Spooky in August"];
+  const cv=document.getElementById('gl'),gl=cv.getContext('webgl',{premultipliedAlpha:false});if(!gl)return;
+  const vs=`attribute vec2 p;varying vec2 v;void main(){v=p*.5+.5;v.y=1.-v.y;gl_Position=vec4(p,0,1);}`;
+  const fs=`precision mediump float;varying vec2 v;uniform sampler2D a,b;uniform float t,ra,rb,rs;
+  float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+  float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+vec2(1,1)),f.x),f.y);}
+  float fb(vec2 p){float s=0.,m=.5;for(int i=0;i<4;i++){s+=m*n(p);p*=2.;m*=.5;}return s;}
+  vec2 cover(vec2 uv,float ri){vec2 s=rs>ri?vec2(1.,ri/rs):vec2(rs/ri,1.);return (uv-.5)*s+.5;}
+  vec4 blur(sampler2D s,vec2 uv,float r){vec4 c=vec4(0);for(int x=-2;x<=2;x++)for(int y=-2;y<=2;y++)c+=texture2D(s,uv+vec2(x,y)*r);return c/25.;}
+  void main(){float bl=sin(t*3.14159)*.0035;vec4 A=blur(a,cover(v,ra),bl),B=blur(b,cover(v,rb),bl);
+    float g=fb(v*vec2(rs,1.)*3.)*.75+(1.-v.y)*.25;float e=t*1.3-.15;float m=smoothstep(e-.08,e,g);
+    float edge=smoothstep(e-.08,e-.02,g)*(1.-smoothstep(e-.02,e+.03,g));
+    vec3 burn=vec3(1.,.55,.2)*edge*1.6;gl_FragColor=vec4(mix(B.rgb,A.rgb,m)+burn,1.);}`;
+  const sh=(t,s)=>{const o=gl.createShader(t);gl.shaderSource(o,s);gl.compileShader(o);return o};
+  const pr=gl.createProgram();gl.attachShader(pr,sh(gl.VERTEX_SHADER,vs));gl.attachShader(pr,sh(gl.FRAGMENT_SHADER,fs));gl.linkProgram(pr);gl.useProgram(pr);
+  gl.bindBuffer(gl.ARRAY_BUFFER,gl.createBuffer());gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
+  const loc=gl.getAttribLocation(pr,'p');gl.enableVertexAttribArray(loc);gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
+  const U=k=>gl.getUniformLocation(pr,k);gl.uniform1i(U('a'),0);gl.uniform1i(U('b'),1);
+  const tex=[],ratio=[];
+  const load=(i)=>new Promise(r=>{const im=new Image();im.crossOrigin='anonymous';im.onload=()=>{const t=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,t);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+    try{gl.texImage2D(gl.TEXTURE_2D,0,gl.RGB,gl.RGB,gl.UNSIGNED_BYTE,im)}catch(e){/* No CORS for this origin: keep the plain images. */return r&&r()}tex[i]=t;ratio[i]=im.width/im.height;r()};im.onerror=()=>r();im.src=urls[i]});
+  const size=()=>{const d=Math.min(devicePixelRatio,1.5);cv.width=cv.clientWidth*d;cv.height=cv.clientHeight*d;gl.viewport(0,0,cv.width,cv.height)};
+  addEventListener('resize',size);size();
+  let cur=0,t=0,start=null,running=true,hold=4200,dur=2600,raf,visible=true;
+  const draw=(i,j,p)=>{gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,tex[i]);gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,tex[j]);
+    gl.uniform1f(U('t'),p);gl.uniform1f(U('ra'),ratio[i]);gl.uniform1f(U('rb'),ratio[j]);gl.uniform1f(U('rs'),cv.width/cv.height);gl.drawArrays(gl.TRIANGLE_STRIP,0,4)};
+  const now=document.getElementById('now'),pause=document.getElementById('pause');
+  const loop=ts=>{raf=requestAnimationFrame(loop);if(!running||!visible)return;if(start==null)start=ts;const el=ts-start;const nx=(cur+1)%urls.length;
+    if(!tex[nx]){draw(cur,cur,0);return}
+    if(el<hold){draw(cur,nx,0)}else if(el<hold+dur){draw(cur,nx,(el-hold)/dur)}else{cur=nx;start=ts;draw(cur,cur,0);now.textContent=String(cur+1).padStart(2,'0')+' · '+names[cur]}};
+  new IntersectionObserver(e=>visible=e[0].isIntersecting).observe(cv);
+  pause.hidden=false;pause.onclick=()=>{running=!running;pause.textContent=running?'Pause':'Play';if(running)start=null};
+  load(0).then(()=>{if(!tex[0])return;draw(0,0,0);cv.classList.add('ready');raf=requestAnimationFrame(loop);for(let i=1;i<urls.length;i++)load(i)});
+})();
+</script>
+</body>
+</html>

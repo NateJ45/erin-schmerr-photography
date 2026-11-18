@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Direction H, Depth of Field | Tate Fine Art Photography</title>
+<!-- Font: EB Garamond (italic for the few words there are). -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+/* Direction H: depth of field. The first screen is a table of her prints at three depths: the far ones small and soft,
+   the near ones large and sharp. The pointer drifts the layers at different rates and anything you point at comes
+   into focus. Below, each story is a full-bleed backdrop with a second print rising over it faster than the page.
+   Measured from references: Almira Kho's soft bleed and focus-on-hover, MORROW's 1s cubic-bezier(.22,1,.36,1).
+   Touch gets a slow drift on its own; reduced motion gets the still composition. Transforms only, no library. */
+:root{--paper:#F3EEE6;--ink:#1D1915;--muted:#5D554B;--ease:cubic-bezier(.22,1,.36,1);--serif:"EB Garamond",Georgia,serif}
+*{box-sizing:border-box;margin:0}
+html{background:var(--paper);color:var(--ink);font:400 18px/1.45 var(--serif)}
+a{color:inherit}:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+img{display:block}
+.chip{background:rgba(243,238,230,.94);padding:6px 12px;text-decoration:none;line-height:1.2}
+.bar{position:fixed;inset:14px 14px auto 14px;display:flex;justify-content:space-between;gap:8px;z-index:20}
+.bar nav{display:flex;gap:6px}
+/* The table of prints. Positions are percentages of the screen; depth sets size, softness and drift. */
+.table{position:relative;height:100vh;height:100svh;overflow:hidden;background:#e7e0d5}
+.layer{position:absolute;inset:-4%;will-change:transform;transition:transform 1.2s var(--ease)}
+.print{position:absolute;display:block;transition:filter .9s var(--ease),transform .9s var(--ease)}
+.print img{width:100%;height:100%;object-fit:cover}
+.far .print{filter:blur(3px) saturate(.85) brightness(1.04)}
+.mid .print{filter:blur(1.2px)}
+.print:hover,.print:focus-visible{filter:none;transform:scale(1.03);z-index:5}
+.print span{position:absolute;left:8px;bottom:8px;opacity:0;transition:opacity .5s;font-size:15px}
+.print:hover span,.print:focus-visible span{opacity:1}
+.title{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:10;text-align:center;pointer-events:none}
+.title h1{font:italic 400 clamp(28px,3.6vw,52px)/1.05 var(--serif);padding:12px 18px}
+.title p{display:inline-block;margin-top:8px;font-size:16px}
+/* Rising pairs: a full-bleed backdrop, and one print that climbs over it faster than the scroll. */
+.pair{position:relative;height:150vh;overflow:clip}
+.pair .back{position:sticky;top:0;height:100vh;height:100svh;width:100%;object-fit:cover}
+.pair .front{position:absolute;right:8vw;top:55vh;width:min(32vw,420px);aspect-ratio:4/5;object-fit:cover;outline:10px solid var(--paper)}
+.pair:nth-of-type(odd) .front{right:auto;left:8vw}
+.pair .cap{position:absolute;left:14px;top:calc(100vh - 56px);z-index:2}
+.pair:nth-of-type(odd) .cap{left:auto;right:14px}
+.pair .cap b{font-weight:500;margin-right:8px}.pair .cap i{color:var(--muted)}
+@supports (animation-timeline: view()){
+  @media (prefers-reduced-motion:no-preference){
+    html.motion .pair .front{animation:rise linear both;animation-timeline:view();animation-range:cover 0% cover 100%}
+    html.motion .pair .back{animation:sink linear both;animation-timeline:view();animation-range:cover 0% cover 100%}
+    @keyframes rise{from{transform:translateY(40vh)}to{transform:translateY(-55vh)}}
+    @keyframes sink{from{transform:scale(1.08)}to{transform:scale(1)}}
+  }
+}
+.end{min-height:70vh;display:grid;place-items:center;text-align:center;padding:60px 20px}
+.end p{font:italic 400 clamp(26px,3vw,40px)/1.15 var(--serif);max-width:24ch;margin:0 auto}
+.end a{display:inline-block;margin-top:22px;border-bottom:1px solid var(--ink);text-decoration:none;padding:6px 0 2px}
+.end small{display:block;margin-top:28px;color:var(--muted);font-size:16px}
+.dir{padding:22px 14px 40px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;font-size:16px;border-top:1px solid #d3c9bb}
+.dir b{display:block;font-weight:500}
+@media (max-width:700px){
+  .dir{grid-template-columns:minmax(0,1fr)}
+  .print.hide-s{display:none}
+  .far .print{width:30vw!important}.mid .print{width:42vw!important}.near .print{width:50vw!important}
+  .near .print:first-child{left:6%!important;top:30%!important}.near .print:nth-child(2){left:52%!important;top:52%!important}
+  .pair .front{width:56vw;right:6vw}.pair:nth-of-type(odd) .front{left:6vw}
+  .bar nav a:first-child{display:none}
+}
+@media (prefers-reduced-motion:reduce){.layer{transition:none}}
+</style>
+<script>if(!navigator.webdriver)document.documentElement.classList.add('motion')</script>
+</head>
+<body>
+<header class="bar"><a class="chip" href="direction-h.html">Tate <i>Fine Art Photography</i></a><nav aria-label="Pages"><a class="chip" href="#stories">Stories</a><a class="chip" href="#book">Book a session</a></nav></header>
+<main>
+  <section class="table" aria-label="A table of prints">
+    <div class="layer far" data-d="10">
+      <a class="print" href="#" style="left:2%;top:4%;width:14vw;aspect-ratio:4/5"><img src="https://cdn.sanity.io/images/feuqkbki/production/cbb94181b71c47254d3b4765a00a2bdd28e2876d-1440x1440.jpg?w=500&amp;q=72&amp;auto=format" alt="A woman in a cream ruffled gown sits on a bed in soft mint light"><span class="chip">Mint</span></a>
+      <a class="print hide-s" href="#" style="left:38%;top:2%;width:12vw;aspect-ratio:1"><img src="https://cdn.sanity.io/images/feuqkbki/production/76d888be6dc1bc1ea0b2c0fb2f17d2b100863682-1440x1440.jpg?w=500&amp;q=72&amp;auto=format" alt="A smiling woman with long fair hair and bangs, in warm light"><span class="chip">Lady Wing Shot</span></a>
+      <a class="print" href="#" style="left:80%;top:6%;width:15vw;aspect-ratio:4/5"><img src="https://cdn.sanity.io/images/feuqkbki/production/d3c81f69d2edc61440c1081c35d7aa9ee5dbd220-1080x1350.jpg?w=500&amp;q=72&amp;auto=format" alt="A woman in a long embroidered white dress holds wildflowers on a path through pines"><span class="chip">The vintage dress</span></a>
+      <a class="print hide-s" href="#" style="left:10%;top:66%;width:13vw;aspect-ratio:4/5"><img src="https://cdn.sanity.io/images/feuqkbki/production/7f054f64b4cdb82661c9fb4fa75ed2c874f78265-1080x1343.jpg?w=500&amp;q=72&amp;auto=format" alt="A woman in a patterned jumpsuit leans on a maze of painted lines"><span class="chip">Graffiti alley</span></a>
+      <a class="print" href="#" style="left:84%;top:64%;width:13vw;aspect-ratio:4/5"><img src="https://cdn.sanity.io/images/feuqkbki/production/719a603c062a0aaf18b908dd1079457734987ea2-1080x1350.jpg?w=500&amp;q=72&amp;auto=format" alt="A woman in black reaches up in a pink room full of mannequins and feathers"><span class="chip">Taking Up Space</span></a>
+    </div>
+    <div class="layer mid" data-d="22">
+      <a class="print" href="#" style="left:14%;top:12%;width:22vw;aspect-ratio:4/5"><img src="https://cdn.sanity.io/images/feuqkbki/production/ce858e4c6e05d280b40acaa3aedc0419d3487628-1080x1350.jpg?w=700&amp;q=72&amp;auto=format" alt="A woman in black lace in a field at dusk, looking up"><span class="chip">Sleepy Hollow</span></a>
+      <a class="print" href="#" style="left:60%;top:6%;width:20vw;aspect-ratio:1"><img src="https://cdn.sanity.io/images/feuqkbki/production/e14d50acf5bb10164001a8ebfb71476d07ca4648-1440x1440.jpg?w=700&amp;q=72&amp;auto=format" alt="A woman in red lace kneels on a checkered rug among paper hearts, 1970s colour"><span class="chip">A 1970s Valentine</span></a>
+      <a class="print hide-s" href="#" style="left:40%;top:66%;width:19vw;aspect-ratio:4/5"><img src="https://cdn.sanity.io/images/feuqkbki/production/29cba897d6dec25210cb15085ef13ef589993a92-1080x1350.jpg?w=700&amp;q=72&amp;auto=format" alt="A woman in profile against red and blue neon letters"><span class="chip">American Sign Museum</span></a>
+    </div>
+    <div class="layer near" data-d="44">
+      <a class="print" href="direction-h-story.html" style="left:28%;top:24%;width:30vw;aspect-ratio:4/5"><img src="https://cdn.sanity.io/images/feuqkbki/production/89e44fc497a5bc621c7c1666ab80a4fd51b83f4d-1080x1350.jpg?w=900&amp;q=72&amp;auto=format" alt="A 1950s living room at Halloween, guests in costume around a glowing television" fetchpriority="high"><span class="chip">A 1950s Halloween at home</span></a>
+      <a class="print" href="#" style="left:64%;top:40%;width:26vw;aspect-ratio:4/5"><img src="https://cdn.sanity.io/images/feuqkbki/production/898f65f91792769481299578c0a3a70e92ea2aa5-1080x1350.jpg?w=900&amp;q=72&amp;auto=format" alt="A fairy with lavender hair and pale wings, her back to the camera, among leaves"><span class="chip">A Midsummer Night's Dream</span></a>
+      <a class="print hide-s" href="#" style="left:2%;top:44%;width:22vw;aspect-ratio:4/5"><img src="https://cdn.sanity.io/images/feuqkbki/production/a707cb65592c05af9a3cb1e8d8fcbbfd8525d9cc-1440x1440.jpg?w=900&amp;q=72&amp;auto=format" alt="A woman in a pink 1960s jumpsuit and glasses behind a dark glass door"><span class="chip">Pink, 1960s</span></a>
+    </div>
+    <div class="title"><h1 class="chip">Everything comes into focus.</h1><br><p class="chip">Erin Schmerr · fine-art portraits · Cincinnati</p></div>
+  </section>
+
+  <div id="stories">
+    <section class="pair" aria-label="A 1950s Halloween at home"><img class="back" src="https://cdn.sanity.io/images/feuqkbki/production/2693aa2f66f3c63a70d029a93d78381afbe02a12-1080x1343.jpg?w=1600&amp;q=72&amp;auto=format" alt="The whole party on the floor of the living room, cards and drinks between them"><img class="front" src="https://cdn.sanity.io/images/feuqkbki/production/c8e429012032c7a4d57524d415abbc2e35d3a39b-1080x1350.jpg?w=700&amp;q=72&amp;auto=format" alt="The devil in red tulle laughs on the floor beside a plate of spaghetti"><a class="cap chip" href="direction-h-story.html"><b>A 1950s Halloween at home</b><i>the party as dad's old camera would have caught it</i></a></section>
+    <section class="pair" aria-label="Sleepy Hollow"><img class="back" src="https://cdn.sanity.io/images/feuqkbki/production/8f6188144846c8d1da27df1e9792175b0da3e51f-1080x1350.jpg?w=1600&amp;q=72&amp;auto=format" alt="Full length in the golden field at the end of the day"><img class="front" src="https://cdn.sanity.io/images/feuqkbki/production/e0c046975e7e174417e8ed258b05be5b6b339efe-1080x1350.jpg?w=700&amp;q=72&amp;auto=format" alt="She leans on the tree trunk and looks at the camera"><a class="cap chip" href="#"><b>Sleepy Hollow</b><i>my favorite Tim Burton character</i></a></section>
+    <section class="pair" aria-label="A 1970s Valentine"><img class="back" src="https://cdn.sanity.io/images/feuqkbki/production/d3059f9d5ddfecdfa852e571da236b973a50997a-1440x1440.jpg?w=1600&amp;q=72&amp;auto=format" alt="Lying on the checkered rug among valentines, a sunny 1970s living room behind"><img class="front" src="https://cdn.sanity.io/images/feuqkbki/production/49f871464e237328819423c42eff502d1eb5c0f3-1440x1440.jpg?w=700&amp;q=72&amp;auto=format" alt="In a red lace mask, her finger at her lips"><a class="cap chip" href="#"><b>A 1970s Valentine</b><i>a checkered rug and a lace mask</i></a></section>
+  </div>
+
+  <section class="end" id="book" aria-label="About and booking"><div><p>Bring me a decade, a character or a story, and we'll build a session around it.</p><a href="#">Book a session</a><small>It started with my dad's camera. As seen in Hollyway, Elysium, PhotoVogue, BleachFilm and Fienfh.</small></div></section>
+</main>
+<aside class="dir" aria-label="About this direction">
+  <div><b>Bet</b>Her pictures feel like a dream half remembered; a screen where the prints float at different depths and sharpen when you look at them says that without words.</div>
+  <div><b>Rejects</b>No grid, no slideshow, no sections of text. A table of prints, then rising pairs.</div>
+  <div><b>Costs</b>Twelve images on the first screen (small ones, but many requests). Pointer-led motion means phones see an automatic drift instead.</div>
+</aside>
+<script>
+// Pointer drift: each layer follows the pointer by its depth. Touch: a slow drift on its own. Reduced motion: still.
+(function(){
+  if(!document.documentElement.classList.contains('motion')||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const table=document.querySelector('.table'),layers=[...document.querySelectorAll('.layer')];
+  const move=(x,y)=>layers.forEach(l=>{const d=+l.dataset.d;l.style.transform=`translate3d(${-x*d}px,${-y*d}px,0)`});
+  if(matchMedia('(hover:hover)').matches){
+    table.addEventListener('pointermove',e=>{const r=table.getBoundingClientRect();move((e.clientX-r.left)/r.width-.5,(e.clientY-r.top)/r.height-.5)});
+    table.addEventListener('pointerleave',()=>move(0,0));
+  } else {
+    layers.forEach(l=>l.style.transition='none');let vis=true;new IntersectionObserver(e=>vis=e[0].isIntersecting).observe(table);
+    const loop=t=>{requestAnimationFrame(loop);if(vis)move(Math.sin(t/6000)*.35,Math.cos(t/7700)*.3)};requestAnimationFrame(loop);
+  }
+})();
+</script>
+</body>
+</html>

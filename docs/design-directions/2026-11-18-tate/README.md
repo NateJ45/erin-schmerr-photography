@@ -1,6 +1,6 @@
 # Design directions: Tate Fine Art Photography, 2026-11-18
 
-Four static mockups for the portfolio, each a home page plus one story page (A 1950s Halloween at
+Static mockups for the portfolio in two rounds (A to D, then the photo-first, motion-led E to H), each a home page plus one story page (A 1950s Halloween at
 home), so the current look (Soft Focus Editorial) can be compared with genuinely different options
 before any reskin. Nothing here touches `src/`, `brand/brand.config.json` or the dataset.
 
@@ -12,15 +12,130 @@ before any reskin. Nothing here touches `src/`, `brand/brand.config.json` or the
   quotes are her own words from captions and interviews.
 - Light only (CLAUDE.md rule 3). Scrolling is native everywhere (rule 5); every effect has a
   reduced-motion and a touch or no-JS fallback, and nothing in the first viewport starts hidden.
-- Screenshots: `shots/<file>-<390|768|1280>.png`, from `npm run directions:shoot`. They are
-  NOT committed (`.gitignore` here): every shot contains her photographs, and her images never go
-  in this public repo. Run the command once to see them in `index.html`. The screenshot
-  browser gets each page in its settled state (B's wipe-ins already open, C's photos already
-  developed), because a full-page capture cannot scroll them into view.
+- Screenshots (`shots/`) and motion captures (`captures/`) are NOT committed (`.gitignore` here):
+  every one contains her photographs, and her images never go in this public repo. Run
+  `npm run directions:shoot -- docs/design-directions/2026-11-18-tate` to make the stills.
 
 ## Decision
 
 Waiting on Nathan's pick.
+
+## Round two (E to H): photo-first, motion-led
+
+Nathan's note on A to D: interesting, but he wants full-page, motion-led showcases where her
+photographs are the page. A to D stay below for the record. E to H are all full-bleed, keep type
+and chrome to a line or two on paper chips, and make the motion the main event.
+
+- Every motion runs in a browser. Captures of each home page (and the E and G story pages) are in
+  `captures/*.mp4`, made with Playwright and kept local like the shots (gitignored: they contain
+  her photographs).
+- **G needs a server.** The Sanity CDN only sends CORS headers to the project's allowed origins
+  (`localhost:4321` and the workers.dev address), and WebGL cannot read a photo without them. Run
+  `node serve.mjs` in this folder (no dependencies) and open `http://localhost:4321/`. Opened as a
+  plain file, G falls back to its still images. At cutover the real domain joins the CORS list.
+- Every direction keeps native scrolling. Scroll effects are CSS scroll-driven animations
+  (`animation-timeline: view()`) with a small rAF fallback where needed, never a scroll-hijack
+  library. Reduced motion shows the photographs still; touch gets a lighter version (noted per
+  direction); without JS every page is a plain run of full-bleed photos.
+- The still shots show each page settled (the screenshot browser is detected and skips motion), so
+  judge the motion from the captures or the live pages.
+
+### Measured references (awwwards MCP)
+
+| #   | Reference                                                                               | What was measured                                                                                                                                                                                              | What to take                                                                                                               |
+| --- | --------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| R1  | [Almira Kho](https://almirakho.com/) (Honorable Mention, Sep 2026)                      | `record_site_motion`, `analyze_scroll_map`, `get_motion_dna`: Lenis, no scroll triggers, document height 900px (the desktop scroll is taken over)                                                              | A portrait shown whole over a blurred enlargement of itself; the works list laid over a soft photo (E, H)                  |
+| R2  | [HOLMCHROME](https://holmchrome.byholm.co/) (Honorable Mention, Oct 2026)               | `record_site_motion` (aperture-iris preloader), `analyze_scroll_map` (a canvas app with no document scroll), site elements (film-strip ribbon, viewfinder hero, contact sheet)                                 | The iris opening (G), frame numbers and exposure labels (F)                                                                |
+| R3  | [Jon McCormack](https://jonmccormack.com/) (nominee)                                    | `record_site_motion` (loading splash to a full-bleed landscape with one centred line), `analyze_page_structure` with mobile compare: one 900px screen on desktop, five stacked bands of about 497px on a phone | Full-bleed with one line of words; and the lesson that desktop scroll-jacking falls back to a plain stack on phones anyway |
+| R4  | [Gallery Play](https://gallery-play.be/) (Honorable Mention)                            | `get_motion_dna`: GSAP ScrollTrigger, Lenis and WebGL; triggers at "top 80%"; durations p25 500ms, median 1000ms, p75 1300ms; ease `cubic-bezier(0, .33, .07, 1.03)`                                           | Reveal timing for captions and the iris range                                                                              |
+| R5  | [MORROW](https://morrow.valerian.studio) (horizontal layout)                            | `record_site_motion` (9 keyframes), `get_motion_dna`: ease `cubic-bezier(.22, 1, .36, 1)`, median 1000ms                                                                                                       | Confirms the site's own easing curve and 1s reveals                                                                        |
+| R6  | [Hearst Exhibit 2026](https://www.hollywoodexhibit2026.com) (Site of the Day, Aug 2026) | `record_site_motion`: a serif title card on black before the gallery                                                                                                                                           | Anti-reference: a dark preloader that hides the work                                                                       |
+| R7  | [Ruth Griffioen](https://ruthgriffioen.art/) (round one)                                | `get_motion_dna`: WebGL, 2.8s keyframes                                                                                                                                                                        | The slow pace for G's 2.6s film-burn                                                                                       |
+
+Three of the four strongest photographer sites take over the desktop scroll (their document is one
+900px screen). None of these directions does; the same feel comes from sticky and scroll-driven
+layers over native scrolling.
+
+### The directions
+
+#### E. Rack Focus (`direction-e.html`, `direction-e-story.html`)
+
+Each story is one full-screen slide; the next slides up over it as you scroll and racks from soft to
+sharp as it arrives. Portraits show whole over a blurred bleed of themselves, so nothing is cropped
+on a wide screen. One line of type. The story page plays like a slideshow film: each frame pushes in
+slowly and pulls into focus, captions sit like subtitles, segmented progress runs along the top,
+with pause, arrows, keyboard and swipe, and the cast as end credits.
+
+- **Bet:** one picture at a time, edge to edge, is how her work wants to be seen.
+- **Motion:** CSS scroll-driven blur and scale (no library); 1.2s crossfades in the film.
+- **Phone and LCP:** the first slide's image is preloaded and is the LCP. Touch drops the blur and
+  keeps scale and fade. Seven full-screen images, so the real build lazy-loads all but the first.
+- **Library:** none.
+
+#### F. The Reel (`direction-f.html`, `direction-f-story.html`)
+
+A full-bleed opening frame, then one long reel pinned to the screen: you scroll down and the frames
+run sideways, each picture drifting inside its frame for depth, chapters (the 1950s, 1960s, 1970s,
+from the page, Halloween) as single lines between frames, a progress rule along the bottom. The story
+is the same reel at full height with a frame counter.
+
+- **Bet:** a reel moving sideways feels like film through a camera, and every story gets full height.
+- **Motion:** CSS scroll-driven translate (compositor-only, cheap); rAF fallback where unsupported.
+- **Phone and LCP:** phones get a native swipe strip with snap instead of the pinned reel. LCP is the
+  opening image. The twelve reel images load lazily in the real build.
+- **Library:** none.
+
+#### G. Darkroom (`direction-g.html`, `direction-g-story.html`)
+
+A full-screen WebGL layer moves between her covers with a warm film-burn dissolve and a short rack of
+lens blur, then each story below opens through an aperture (a clip-path iris) as it scrolls in. The
+story page develops as you scroll: one fixed screen, each step burning the current print into the
+next, scrubbed by the scroll so it runs backwards too.
+
+- **Bet:** the change between two of her photographs can itself feel like a darkroom.
+- **Motion:** a WebGL shader (noise-edged burn with a warm glow, a 5x5 blur during the change); a CSS
+  scroll-driven iris.
+- **Phone and LCP:** a real `<img>` is the LCP and stays until the first texture is ready; the canvas
+  pauses off screen and caps pixel ratio at 1.5. Six 1600px textures is real GPU memory on a phone,
+  so the build would use smaller textures there. Reduced motion: no canvas at all.
+- **Library:** the mockup is hand-written WebGL (about 60 lines). The real build would keep it
+  hand-written (no dependency) or use OGL (about 10 kB); pause for Nathan's OK before adding OGL. It
+  also needs the production domain on the Sanity CORS list.
+
+#### H. Depth of Field (`direction-h.html`, `direction-h-story.html`)
+
+The first screen is a table of her prints at three depths: far ones small and soft, near ones large
+and sharp. The pointer drifts the layers at different rates, and whatever you point at comes into
+focus with its title. Below, each story is a full-bleed backdrop with a second print climbing over it
+faster than the page. The story keeps the room behind you, softening, while the prints float up at
+three speeds and sharpen as they reach the middle.
+
+- **Bet:** her pictures feel like a dream half remembered; depth and focus say that without words.
+- **Motion:** pointer-led transforms (1.2s ease), CSS scroll-driven parallax and focus.
+- **Phone and LCP:** eleven small images on the first screen means more requests; LCP is the near
+  Halloween print. Touch gets a slow automatic drift; the blur on far prints stays static.
+- **Library:** none.
+
+### Trade-offs, round two
+
+| Direction | Feel                           | Phone                     | LCP risk          | Build cost | New dependency             |
+| --------- | ------------------------------ | ------------------------- | ----------------- | ---------- | -------------------------- |
+| E         | Calm, cinematic, one at a time | Good (lighter effect)     | Low               | Low        | None                       |
+| F         | Playful, filmic, sideways      | Swipe strip instead       | Low               | Medium     | None                       |
+| G         | Spectacular, warm, darkroom    | Heavy (textures)          | Low (image first) | High       | Maybe OGL; CORS at cutover |
+| H         | Dreamy, exploratory            | Auto drift, many requests | Medium            | Medium     | None                       |
+
+### Recommendation, round two
+
+**E, Rack Focus,** as the base. It is the closest to "the photographs are the page": every story gets
+the whole screen, portraits are never cropped, and the motion (a slow rack into focus) is the current
+site's "everything comes into focus" idea made full-screen. It needs no library, has the safest LCP,
+and falls back to a good plain stack. Borrow G's film-burn as the one transition in the story film
+once the domain and CORS are settled, since it is the most memorable effect here, and F's reel would
+make a strong `/stories/` archive. H is the most dreamlike on a desktop but the weakest on a phone,
+where most of her visitors are. The pick is Nathan's.
+
+## Round one (A to D)
 
 ## Must not look like
 

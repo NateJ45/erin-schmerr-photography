@@ -1,3 +1,4 @@
-# Screenshots contain her photographs, so they stay out of this public repo.
-# Regenerate with: npm run directions:shoot -- docs/design-directions/2026-11-18-tate
+# Screenshots and motion captures contain her photographs, so they stay out of this public repo.
+# Regenerate stills with: npm run directions:shoot -- docs/design-directions/2026-11-18-tate
 shots/
+captures/

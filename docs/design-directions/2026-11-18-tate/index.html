@@ -31,10 +31,38 @@ header p{color:var(--muted);margin-top:10px;max-width:70ch}
 </head>
 <body>
 <header>
-  <h1>Tate Fine Art Photography: four directions</h1>
+  <h1>Tate Fine Art Photography: design directions, two rounds</h1>
   <p>Home page and one story page per direction, built with her own photographs (hot-linked from the public dataset) and draft copy in her voice. Shots are the top of each page at 390, 768 and 1280; open a page to see the whole thing. Details, references and the divergence table are in README.md.</p>
 </header>
 <main>
+  <h2 style="margin-top:28px">Round two: photo-first, motion-led</h2>
+  <p style="color:var(--muted);max-width:70ch;margin-top:6px">The motion is the point, so each card shows the home page capture (captures/, local only, like the shots). Direction G needs <code>node serve.mjs</code> in this folder and <code>http://localhost:4321/</code>, because the photo CDN only allows that origin for WebGL.</p>
+  <section class="card" aria-labelledby="e">
+    <h2 id="e">E. Rack Focus <span>full-screen slides that pull into focus</span></h2>
+    <div class="notes"><div><b>Bet</b>One picture at a time, edge to edge; the scroll becomes a slow slideshow, and the story plays like a film.</div><div><b>Motion</b>CSS scroll-driven blur and scale; portraits whole over a blurred bleed. No library.</div><div><b>Costs</b>Blur is costly on old phones (touch gets scale and fade). Seven full-screen images; only the first is eager.</div></div>
+    <p class="links"><a href="direction-e.html">Open home</a><a href="direction-e-story.html">Open story (the film)</a></p>
+    <div class="shots"><figure><figcaption>Home, motion capture</figcaption><video src="captures/direction-e.mp4" controls muted loop playsinline style="width:100%"></video></figure><figure><figcaption>Story, motion capture</figcaption><video src="captures/direction-e-story.mp4" controls muted loop playsinline style="width:100%"></video></figure><figure><figcaption>1280 still</figcaption><img src="shots/direction-e-1280.png" alt="Direction E home at 1280 wide"></figure></div>
+  </section>
+  <section class="card" aria-labelledby="f">
+    <h2 id="f">F. The Reel <span>a pinned horizontal gallery</span></h2>
+    <div class="notes"><div><b>Bet</b>A reel that runs sideways as you scroll down feels like film moving through a camera.</div><div><b>Motion</b>CSS scroll-driven translate and in-frame drift; rAF fallback. No library.</div><div><b>Costs</b>Sideways scrolling is divisive; phones get a swipe strip instead.</div></div>
+    <p class="links"><a href="direction-f.html">Open home</a><a href="direction-f-story.html">Open story</a></p>
+    <div class="shots"><figure><figcaption>390 still</figcaption><img src="shots/direction-f-390.png" alt="Direction F home at 390 wide"></figure><figure><figcaption>Home, motion capture</figcaption><video src="captures/direction-f.mp4" controls muted loop playsinline style="width:100%"></video></figure><figure><figcaption>1280 still</figcaption><img src="shots/direction-f-1280.png" alt="Direction F home at 1280 wide"></figure></div>
+  </section>
+  <section class="card" aria-labelledby="g">
+    <h2 id="g">G. Darkroom <span>WebGL film-burn and aperture reveals</span></h2>
+    <div class="notes"><div><b>Bet</b>The change between two of her photographs can itself feel like a darkroom.</div><div><b>Motion</b>Hand-written WebGL burn with lens blur; CSS iris reveals. Real build: keep it hand-written or add OGL (ask first).</div><div><b>Costs</b>GPU memory on phones; needs the domain on the Sanity CORS list; most to build and test.</div></div>
+    <p class="links"><a href="direction-g.html">Open home</a><a href="direction-g-story.html">Open story</a></p>
+    <div class="shots"><figure><figcaption>Home, motion capture</figcaption><video src="captures/direction-g.mp4" controls muted loop playsinline style="width:100%"></video></figure><figure><figcaption>Story, motion capture</figcaption><video src="captures/direction-g-story.mp4" controls muted loop playsinline style="width:100%"></video></figure><figure><figcaption>1280 still</figcaption><img src="shots/direction-g-1280.png" alt="Direction G home at 1280 wide"></figure></div>
+  </section>
+  <section class="card" aria-labelledby="h">
+    <h2 id="h">H. Depth of Field <span>prints at three depths, drifting with the pointer</span></h2>
+    <div class="notes"><div><b>Bet</b>Her work feels like a dream half remembered; depth and focus say that without words.</div><div><b>Motion</b>Pointer-led parallax, focus on hover, scroll-driven rising pairs. No library.</div><div><b>Costs</b>Many images on the first screen; phones get an automatic drift instead of the pointer.</div></div>
+    <p class="links"><a href="direction-h.html">Open home</a><a href="direction-h-story.html">Open story</a></p>
+    <div class="shots"><figure><figcaption>390 still</figcaption><img src="shots/direction-h-390.png" alt="Direction H home at 390 wide"></figure><figure><figcaption>Home, motion capture</figcaption><video src="captures/direction-h.mp4" controls muted loop playsinline style="width:100%"></video></figure><figure><figcaption>1280 still</figcaption><img src="shots/direction-h-1280.png" alt="Direction H home at 1280 wide"></figure></div>
+  </section>
+  <p class="rec"><b>Round two recommendation:</b> E as the base, with G's film-burn as the one transition in the story film once the domain and CORS are settled, and F's reel as the stories archive. The pick is Nathan's.</p>
+  <h2 style="margin-top:40px">Round one, for the record</h2>
   <section class="card" aria-labelledby="a">
     <h2 id="a">A. The Contact Sheet <span>Index / directory</span></h2>
     <div class="notes"><div><b>Bet</b>Visitors from a credit want to scan everything she has made and judge the eye by the edit.</div><div><b>Rejects</b>No hero image, no slideshow, no big serif, no card grid.</div><div><b>Costs</b>Dense on a phone; needs six good frames per story; more archive than feeling.</div></div>
@@ -59,7 +87,7 @@ header p{color:var(--muted);margin-top:10px;max-width:70ch}
     <p class="links"><a href="direction-d.html">Open home</a><a href="direction-d-story.html">Open story</a></p>
     <div class="shots"><figure><figcaption>390</figcaption><img src="shots/direction-d-390.png" alt="Direction D home at 390 wide"></figure><figure><figcaption>768</figcaption><img src="shots/direction-d-768.png" alt="Direction D home at 768 wide"></figure><figure><figcaption>1280</figcaption><img src="shots/direction-d-1280.png" alt="Direction D home at 1280 wide"></figure></div>
   </section>
-  <p class="rec"><b>Recommendation:</b> C, with B's wall of magazine names for the press and A's filterable index as the stories archive page. B is the runner-up if the press should lead. The pick is Nathan's.</p>
+  <p class="rec"><b>Round one recommendation:</b> C, with B's wall of magazine names for the press and A's filterable index as the stories archive page. B is the runner-up if the press should lead. The pick is Nathan's.</p>
 </main>
 </body>
 </html>
