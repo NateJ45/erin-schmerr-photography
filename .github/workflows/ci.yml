@@ -281,12 +281,35 @@ jobs:
         run: |
           echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
           echo "image=${ImageOS:-unknown}" >> "$GITHUB_OUTPUT"
+          echo "imgver=${ImageVersion:-unknown}" >> "$GITHUB_OUTPUT"
 
       - uses: actions/cache@v6
         id: pw-cache
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ steps.pw.outputs.image }}-${{ steps.pw.outputs.version }}
+
+      # Cache the .deb files `install-deps` downloads (about 116 MB, 181 packages), so a
+      # throttled Ubuntu mirror cannot time the step out. On 2026-11-18 almost every PR run
+      # lost an e2e shard because the mirror the runner drew (us-east-2.ec2.archive.ubuntu.com)
+      # served one 7 MB package in over two minutes, and the Azure-drop fallback below does
+      # not help when the slow one is the ec2 mirror. apt's archive cache is pointed at a
+      # folder the runner user can restore and save; on a hit `apt-get install` still runs but
+      # fetches nothing. Keyed on the runner image build (packages move with it) and the
+      # Playwright version (it decides which libraries are needed). The timeouts below stay
+      # as the safety net for a miss.
+      - name: Point apt at a cacheable archive folder
+        run: |
+          mkdir -p "$HOME/apt-debs/partial"
+          sudo chmod -R a+rwX "$HOME/apt-debs"
+          sudo rm -f /etc/apt/apt.conf.d/docker-clean
+          { echo 'Dir::Cache::Archives "'"$HOME"'/apt-debs/";'; echo 'APT::Keep-Downloaded-Packages "true";'; } | sudo tee /etc/apt/apt.conf.d/98-ci-archive-cache > /dev/null
+
+      - uses: actions/cache@v6
+        id: apt-cache
+        with:
+          path: ~/apt-debs/*.deb
+          key: apt-debs-${{ runner.os }}-${{ steps.pw.outputs.image }}-${{ steps.pw.outputs.imgver }}-pw${{ steps.pw.outputs.version }}-chromium-webkit
 
       # `--with-deps` runs `apt-get update`, which fails outright when the
       # runner's third-party Chrome/Microsoft apt sources are mid-sync and
@@ -298,11 +321,11 @@ jobs:
       # 29 kB/s for 57 minutes and held required checks; apt resumes the partial
       # download on the retry, and nothing can sit for the 6-hour default.
       - name: Install Playwright browsers
-        timeout-minutes: 15
+        timeout-minutes: 20
         if: steps.pw-cache.outputs.cache-hit != 'true'
         run: |
           sudo rm -f /etc/apt/sources.list.d/google-chrome* /etc/apt/sources.list.d/microsoft*
-          timeout 360 npx playwright install --with-deps chromium webkit || {
+          timeout 480 npx playwright install --with-deps chromium webkit || {
             # The killed try's sudo apt-get keeps running and holds the dpkg lock, so the retry
             # died at once with "Could not get lock". Stop it, let apt wait for the lock, and
             # skip the Azure mirror (the slow one) when the mirror list has another entry.
@@ -310,15 +333,15 @@ jobs:
             echo 'DPkg::Lock::Timeout "60";' | sudo tee /etc/apt/apt.conf.d/99-lock-timeout > /dev/null
             sudo dpkg --configure -a || true
             grep -qv azure /etc/apt/apt-mirrors.txt && sudo sed -i '/azure/d' /etc/apt/apt-mirrors.txt
-            timeout 360 npx playwright install --with-deps chromium webkit
+            timeout 480 npx playwright install --with-deps chromium webkit
           }
 
       - name: Install Playwright system libraries (browsers cached)
-        timeout-minutes: 8
+        timeout-minutes: 12
         if: steps.pw-cache.outputs.cache-hit == 'true'
         run: |
           sudo rm -f /etc/apt/sources.list.d/google-chrome* /etc/apt/sources.list.d/microsoft*
-          timeout 180 npx playwright install-deps chromium webkit || {
+          timeout 240 npx playwright install-deps chromium webkit || {
             # The killed try's sudo apt-get keeps running and holds the dpkg lock, so the retry
             # died at once with "Could not get lock". Stop it, let apt wait for the lock, and
             # skip the Azure mirror (the slow one) when the mirror list has another entry.
@@ -326,7 +349,7 @@ jobs:
             echo 'DPkg::Lock::Timeout "60";' | sudo tee /etc/apt/apt.conf.d/99-lock-timeout > /dev/null
             sudo dpkg --configure -a || true
             grep -qv azure /etc/apt/apt-mirrors.txt && sudo sed -i '/azure/d' /etc/apt/apt-mirrors.txt
-            timeout 180 npx playwright install-deps chromium webkit
+            timeout 240 npx playwright install-deps chromium webkit
           }
 
       # smoke (every route 200s and carries the site name in its title), axe in
