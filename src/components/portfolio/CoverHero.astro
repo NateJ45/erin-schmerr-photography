@@ -48,7 +48,11 @@ const pad = (n: number) => String(n).padStart(2, '0');
 <section class="cover-hero" aria-labelledby={headingId} data-cover-hero>
   <div class="cover-hero__slides">
     {stories.map((story, i) => (
-      <div class:list={['cover-hero__slide', i === 0 && 'is-active']} data-slide>
+      <div
+        class:list={['cover-hero__slide', i === 0 && 'is-active']}
+        data-slide
+        data-first-viewport-exempt={i === 0 ? undefined : ''}
+      >
         <FocusImage
           photo={story.cover}
           width={2400}
@@ -57,6 +61,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
           fetchpriority={i === 0 ? 'high' : 'low'}
           alt={story.cover?.alt ?? ''}
           class="cover-hero__frame"
+          pull={false}
         />
       </div>
     ))}
