@@ -896,11 +896,7 @@ const SITE_INSERT_GROUPS: InsertGroup[] = [
     // only on its own page (richSections.ts); a group whose types are absent does not appear.
     name: 'thispage',
     title: 'This page',
-    of: [
-      'contactFormSection',
-      'privacyPolicySection',
-      'journalPostsSection', // scaffold: journal
-    ],
+    of: ['contactFormSection', 'privacyPolicySection'],
   },
   {
     // The portfolio's home page blocks, filled from Stories and Publications.
@@ -940,7 +936,6 @@ export const SECTION_INSERT_MENU: ArrayOptions['insertMenu'] = {
           'statSection',
           'logoStripSection',
           'guaranteeSection',
-          'faqSection', // scaffold: faq
         ],
       },
       {
@@ -964,7 +959,6 @@ export const SECTION_INSERT_MENU: ArrayOptions['insertMenu'] = {
         name: 'business',
         title: 'About the business',
         of: [
-          'processSection', // scaffold: process
           'storySection', // scaffold: about
           'founderSection', // scaffold: about
           'teamSection',

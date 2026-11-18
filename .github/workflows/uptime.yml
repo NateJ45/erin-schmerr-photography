@@ -70,7 +70,6 @@ jobs:
           base="${SITE_URL%/}"
           fail=0
           ROUTES="/ /privacy/"
-          ROUTES="$ROUTES /faq/" # scaffold: faq
           for path in $ROUTES; do
             code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 25 "${base}${path}")
             echo "${code}  ${base}${path}"

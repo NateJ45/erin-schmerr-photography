@@ -16,20 +16,4 @@
 // =============================================================================
 import type { TableConfig } from '../lib/studio-table';
 
-export const TABLES: TableConfig[] = [
-  // scaffold: journal
-  {
-    id: 'journal-table',
-    title: 'Posts as a table',
-    type: 'journalEntry',
-    projection: 'publishedAt, title, "categories": categories[]->title, featured',
-    columns: [
-      { key: 'publishedAt', label: 'Date', kind: 'date' },
-      { key: 'title', label: 'Title' },
-      { key: 'categories', label: 'Categories', kind: 'list' },
-      { key: 'featured', label: 'Featured', kind: 'bool' },
-    ],
-    defaultSort: { key: 'publishedAt', dir: 'desc' },
-  },
-  // scaffold:end
-];
+export const TABLES: TableConfig[] = [];

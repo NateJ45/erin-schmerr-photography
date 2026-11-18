@@ -117,7 +117,7 @@ jobs:
           npx lhci autorun
           --collect.url=http://localhost:4173/
           --collect.url=http://localhost:4173/about/
-          --collect.url=http://localhost:4173/journal/
+          --collect.url=http://localhost:4173/stories/
           --collect.url=http://localhost:4173/404.html
 
       - name: Lighthouse CI (full)

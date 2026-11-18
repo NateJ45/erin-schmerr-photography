@@ -108,7 +108,6 @@ test('rich SELF_CONTAINED types get null surface', () => {
   const richSelf: string[] = [
     'founderSection', // scaffold: about
     'testimonialsSection', // scaffold: testimonials
-    'processSection', // scaffold: process
   ];
   for (const type of richSelf) {
     const rows = classifySections([block(type)]);
@@ -151,7 +150,6 @@ test('every new rich type appears in SELF_CONTAINED_TYPES or CONTENT_TYPES', () 
     'founderSection', // scaffold: about
     'testimonialsSection', // scaffold: testimonials
     'storySection', // scaffold: about
-    'processSection', // scaffold: process
     'serviceAreaSection',
     'guaranteeSection',
   ];
@@ -175,13 +173,6 @@ test('divider inserted between richTextSection and serviceAreaSection (different
 });
 
 // ── U7: new page-builder blocks — all SELF_CONTAINED ─────────────────────
-
-// scaffold: faq
-test('faqSection is SELF_CONTAINED (null surface)', () => {
-  const rows = classifySections([block('faqSection')]);
-  assert.equal(rows[0].surface, null, 'faqSection should have null surface');
-});
-// scaffold:end
 
 test('logoStripSection is SELF_CONTAINED (null surface)', () => {
   const rows = classifySections([block('logoStripSection')]);
@@ -211,12 +202,7 @@ test('U7 blocks do not advance the content cadence counter', () => {
 });
 
 test('every U7 type appears in SELF_CONTAINED_TYPES and not CONTENT_TYPES', () => {
-  const u7: string[] = [
-    'faqSection', // scaffold: faq
-    'logoStripSection',
-    'teamSection',
-    'embedSection',
-  ];
+  const u7: string[] = ['logoStripSection', 'teamSection', 'embedSection'];
   for (const type of u7) {
     assert.ok(SELF_CONTAINED_TYPES.has(type), `${type} must be in SELF_CONTAINED_TYPES`);
     assert.ok(!CONTENT_TYPES.has(type), `${type} must not be in CONTENT_TYPES`);

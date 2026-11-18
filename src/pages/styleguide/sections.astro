@@ -324,20 +324,6 @@ const SECTIONS: Record<string, unknown>[] = [
     })),
   },
   // scaffold:end
-  // scaffold: process
-  {
-    _type: 'processSection',
-    _key: 'process',
-    eyebrow: 'How it works',
-    headline: 'Three simple steps',
-    variant: 'preview',
-    steps: ['Talk', 'Plan', 'Do'].map((title, i) => ({
-      stepNumber: i + 1,
-      title,
-      shortDescription: 'What happens at this step.',
-    })),
-  },
-  // scaffold:end
   {
     _type: 'serviceAreaSection',
     _key: 'area',
@@ -354,21 +340,6 @@ const SECTIONS: Record<string, unknown>[] = [
     _key: 'guarantee',
     text: 'If something is not right, tell us and we will put it right.',
   },
-  // scaffold: faq
-  {
-    _type: 'faqSection',
-    _key: 'faq',
-    eyebrow: 'Questions',
-    headline: 'Common questions',
-    items: ['How do I get started?', 'What does it cost?', 'How long does it take?'].map(
-      (question, i) => ({
-        _id: `q${i}`,
-        question,
-        answer: [para(`a${i}`, 'A short, friendly answer.')],
-      }),
-    ),
-  },
-  // scaffold:end
   {
     _type: 'teamSection',
     _key: 'team',
@@ -662,7 +633,6 @@ const SECTIONS: Record<string, unknown>[] = [
   // what they draw here follows the dataset; the policy shows the built-in text.
   { _type: 'contactFormSection', _key: 'contact-form', sidebar: true },
   { _type: 'privacyPolicySection', _key: 'privacy-policy', lastUpdated: '2026-01-15' },
-  { _type: 'journalPostsSection', _key: 'journal-posts', showCategories: true }, // scaffold: journal
   // ── The portfolio (stories and press) ──────────────────────────────────────
   // These read their stories and publications themselves; with no Sanity data
   // they draw the labelled placeholders, which is what the thumbnails show.

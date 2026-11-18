@@ -18,11 +18,9 @@ import { defineType, defineField, defineArrayMember } from 'sanity';
 import { UserIcon } from '@sanity/icons/User';
 import { StarIcon } from '@sanity/icons/Star';
 import { DocumentTextIcon } from '@sanity/icons/DocumentText';
-import { OlistIcon } from '@sanity/icons/Olist';
 import { PinIcon } from '@sanity/icons/Pin';
 import { CheckmarkCircleIcon } from '@sanity/icons/CheckmarkCircle';
 import { UsersIcon } from '@sanity/icons/Users';
-import { HelpCircleIcon } from '@sanity/icons/HelpCircle';
 import { SyncIcon } from '@sanity/icons/Sync';
 import { SECTION_TYPES } from './sections';
 import {
@@ -234,56 +232,6 @@ export const storySection = defineType({
 });
 // scaffold:end
 
-// scaffold: process
-// ── 6. processSection ────────────────────────────────────────────────────────
-// Ordered process steps. Auto-populates from the processStep collection.
-// Two variants: 'full' (all steps, large cards) and 'preview' (first 4, compact grid).
-// Manages its own surface (SELF_CONTAINED) — 'full' on bg-background, 'preview' on bg-muted.
-export const processSection = defineType({
-  name: 'processSection',
-  title: 'Process steps',
-  type: 'object',
-  icon: OlistIcon,
-  fields: [
-    defineField({ name: 'eyebrow', title: 'Eyebrow (optional)', type: 'string' }),
-    defineField({ name: 'headline', title: 'Headline (optional)', type: 'string' }),
-    defineField({ name: 'subhead', title: 'Subhead (optional)', type: 'text', rows: 2 }),
-    defineField({
-      name: 'variant',
-      title: 'Variant',
-      type: 'string',
-      initialValue: 'preview',
-      options: {
-        list: [
-          {
-            title: 'Preview (first 4 steps, compact grid with a link)',
-            value: 'preview',
-          },
-          {
-            title: 'Full (all steps, large detail cards)',
-            value: 'full',
-          },
-        ],
-        layout: 'radio',
-      },
-    }),
-    defineField({
-      name: 'cta',
-      title: 'Link button (preview variant only)',
-      type: 'ctaBlock',
-      description: 'Only shown in the "preview" variant. Leave blank to hide.',
-    }),
-  ],
-  preview: {
-    select: { title: 'headline', variant: 'variant' },
-    prepare: ({ title, variant }) => ({
-      title: title || 'Process steps',
-      subtitle: variant === 'full' ? 'Process steps (full)' : 'Process steps (preview)',
-    }),
-  },
-});
-// scaffold:end
-
 // ── 7. serviceAreaSection ────────────────────────────────────────────────────
 // Two-column service area info + optional travel fee table (from businessInfo).
 // Participates in alternating surface cadence (CONTENT) — receives surface prop.
@@ -350,57 +298,6 @@ export const guaranteeSection = defineType({
     }),
   },
 });
-
-// scaffold: faq
-// ── 9. faqSection ─────────────────────────────────────────────────────────--
-// Inline FAQ accordion. References existing faqItem documents so editors pick
-// from the curated collection rather than entering duplicate copy.
-// SELF_CONTAINED — manages its own bg-background surface.
-//
-// NOTE: the dedicated /faq page emits FAQPage JSON-LD for Google rich results.
-// This inline block deliberately does NOT re-emit that schema — Google penalises
-// duplicate FAQPage markup on the same domain. The accordion renders without it.
-export const faqSection = defineType({
-  name: 'faqSection',
-  title: 'FAQ accordion (inline)',
-  type: 'object',
-  icon: HelpCircleIcon,
-  fields: [
-    defineField({ name: 'eyebrow', title: 'Eyebrow (optional)', type: 'string' }),
-    defineField({
-      name: 'headline',
-      title: 'Headline',
-      type: 'string',
-      validation: (R) => R.required(),
-    }),
-    headingAccentField(),
-    defineField({
-      name: 'subhead',
-      title: 'Subhead (optional)',
-      type: 'text',
-      rows: 2,
-      hidden: hideWhenRich('subheadRich'),
-    }),
-    richTwin('subheadRich', 'Subhead'),
-    defineField({
-      name: 'items',
-      title: 'Questions to show',
-      type: 'array',
-      description: 'Pick 3 to 6 questions. Fewer is better for inline blocks.',
-      validation: (R) => R.max(8),
-      of: [defineArrayMember({ type: 'reference', to: [{ type: 'faqItem' }] })],
-    }),
-    defineField({ name: 'cta', title: 'Link button (optional)', type: 'ctaBlock' }),
-  ],
-  preview: {
-    select: { title: 'headline', items: 'items' },
-    prepare: ({ title, items }) => ({
-      title: title || 'FAQ accordion',
-      subtitle: `FAQ${Array.isArray(items) ? ` (${items.length} items)` : ''}`,
-    }),
-  },
-});
-// scaffold:end
 
 // ── 10. teamSection ─────────────────────────────────────────────────────────
 // Inline team member grid. Members are stored as inline objects rather than
@@ -584,10 +481,8 @@ export const richSectionSchemas = [
   founderSection, // scaffold: about
   testimonialsSection, // scaffold: testimonials
   storySection, // scaffold: about
-  processSection, // scaffold: process
   serviceAreaSection,
   guaranteeSection,
-  faqSection, // scaffold: faq
   teamSection,
   dynamicListSection,
 ];
@@ -607,8 +502,6 @@ export const HOME_SECTION_TYPES = [
   ...SECTION_TYPES,
   { type: 'founderSection' }, // scaffold: about
   { type: 'testimonialsSection' }, // scaffold: testimonials
-  { type: 'processSection' }, // scaffold: process
-  { type: 'faqSection' }, // scaffold: faq
   { type: 'teamSection' },
   { type: 'dynamicListSection' },
   // The portfolio's home page blocks (storyIndexSection.ts, pressSections.ts).
@@ -625,7 +518,6 @@ export const HOME_SECTION_TYPES = [
 export const ABOUT_SECTION_TYPES = [
   ...SECTION_TYPES,
   { type: 'storySection' }, // scaffold: about
-  { type: 'faqSection' }, // scaffold: faq
   { type: 'teamSection' },
   { type: 'dynamicListSection' },
 ];
@@ -634,7 +526,6 @@ export const SERVICES_SECTION_TYPES = [
   ...SECTION_TYPES,
   { type: 'serviceAreaSection' },
   { type: 'guaranteeSection' },
-  { type: 'faqSection' }, // scaffold: faq
 ];
 
 // Every main page a page builder (card 190, ported from FBC Auburn). Contact and Privacy also
@@ -643,12 +534,5 @@ export const SERVICES_SECTION_TYPES = [
 // library or the saved sections.
 export const CONTACT_SECTION_TYPES = [...ABOUT_SECTION_TYPES, { type: 'contactFormSection' }];
 export const PRIVACY_SECTION_TYPES = [...ABOUT_SECTION_TYPES, { type: 'privacyPolicySection' }];
-// scaffold: journal
-export const JOURNAL_SECTION_TYPES = [...ABOUT_SECTION_TYPES, { type: 'journalPostsSection' }];
-// scaffold:end
 
-export const PROCESS_SECTION_TYPES = [
-  ...SECTION_TYPES,
-  { type: 'processSection' }, // scaffold: process
-  { type: 'faqSection' }, // scaffold: faq
-];
+export const PROCESS_SECTION_TYPES = [...SECTION_TYPES];

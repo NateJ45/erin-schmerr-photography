@@ -378,10 +378,7 @@ export const siteSettings = defineType({
               to: [
                 { type: 'homePage' },
                 { type: 'aboutPage' }, // scaffold: about
-                { type: 'processPage' }, // scaffold: process
-                { type: 'faqPage' }, // scaffold: faq
                 { type: 'contactPage' },
-                { type: 'journalPage' }, // scaffold: journal
                 { type: 'page' },
               ],
               hidden: ({ parent }) => parent?.everyPage === true,

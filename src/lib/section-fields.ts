@@ -67,7 +67,6 @@ export const HEADING_ACCENT_FIELDS: Readonly<Record<string, string>> = {
   richTextSection: 'heading',
   ctaBandSection: 'headline',
   testimonialsSection: 'headline', // scaffold: testimonials
-  faqSection: 'headline', // scaffold: faq
 };
 
 /** The section types that offer an accent word. */
@@ -94,7 +93,6 @@ export interface RichTwin {
 export const RICH_TWINS: Readonly<Record<string, RichTwin>> = {
   ctaBandSection: { plain: 'subhead', rich: 'subheadRich' },
   testimonialsSection: { plain: 'subhead', rich: 'subheadRich' }, // scaffold: testimonials
-  faqSection: { plain: 'subhead', rich: 'subheadRich' }, // scaffold: faq
   teamSection: { plain: 'subhead', rich: 'subheadRich' },
   dynamicListSection: { plain: 'subhead', rich: 'subheadRich' },
 };
