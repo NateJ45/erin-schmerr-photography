@@ -1,5 +1,7 @@
 # Change history
 
+_2026-11-18: home cover as full-screen slides (site-specific)._ `CoverHero.astro` no longer crossfades: each featured story is a sticky full-screen slide that racks from soft to sharp as it scrolls in (CSS `view()` timeline in `portfolio.css`; lighter on touch; still under reduced motion, without JS or support). `src/scripts/cover-hero.ts` and its Pause button are gone, since nothing moves on its own. No schema field change (description text only). The pick: `docs/design-directions/2026-11-18-tate/README.md`.
+
 _2026-11-07: video byte ranges (PORTS card 222)._ `src/worker.ts` wraps Astro's handler and `src/lib/video-ranges.ts` answers `*.mp4` and `*.webm` range requests with a 206, because the asset store sends the whole file with a 200 and Safari on an iPhone expects a partial answer. Every other request behaves as before. Detail: `docs/agent/deployment.md`.
 
 _2026-11-05: the Report tool in the Studio (PORTS card 218)._ A site's numbers by Month, Quarter or Year against the same period a year before, the Astro twin of the WordPress board report. `src/lib/studio-board.ts` is the arithmetic, `src/pages/api/studio/board.ts` the signed-in route onto `siteSeries`, `src/sanity/kit/board/` the screen and the chart kit (same bytes as the themes), `src/config/board.ts` the site's own parts and words. Off unless `PUBLIC_BOARD_REPORT=true`. See `docs/agent/studio-kit.md`.

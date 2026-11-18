@@ -69,6 +69,7 @@ Flat. Nothing floats except the lightbox and the phone menu. Depth comes from ph
 
 ## 5. Components
 
+- **Cover slides** (`CoverHero.astro`, block `coverHero`; picked 2026-11-18): the home page opens with the featured stories one per screen, full bleed and sticky, so each slides up over the last. Arriving slides rack from soft and slightly large to sharp on a CSS `view()` timeline (touch: scale and fade only; reduced motion, no JS or no support: still). A portrait shows whole over its own blurred LQIP on a wide screen. The first slide carries the headline, line and buttons on a paper chip, never animates, and holds the LCP image; the rest load lazily. Each slide has a caption chip and a counter. Nothing moves on its own, so there is no Pause button.
 - **Focus image** (`FocusImage.astro`): every photo renders over its own LQIP blur and resolves to sharp as it loads and enters view. Reduced motion shows it sharp at once.
 - **Credit block** (`CreditBlock.astro`): a two-column definition list (role, then linked name), set like a magazine credit.
 - **Story index** (`StoryIndex.astro`): selected stories as a grid or a list, with a toggle; in list view, hovering a title reveals its cover.

@@ -65,7 +65,7 @@ export const coverHero = defineType({
   type: 'object',
   icon: ImagesIcon,
   description:
-    'Full-width covers of the featured stories, fading one into the next, under your headline.',
+    'The featured stories, one per screen, each pulling into focus as you scroll. Your headline sits on the first.',
   fields: [
     defineField({
       name: 'eyebrow',

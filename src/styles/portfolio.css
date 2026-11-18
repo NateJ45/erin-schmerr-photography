@@ -583,166 +583,206 @@ html.motion [data-focus].is-focused .focus-image__img {
   opacity: 0.72;
 }
 
-/* COVER HERO (CoverHero.astro, src/scripts/cover-hero.ts). Full bleed. The text
-   colours are fixed light because they always sit on a photo under a scrim. */
+/* COVER HERO as full-screen slides (CoverHero.astro; picked 2026-11-18, design-directions
+   "direction I"). Each featured story fills the screen and sticks; the next slides up over it.
+   Arriving slides rack from soft and slightly large to sharp, driven by native scroll through a
+   CSS view() timeline. The first slide never animates. Words sit on paper chips (light only),
+   so contrast does not depend on the photograph. */
 .cover-hero {
   position: relative;
+}
+.cover-slide {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+  gap: 0.75rem;
+  height: 100vh;
+  height: 100svh;
+  padding: var(--spacing-m);
+  overflow: hidden;
+  background: var(--color-muted);
+}
+/* The first slide starts under the site header, so its chips sit higher by about the header's
+   height (which grows from ~58px on a phone to ~93px wide; this errs a few px high). Plain CSS:
+   measuring the header in script resized the slide after paint and cost layout shift. */
+.cover-slide--first {
+  padding-bottom: calc(var(--spacing-m) + clamp(3.6rem, 3.1rem + 2.6vw, 6.25rem));
+}
+/* A slide with focus inside paints above the slides stacked over it, so a focused link is never
+   hidden under the next slide (WCAG 2.4.11). */
+.cover-slide:focus-within {
+  z-index: 2;
+}
+.cover-slide > :not(.cover-slide__frame) {
+  position: relative;
+}
+.cover-slide__foot {
   display: flex;
   align-items: flex-end;
-  min-height: min(92svh, 62rem);
-  overflow: hidden;
-  color: #f3eee7;
-  background: #12100e;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
 }
-.cover-hero__slides,
-.cover-hero__slide {
-  position: absolute;
-  inset: 0;
+.cover-slide--empty {
+  position: relative;
 }
-.cover-hero__slide {
-  opacity: 0;
-}
-.cover-hero__slide.is-active {
-  opacity: 1;
-}
-.cover-hero .cover-hero__frame {
+.cover-hero .cover-slide__frame {
   position: absolute;
   inset: 0;
   height: 100%;
   aspect-ratio: auto !important;
 }
-html.motion .cover-hero.is-running .cover-hero__slide {
-  transition: opacity 1600ms var(--ease-focus, ease);
-}
-html.motion .cover-hero.is-running .cover-hero__slide .focus-image__img {
-  filter: blur(16px);
-  transform: scale(1.06);
-  transition:
-    filter 2200ms var(--ease-focus, ease),
-    transform 7000ms var(--ease-focus, ease);
-}
-html.motion .cover-hero.is-running .cover-hero__slide.is-active .focus-image__img {
-  filter: blur(0);
-  transform: scale(1);
-}
-.cover-hero__scrim {
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(
-      to top,
-      rgb(18 16 14 / 0.86) 0%,
-      rgb(18 16 14 / 0.62) 58%,
-      rgb(18 16 14 / 0.2) 85%,
-      rgb(18 16 14 / 0) 100%
-    ),
-    rgb(18 16 14 / 0.4);
-}
-.cover-hero__body {
-  position: relative;
-  text-shadow: 0 1px 14px rgb(18 16 14 / 0.3);
+.cover-hero .cover-slide__frame .focus-image__img {
   width: 100%;
-  padding-block: clamp(5rem, 14vh, 9rem) clamp(1.5rem, 4vh, 2.5rem);
+  height: 100%;
+  object-fit: cover;
 }
-.cover-hero__eyebrow,
-.cover-hero__count,
-.cover-hero__where,
-.cover-hero__pause {
+/* A portrait on a wide screen shows whole; the frame's own blurred LQIP fills the sides. */
+@media (min-aspect-ratio: 1 / 1) {
+  .cover-hero .cover-slide--portrait .cover-slide__frame .focus-image__img {
+    object-fit: contain;
+  }
+}
+.cover-chip {
+  background: var(--color-background);
+  color: var(--color-foreground);
+}
+.cover-slide__intro {
+  max-width: min(36rem, 100%);
+  padding: clamp(1rem, 2.4vw, 1.5rem);
+}
+.cover-slide__eyebrow,
+.cover-slide__count,
+.cover-slide__where {
   font-size: 0.75rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
-.cover-hero__title {
-  /* In em, not ch: ch is the width of the CURRENT font's zero, so it changed
-     when Instrument Serif replaced its fallback and the title re-wrapped (CLS on
-     Linux CI). 6.5em is what 14ch measures in Instrument Serif. */
-  max-width: 6.5em;
-  margin-top: 0.75rem;
-  font-size: clamp(2.75rem, 8vw, 7.5rem);
-  line-height: 0.95;
+.cover-slide__eyebrow {
+  color: var(--color-muted-foreground);
+}
+.cover-slide__title {
+  /* In em, not ch (card notes: ch re-wrapped when the web font swapped in). */
+  max-width: 11em;
+  margin-top: 0.5rem;
+  font-size: clamp(2rem, 4.6vw, 3.75rem);
+  line-height: 1;
   letter-spacing: -0.015em;
   text-wrap: balance;
 }
-.cover-hero__subhead {
-  max-width: 34rem;
-  margin-top: 1.25rem;
-  font-size: 1.0625rem;
+.cover-slide__subhead {
+  margin-top: 0.75rem;
+  font-size: 1rem;
   line-height: 1.55;
-  color: rgb(243 238 231 / 0.9);
 }
-.cover-hero__ctas {
+.cover-slide__ctas {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
-  margin-top: 2rem;
+  margin-top: 1.25rem;
 }
-.cover-hero__meta {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 1.5rem;
-  margin-top: clamp(2.5rem, 8vh, 5rem);
-  padding-top: 1rem;
-  border-top: 1px solid rgb(243 238 231 / 0.3);
-}
-.cover-hero__captions {
-  display: grid;
+.cover-slide__caption {
+  min-width: 0;
   margin: 0;
-  padding: 0;
-  list-style: none;
 }
-.cover-hero__caption {
-  grid-area: 1 / 1;
-  visibility: hidden;
-  opacity: 0;
-  transition:
-    opacity 600ms var(--ease-focus, ease),
-    visibility 0s linear 600ms;
-}
-.cover-hero__caption.is-active {
-  visibility: visible;
-  opacity: 1;
-  transition: opacity 600ms var(--ease-focus, ease) 400ms;
-}
-.cover-hero__caption a {
+.cover-slide__caption a {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: 0.25rem 1rem;
+  gap: 0.15rem 0.85rem;
   min-height: 44px;
+  padding: 0.55rem 0.85rem;
   color: inherit;
   text-decoration: none;
 }
-.cover-hero__story {
+.cover-slide__story {
   font-family: var(--font-display);
-  font-size: 1.375rem;
+  font-size: 1.25rem;
+  line-height: 1.15;
 }
-.cover-hero__caption a:hover .cover-hero__story {
+.cover-slide__caption a:hover .cover-slide__story {
   text-decoration: underline;
   text-underline-offset: 0.2em;
   text-decoration-thickness: 1px;
 }
-.cover-hero__where {
-  color: rgb(243 238 231 / 0.8);
+.cover-slide__where {
+  color: var(--color-muted-foreground);
 }
-.cover-hero__pause {
+.cover-slide__count {
   flex: none;
-  min-width: 44px;
-  min-height: 44px;
-  padding: 0;
-  color: inherit;
-  background: none;
-  border: 0;
-  border-bottom: 1px solid currentColor;
-  cursor: pointer;
+  padding: 0.55rem 0.75rem;
+  font-variant-numeric: tabular-nums;
 }
-.cover-hero__pause[hidden] {
-  display: none;
-}
-.cover-hero a:focus-visible,
-.cover-hero__pause:focus-visible {
-  outline: 2px solid #f3eee7;
+.cover-hero a:focus-visible {
+  outline: 2px solid var(--color-foreground);
   outline-offset: 3px;
+}
+/* The rack focus. Only under html.motion (set by JS), with no reduced motion, in a browser
+   that has view() timelines; everything else shows the slides standing still. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    html.motion .cover-slide:not(.cover-slide--first) .focus-image__img {
+      animation: cover-rack linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 100%;
+    }
+    html.motion .cover-slide:not(.cover-slide--first) .cover-slide__caption {
+      animation: cover-caption linear both;
+      animation-timeline: view();
+      animation-range: entry 60% entry 100%;
+    }
+    @keyframes cover-rack {
+      from {
+        filter: blur(16px);
+        transform: scale(1.08);
+      }
+      to {
+        filter: blur(0);
+        transform: none;
+      }
+    }
+    @keyframes cover-caption {
+      from {
+        opacity: 0;
+        transform: translateY(0.875rem);
+      }
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+    /* Touch screens: blur on scroll is the costly part, so keep the scale and a fade only. */
+    @media (hover: none) {
+      html.motion .cover-slide:not(.cover-slide--first) .focus-image__img {
+        animation-name: cover-rack-lite;
+      }
+      @keyframes cover-rack-lite {
+        from {
+          opacity: 0.4;
+          transform: scale(1.06);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+    }
+  }
+}
+@media (max-width: 40rem) {
+  /* The back-to-top button lives in this corner on phones; the counter is decorative. */
+  .cover-slide__count {
+    display: none;
+  }
+  .cover-slide__subhead {
+    font-size: 0.9375rem;
+  }
+  .cover-slide__ctas {
+    margin-top: 1rem;
+  }
 }
 
 /* =============================================================================
