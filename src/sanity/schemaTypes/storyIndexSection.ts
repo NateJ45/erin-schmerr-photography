@@ -52,3 +52,55 @@ export const storyIndex = defineType({
     }),
   },
 });
+
+// Home page block: "Cover hero". The opening of the home page: the featured
+// stories' covers, full bleed, crossfading one into the next, each easing from
+// blur to sharp (DESIGN.md "everything comes into focus"), with the headline and
+// two buttons over a soft scrim. The covers come from the Stories list (the
+// ones ticked Featured); the block holds only its words and buttons. No colour
+// field (rule 9); SELF_CONTAINED in sectionCadence.ts.
+export const coverHero = defineType({
+  name: 'coverHero',
+  title: 'Cover hero',
+  type: 'object',
+  icon: ImagesIcon,
+  description:
+    'Full-width covers of the featured stories, fading one into the next, under your headline.',
+  fields: [
+    defineField({
+      name: 'eyebrow',
+      title: 'Small line above the headline',
+      type: 'string',
+      validation: (Rule) => Rule.max(80),
+    }),
+    defineField({
+      name: 'headline',
+      title: 'Headline',
+      type: 'string',
+      validation: (Rule) => Rule.required().max(90),
+    }),
+    defineField({
+      name: 'subhead',
+      title: 'A sentence under it',
+      type: 'text',
+      rows: 2,
+      validation: (Rule) => Rule.max(200),
+    }),
+    defineField({ name: 'primaryCta', title: 'First button', type: 'ctaBlock' }),
+    defineField({ name: 'secondaryCta', title: 'Second button', type: 'ctaBlock' }),
+    defineField({
+      name: 'limit',
+      title: 'How many covers',
+      type: 'number',
+      initialValue: 5,
+      validation: (Rule) => Rule.min(1).max(8).integer(),
+    }),
+  ],
+  preview: {
+    select: { headline: 'headline' },
+    prepare: ({ headline }) => ({
+      title: headline || 'Cover hero',
+      subtitle: 'Featured story covers, fading one into the next',
+    }),
+  },
+});

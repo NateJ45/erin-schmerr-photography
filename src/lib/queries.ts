@@ -99,6 +99,7 @@ const SECTION_ARMS = `
       ...,
       groups[]{ ..., cards[]{ ..., image${IMAGE_PROJECTION}, link${CTA_PROJECTION} } }
     },
+    _type == "coverHero" => { ..., primaryCta${CTA_PROJECTION}, secondaryCta${CTA_PROJECTION} }, // scaffold: stories
     _type == "heroSection" => {
       ...,
       backgroundImage${IMAGE_PROJECTION},

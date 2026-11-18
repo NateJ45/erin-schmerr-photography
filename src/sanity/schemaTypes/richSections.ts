@@ -612,6 +612,7 @@ export const HOME_SECTION_TYPES = [
   { type: 'teamSection' },
   { type: 'dynamicListSection' },
   // The portfolio's home page blocks (storyIndexSection.ts, pressSections.ts).
+  { type: 'coverHero' }, // scaffold: stories
   { type: 'storyIndex' }, // scaffold: stories
   { type: 'publishedMarquee' }, // scaffold: press
   { type: 'tearSheetStack' }, // scaffold: press

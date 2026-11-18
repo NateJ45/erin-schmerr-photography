@@ -497,6 +497,17 @@ export interface ProjectedJournalPostsSection {
 }
 // scaffold:end
 // scaffold: stories
+/** coverHero: the home page's opening; the covers come from the featured stories (CoverHero.astro). */
+export interface ProjectedCoverHeroSection {
+  _type: 'coverHero';
+  _key: string;
+  eyebrow?: string;
+  headline?: string;
+  subhead?: string;
+  primaryCta?: ProjectedCtaBlock | null;
+  secondaryCta?: ProjectedCtaBlock | null;
+  limit?: number;
+}
 /** storyIndex: the featured stories; the block reads them itself (StoryIndex.astro). */
 export interface ProjectedStoryIndexSection {
   _type: 'storyIndex';
@@ -558,6 +569,7 @@ export type PageBuilderBlock =
   | ProjectedPrivacyPolicySection
   | ProjectedJournalPostsSection // scaffold: journal
   // The portfolio
+  | ProjectedCoverHeroSection // scaffold: stories
   | ProjectedStoryIndexSection // scaffold: stories
   | ProjectedPublishedMarqueeSection // scaffold: press
   | ProjectedTearSheetStackSection // scaffold: press

@@ -340,3 +340,160 @@ html.motion [data-focus].is-focused .focus-image__img {
 .archive--canvas:not(.is-dragging) .archive__world:hover .archive__plane > li:not(:hover) {
   opacity: 0.72;
 }
+
+/* COVER HERO (CoverHero.astro, src/scripts/cover-hero.ts). Full bleed. The text
+   colours are fixed light because they always sit on a photo under a scrim. */
+.cover-hero {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  min-height: min(92svh, 62rem);
+  overflow: hidden;
+  color: #f3eee7;
+  background: #12100e;
+}
+.cover-hero__slides,
+.cover-hero__slide {
+  position: absolute;
+  inset: 0;
+}
+.cover-hero__slide {
+  opacity: 0;
+}
+.cover-hero__slide.is-active {
+  opacity: 1;
+}
+.cover-hero .cover-hero__frame {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  aspect-ratio: auto !important;
+}
+html.motion .cover-hero.is-running .cover-hero__slide {
+  transition: opacity 1600ms var(--ease-focus, ease);
+}
+html.motion .cover-hero.is-running .cover-hero__slide .focus-image__img {
+  filter: blur(16px);
+  transform: scale(1.06);
+  transition:
+    filter 2200ms var(--ease-focus, ease),
+    transform 7000ms var(--ease-focus, ease);
+}
+html.motion .cover-hero.is-running .cover-hero__slide.is-active .focus-image__img {
+  filter: blur(0);
+  transform: scale(1);
+}
+.cover-hero__scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgb(18 16 14 / 0.82) 0%,
+    rgb(18 16 14 / 0.58) 45%,
+    rgb(18 16 14 / 0.22) 75%,
+    rgb(18 16 14 / 0) 100%
+  );
+}
+.cover-hero__body {
+  position: relative;
+  text-shadow: 0 1px 14px rgb(18 16 14 / 0.3);
+  width: 100%;
+  padding-block: clamp(5rem, 14vh, 9rem) clamp(1.5rem, 4vh, 2.5rem);
+}
+.cover-hero__eyebrow,
+.cover-hero__count,
+.cover-hero__where,
+.cover-hero__pause {
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.cover-hero__title {
+  max-width: 14ch;
+  margin-top: 0.75rem;
+  font-size: clamp(2.75rem, 8vw, 7.5rem);
+  line-height: 0.95;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+.cover-hero__subhead {
+  max-width: 34rem;
+  margin-top: 1.25rem;
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  color: rgb(243 238 231 / 0.9);
+}
+.cover-hero__ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+.cover-hero__meta {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-top: clamp(2.5rem, 8vh, 5rem);
+  padding-top: 1rem;
+  border-top: 1px solid rgb(243 238 231 / 0.3);
+}
+.cover-hero__captions {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.cover-hero__caption {
+  grid-area: 1 / 1;
+  visibility: hidden;
+  opacity: 0;
+  transition:
+    opacity 600ms var(--ease-focus, ease),
+    visibility 0s linear 600ms;
+}
+.cover-hero__caption.is-active {
+  visibility: visible;
+  opacity: 1;
+  transition: opacity 600ms var(--ease-focus, ease) 400ms;
+}
+.cover-hero__caption a {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 1rem;
+  min-height: 44px;
+  color: inherit;
+  text-decoration: none;
+}
+.cover-hero__story {
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+}
+.cover-hero__caption a:hover .cover-hero__story {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+}
+.cover-hero__where {
+  color: rgb(243 238 231 / 0.8);
+}
+.cover-hero__pause {
+  flex: none;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  color: inherit;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid currentColor;
+  cursor: pointer;
+}
+.cover-hero__pause[hidden] {
+  display: none;
+}
+.cover-hero a:focus-visible,
+.cover-hero__pause:focus-visible {
+  outline: 2px solid #f3eee7;
+  outline-offset: 3px;
+}

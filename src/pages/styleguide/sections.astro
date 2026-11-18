@@ -668,6 +668,16 @@ const SECTIONS: Record<string, unknown>[] = [
   // they draw the labelled placeholders, which is what the thumbnails show.
   // scaffold: stories
   {
+    _type: 'coverHero',
+    _key: 'cover-hero',
+    eyebrow: 'Fine-art portraits',
+    headline: 'Portraits, slowly brought into focus.',
+    subhead: 'A sentence about the work goes here.',
+    primaryCta: { _type: 'ctaBlock', label: 'Book a session', href: '/contact/' },
+    secondaryCta: { _type: 'ctaBlock', label: 'See the stories', href: '/stories/' },
+    limit: 3,
+  },
+  {
     _type: 'storyIndex',
     _key: 'story-index',
     heading: 'Selected stories',

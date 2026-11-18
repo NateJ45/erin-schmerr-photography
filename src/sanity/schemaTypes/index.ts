@@ -29,7 +29,7 @@ import { notFoundPage } from './notFoundPage';
 import { photo } from './photo';
 import { collaborator } from './collaborator'; // scaffold: stories
 import { story } from './story'; // scaffold: stories
-import { storyIndex } from './storyIndexSection'; // scaffold: stories
+import { storyIndex, coverHero } from './storyIndexSection'; // scaffold: stories
 import { publication } from './publication'; // scaffold: press
 import { pressSectionSchemas } from './pressSections'; // scaffold: press
 import { privacyPage } from './privacyPage';
@@ -64,6 +64,7 @@ export const schemaTypes = [
   journalPostsSection, // scaffold: journal
   // The portfolio's home page blocks (the stories and press capabilities).
   storyIndex, // scaffold: stories
+  coverHero, // scaffold: stories
   ...pressSectionSchemas, // scaffold: press
   // One photograph (photo.ts): used by stories AND press, so in neither capability.
   photo,

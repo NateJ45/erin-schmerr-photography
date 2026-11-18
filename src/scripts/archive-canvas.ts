@@ -1,3 +1,4 @@
+// scaffold-file: stories
 // Safe to edit by hand
 // The archive canvas (DESIGN.md "Archive canvas", /archive/). Progressive: the
 // page ships a plain grid of every photo, and this turns it into an endless,
