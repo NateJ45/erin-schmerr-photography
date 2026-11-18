@@ -1,60 +1,52 @@
 # Product
 
-> **PLACEHOLDER, NOT A REAL BRIEF.** This is the starter's neutral design context. It describes no client. A fork replaces every section below with the real project's facts, and deletes this banner when it does. Until then, nothing here is a source of truth about audience, tone or brand: if a design decision seems to depend on this file, stop and get the answer from the client. This is the same trap as CLAUDE.md rule 11 (fork residue): a default that sounds plausible gets shipped as if it were decided. Visual defaults live in `DESIGN.md`.
+Design context for the Erin Schmerr Photography site. Visual system: `DESIGN.md`. Facts that are still waiting on the client are marked **[open]**; do not design around a guess for them.
 
 ## Register
 
 brand
 
-(Placeholder. Choose `brand` for marketing and portfolio-style sites, `product` for app-like UI. The starter's page builder is brand-register.)
+A portfolio, not an app. The pictures are the product; the interface stays out of their way.
 
 ## Users
 
-[PLACEHOLDER: who visits, in the client's own words. For each group: what they arrive asking, what device they use, and what decision the site helps them make. Keep it to facts the client has confirmed.]
-
-- Primary: [PLACEHOLDER]
-- Secondary: [PLACEHOLDER]
-
-TODO(Nathan): decide whether forks should be required to fill this file in during `docs/bootstrap/NEW-PROJECT.md` (and whether `docs/bootstrap/setup-checklist.md` should gain a "PRODUCT.md and DESIGN.md rewritten, banner removed" line). Not done here because only the two new files and a CLAUDE.md pointer were in scope.
+- **Primary: people looking for a fine-art portrait session** in and around Cincinnati and West Chester, Ohio. They arrive from Instagram, Facebook, a magazine credit or a search for a fine-art portrait photographer. Mostly on a phone. The decision the site helps them make: "is this the look I want, and how do I book it?"
+- **Secondary: creative collaborators and editors** (models, makeup artists, stylists, designers, magazine editors). They arrive from a credit or a shared story. They want to see the work, the credits and the publications, and to share the page that names them.
 
 ## Product Purpose
 
-The starter is an Astro 7, Sanity v6 and Cloudflare Workers site template, page-builder first: the home, about, services and process pages render from Sanity `pageBuilder` arrays through `SectionRenderer`, and any page created in the Studio gets a `/[slug]` route. A project pours in a brand (`brand/brand.config.json`, then `npm run apply-brand`) and its content.
-
-[PLACEHOLDER: what this specific site is for, and what a good visit leads to (a booking, an enquiry, a registration, a read). One or two sentences, and the one conversion that matters.]
+A credits-first editorial portfolio for Erin Schmerr, a fine-art portrait photographer whose work is dreamy and ethereal. It shows the stories (shoots) as editorials, the publications they appeared in, and the people who made each one. A good visit ends in a session inquiry, or in a collaborator sharing the story that credits them.
 
 ## Brand Personality
 
-[PLACEHOLDER: three words and a short paragraph of voice, in the client's terms.]
+Dreamy, crafted, quiet. The voice is warm and first person, short sentences, no hard sell. The work does the impressing; the copy says who, where and how to book.
 
-The starter's neutral baseline, until replaced: warm, conversational and plain; say prices and facts directly; stop when the point is made. No AI-tell vocabulary and no em-dashes in public copy (CLAUDE.md rule 2 and its Style section). Client-specific voice goes in `docs/brand/voice.md`, which is also a blank template.
+Brand name and domain are **[open]** (the business has traded as Stellina Fine Art Photography; the site may use her own name). Every place the name appears reads from `brand/brand.config.json` and Site settings, so the choice is a config change.
+
+## Content model, in plain words
+
+- **Story:** one shoot or editorial. Cover, a sequence of photos, the credit block, and the publication it ran in, if any.
+- **Photo:** one image with its alt text, caption, credits and camera details.
+- **Publication:** a magazine feature (title, issue, date, link, tear sheet).
+- **Collaborator:** a person credited on a story (name, role, link).
+
+Placeholder pictures stand in for every image until originals arrive. They are licence-free and labelled as placeholders.
 
 ## Anti-references
 
-[PLACEHOLDER: what the site must not look or sound like, named. Recorded decisions only.]
-
-What the starter itself guards against, because it has bitten real builds:
-
-- Starter defaults showing through on a client site (the neutral Slate palette, Libre Baskerville and Inter, the starter's wordmark and copy). The 2026-09-17 Stone Steps audit found the gap was defaults leaking, not a shortage of ideas.
-- Residue from the client build the starter was forked from (logos, names, palettes, business copy): CLAUDE.md rule 11.
-- A reference-design look carried between clients. A fork should not read as a sibling of another client's site.
-
-TODO(Nathan): list any "must not look like <other client>" pairs across the site family once they are decided, so forks inherit the constraint. None are recorded in the repo.
+- Wedding-photographer templates: script logos, blush pink, "capturing your forever" copy.
+- Tech-portfolio gimmicks that distort photos (3D globes, pixel shaders, image drums).
+- Heavy chrome: big headers, coloured bands, card shadows around photos.
+- Instagram embeds as the portfolio.
 
 ## Design Principles
 
-Neutral starter principles, true for every fork until the project adds its own:
-
-1. **One grammar per page.** One left edge, one split, one button family.
-2. **Blocks carry no colour.** `SectionRenderer` owns the alternating-surface cadence; editors never choose a background.
-3. **Derive, don't retype.** Anything computable from data is computed at build time.
-4. **Say it plainly.** Concrete facts and prices beat adjectives.
-5. **Survive the editor's content.** Any photo, any headline length, sections reordered.
-
-[PLACEHOLDER: three to five principles specific to this project.]
+1. **The picture first.** Full-bleed or generous whitespace, never a frame that competes.
+2. **Everything comes into focus.** Images arrive soft and resolve; motion is slow and optical, never bouncy.
+3. **Credit every hand.** Each story carries a magazine-style credit block with linked names.
+4. **Quiet chrome.** Type and space do the structure, not boxes and colour.
+5. **Survive real content.** Portrait and landscape photos in any order, long and short titles, a story with no publication.
 
 ## Accessibility & Inclusion
 
-The starter's floor, kept for every fork: WCAG AA, with every colour token measured against every surface it appears on (`src/lib/theme-tokens.test.ts` is a gate), an axe sweep and a reflow suite in Playwright, visible focus rings, 44px tap targets, and reduced motion honoured. Detail: `docs/agent/accessibility.md`.
-
-[PLACEHOLDER: client-specific needs (audience age, languages, assistive-technology expectations).]
+The starter's floor: WCAG AA in both themes (`src/lib/theme-tokens.test.ts` is a gate), axe and reflow suites, visible focus, 44px tap targets. Every effect has a `prefers-reduced-motion` and a touch fallback, and every page reads with JavaScript off. Alt text describes the picture and names the people credited in it.

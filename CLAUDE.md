@@ -1,16 +1,22 @@
-# NCS Astro + Sanity Starter: CLAUDE.md
+# Erin Schmerr Photography website: CLAUDE.md
 
-Always-loaded rules for `ncs-astro-sanity-starter`. This file stays under 200 lines on purpose. File-specific rules live in `.claude/rules/*.md` and load only when you touch matching files; long reference lives in `docs/claude/` and `docs/agent/` and is read on demand. The docs map at the bottom lists every one of them.
+Always-loaded rules for this repo, the portfolio site for Erin Schmerr, a fine-art portrait photographer in Cincinnati and West Chester, Ohio. This file stays under 200 lines on purpose. File-specific rules live in `.claude/rules/*.md` and load only when you touch matching files; long reference lives in `docs/claude/` and `docs/agent/` and is read on demand. The docs map at the bottom lists every one of them.
+
+**This file is client-safe**: the repo is public and may be handed to the client, so it holds technical orientation only. Prices, contract text, strategy, opinions about people, private contacts and credentials never go in this repo (files, commits, PRs, issues, code comments).
+
+**Read this first.** Project records, rules and status are kept privately by the studio, outside this folder. Before doing any work, read the session guide: `C:\Users\natha\Documents\Claude\Projects\_vault\projects\erin-schmerr-photography-session-guide.md`. Also read `~/.claude/CLAUDE.md` and the Projects `CLAUDE.md`.
+
+**Placeholder content.** Until the client sends originals, every photo is a licence-free placeholder that reads as one, and copy that needs her words is marked. Never put her published photos in the repo or the dataset without her originals and say-so.
 
 **Read `docs/PENDING.md` early in a session.** It is the live registry of open loops: queued work, known gaps, and waiting-on-a-human items. If you finish or discover one, update it in the same commit.
 
 Companion tactical runbook: `OPERATIONS.md`. New-project setup entry point: `docs/bootstrap/NEW-PROJECT.md`, rewritten 2026-09-18 from the order the Stone Steps build actually followed; it is the start for any team adapting this starter for a new client, and `docs/bootstrap/setup-checklist.md` is its sign-off. Cross-repo shared-improvement registry: `PORTS.md` (see Ports below).
 
-Design context: `PRODUCT.md` and `DESIGN.md` at the repo root are neutral PLACEHOLDERS describing the starter's defaults, not any client; a fork rewrites both (see rule 11).
+Design context: `PRODUCT.md` (audience, purpose, content model in plain words) and `DESIGN.md` (Soft Focus Editorial: tokens, type, signature components), both written 2026-11-17.
 
 ## What this is
 
-A production-ready **Astro 7 + Sanity v6 + Cloudflare Workers** site template, forked from the Reid Design build. **Page-builder-first**: home, about, services and process render through `SectionRenderer` from Sanity `pageBuilder` arrays, and any Studio page gets a `/[slug]` route. Contact, Privacy and Journal are page builders too (card 190): empty Page layout draws the classic page, a filled one draws the sections around a block that holds the old piece (`docs/agent/page-architecture.md`). A new project pours in a brand (`brand/brand.config.json` then `npm run apply-brand`) and content. It ships FULL and subtracts: `npm run scaffold` removes the seven capabilities (`about`, `faq`, `journal`, `philosophy`, `process`, `services`, `testimonials`). Full overview and stack notes: `docs/claude/overview.md`.
+The portfolio on **Astro 7 + Sanity v6 + Cloudflare Workers**, forked from `ncs-astro-sanity-starter` (main at `0a9fef3`) on 2026-11-17. Sanity project `feuqkbki`, dataset `production` (public, so no personal data in it). Worker `erin-schmerr-photography`, pre-launch address https://erin-schmerr-photography.nathanjnixon86.workers.dev (domain not chosen; `brand/brand.config.json` `domain` and `SITE_URL` move at cutover). The text below is the starter's, kept because the machinery is the same. **Page-builder-first**: home, about, services and process render through `SectionRenderer` from Sanity `pageBuilder` arrays, and any Studio page gets a `/[slug]` route. Contact, Privacy and Journal are page builders too (card 190): empty Page layout draws the classic page, a filled one draws the sections around a block that holds the old piece (`docs/agent/page-architecture.md`). A new project pours in a brand (`brand/brand.config.json` then `npm run apply-brand`) and content. It ships FULL and subtracts: `npm run scaffold` removes the seven capabilities (`about`, `faq`, `journal`, `philosophy`, `process`, `services`, `testimonials`). Full overview and stack notes: `docs/claude/overview.md`.
 
 The must-knows:
 
@@ -95,7 +101,7 @@ Files are either safe to edit by hand (`docs/claude/safe-to-edit.md`) or foundat
 
 ## Vault
 
-Business context and decisions live in the studio vault, not here: `_vault/clients/ncs-starter.md` at the Projects root (internal; log a Work log row per session of real work, adding a `## Work log` section to the note if missing). Read its `## Current state` first. Update repo docs in the same piece of work as any change; repo docs stay in the repo, and no vault notes are created inside this repo.
+Business context and decisions live in the studio vault, not here; the session guide named at the top of this file says which notes to read and how to log work. Update repo docs in the same piece of work as any change; repo docs stay in the repo, and no vault notes are created inside this repo.
 
 ## Ports
 
