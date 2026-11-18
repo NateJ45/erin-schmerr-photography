@@ -54,7 +54,9 @@
   --font-display:
     'Instrument Serif', 'Instrument Serif Fallback', 'Instrument Serif Fallback Times', Georgia,
     'Times New Roman', serif;
-  --font-body: 'Instrument Sans Variable', system-ui, -apple-system, sans-serif;
+  --font-body:
+    'Instrument Sans Variable', 'Instrument Sans Variable Fallback', system-ui, -apple-system,
+    sans-serif;
   --font-mono: ui-monospace, 'SF Mono', Consolas, monospace;
   --font-script: 'Snell Roundhand', 'Apple Chancery', cursive;
 

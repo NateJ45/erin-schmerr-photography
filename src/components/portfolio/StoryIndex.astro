@@ -45,7 +45,7 @@ const stories = await getFeaturedStories(limit);
           All stories
         </a>
       </div>
-      <div class="story-index__toggle mt-6" role="group" aria-label="View stories as" hidden>
+      <div class="story-index__toggle mt-6" role="group" aria-label="View stories as" data-waiting>
         <button
           type="button"
           data-view-btn="grid"
@@ -91,14 +91,15 @@ const stories = await getFeaturedStories(limit);
 <script>
   // Grid / List toggle. The section ships with data-view set from the block's
   // layout, so with JavaScript off it shows that one view and the toggle stays
-  // hidden. Re-runs after a client-side navigation.
+  // invisible. It holds its space while it waits, so showing it moves nothing
+  // (layout shift, tests/cls.spec.ts). Re-runs after a client-side navigation.
   function initStoryIndex() {
     document.querySelectorAll<HTMLElement>('.story-index').forEach((section) => {
       if (section.dataset.ready) return;
       section.dataset.ready = '1';
       const toggle = section.querySelector<HTMLElement>('.story-index__toggle');
       if (!toggle) return;
-      toggle.hidden = false;
+      toggle.removeAttribute('data-waiting');
       toggle.querySelectorAll<HTMLButtonElement>('[data-view-btn]').forEach((btn) => {
         btn.addEventListener('click', () => {
           const view = btn.dataset.viewBtn ?? 'grid';

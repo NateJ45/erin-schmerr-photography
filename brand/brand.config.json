@@ -111,7 +111,7 @@
       ]
     },
     "body": {
-      "familyValue": "\"Instrument Sans Variable\", system-ui, -apple-system, sans-serif",
+      "familyValue": "\"Instrument Sans Variable\", \"Instrument Sans Variable Fallback\", system-ui, -apple-system, sans-serif",
       "ogFontStack": "Instrument Sans, system-ui, sans-serif",
       "imports": ["@fontsource-variable/instrument-sans"]
     },

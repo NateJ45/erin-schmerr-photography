@@ -42,7 +42,7 @@ const schemas = [
         <p class="portfolio-label">
           {photos.length} photographs{placeholder ? ', all placeholders for now' : ''}
         </p>
-        <div class="archive__controls" hidden>
+        <div class="archive__controls" data-waiting>
           <span class="portfolio-label archive__hint">Drag to explore</span>
           <button type="button" class="archive__toggle" data-archive-toggle aria-pressed="true">
             View as a grid

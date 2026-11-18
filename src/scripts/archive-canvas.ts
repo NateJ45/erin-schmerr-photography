@@ -44,7 +44,7 @@ function setup(root: HTMLElement) {
   const items = Array.from(pl.children) as HTMLElement[];
   if (items.length < 4) return; // too few photos to loop; the grid is better
 
-  ctl.hidden = false;
+  ctl.removeAttribute('data-waiting');
   let on = false;
   let world: HTMLElement | null = null;
   let tileW = 0;

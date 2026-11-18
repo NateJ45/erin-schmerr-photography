@@ -192,8 +192,10 @@
   display: inline-flex;
   gap: 1.25rem;
 }
-.story-index__toggle[hidden] {
-  display: none;
+/* Waiting for its script: invisible but holding its space, so showing it
+   shifts nothing. */
+.story-index__toggle[data-waiting] {
+  visibility: hidden;
 }
 .story-index__toggle button {
   min-height: 44px;
@@ -282,8 +284,8 @@ html.motion [data-focus].is-focused .focus-image__img {
   align-items: center;
   gap: 1.5rem;
 }
-.archive__controls[hidden] {
-  display: none;
+.archive__controls[data-waiting] {
+  visibility: hidden;
 }
 .archive__toggle {
   min-height: 44px;
