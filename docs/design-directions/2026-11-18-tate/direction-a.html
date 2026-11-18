@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Direction A, The Contact Sheet | Tate Fine Art Photography</title>
+<!-- Fonts: Archivo (grotesque, width axis 62 to 125). One family, set condensed for display and normal for text. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,300..800;1,62..125,400&display=swap" rel="stylesheet">
+<style>
+/* Direction A: Index / directory. Throwaway mockup, not site code. Light only. */
+:root{
+  --paper:#F6F5F1; --ink:#111110; --muted:#55534E; --rule:#D4D1C8;
+  --film:#151514; --edge:#F2B24A; --pencil:#C2261C;
+  --gut:clamp(16px,3vw,40px);
+  --cond:"Archivo",system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0}
+html{background:var(--paper);color:var(--ink);font:400 15px/1.45 var(--cond);font-stretch:100%;-webkit-text-size-adjust:100%}
+body{min-height:100vh}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--pencil);outline-offset:3px}
+img{display:block;max-width:100%;height:auto}
+.num{font-variant-numeric:tabular-nums}
+.skip{position:absolute;left:-999px}.skip:focus{left:var(--gut);top:8px;background:var(--ink);color:var(--paper);padding:6px 10px;z-index:9}
+
+/* Film-edge strip: the only chrome. Edge print in amber on black, like the rebate of a negative. */
+.edge{background:var(--film);color:var(--edge);font:500 11px/1 var(--cond);font-stretch:75%;letter-spacing:.18em;text-transform:uppercase;
+  display:flex;gap:2.2em;padding:9px var(--gut);white-space:nowrap;overflow:hidden}
+.edge span:nth-child(n+4){opacity:.75}
+@media (max-width:560px){.edge span:nth-child(n+3){display:none}}
+
+/* Index hero: wordmark and one sentence on the left, the whole archive as a table on the right. */
+.top{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,8fr);gap:var(--gut);padding:clamp(20px,3vw,36px) var(--gut) 0}
+.mark{font-stretch:62%;font-weight:700;font-size:clamp(64px,11vw,168px);line-height:.82;letter-spacing:-.02em;text-transform:uppercase}
+.mark small{display:block;font-size:.205em;letter-spacing:.06em;font-weight:500;margin-top:.5em;font-stretch:80%}
+.lede{margin-top:22px;max-width:34ch;font-size:16px}
+.lede b{font-weight:600}
+.book{display:inline-flex;align-items:center;gap:.6em;margin-top:18px;font-weight:600;text-decoration:none;border-bottom:2px solid var(--pencil);padding:10px 0 4px;min-height:44px}
+.book::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--pencil)}
+.pages{margin-top:26px;display:flex;flex-wrap:wrap;gap:4px 18px;font-size:13px}
+.pages a{text-decoration:none;border-bottom:1px solid var(--rule);padding:8px 0 2px}
+.pages a:hover{border-color:var(--ink)}
+
+.filters{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;font-size:12px}
+.filters button{font:inherit;font-stretch:85%;letter-spacing:.06em;text-transform:uppercase;background:none;border:1px solid var(--rule);color:var(--ink);padding:7px 10px;min-height:32px;cursor:pointer}
+.filters button[aria-pressed=true]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+table.index{width:100%;border-collapse:collapse;font-size:13.5px}
+.index th{font:500 10.5px/1 var(--cond);font-stretch:80%;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);text-align:left;padding:0 8px 8px 0;border-bottom:1px solid var(--ink)}
+.index td{padding:7px 8px 7px 0;border-bottom:1px solid var(--rule);vertical-align:baseline}
+.index td:first-child{color:var(--muted);width:3.2em}
+.index a{text-decoration:none;font-weight:600}
+.index tr:hover a{text-decoration:underline;text-decoration-color:var(--pencil);text-decoration-thickness:2px;text-underline-offset:3px}
+.index .pub{color:var(--muted)}
+.index .pub b{color:var(--pencil);font-weight:600}
+.index tr[hidden]{display:none}
+
+/* Contact strips: each selected story is a strip of frames on film. The pick is circled in grease pencil. */
+h2{font-stretch:68%;font-weight:700;text-transform:uppercase;font-size:clamp(28px,3.6vw,44px);line-height:.95;letter-spacing:-.01em}
+.sec{padding:clamp(40px,6vw,72px) var(--gut) 0}
+.sechead{display:flex;justify-content:space-between;align-items:end;gap:16px;border-bottom:1px solid var(--ink);padding-bottom:10px;margin-bottom:18px}
+.sechead p{font-size:13px;color:var(--muted);max-width:44ch;text-align:right}
+.roll{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,9fr);gap:var(--gut);padding:14px 0 22px;border-bottom:1px solid var(--rule)}
+.roll h3{font-stretch:75%;font-weight:700;font-size:22px;line-height:1.05;text-transform:uppercase}
+.roll h3 a{text-decoration:none}
+.roll .meta{font-size:12px;color:var(--muted);margin-top:6px;letter-spacing:.02em}
+.roll .dek{margin-top:8px;font-size:14px;max-width:36ch}
+.strip{background:var(--film);padding:18px 10px 20px;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;position:relative}
+.strip::before,.strip::after{content:"";position:absolute;left:10px;right:10px;height:6px;
+  background:repeating-linear-gradient(90deg,transparent 0 8px,#3a3a37 8px 16px)}
+.strip::before{top:5px}.strip::after{bottom:6px}
+.frame{position:relative}
+.frame img{aspect-ratio:4/5;object-fit:cover;width:100%;filter:saturate(.92)}
+.frame .no{position:absolute;left:0;bottom:-15px;color:var(--edge);font:500 9.5px/1 var(--cond);font-stretch:70%;letter-spacing:.1em}
+.frame.pick::after{content:"";position:absolute;inset:-7px -6px;border:2.5px solid var(--pencil);border-radius:48% 52% 45% 55%/55% 45% 55% 45%;transform:rotate(-3deg);pointer-events:none}
+.frame a{display:block}
+.frame a:hover img{filter:none}
+
+/* Ledger: the press as a plain table, newest first. */
+.ledger{width:100%;border-collapse:collapse;font-size:14px}
+.ledger td{padding:10px 10px 10px 0;border-bottom:1px solid var(--rule);vertical-align:top}
+.ledger td:first-child{width:4.5em;color:var(--muted)}
+.ledger .mag{font-stretch:75%;font-weight:700;text-transform:uppercase;font-size:18px;line-height:1.1}
+.two{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:calc(var(--gut)*1.5)}
+.note{font-size:16px;max-width:44ch}
+.note p+p{margin-top:12px}
+.note q{display:block;margin-top:18px;font-stretch:75%;font-size:24px;line-height:1.1;font-weight:600;quotes:none}
+.note cite{display:block;font-style:normal;font-size:12px;color:var(--muted);margin-top:6px}
+.sessions{margin-top:clamp(40px,6vw,72px);background:var(--film);color:#F3F1EA;padding:clamp(28px,4vw,48px) var(--gut);display:grid;grid-template-columns:minmax(0,8fr) minmax(0,4fr);gap:var(--gut);align-items:end}
+.sessions h2{color:#fff}
+.sessions p{color:#D8D5CC;max-width:46ch;margin-top:10px}
+.sessions a{color:#fff;justify-self:start;border-bottom:2px solid var(--edge);text-decoration:none;font-weight:600;padding:10px 0 4px;min-height:44px}
+footer{padding:28px var(--gut) 40px;font-size:12.5px;color:var(--muted);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--gut);border-top:1px solid var(--ink);margin-top:0}
+footer h4{font-stretch:80%;letter-spacing:.14em;text-transform:uppercase;font-size:11px;color:var(--ink);margin-bottom:6px}
+.dir{margin:0 var(--gut);padding:18px 0;border-top:2px solid var(--pencil);font-size:13px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--gut)}
+.dir b{display:block;font-stretch:80%;letter-spacing:.12em;text-transform:uppercase;font-size:11px;margin-bottom:4px}
+
+@media (max-width:900px){
+  .top,.roll,.two,.sessions{grid-template-columns:minmax(0,1fr)}
+  .strip{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:22px}
+  .sechead{flex-direction:column;align-items:start}.sechead p{text-align:left}
+  footer,.dir{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:560px){
+  .index th:nth-child(4),.index td:nth-child(4),.index th:nth-child(5),.index td:nth-child(5){display:none}
+}
+@media (prefers-reduced-motion:no-preference){
+  .frame img{transition:filter .3s}
+  .frame.pick::after{animation:circle .6s cubic-bezier(.22,1,.36,1) both}
+  @keyframes circle{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the index</a>
+<div class="edge" aria-hidden="true"><span>Tate Fine Art Photography</span><span class="num">Rolls 01 to 16</span><span>Cincinnati and West Chester, Ohio</span><span class="num">2022 to 2026</span><span>Safety film</span></div>
+
+<header class="top">
+  <div>
+    <p class="mark">Tate<small>Fine Art Photography</small></p>
+    <p class="lede">I'm Erin, and I make portraits that look like they were <b>found in an old album</b>: vintage clothes, stories from books and films, and a lot of soft light. Every roll I have shot is on this page.</p>
+    <a class="book" href="#sessions">Book a session</a>
+    <nav class="pages" aria-label="Pages"><a href="#main">Index</a><a href="#press">Press</a><a href="#about">About</a><a href="#sessions">Sessions</a><a href="direction-a-story.html">Open a roll</a></nav>
+  </div>
+  <main id="main">
+    <h1 class="sr" style="position:absolute;left:-999px">The index of stories</h1>
+    <div class="filters" role="group" aria-label="Show stories from">
+      <button aria-pressed="true" data-f="all">All 16</button><button aria-pressed="false" data-f="50s">1950s</button><button aria-pressed="false" data-f="60s">1960s</button><button aria-pressed="false" data-f="70s">1970s</button><button aria-pressed="false" data-f="hw">Halloween</button><button aria-pressed="false" data-f="bk">From a book or film</button><button aria-pressed="false" data-f="pub">Published</button>
+    </div>
+    <table class="index num">
+      <thead><tr><th scope="col">Roll</th><th scope="col">Story</th><th scope="col">Era or source</th><th scope="col">Place</th><th scope="col">Frames</th><th scope="col">Ran in</th></tr></thead>
+      <tbody>
+        <tr data-t="50s hw pub"><td>01</td><td><a href="direction-a-story.html">A 1950s Halloween at home</a></td><td>1950s</td><td>Mid Century Modern Rescue</td><td>16</td><td class="pub"><b>Hollyway</b></td></tr>
+        <tr data-t="hw bk"><td>02</td><td><a href="#">Sleepy Hollow</a></td><td>Washington Irving</td><td>&nbsp;</td><td>11</td><td class="pub">&nbsp;</td></tr>
+        <tr data-t="pub"><td>03</td><td><a href="#">Just Ken</a></td><td>Barbie</td><td>&nbsp;</td><td>8</td><td class="pub"><b>Elysium</b></td></tr>
+        <tr data-t="pub"><td>04</td><td><a href="#">Taking Up Space</a></td><td>Pink</td><td>Haus of Sequins</td><td>4</td><td class="pub"><b>Fienfh</b></td></tr>
+        <tr data-t="bk"><td>05</td><td><a href="#">A Midsummer Night's Dream</a></td><td>Shakespeare</td><td>&nbsp;</td><td>9</td><td class="pub">&nbsp;</td></tr>
+        <tr data-t="70s"><td>06</td><td><a href="#">A 1970s Valentine</a></td><td>1970s</td><td>&nbsp;</td><td>5</td><td class="pub">&nbsp;</td></tr>
+        <tr data-t=""><td>07</td><td><a href="#">The vintage dress</a></td><td>A new to me find</td><td>A tunnel of pines</td><td>7</td><td class="pub">&nbsp;</td></tr>
+        <tr data-t=""><td>08</td><td><a href="#">Mint</a></td><td>A poet</td><td>&nbsp;</td><td>7</td><td class="pub">&nbsp;</td></tr>
+        <tr data-t="60s"><td>09</td><td><a href="#">American Sign Museum</a></td><td>Neon</td><td>Cincinnati</td><td>9</td><td class="pub">&nbsp;</td></tr>
+        <tr data-t="hw"><td>10</td><td><a href="#">Spooky in August</a></td><td>Halloween, early</td><td>&nbsp;</td><td>8</td><td class="pub">&nbsp;</td></tr>
+        <tr data-t="bk"><td>11</td><td><a href="#">Lady Wing Shot</a></td><td>Annie Oakley</td><td>Darke County</td><td>4</td><td class="pub">&nbsp;</td></tr>
+        <tr data-t="hw"><td>12</td><td><a href="#">Killer clown</a></td><td>Halloween</td><td>Graffiti alley</td><td>6</td><td class="pub">&nbsp;</td></tr>
+        <tr data-t=""><td>13</td><td><a href="#">Graffiti alley</a></td><td>All the colors</td><td>Cincinnati</td><td>4</td><td class="pub">&nbsp;</td></tr>
+        <tr data-t="60s"><td>14</td><td><a href="#">Pink, 1960s</a></td><td>1960s</td><td>Tupelo House</td><td>5</td><td class="pub">&nbsp;</td></tr>
+        <tr data-t="60s"><td>15</td><td><a href="#">A '60s look</a></td><td>1960s</td><td>&nbsp;</td><td>3</td><td class="pub">&nbsp;</td></tr>
+        <tr data-t="hw"><td>16</td><td><a href="#">Pink Halloween</a></td><td>Halloween</td><td>Cincinnati</td><td>4</td><td class="pub">&nbsp;</td></tr>
+      </tbody>
+    </table>
+  </main>
+</header>
+
+<section class="sec" aria-labelledby="sheets">
+  <div class="sechead"><h2 id="sheets">The contact sheets</h2><p>Six frames from each roll, the way I lay them out before I pick. The circled frame is the one I print.</p></div>
+
+  <article class="roll">
+    <div><h3><a href="direction-a-story.html">A 1950s Halloween at home</a></h3><p class="meta num">Roll 01 · October 2023 · 16 frames</p><p class="dek">Grainy, overexposed in places, a little chaotic: the party as dad's old camera would have caught it.</p></div>
+    <div class="strip num">
+      <figure class="frame"><a href="direction-a-story.html"><img src="https://cdn.sanity.io/images/feuqkbki/production/89e44fc497a5bc621c7c1666ab80a4fd51b83f4d-1080x1350.jpg?w=300&amp;q=72&amp;auto=format" alt="A 1950s living room at Halloween, guests in costume around a glowing television" width="300" height="375"></a><span class="no">1A</span></figure>
+      <figure class="frame"><img src="https://cdn.sanity.io/images/feuqkbki/production/316a844610310cb55bbaf77237a371bef8d4ac56-1080x1350.jpg?w=300&amp;q=72&amp;auto=format" alt="Elvis on the sofa while a beauty queen and Pierrot sit behind him, in black and white" width="300" height="375"><span class="no">2A</span></figure>
+      <figure class="frame pick"><img src="https://cdn.sanity.io/images/feuqkbki/production/c8e429012032c7a4d57524d415abbc2e35d3a39b-1080x1350.jpg?w=300&amp;q=72&amp;auto=format" alt="The devil in red tulle laughs on the floor beside a plate of spaghetti" width="300" height="375"><span class="no">3A</span></figure>
+      <figure class="frame"><img src="https://cdn.sanity.io/images/feuqkbki/production/271b9bb7dbbc739e39329517eadcd1df91c0392b-1080x1350.jpg?w=300&amp;q=72&amp;auto=format" alt="Close portrait of the devil in red horns and dark curls, smiling" width="300" height="375"><span class="no">4A</span></figure>
+      <figure class="frame"><img src="https://cdn.sanity.io/images/feuqkbki/production/ffd25176ec74d142a015f1c52ea3eecae5c5681e-1080x1350.jpg?w=300&amp;q=72&amp;auto=format" alt="The beauty queen in a tiara, her shadow on the wall behind her" width="300" height="375"><span class="no">5A</span></figure>
+      <figure class="frame"><img src="https://cdn.sanity.io/images/feuqkbki/production/2693aa2f66f3c63a70d029a93d78381afbe02a12-1080x1343.jpg?w=300&amp;q=72&amp;auto=format" alt="The whole party on the floor of the living room, cards and drinks between them" width="300" height="375"><span class="no">6A</span></figure>
+    </div>
+  </article>
+
+  <article class="roll">
+    <div><h3><a href="#">Sleepy Hollow</a></h3><p class="meta num">Roll 02 · October 2024 · 11 frames</p><p class="dek">A Sleepy Hollow shoot with my favorite Tim Burton character.</p></div>
+    <div class="strip num">
+      <figure class="frame pick"><img src="https://cdn.sanity.io/images/feuqkbki/production/ce858e4c6e05d280b40acaa3aedc0419d3487628-1080x1350.jpg?w=300&amp;q=72&amp;auto=format" alt="A woman in black lace in a field at dusk, looking up" width="300" height="375"><span class="no">1A</span></figure>
+      <figure class="frame"><img src="https://cdn.sanity.io/images/feuqkbki/production/c477f75f6b79cbcdb4c5eef56351607bd7be50bf-1080x1350.jpg?w=300&amp;q=72&amp;auto=format" alt="She stands against a tree with autumn leaves" width="300" height="375"><span class="no">2A</span></figure>
+      <figure class="frame"><img src="https://cdn.sanity.io/images/feuqkbki/production/b868b9b4ce5af49aab9270ead42d42f1f4d8ed73-1080x1350.jpg?w=300&amp;q=72&amp;auto=format" alt="Close portrait, two-tone hair over her shoulder" width="300" height="375"><span class="no">3A</span></figure>
+      <figure class="frame"><img src="https://cdn.sanity.io/images/feuqkbki/production/90c9ff8cc8ac470ad5863e12ccd917734b01086f-1080x1350.jpg?w=300&amp;q=72&amp;auto=format" alt="Among dried teasels, looking past the camera" width="300" height="375"><span class="no">4A</span></figure>
+      <figure class="frame"><img src="https://cdn.sanity.io/images/feuqkbki/production/cee9131f13bc619acf2c9123607d8c61789f6692-1440x1800.jpg?w=300&amp;q=72&amp;auto=format" alt="In the tall grass with orange trees behind" width="300" height="375"><span class="no">5A</span></figure>
+      <figure class="frame"><img src="https://cdn.sanity.io/images/feuqkbki/production/8f6188144846c8d1da27df1e9792175b0da3e51f-1080x1350.jpg?w=300&amp;q=72&amp;auto=format" alt="Full length in the golden field at the end of the day" width="300" height="375"><span class="no">6A</span></figure>
+    </div>
+  </article>
+
+  <article class="roll">
+    <div><h3><a href="#">A Midsummer Night's Dream</a></h3><p class="meta num">Roll 05 · September 2023 · 9 frames</p><p class="dek">Love looks not with the eyes, but with the mind.</p></div>
+    <div class="strip num">
+      <figure class="frame"><img src="https://cdn.sanity.io/images/feuqkbki/production/898f65f91792769481299578c0a3a70e92ea2aa5-1080x1350.jpg?w=300&amp;q=72&amp;auto=format" alt="A fairy with lavender hair and pale wings, her back to the camera, among leaves" width="300" height="375"><span class="no">1A</span></figure>
+      <figure class="frame"><img src="https://cdn.sanity.io/images/feuqkbki/production/efa8c956fd8c8f1891cd526bdb7d9dee337c6840-1080x1350.jpg?w=300&amp;q=72&amp;auto=format" alt="The fairy in profile, her hand at her cheek" width="300" height="375"><span class="no">2A</span></figure>
+      <figure class="frame"><img src="https://cdn.sanity.io/images/feuqkbki/production/5fc1ee7a8e7aee0117c3a6230972d2bd4dfee3f3-1080x1350.jpg?w=300&amp;q=72&amp;auto=format" alt="Arm raised, light falling across her dress" width="300" height="375"><span class="no">3A</span></figure>
+      <figure class="frame pick"><img src="https://cdn.sanity.io/images/feuqkbki/production/394d2fe4b6c3d0640dcce4fcad2bbc7eaa0207dc-1080x1350.jpg?w=300&amp;q=72&amp;auto=format" alt="Her hand at her eye, wings behind her" width="300" height="375"><span class="no">4A</span></figure>
+      <figure class="frame"><img src="https://cdn.sanity.io/images/feuqkbki/production/536e1adb2b2647fb5449c554bab6d4b6e6603555-1080x1350.jpg?w=300&amp;q=72&amp;auto=format" alt="Close portrait, her hand at her throat" width="300" height="375"><span class="no">5A</span></figure>
+      <figure class="frame"><img src="https://cdn.sanity.io/images/feuqkbki/production/4beade977a38d54679f7c0509a1def9c1b779bcc-1080x1350.jpg?w=300&amp;q=72&amp;auto=format" alt="Looking straight at the camera through the leaves" width="300" height="375"><span class="no">6A</span></figure>
+    </div>
+  </article>
+
+  <article class="roll">
+    <div><h3><a href="#">American Sign Museum</a></h3><p class="meta num">Roll 09 · May 2025 · 9 frames</p><p class="dek">Neon, old marquees and three models.</p></div>
+    <div class="strip num">
+      <figure class="frame pick"><img src="https://cdn.sanity.io/images/feuqkbki/production/29cba897d6dec25210cb15085ef13ef589993a92-1080x1350.jpg?w=300&amp;q=72&amp;auto=format" alt="A woman in profile against red and blue neon letters" width="300" height="375"><span class="no">1A</span></figure>
+      <figure class="frame"><img src="https://cdn.sanity.io/images/feuqkbki/production/f1eeb122ec31f454694ff4e7ff41fc1ec32fb630-1080x1350.jpg?w=300&amp;q=72&amp;auto=format" alt="Pink-haired, lit by a red sign" width="300" height="375"><span class="no">2A</span></figure>
+      <figure class="frame"><img src="https://cdn.sanity.io/images/feuqkbki/production/f86ca3b541a0c0404b7955e5a07d4efa6fc97084-1080x1350.jpg?w=300&amp;q=72&amp;auto=format" alt="Under a giant lit boot and a REGAL sign" width="300" height="375"><span class="no">3A</span></figure>
+      <figure class="frame"><img src="https://cdn.sanity.io/images/feuqkbki/production/9682e365c37558683a2371f530e4a72cf7939bd3-1080x1350.jpg?w=300&amp;q=72&amp;auto=format" alt="Under a big pink letter M" width="300" height="375"><span class="no">4A</span></figure>
+      <figure class="frame"><img src="https://cdn.sanity.io/images/feuqkbki/production/762806d3e6151b16d5168bed0d0d0a6abfbd9dfb-1080x1350.jpg?w=300&amp;q=72&amp;auto=format" alt="Close, hand at her chin, in front of a Holiday Inn sign" width="300" height="375"><span class="no">5A</span></figure>
+      <figure class="frame"><img src="https://cdn.sanity.io/images/feuqkbki/production/28e4fedc78accd4f73e7157d1d734adfe5cff668-1080x1349.jpg?w=300&amp;q=72&amp;auto=format" alt="Beside a giant old milk bottle sign" width="300" height="375"><span class="no">6A</span></figure>
+    </div>
+  </article>
+</section>
+
+<section class="sec" id="press" aria-labelledby="pressh">
+  <div class="two">
+    <div>
+      <div class="sechead"><h2 id="pressh">Ran in</h2><p>Every feature, newest first.</p></div>
+      <table class="ledger num">
+        <tr><td>2026</td><td><span class="mag">Cornerstone Press</span><br>The cover of Mouth, poems by Amorak Huey</td></tr>
+        <tr><td>2025</td><td><span class="mag">BleachFilm</span><br>We All Look Good in Pink, an interview</td></tr>
+        <tr><td>2024</td><td><span class="mag">PhotoVogue</span><br>A selected portrait</td></tr>
+        <tr><td>2023</td><td><span class="mag">Hollyway</span><br>Time Machine Halloween, from Tokyo</td></tr>
+        <tr><td>2023</td><td><span class="mag">Elysium</span><br>Just Ken</td></tr>
+        <tr><td>2023</td><td><span class="mag">PhotoVogue</span><br>Plastic Lightning and Out of the Box</td></tr>
+        <tr><td>2023</td><td><span class="mag">Fienfh</span><br>Taking Up Space</td></tr>
+        <tr><td>2022</td><td><span class="mag">CanvasRebel</span><br>Meet Erin Schmerr, an interview</td></tr>
+      </table>
+    </div>
+    <div id="about">
+      <div class="sechead"><h2>Roll 00</h2><p>About me</p></div>
+      <div class="note">
+        <p>My dad was a self-proclaimed picture nerd, never without a camera around his neck. Years after he died, I finally turned his camera on again and found the last photo he ever took: fall leaves, from our kitchen window.</p>
+        <p>Through his lens I fell in love with photography. Now I chase the look of a real vintage photograph, one story at a time.</p>
+        <q>I never prioritize beauty standards. I want to capture a person's essence.</q><cite>From my interview with CanvasRebel, 2022</cite>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sessions" id="sessions" aria-labelledby="sessh">
+  <div><h2 id="sessh">Load a new roll</h2><p>Bring me a decade, a character or a story, and we'll build a session around it. I find the clothes and the place; you bring yourself.</p></div>
+  <a href="#">Ask about a session</a>
+</section>
+
+<footer>
+  <div><h4>Tate Fine Art Photography</h4>Fine-art portraits by Erin Schmerr, Cincinnati and West Chester, Ohio.</div>
+  <div><h4>Elsewhere</h4>Instagram · Facebook</div>
+  <div><h4>Roll count</h4><span class="num">16 stories, 8 features</span></div>
+</footer>
+<aside class="dir" aria-label="About this direction">
+  <div><b>Bet</b>Visitors who come from a credit want to scan everything she has made, fast, and judge the eye by the edit.</div>
+  <div><b>Rejects</b>No hero image, no slideshow, no big serif. No card grid: rolls, tables and strips.</div>
+  <div><b>Costs</b>Dense on a phone. Needs every story to have six good frames. Reads more like an archive than a feeling.</div>
+</aside>
+<script>
+// Filter the index by era or theme. Without JS every row shows.
+document.querySelectorAll('.filters button').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.filters button').forEach(x=>x.setAttribute('aria-pressed',x===b));
+  const f=b.dataset.f;
+  document.querySelectorAll('.index tbody tr').forEach(r=>{r.hidden=f!=='all'&&!r.dataset.t.split(' ').includes(f)});
+}));
+</script>
+</body>
+</html>

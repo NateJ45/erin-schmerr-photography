@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Design directions, Tate Fine Art Photography, 2026-11-18</title>
+<!-- Comparison page for the four directions. System fonts only. -->
+<style>
+:root{--bg:#F4F2EC;--ink:#1B1A17;--muted:#58554D;--rule:#D3CFC4;--gut:clamp(16px,3vw,40px)}
+*{box-sizing:border-box;margin:0}
+html{background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:inherit}:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+img{display:block;max-width:100%;height:auto}
+header,main{max-width:1320px;margin:0 auto;padding:0 var(--gut)}
+header{padding-top:36px;padding-bottom:12px}
+h1{font-size:clamp(28px,4vw,44px);line-height:1.05}
+header p{color:var(--muted);margin-top:10px;max-width:70ch}
+.card{border-top:2px solid var(--ink);padding:22px 0 40px;margin-top:20px}
+.card h2{font-size:clamp(22px,2.6vw,30px)}
+.card h2 span{font-weight:400;color:var(--muted);font-size:.65em;margin-left:8px}
+.notes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--gut);margin-top:12px;font-size:14.5px}
+.notes b{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:2px}
+.links{margin-top:12px;display:flex;gap:18px;flex-wrap:wrap;font-weight:600}
+.links a{padding:8px 0}
+.shots{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr) minmax(0,3.4fr);gap:14px;align-items:start;margin-top:18px}
+.shots figure{background:#fff;border:1px solid var(--rule);padding:6px;max-height:640px;overflow:hidden}
+.shots figcaption{font-size:12px;color:var(--muted);margin-bottom:6px}
+.rec{border:2px solid var(--ink);padding:18px 20px;margin-top:28px;margin-bottom:60px}
+@media (max-width:800px){.notes,.shots{grid-template-columns:minmax(0,1fr)}.shots figure{max-height:420px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Tate Fine Art Photography: four directions</h1>
+  <p>Home page and one story page per direction, built with her own photographs (hot-linked from the public dataset) and draft copy in her voice. Shots are the top of each page at 390, 768 and 1280; open a page to see the whole thing. Details, references and the divergence table are in README.md.</p>
+</header>
+<main>
+  <section class="card" aria-labelledby="a">
+    <h2 id="a">A. The Contact Sheet <span>Index / directory</span></h2>
+    <div class="notes"><div><b>Bet</b>Visitors from a credit want to scan everything she has made and judge the eye by the edit.</div><div><b>Rejects</b>No hero image, no slideshow, no big serif, no card grid.</div><div><b>Costs</b>Dense on a phone; needs six good frames per story; more archive than feeling.</div></div>
+    <p class="links"><a href="direction-a.html">Open home</a><a href="direction-a-story.html">Open story</a></p>
+    <div class="shots"><figure><figcaption>390</figcaption><img src="shots/direction-a-390.png" alt="Direction A home at 390 wide"></figure><figure><figcaption>768</figcaption><img src="shots/direction-a-768.png" alt="Direction A home at 768 wide"></figure><figure><figcaption>1280</figcaption><img src="shots/direction-a-1280.png" alt="Direction A home at 1280 wide"></figure></div>
+  </section>
+  <section class="card" aria-labelledby="b">
+    <h2 id="b">B. The Feature <span>Editorial / magazine</span></h2>
+    <div class="notes"><div><b>Bet</b>Her work already lives in magazines; a site set like an issue makes press and stories one thing.</div><div><b>Rejects</b>No full-bleed hero, no single accent, no quiet minimal grid.</div><div><b>Costs</b>A cover and coverlines to keep fresh; spot colours can fight some pictures.</div></div>
+    <p class="links"><a href="direction-b.html">Open home</a><a href="direction-b-story.html">Open story</a></p>
+    <div class="shots"><figure><figcaption>390</figcaption><img src="shots/direction-b-390.png" alt="Direction B home at 390 wide"></figure><figure><figcaption>768</figcaption><img src="shots/direction-b-768.png" alt="Direction B home at 768 wide"></figure><figure><figcaption>1280</figcaption><img src="shots/direction-b-1280.png" alt="Direction B home at 1280 wide"></figure></div>
+  </section>
+  <section class="card" aria-labelledby="c">
+    <h2 id="c">C. Chapters by Decade <span>Story / scroll chapter</span></h2>
+    <div class="notes"><div><b>Bet</b>She thinks in decades and stories; a visitor finds their era first and the photographer second.</div><div><b>Rejects</b>No thumbnail grid, no top nav bar, no accent colour.</div><div><b>Costs</b>Long scroll before press and booking; each story needs a chapter.</div></div>
+    <p class="links"><a href="direction-c.html">Open home</a><a href="direction-c-story.html">Open story</a></p>
+    <div class="shots"><figure><figcaption>390</figcaption><img src="shots/direction-c-390.png" alt="Direction C home at 390 wide"></figure><figure><figcaption>768</figcaption><img src="shots/direction-c-768.png" alt="Direction C home at 768 wide"></figure><figure><figcaption>1280</figcaption><img src="shots/direction-c-1280.png" alt="Direction C home at 1280 wide"></figure></div>
+  </section>
+  <section class="card" aria-labelledby="d">
+    <h2 id="d">D. The Album <span>Split-screen</span></h2>
+    <div class="notes"><div><b>Bet</b>"Found in an old album", said literally; one print at a time, and a visitor slows down to match.</div><div><b>Rejects</b>No grid, no thumbnails, no accent, no nav links in a bar.</div><div><b>Costs</b>The split becomes a plain stack on phones; few stories fit; the photo corners could tire.</div></div>
+    <p class="links"><a href="direction-d.html">Open home</a><a href="direction-d-story.html">Open story</a></p>
+    <div class="shots"><figure><figcaption>390</figcaption><img src="shots/direction-d-390.png" alt="Direction D home at 390 wide"></figure><figure><figcaption>768</figcaption><img src="shots/direction-d-768.png" alt="Direction D home at 768 wide"></figure><figure><figcaption>1280</figcaption><img src="shots/direction-d-1280.png" alt="Direction D home at 1280 wide"></figure></div>
+  </section>
+  <p class="rec"><b>Recommendation:</b> C, with B's wall of magazine names for the press and A's filterable index as the stories archive page. B is the runner-up if the press should lead. The pick is Nathan's.</p>
+</main>
+</body>
+</html>
