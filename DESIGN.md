@@ -40,6 +40,7 @@ Direction chosen 2026-11-17 for the build on placeholder content. Two answers fr
 - **Light is the default, dark ships too** (rule 3). Dark is a deep warm black, not grey, so prints read like a gallery wall.
 - **No polish-layer chrome.** No brand stripe, no card lift, no tinted bands around photos. Sections separate by space and hairline rules.
 - **Square corners.** Radius 0 on photos, buttons and fields.
+- **One left edge, one row of chrome** (2026-11-17). The header has no eyebrow strip (its tagline already sits in the hero and the footer); the theme toggle lives in the nav row, and the row uses the page gutter so the wordmark lines up with every heading below it. Content bands all sit on paper: the starter's paper-soft cadence, sunburst ornaments and testimonial glow are switched off in `src/styles/erin.css`, and sections part with a content-width hairline. The footer defaults to the compact style (brand row on top, left-aligned at every width); an editor's choice in Site settings still wins.
 
 ## 2. Colors
 
