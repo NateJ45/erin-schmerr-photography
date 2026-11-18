@@ -4,6 +4,6 @@
    sanity.config.ts imports this file; the family names are DISPLAY_STACK and
    BODY_STACK there. studio-theme.test.ts fails if this list drifts from the
    brand. */
-@import '@fontsource/libre-baskerville/400.css';
-@import '@fontsource/libre-baskerville/700.css';
-@import '@fontsource-variable/inter';
+@import '@fontsource/instrument-serif/400.css';
+@import '@fontsource/instrument-serif/400-italic.css';
+@import '@fontsource-variable/instrument-sans';

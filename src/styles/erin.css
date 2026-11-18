@@ -1,0 +1,64 @@
+/* Erin Schmerr Photography: the site's own layer (DESIGN.md, "Soft Focus
+   Editorial"). Loaded after globals.css and starwind.css, before print.css.
+   Tokens come from brand.config.json via apply-brand; this file only reshapes
+   the starter's chrome so the photographs carry the page. */
+
+/* Quiet chrome: no brand stripe, and the desktop eyebrow strip sits on the page
+   ground instead of a tinted band. */
+.site-header > .h-1.bg-primary {
+  display: none;
+}
+.site-header__eyebrow {
+  background: var(--background);
+  border-color: transparent;
+}
+.site-header__row {
+  border-color: transparent;
+}
+
+/* Masthead nav: small, uppercase, tracked, like a magazine's section labels. */
+.site-header__nav a,
+.site-header__nav button {
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* The display face is a tall, narrow serif; it wants tight leading and a touch
+   of negative tracking at size. */
+:where(h1, h2, .font-display) {
+  letter-spacing: -0.01em;
+  line-height: 0.98;
+}
+h1 em,
+h2 em {
+  font-style: italic;
+  color: var(--primary);
+}
+
+/* Selection in the one accent colour. */
+::selection {
+  background: color-mix(in oklab, var(--primary) 22%, transparent);
+  color: var(--foreground);
+}
+
+/* Optical easing shared by the focus-pull and reveal effects. */
+:root {
+  --ease-focus: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* The wordmark is wide (about 9:1). Below lg the header centres it with the
+   menu button absolutely placed at the right, so cap its width to leave the
+   button its 44px plus a gutter at 320px. */
+@media (max-width: 1023.98px) {
+  .site-header__row {
+    justify-content: flex-start;
+  }
+  .site-header__logo {
+    max-width: min(18rem, calc(100% - 4.5rem));
+  }
+  .site-header__logo img {
+    width: 100%;
+    height: auto;
+  }
+}

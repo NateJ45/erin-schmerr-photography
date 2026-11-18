@@ -5,7 +5,7 @@ colors:
   paper: '#F3EEE7'
   paper-soft: '#EAE3D9'
   ink: '#1F1B18'
-  muted-text: '#655C54'
+  muted-text: '#5C534B'
   dusk: '#7A4A40'
   divider: '#D9CFC2'
   dark-ground: '#12100E'
@@ -48,7 +48,7 @@ Direction chosen 2026-11-17 for the build on placeholder content. Two answers fr
 | Ground                                | Paper `#F3EEE7` | `#12100E`            |                    |
 | Soft band                             | `#EAE3D9`       | `#1C1916`            |                    |
 | Text                                  | Ink `#1F1B18`   | `#EEE7DD`            | 14.8 / 15.5        |
-| Muted text                            | `#655C54`       | `#A99F94`            | 5.7 / 7.3          |
+| Muted text                            | `#5C534B`       | `#A99F94`            | 5.7 / 7.3          |
 | Accent (links, the one filled button) | Dusk `#7A4A40`  | `#D6A898`            | 6.3 / 9.0          |
 | Hairline                              | `#D9CFC2`       | `oklch(1 0 0 / 12%)` | decorative         |
 

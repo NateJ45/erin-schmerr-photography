@@ -51,15 +51,15 @@ export const site = {
   // Brand colors are also declared in src/styles/globals.css.
   // Mirrored here for any script that needs them outside CSS (OG generator, structured data, etc.).
   brandColors: {
-    primary: '#586577', // Slate
-    primaryDark: '#434E5C', // Slate Dark
-    accent: '#2A2D31', // Ink
-    accentDark: '#1E2024', // Ink Dark
-    secondary: '#AAB0B8', // Cool Gray
-    tertiary: '#9DB0A6', // Muted Sage
-    bg: '#FBFBFA', // Paper
-    bgSoft: '#F3F4F2', // Soft Paper
-    border: '#E6E7E5', // Faint dividers
+    primary: '#7A4A40', // Slate
+    primaryDark: '#633A31', // Slate Dark
+    accent: '#1F1B18', // Ink
+    accentDark: '#12100E', // Ink Dark
+    secondary: '#B9A999', // Cool Gray
+    tertiary: '#A89485', // Muted Sage
+    bg: '#F3EEE7', // Paper
+    bgSoft: '#EAE3D9', // Soft Paper
+    border: '#D9CFC2', // Faint dividers
   },
 
   // Static asset paths under public/

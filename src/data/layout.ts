@@ -5,8 +5,8 @@ import { resolveLayout } from '@/lib/site-layout';
 
 export const layout = resolveLayout({
   header: 'inline',
-  hero: 'bleed',
-  density: 'standard',
-  cards: 'standard',
+  hero: 'editorial',
+  density: 'airy',
+  cards: 'outline',
   motion: 'reveal',
 });

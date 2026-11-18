@@ -1,37 +1,4 @@
-<!--
-  Studio Starter favicon. A Slate (#586577) circle with paper (#FBFBFA)
-  "S" initial set in a serif stack.
-
-  Theme behavior:
-    - Light mode: slate disc on light tab background.
-    - Dark mode: disc lifts slightly so it reads against dark tab strips.
--->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <style>
-    .disc { fill: #586577; }
-    .mark { fill: #FBFBFA; }
-    @media (prefers-color-scheme: dark) {
-      .disc { fill: #6B7A8D; }
-      .mark { fill: #F0F0EE; }
-    }
-  </style>
-
-  <!-- Slate disc — the brand mark. -->
-  <circle class="disc" cx="32" cy="32" r="30" />
-
-  <!--
-    "S" monogram. Serif stack gives a refined feel without embedding a webfont.
-    text-anchor + dominant-baseline keep the letterform optically centered.
-    font-weight 700 gives stems enough body to read at 16px.
-  -->
-  <text
-    class="mark"
-    x="32"
-    y="32"
-    font-family="Libre Baskerville, Georgia, Cambria, 'Times New Roman', serif"
-    font-size="34"
-    font-weight="700"
-    text-anchor="middle"
-    dominant-baseline="central"
-  >S</text>
+  <rect width="64" height="64" fill="#7A4A40"/>
+  <path fill="#F3EEE7" d="M37.49 52.88L17.30 52.88Q16.49 52.88 16.49 52.30Q16.49 51.66 17.65 51.49L18.81 51.31Q20.09 51.14 20.58 50.71Q21.07 50.27 21.30 49.05L29.19 14.95Q29.48 13.73 29.19 13.32Q28.90 12.92 27.74 12.69L26.58 12.45Q25.83 12.28 25.83 11.82Q25.83 11.12 26.87 11.12L46.24 11.12Q47.75 11.12 47.46 12.45L45.66 22.08Q45.49 23.07 44.74 23.07Q43.92 23.07 44.04 22.31L44.21 20.28Q44.50 17.33 43.72 15.64Q42.94 13.96 41.40 13.27Q39.86 12.57 37.83 12.57Q35.51 12.57 34.47 13.24Q33.43 13.90 33.02 15.59L29.83 29.56Q29.66 30.38 30.47 30.38L33.43 30.38Q35.98 30.38 37.14 27.65L38.41 24.75Q38.70 24 39.34 24Q39.69 24 39.89 24.26Q40.10 24.52 39.98 24.98L36.96 38.03Q36.67 39.02 35.98 39.02Q35.28 39.02 35.28 38.26L35.34 35.42Q35.40 33.39 34.85 32.75Q34.30 32.12 32.96 32.12L30.06 32.12Q29.19 32.12 29.02 32.93L25.65 47.49Q25.19 49.57 26.06 50.50Q26.93 51.43 29.77 51.43Q31.51 51.43 33.22 50.88Q34.93 50.33 36.47 48.76Q38.01 47.20 39.28 44.24L40.68 40.99Q40.97 40.24 41.60 40.24Q42.47 40.24 42.18 41.22L39.23 51.55Q38.88 52.88 37.49 52.88"/>
 </svg>
