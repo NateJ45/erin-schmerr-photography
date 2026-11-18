@@ -49,4 +49,4 @@ Placeholder pictures stand in for every image until originals arrive. They are l
 
 ## Accessibility & Inclusion
 
-The starter's floor: WCAG AA in both themes (`src/lib/theme-tokens.test.ts` is a gate), axe and reflow suites, visible focus, 44px tap targets. Every effect has a `prefers-reduced-motion` and a touch fallback, and every page reads with JavaScript off. Alt text describes the picture and names the people credited in it.
+The starter's floor: WCAG AA (the site is light only since 2026-11-18) (`src/lib/theme-tokens.test.ts` is a gate), axe and reflow suites, visible focus, 44px tap targets. Every effect has a `prefers-reduced-motion` and a touch fallback, and every page reads with JavaScript off. Alt text describes the picture and names the people credited in it.

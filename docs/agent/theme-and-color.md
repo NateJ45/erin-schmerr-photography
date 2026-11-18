@@ -2,6 +2,8 @@
 
 > Default palette tokens, shadcn token mapping, the three-state light/dark theme system, and the re-skin design seam.
 
+> **Erin Schmerr Photography is light only (decided 2026-11-18, CLAUDE.md rule 3).** The theme toggle is removed from the header and the phone menu, and the bootstrap in `BaseLayout.astro` defaults to light and ignores the system setting; only a stored `dark` (seeded by the shared dark test suites) turns dark on. `ThemeToggle.tsx` stays in the tree unused. The rest of this page describes the starter's three-state system, which is still in the code underneath.
+
 ## Default palette
 
 The starter ships a neutral Slate/Ink/Paper palette. These are the defaults to build on and test against; a consuming project re-skins by editing the design seam described at the end of this document.

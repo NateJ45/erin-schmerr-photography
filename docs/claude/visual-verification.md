@@ -8,7 +8,7 @@ Every UI change is verified visually before being reported done. The build that 
 
 For any change touching components, layouts, styles, or copy that affects layout:
 
-1. **Both themes.** Light AND dark. Toggle in the running site via the header `ThemeToggle`, or use Chrome DevTools' "Emulate CSS prefers-color-scheme" while testing system mode. Light is primary, but dark must read as the brand, not as broken.
+1. **Light only on this site** (CLAUDE.md rule 3, 2026-11-18); skip the dark pass. The starter text follows: Light AND dark. Toggle in the running site via the header `ThemeToggle`, or use Chrome DevTools' "Emulate CSS prefers-color-scheme" while testing system mode. Light is primary, but dark must read as the brand, not as broken.
 2. **Both viewports.** Mobile (~375px wide) and desktop (~1280px wide). Most visitors arrive on mobile. Never ship desktop-only.
 3. **Interactive states.** Hover, focus (keyboard Tab), active. Test with mouse AND keyboard.
 4. **Adjacent regressions.** Look at the sections immediately before and after the change. Cascading styles wreck neighbors more often than expected.

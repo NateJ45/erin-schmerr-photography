@@ -19,7 +19,6 @@ import { getImage } from 'astro:assets';
 import { site } from '@/data/site';
 import { Mail, Phone } from 'lucide-react';
 import { IconBrandInstagram, IconBrandFacebook } from '@tabler/icons-react';
-import ThemeToggle from './ThemeToggle';
 import MobileNav from './MobileNav.astro';
 import { ChevronDown } from 'lucide-react';
 import logoLightAsset from '@/assets/logo-light.svg';
@@ -429,10 +428,7 @@ function isGroupActive(items: { href: string }[]) {
       </nav>
       {/* Visitor search (card 126). Renders nothing when search is off. */}
       <SearchButton class="inline-flex h-9 w-9 items-center justify-center rounded-md text-foreground transition-colors hover:bg-accent hover:text-link focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none" />
-      {/* Theme toggle lives in the nav row: this site hides the eyebrow strip
-          (erin.css), so the one desktop row carries everything. Hydrates when
-          idle; the anti-FOUC script in BaseLayout already set the theme. */}
-      <ThemeToggle client:idle />
+      {/* No theme toggle: the site is light only (decided 2026-11-18, CLAUDE.md rule 3). */}
       <span class="h-6 w-px bg-border-soft" aria-hidden="true"></span>
       {headerSecondary && (
         <a
