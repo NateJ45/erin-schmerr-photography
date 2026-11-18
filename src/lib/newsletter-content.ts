@@ -42,9 +42,6 @@ export const issuePath = (slug: string) => `/newsletter/${slug}/`;
 
 export const ISSUE_PROJECTION = `{
   _id, subject, preheader, intro, "slug": slug.current, showOnWebsite, date,
-  // scaffold: journal
-  "posts": posts[]->{ title, "slug": slug.current, excerpt, publishedAt },
-  // scaffold:end
   notices[]{ title, text, link },
   note
 }`;

@@ -205,9 +205,6 @@ jobs:
           FAIL=0
           ROUTES="/ /contact/ /privacy/"
           ROUTES="$ROUTES /about/" # scaffold: about
-          ROUTES="$ROUTES /process/" # scaffold: process
-          ROUTES="$ROUTES /faq/" # scaffold: faq
-          ROUTES="$ROUTES /journal/" # scaffold: journal
           ROUTES="$ROUTES /stories/ /archive/" # scaffold: stories
           ROUTES="$ROUTES /press/" # scaffold: press
           for path in $ROUTES; do

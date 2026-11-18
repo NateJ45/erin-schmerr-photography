@@ -32,9 +32,7 @@ import { kitConfig } from './kit.config';
 import { TRASH_TYPE } from '../lib/studio-trash';
 import { privateDocId } from '../lib/private-pages';
 import { STAFF_TYPE, WEEK_TYPE } from '../lib/studio-kit';
-import { tableListItem } from './workflow';
 import { OWN_NEWSLETTER } from './ownNewsletter';
-import { TABLES } from './tables.config';
 
 const SINGLETON_TYPES = [
   'siteSettings',
@@ -42,10 +40,7 @@ const SINGLETON_TYPES = [
   // Core pages
   'homePage',
   'aboutPage', // scaffold: about
-  'processPage', // scaffold: process
-  'faqPage', // scaffold: faq
   'contactPage',
-  'journalPage', // scaffold: journal
   'notFoundPage',
   'privacyPage',
   'studioGuide',
@@ -53,7 +48,6 @@ const SINGLETON_TYPES = [
 ] as const;
 
 const ORDERABLE_TYPES = [
-  'processStep', // scaffold: process
   'story', // scaffold: stories
 ] as const;
 
@@ -64,10 +58,6 @@ const HIDDEN_FROM_DEFAULT = new Set<string>([
   'popup', // placed explicitly under Content → Popups, after Announcements
   'testimonial', // scaffold: testimonials
   'libraryDocument', // scaffold: documents
-  'faqItem', // scaffold: faq
-  'faqCategory', // scaffold: faq
-  'journalEntry', // scaffold: journal
-  'journalCategory', // scaffold: journal
   'collaborator', // scaffold: stories
   'publication', // scaffold: press
   // No newsletter issues while the list lives elsewhere (ownNewsletter.ts, card 187).
@@ -89,7 +79,6 @@ const HIDDEN_FROM_DEFAULT = new Set<string>([
   // Private preview link records (card 117): managed from "Share a preview" only.
   'previewShare',
   // processStep is placed explicitly under Content → Process Steps
-  'processStep', // scaffold: process
 ]);
 
 /**
@@ -240,10 +229,7 @@ const fullDesk = (S: StructureBuilder, context: StructureResolverContext) =>
             .items([
               singletonWithPreview(S, 'homePage', 'Home'),
               singletonWithPreview(S, 'aboutPage', 'About'), // scaffold: about
-              singletonWithPreview(S, 'processPage', 'Process'), // scaffold: process
-              singletonWithPreview(S, 'faqPage', 'FAQ'), // scaffold: faq
               singletonWithPreview(S, 'contactPage', 'Contact'),
-              singletonWithPreview(S, 'journalPage', 'Journal (index page)'), // scaffold: journal
               singletonWithPreview(S, 'notFoundPage', '404 Page'),
 
               S.divider(),
@@ -327,22 +313,9 @@ const fullDesk = (S: StructureBuilder, context: StructureResolverContext) =>
 
               S.divider(),
 
-              // scaffold: process
-              orderableDocumentListDeskItem({
-                type: 'processStep',
-                title: 'Process Steps',
-                icon: typeIcon('processStep'),
-                S,
-                context,
-              }),
-              // scaffold:end
               S.documentTypeListItem('testimonial')
                 .title('Testimonials')
                 .icon(typeIcon('testimonial')), // scaffold: testimonials
-              S.documentTypeListItem('faqCategory')
-                .title('FAQ Categories')
-                .icon(typeIcon('faqCategory')), // scaffold: faq
-              S.documentTypeListItem('faqItem').title('FAQ Items').icon(typeIcon('faqItem')), // scaffold: faq
               // scaffold: documents
               S.documentTypeListItem('libraryDocument')
                 .title('Documents')
@@ -368,25 +341,6 @@ const fullDesk = (S: StructureBuilder, context: StructureResolverContext) =>
         ),
 
       S.divider(),
-
-      // scaffold: journal
-      // Journal — its own section so the editor can find posts + categories at a glance
-      S.listItem()
-        .title('Journal')
-        .icon(brandIcon('journal'))
-        .child(
-          S.list()
-            .title('Journal')
-            .items([
-              S.documentTypeListItem('journalEntry').title('Posts').icon(typeIcon('journalEntry')),
-              // The same posts as a sortable table (card 117, tables.config.ts).
-              ...TABLES.filter((c) => c.type === 'journalEntry').map((c) => tableListItem(S, c)),
-              S.documentTypeListItem('journalCategory')
-                .title('Categories')
-                .icon(typeIcon('journalCategory')),
-            ]),
-        ),
-      // scaffold:end
 
       S.divider(),
 

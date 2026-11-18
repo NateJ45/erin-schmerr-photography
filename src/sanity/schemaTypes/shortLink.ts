@@ -39,11 +39,7 @@ const PAGE_TARGETS = [
   { type: 'page' },
   { type: 'homePage' },
   { type: 'aboutPage' }, // scaffold: about
-  { type: 'processPage' }, // scaffold: process
-  { type: 'faqPage' }, // scaffold: faq
   { type: 'contactPage' },
-  { type: 'journalPage' }, // scaffold: journal
-  { type: 'journalEntry' }, // scaffold: journal
   { type: 'privacyPage' },
 ];
 

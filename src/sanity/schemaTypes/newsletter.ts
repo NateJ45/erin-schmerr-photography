@@ -58,15 +58,6 @@ export const newsletter = defineType({
       rows: 5,
       description: 'A few friendly lines at the top. A blank line starts a new paragraph.',
     }),
-    // scaffold: journal
-    defineField({
-      name: 'posts',
-      title: 'Posts to feature (optional)',
-      type: 'array',
-      of: [defineArrayMember({ type: 'reference', to: [{ type: 'journalEntry' }] })],
-      validation: (R) => R.max(3),
-    }),
-    // scaffold:end
     defineField({
       name: 'notices',
       title: 'Notices',

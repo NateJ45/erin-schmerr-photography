@@ -130,11 +130,9 @@ export interface ResolvedChromeSettings {
  * dropped when that module is switched off in Section visibility, which is why
  * this is a function of the same settings document rather than a constant.
  */
-export function fallbackNavItems(visible: SectionVisibility): NavItem[] {
+export function fallbackNavItems(_visible: SectionVisibility): NavItem[] {
   return [
     { kind: 'flat', label: 'About', href: '/about/' }, // scaffold: about
-    { kind: 'flat', label: 'FAQ', href: '/faq/' }, // scaffold: faq
-    ...(visible.journal ? [{ kind: 'flat' as const, label: 'Journal', href: '/journal/' }] : []), // scaffold: journal
   ];
 }
 

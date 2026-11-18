@@ -44,9 +44,7 @@ export const SELF_CONTAINED_TYPES = new Set([
   // Rich section types — phase B
   'founderSection', // scaffold: about
   'testimonialsSection', // scaffold: testimonials
-  'processSection', // scaffold: process
   // U7 new blocks — all four are SELF_CONTAINED (manage their own surface)
-  'faqSection', // scaffold: faq
   'logoStripSection',
   'teamSection',
   'embedSection',
@@ -57,7 +55,6 @@ export const SELF_CONTAINED_TYPES = new Set([
   // Every main page a page builder (card 190): each draws the band its page drew.
   'contactFormSection',
   'privacyPolicySection',
-  'journalPostsSection', // scaffold: journal
   // The portfolio blocks sit on the plain page ground (DESIGN.md: no tinted bands).
   'storyIndex', // scaffold: stories
   'coverHero', // scaffold: stories

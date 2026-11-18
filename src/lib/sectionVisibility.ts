@@ -13,7 +13,6 @@
 /** The raw sectionVisibility object as fetched from Sanity. */
 interface RawSectionVisibility {
   showPortfolio?: boolean | null;
-  showJournal?: boolean | null; // scaffold: journal
   showShop?: boolean | null;
   showGiftCertificates?: boolean | null;
   showPress?: boolean | null;
@@ -26,7 +25,6 @@ interface RawSectionVisibility {
 /** Normalized visibility map — all values are plain booleans. */
 export interface SectionVisibility {
   portfolio: boolean;
-  journal: boolean; // scaffold: journal
   shop: boolean;
   giftCertificates: boolean;
   press: boolean;
@@ -58,7 +56,6 @@ export interface SectionVisibility {
 export function getSectionVisibility(raw?: RawSectionVisibility | null): SectionVisibility {
   return {
     // Core route: on unless switched off.
-    journal: raw?.showJournal !== false, // scaffold: journal
     // Module routes: off unless switched on.
     portfolio: raw?.showPortfolio === true,
     shop: raw?.showShop === true,
