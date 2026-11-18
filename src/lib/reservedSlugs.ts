@@ -33,9 +33,6 @@ export const RESERVED_SLUGS = new Set([
   'stories', // scaffold: stories
   'archive', // scaffold: stories
   'press', // scaffold: press
-  // The planned sessions page (a portfolio route to come). Reserved now so a
-  // custom page cannot take the address before the route lands.
-  'sessions',
   'contact',
   'privacy',
   // The fixed-data wall the visual-regression suite shoots (PORTS.md card 37).
