@@ -60,9 +60,6 @@ test('every reserved slug is a route this repo serves, a scaffolded one, or a bu
     'stories', // scaffold: stories
     'archive', // scaffold: stories
     'press', // scaffold: press
-    // Planned, not built yet: reserved on purpose so the sessions page can land
-    // at its address (src/lib/reservedSlugs.ts says why).
-    'sessions',
     'contact',
     'privacy',
     '404',
