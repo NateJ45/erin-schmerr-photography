@@ -235,6 +235,66 @@ export function splitAfterWord(text: string, after: number): [string, string] {
 }
 
 /**
+ * The first decade a piece of text names, as its first year (1950 for
+ * "1950s"), or null. Reads "1950s" and "1950's", and the short "'60s" (with a
+ * straight or curly apostrophe), which is read as the 1900s: on this site a
+ * short decade is always a vintage look.
+ */
+export function decadeNamed(text: string | null | undefined): number | null {
+  if (typeof text !== 'string' || !text) return null;
+  const long = text.match(/\b(1[89]\d|20\d)0['’]?s\b/);
+  if (long) return Number(long[1]) * 10;
+  const short = text.match(/(?:^|[^\w])['’‘](\d)0s\b/);
+  if (short) return 1900 + Number(short[1]) * 10;
+  return null;
+}
+
+/**
+ * The decade a story belongs to on the /stories/ reel, derived at build time
+ * (rule 15, nothing typed): the decade its look comes from when "Started from",
+ * the title or the short line names one (checked in that order), otherwise the
+ * decade it was made. Null when it names none and has no date.
+ */
+export function storyDecade(story: {
+  startedFrom?: string | null;
+  title?: string | null;
+  dek?: string | null;
+  date?: string | null;
+}): number | null {
+  for (const text of [story.startedFrom, story.title, story.dek]) {
+    const named = decadeNamed(text);
+    if (named !== null) return named;
+  }
+  const year = yearOf(story.date);
+  return year === null ? null : Math.floor(year / 10) * 10;
+}
+
+/**
+ * The reel's chapters: the stories grouped by `storyDecade()`, oldest decade
+ * first, stories with no decade last. Inside a chapter the stories keep the
+ * order they came in (the Studio's drag order).
+ */
+export function reelChapters<
+  T extends {
+    startedFrom?: string | null;
+    title?: string | null;
+    dek?: string | null;
+    date?: string | null;
+  },
+>(stories: T[]): { decade: number | null; stories: T[] }[] {
+  const groups = new Map<number | null, T[]>();
+  for (const story of stories) {
+    const decade = storyDecade(story);
+    const list = groups.get(decade);
+    if (list) list.push(story);
+    else groups.set(decade, [story]);
+  }
+  return [...groups.entries()]
+    .sort(([a], [b]) => (a === null ? 1 : b === null ? -1 : a - b))
+    .map(([decade, items]) => ({ decade, stories: items }));
+}
+
+/**
  * The cast of a story for "How this was made": the credited names, without a
  * venue that is already named as the place (a story set at the American Sign
  * Museum credits the museum too). Derived from the credits (rule 15).
