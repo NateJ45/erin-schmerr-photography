@@ -16,7 +16,8 @@ import { site } from '@/data/site';
 import { layout } from '@/data/layout';
 import { layoutAttrs, hasFlow, type SiteLayout } from '@/lib/site-layout';
 import { urlFor } from '@/lib/sanity';
-import { localBusinessSchema } from '@/lib/schemas';
+import { siteBusinessSchema } from '@/lib/site-graph';
+import { pageDescription, pageTitle } from '@/lib/page-meta';
 import { getActiveAnnouncement, getPopups, getSiteCode } from '@/lib/queries';
 import { pickPopup, popupShowsOn } from '@/lib/popup';
 import { isSiteCodeRoute } from '@/lib/custom-code';
@@ -69,8 +70,8 @@ interface Props {
 }
 
 const {
-  title,
-  description,
+  title: rawTitle,
+  description: rawDescription,
   ogImage,
   seoImage,
   schemas = [],
@@ -83,6 +84,12 @@ const {
   flow,
   motion,
 } = Astro.props as Props;
+
+// Real words only (src/lib/page-meta.ts): an empty or placeholder title or description
+// (a seeded "Replace this ..." left in the Studio) never reaches the head. The title falls
+// back to the site name, the description to site.description.
+const title = pageTitle(rawTitle);
+const description = pageDescription(rawDescription);
 
 // Motion (card 192): the site's layout.motion, or this page's override. The flow layer's script
 // is rendered only when it runs (flow or fade), so the default ('reveal') ships nothing new.
@@ -109,17 +116,17 @@ function ogUrlFromImage(img: any): string | null {
 
 
 // Build the document title. If the editor-supplied seoTitle already contains
-// the brand name anywhere, use it verbatim. Otherwise append " — {site.name}"
-// so the tab + search-result line carries the brand. Strips a trailing suffix
-// once before evaluating so any legacy pre-baked suffix is handled.
-const brandSuffix = ` — ${site.name}`;
-const cleanTitle = title.endsWith(brandSuffix)
-  ? title.slice(0, -brandSuffix.length)
-  : title;
+// the brand name anywhere, use it verbatim. Otherwise append " | {site.name}"
+// so the tab + search-result line carries the brand (a bar, not an em-dash: the
+// title is visitor copy, rule 2). Strips a trailing suffix once before evaluating
+// so any legacy pre-baked suffix (either separator) is handled.
+const brandSuffixes = [` | ${site.name}`, ` — ${site.name}`];
+const legacySuffix = brandSuffixes.find((s) => title.endsWith(s));
+const cleanTitle = legacySuffix ? title.slice(0, -legacySuffix.length) : title;
 const hasBrandInline = cleanTitle.toLowerCase().includes(site.name.toLowerCase());
 const fullTitle = cleanTitle === site.name || hasBrandInline
   ? cleanTitle
-  : `${cleanTitle} — ${site.name}`;
+  : `${cleanTitle} | ${site.name}`;
 
 // The share image (PORTS.md card 169; src/lib/og-card-marker.ts has the order). Every
 // prerendered page without a picture of its own gets a card drawn at build time by
@@ -140,9 +147,10 @@ const share = resolveShareImage({
 });
 const absOg = share.url.startsWith('http') ? share.url : new URL(share.url, site.url).toString();
 
-// Auto-inject LocalBusiness on every page when siteSettings is available.
-// Pages can still pass their own additional schemas (Service, FAQPage, BreadcrumbList).
-const allSchemas = siteSettings ? [localBusinessSchema(siteSettings), ...schemas] : schemas;
+// Auto-inject the business on every page when siteSettings is available: the starter's
+// LocalBusiness plus this site's links (src/lib/site-graph.ts: founder, knowsAbout, the
+// photographer's @id). Pages can still pass their own schemas (Person, FAQPage, BreadcrumbList).
+const allSchemas = siteSettings ? [siteBusinessSchema(siteSettings), ...schemas] : schemas;
 
 // Analytics (Cloudflare Web Analytics + GA4) lives in src/components/Analytics.astro,
 // which owns the environment variables and the conditions. It is rendered near the

@@ -17,6 +17,7 @@ import { eventsConfig } from '@/config/events';
 import { eventsSentence } from '@/lib/event-kinds';
 import { site } from '@/data/site';
 import { formatDate } from '@/lib/format-date';
+import { PLACEHOLDER_TEXT, plainText } from '@/lib/page-meta';
 import type { PortableTextBlock } from '@portabletext/types';
 
 interface Props {
@@ -30,8 +31,12 @@ const lastUpdated = formatDate(rawDate ?? undefined);
 // Contact email for the built-in copy
 const contactEmail = siteSettings?.email ?? `hello@${site.domain}`;
 
-// Whether to use the typed policy text
-const hasSanityBody = Array.isArray(body) ? body.length > 0 : Boolean(body);
+// Whether to use the typed policy text. The starter's seeded policy ("Studio Starter",
+// hello@example.com, "Replace this address ...") counts as no text: the built-in policy below
+// is about this site and names what it really measures (src/lib/page-meta.ts, 2026-11-18).
+const typedText = Array.isArray(body) ? plainText(body) : typeof body === 'string' ? body : '';
+const hasSanityBody =
+  (Array.isArray(body) ? body.length > 0 : Boolean(body)) && !PLACEHOLDER_TEXT.test(typedText);
 ---
 
 {/* The label has to differ from the hero's heading ("Privacy Policy"), which

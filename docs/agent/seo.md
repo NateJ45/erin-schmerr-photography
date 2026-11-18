@@ -25,7 +25,9 @@
 
 **OG regeneration is a per-project step.** The `og-default.png` committed in the starter is a placeholder. Run `npm run og` after updating the brand inputs in `scripts/generate-og-default.mjs` (brand colors, tagline, wordmark) to regenerate it for the actual project.
 
-**llms.txt regeneration is also per-project.** `public/llms.txt` ships as an AI/LLM crawler index for the core routes. Update it when pages are added or removed, and review it before launch to make sure it describes the actual project.
+**llms.txt is built, not committed, on this site (2026-11-18).** `src/pages/llms.txt.ts` and `src/pages/llms-full.txt.ts` write both files from Sanity on every build (`src/lib/llms.ts` formats, `src/lib/llms-data.ts` reads): who she is, what a session is, where she shoots, the key pages, every real story and press feature, how to book. Placeholder and seeded text is left out (`src/lib/page-meta.ts`). A new key page goes into `keyPages()` in `llms.ts`.
+
+**Titles and descriptions never ship a placeholder (2026-11-18).** Pages pick them with `pageTitle()` / `pageDescription()` from `src/lib/page-meta.ts`, which skip empty and seeded text; BaseLayout runs the same check and falls back to `site.description`. The business and photographer JSON-LD are in `src/lib/site-graph.ts` (linked by @id).
 
 ### JSON-LD schemas (via `StructuredData.astro`)
 
@@ -79,7 +81,7 @@ Sitemap: <site.url>/sitemap-index.xml
 
 There is no static `public/robots.txt`. The generated endpoint ensures the sitemap URL is always the correct production domain as long as `site.ts` `url` is set correctly -- no manual file editing needed.
 
-`public/llms.txt` also ships -- an AI/LLM crawler index of the site for tools that follow the emerging llms.txt convention. Keep it updated if major pages are added or removed.
+`/llms.txt` and `/llms-full.txt` are built from Sanity on every build (see above), for tools that follow the llms.txt convention.
 
 After DNS cutover, submit `sitemap-index.xml` to Google Search Console. Verify the property via DNS TXT record (preferred -- survives redeploys) or HTML file upload.
 

@@ -16,6 +16,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import { getFaqPage, getSiteSettings } from '@/lib/queries';
 import { breadcrumbSchema, faqPageSchema } from '@/lib/schemas';
 import { site } from '@/data/site';
+import { pageDescription, pageTitle, realFaqs } from '@/lib/page-meta';
 
 import Hero from '@/components/Hero.astro';
 import FaqAccordion from '@/components/FaqAccordion';
@@ -23,10 +24,12 @@ import FinalCta from '@/components/FinalCta.astro';
 
 const [page, siteSettings] = await Promise.all([getFaqPage(), getSiteSettings()]);
 
-const title = page?.seoTitle ?? `Frequently Asked Questions · ${site.name}`;
-const description =
-  page?.seoDescription ??
-  'Pricing, process, logistics, and service area — everything visitors ask before reaching out.';
+// Real words only (src/lib/page-meta.ts): a seeded placeholder in the Studio is skipped.
+const title = pageTitle(page?.seoTitle, 'Questions');
+const description = pageDescription(
+  page?.seoDescription,
+  'Answers to the questions people ask me before booking a portrait session.',
+);
 
 const heroEyebrow = page?.heroEyebrow ?? 'Common Questions.';
 const heroHeadline = page?.heroHeadline ?? 'Everything You Want to Know.';
@@ -40,7 +43,8 @@ const schemas = [
     { name: 'Home', url: site.url },
     { name: 'FAQ', url: `${site.url}/faq/` },
   ]),
-  faqPageSchema(faqs),
+  // Real answers only: a seeded placeholder answer is never sent as hers (src/lib/page-meta.ts).
+  ...(realFaqs(faqs).length ? [faqPageSchema(realFaqs(faqs))] : []),
 ];
 ---
 

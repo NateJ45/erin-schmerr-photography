@@ -16,6 +16,12 @@ sequence).
 
 ## Waiting on a human
 
+- **Her words for the Studio's SEO fields and the three Sessions answers (2026-11-18).** The About, Contact, FAQ, Process, Journal and Privacy singletons still hold the starter's seeded "Replace this ..." SEO title and description. The site now skips them (`src/lib/page-meta.ts`) and uses a real line in her voice, so nothing placeholder reaches Google, but the Studio still shows the seeded text. When she writes her own, it wins. The Sessions FAQ answers on turnaround, prints and booking are still "Placeholder: ...", so the Sessions FAQPage carries only the two real answers until she fills them.
+
+- **The starter's FAQ, Process and Journal pages are still live (2026-11-18).** `/faq/`, `/process/` and `/journal/` (two placeholder posts) have real titles and descriptions now and send no placeholder FAQPage, but their bodies are starter text and nothing links to them. Nathan's call: remove them (`npm run scaffold -- --remove faq process journal`, then refresh the snapshot) or fill them. They are left out of `/llms.txt`.
+
+- **Search Console and GA4 Realtime after the next deploy (2026-11-18).** Check the Rich Results test on `/`, `/about/`, `/sessions/` and one story (ProfessionalService with sameAs, Person, FAQPage, CreativeWork with ImageObjects), and read GA4 Realtime for `book_click`, `social_click`, `press_click` and `generate_lead` in a real browser (`docs/agent/analytics.md`, "Verifying").
+
 - **Her originals and her review of the Instagram import (2026-11-18).** The live stories, press and archive are her Instagram copies (1080 to 1440px, some with magazine logos on the page), titled, dated and alt-texted by us. Waiting on her: originals to replace them, real names for the collaborators (most are Instagram handles), the publication dates (taken from post dates) and the story titles and short lines. Children, family and client sessions were left out on purpose; she adds any she wants. Then retire the `placeholder-*` documents with a backup-then-delete script (rule 16) and refresh `ci/sanity-snapshot.ndjson.gz` in the same PR as any test that names a placeholder.
 
 - **The `e2e` job is pinned to ubuntu-24.04 (2026-10-30).** `ubuntu-latest` moved to 26.04, where Playwright's WebKit will not launch, so every `[webkit-iphone]` test failed. `ci.yml` now says `runs-on: ubuntu-24.04` on that job only. Unpin it once a Playwright release supports 26.04 (try it on a branch first). Starter PORTS.md card and vault gotcha `playwright-webkit-ubuntu-26-04`.

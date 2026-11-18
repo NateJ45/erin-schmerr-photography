@@ -4,7 +4,8 @@
 // =============================================================================
 // NOT PORTABLE: each site edits this file. The shared half is src/lib/track.ts
 // and src/components/analytics/SiteEvents.astro; they read this map and nothing
-// else. With the map empty (as here) only the built-in rules run:
+// else. This site adds book_click, social_click and press_click (below, pinned in
+// tests/site-events.spec.ts); with the map empty only the built-in rules run:
 //
 //   contact_click      an email or phone link (the kind only, never the address)
 //   watch_click        YouTube or Vimeo
@@ -32,19 +33,51 @@
 // Docs: docs/agent/analytics.md.
 // =============================================================================
 
-import type { EventsConfig } from '@/lib/track';
+// Relative, with the extension, so the unit test (src/lib/site-events-config.test.ts) can load it.
+import { hostUnder, type EventsConfig } from '../lib/track.ts';
 
 export const eventsConfig: EventsConfig = {
   links: [
-    // Giving. A page on this site and the giving platform it hands off to:
-    // { own: true, path: /^\/give(\/|$)/, event: 'give_click', params: { destination: 'give_page' } },
-    // { host: 'give.example.org', event: 'give_click', params: { destination: 'platform' } },
-    //
-    // Registering for an event or a class:
-    // { host: 'register.example.org', event: 'register_click', params: { destination: 'registration' } },
-    //
-    // A calendar file (any host):
-    // { path: /\.ics$/, event: 'calendar_add', describe: 'calendar files' },
+    // Booking (2026-11-18). Any link to the contact page is a step towards a session:
+    // the "Book a session" buttons, the footer link and any text link an editor adds.
+    {
+      own: true,
+      path: /^\/contact(\/|$)/,
+      event: 'book_click',
+      describe: 'links to the booking page',
+      params: { destination: 'contact_page' },
+    },
+
+    // Her own profiles. A collaborator's Instagram (the story credits) is not hers and
+    // stays an outbound_click; only her studio's accounts count here.
+    {
+      host: 'instagram.com',
+      path: /^\/tatefineartphotography(\/|$)/,
+      event: 'social_click',
+      describe: 'links to her Instagram and Facebook pages',
+      params: { platform: 'instagram' },
+    },
+    {
+      host: ['facebook.com', 'fb.com'],
+      path: /^\/(stellinafineartphotography|share\/19xsggv2za)(\/|$)/,
+      event: 'social_click',
+      describe: 'links to her Instagram and Facebook pages',
+      params: { platform: 'facebook' },
+    },
+
+    // Press: a feature or interview about her on another site. The hosts are the
+    // features in the dataset with a web address (add one when a new feature has a
+    // link); any other site's page with her name in its address counts too.
+    {
+      own: false,
+      test: (l) =>
+        ['bleachfilm.com', 'canvasrebel.com'].some((h) => hostUnder(l.host, h)) ||
+        (hostUnder(l.host, 'vogue.com') && /photovogue/.test(l.path)) ||
+        (/^https?:$/.test(l.url.protocol) && /schmerr/.test(l.path)),
+      event: 'press_click',
+      describe: 'links to magazine features about her work',
+      params: (l) => ({ destination: l.host.slice(0, 80) }),
+    },
   ],
 
   // Events this site does not send, by name. Enhanced measurement in GA4
