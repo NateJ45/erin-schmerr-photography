@@ -16,6 +16,7 @@ import { getSiteSettings } from '@/lib/queries';
 import { getStories, type Story } from '@/lib/storyQueries';
 import { formatExif, formatMonthYear, photoRatio } from '@/lib/portfolio';
 import { breadcrumbSchema } from '@/lib/schemas';
+import { storySchema } from '@/lib/portfolio-schemas';
 import { site } from '@/data/site';
 import '@/styles/portfolio.css';
 
@@ -67,7 +68,10 @@ const schemas = [
     { name: 'Stories', url: `${site.url}/stories/` },
     { name: story.title, url: `${site.url}/stories/${story.slug}/` },
   ]),
+  storySchema(story),
 ];
+// The share picture: the story's own SEO image, else its cover (a real file only).
+const shareImage = story.seoImage ?? (story.cover?.asset ? story.cover : undefined);
 ---
 
 <BaseLayout
@@ -75,7 +79,7 @@ const schemas = [
   {description}
   {schemas}
   {siteSettings}
-  seoImage={story.seoImage}
+  seoImage={shareImage}
   noindex={story.hideFromSearch === true}
   ogType="article"
   ogCard={{ kicker: 'Stories' }}

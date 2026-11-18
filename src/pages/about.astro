@@ -10,6 +10,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import SectionRenderer from '@/components/SectionRenderer.astro';
 import { getAboutPage, getSiteSettings } from '@/lib/queries';
 import { breadcrumbSchema } from '@/lib/schemas';
+import { personSchema } from '@/lib/portfolio-schemas'; // scaffold: stories
 import { site } from '@/data/site';
 import { DEFAULT_ABOUT_SECTIONS } from '@/data/defaultSections';
 
@@ -25,6 +26,7 @@ const schemas = [
     { name: 'Home', url: site.url },
     { name: 'About', url: `${site.url}/about/` },
   ]),
+  personSchema(), // scaffold: stories
 ];
 ---
 
