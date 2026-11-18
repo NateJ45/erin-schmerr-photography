@@ -786,96 +786,399 @@ html.motion [data-focus].is-focused .focus-image__img {
 }
 
 /* =============================================================================
-   STORY PAGE (/stories/<slug>/). A magazine feature: an opener, a sequence with
-   a rhythm, and a closing "Next story". Square corners, no card chrome.
-   ============================================================================= */
+   STORY PAGE (/stories/<slug>/) as a slideshow film (picked 2026-11-18,
+   design-directions "direction I"). The opener and the photo sequence are one
+   film: full-screen frames, a slow push-in, captions as subtitles on paper
+   chips, segmented progress, Pause and arrows, and the cast as end credits.
+   Then "How this was made" and "Next story" as ordinary page sections.
 
-/* A landscape cover runs full bleed above the opener, held under the fold line
-   so the title still shows on a laptop. */
-.story-cover--wide .focus-image {
-  aspect-ratio: auto !important;
-  height: min(78svh, 56.25vw);
+   Two modes, one markup:
+   - STACK (no JavaScript, and the first paint): a vertical run of full-bleed
+     frames, each a screen tall under the header, captions on chips, the end
+     credits as a paper block after the last frame. Nothing starts hidden.
+   - FILM (`.film[data-mode='film']`, set by src/scripts/story-film.ts): the
+     frames stack in one screen and play. The first frame sits exactly where it
+     painted in stack mode, so switching moves nothing on screen.
+   A portrait shows whole over its own blurred LQIP when the frame is wide, and
+   a landscape when it is tall (a container query on the frame, so the burn
+   shader can read the same answer back from object-fit).
+   ============================================================================= */
+.film {
+  /* The frame fills the screen under the sticky header (the same estimate the
+     home page's first slide uses), so the controls are on screen at load. */
+  --film-h: max(22rem, calc(100svh - clamp(3.6rem, 3.1rem + 2.6vw, 6.25rem)));
+  --film-hold: 4800ms;
+  --film-pad: var(--spacing-m);
+  position: relative;
+  background: var(--color-muted);
 }
-@media (max-width: 47.99rem) {
-  /* On a phone a 16:9 band is a sliver; give the cover a 4:3 frame. */
-  .story-cover--wide .focus-image {
-    height: 75vw;
+.film__frames {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.film__frame {
+  position: relative;
+  height: var(--film-h);
+  overflow: hidden;
+  container: film-frame / size;
+}
+.film__frame .film__pic {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  aspect-ratio: auto !important;
+  background-color: var(--color-muted);
+}
+/* The bleed: the photo's own LQIP, blurred well past its edges. */
+.film__frame .film__pic::before {
+  inset: -10%;
+  filter: blur(36px);
+}
+.film__frame .film__pic .focus-image__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+@container film-frame (min-aspect-ratio: 1 / 1) {
+  .film__frame--portrait .film__pic .focus-image__img {
+    object-fit: contain;
+    object-position: 50% 50% !important;
   }
 }
-
-.story-opener {
-  display: grid;
-  gap: 2rem;
-  padding-top: clamp(1.5rem, 4vw, 3rem);
+@container film-frame (max-aspect-ratio: 1 / 1) {
+  .film__frame--landscape .film__pic .focus-image__img {
+    object-fit: contain;
+    object-position: 50% 50% !important;
+  }
 }
-.story-opener--plain {
-  padding-top: var(--spacing-section-md);
+.film__chip {
+  background: var(--color-background);
+  color: var(--color-foreground);
 }
-.story-title {
-  margin-top: 1rem;
-  font-size: clamp(3rem, 7vw, 6.5rem);
-  line-height: 0.95;
+.film__sub {
+  position: absolute;
+  left: 50%;
+  bottom: var(--film-pad);
+  translate: -50% 0;
+  width: max-content;
+  max-width: min(40rem, calc(100% - 2 * var(--film-pad)));
+  margin: 0;
+  padding: 0.5rem 0.85rem;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: clamp(1.0625rem, 0.95rem + 0.5vw, 1.375rem);
+  line-height: 1.3;
+}
+.film__exif {
+  display: block;
+  margin-top: 0.2rem;
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-muted-foreground);
+}
+.film__title {
+  position: absolute;
+  z-index: 3;
+  top: var(--film-pad);
+  left: var(--film-pad);
+  max-width: min(34rem, calc(100% - 2 * var(--film-pad)));
+  padding: 0.65rem 0.9rem 0.75rem;
+}
+.film__kicker,
+.film__meta,
+.film__count {
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.film__kicker,
+.film__meta {
+  color: var(--color-muted-foreground);
+}
+.film__kicker a {
+  color: inherit;
+}
+.film__h1 {
+  margin-top: 0.25rem;
+  font-size: clamp(1.625rem, 1.2rem + 1.9vw, 2.75rem);
+  line-height: 1;
   letter-spacing: -0.015em;
   text-wrap: balance;
 }
-.story-dek {
+.film__meta {
+  margin-top: 0.45rem;
+}
+/* The end credits: a paper card after the last frame. */
+.film__frame--end {
+  height: auto;
+  min-height: min(var(--film-h), 40rem);
+  container-type: normal;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(4rem, 9vw, 7rem) var(--film-pad);
+  background: var(--color-background);
+  text-align: center;
+}
+.film__end {
+  width: 100%;
+  max-width: 36rem;
+}
+.film__end-title {
+  margin-bottom: 1rem;
+  font-size: clamp(2rem, 1.5rem + 2.4vw, 3.25rem);
+  line-height: 1;
+  font-style: italic;
+}
+.film__end .credit-block {
   margin-top: 1.25rem;
-  max-width: 34em;
-  font-size: var(--text-lg, 1.125rem);
-  line-height: 1.5;
+  /* Two columns even on a phone, so the credits fit one screen like a film's. */
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem 1.25rem;
+  text-align: left;
 }
-.story-opener__credits {
-  margin-top: 2.5rem;
-  max-width: 36em;
+.film__end-dek {
+  margin-top: 1.5rem;
 }
-/* Credits in the opener run one column: they sit beside the cover. */
-.story-opener--spread .credit-block {
-  grid-template-columns: minmax(0, 1fr);
+.film__end-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem 1.5rem;
+  margin-top: 2rem;
 }
-
-/* From the large breakpoint the portrait cover and the words are the two pages
-   of a spread: the cover on the left, the words bottom-aligned on the right. */
-@media (min-width: 64rem) {
-  .story-opener--spread {
-    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-    gap: clamp(2rem, 5vw, 5rem);
-    align-items: end;
-  }
-  .story-opener--plain {
-    grid-template-columns: minmax(0, 1fr);
-  }
-  .story-opener--plain .story-opener__credits .credit-block {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-  .story-opener--plain .story-opener__credits {
-    max-width: none;
-  }
+.film a:focus-visible,
+.film button:focus-visible {
+  outline: 2px solid var(--color-foreground);
+  outline-offset: 3px;
 }
 
-/* The sequence: rows spaced like turned pages. */
-.story-sequence {
-  display: grid;
-  gap: clamp(4rem, 10vw, 9rem);
-  margin-top: clamp(4rem, 10vw, 9rem);
+/* The player chrome. Hidden until the script has set the film up. */
+.film__progress {
+  position: absolute;
+  z-index: 3;
+  top: calc(var(--film-pad) - 0.6rem);
+  left: var(--film-pad);
+  right: var(--film-pad);
+  display: flex;
+  gap: 4px;
 }
-.story-row {
-  display: grid;
-  gap: clamp(1rem, 2.5vw, 2rem);
+.film__progress i {
+  position: relative;
+  flex: 1;
+  height: 3px;
+  overflow: hidden;
+  background: color-mix(in oklab, var(--color-background) 55%, transparent);
 }
-@media (min-width: 48rem) {
-  .story-row--pair {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    align-items: start;
+.film__progress b {
+  position: absolute;
+  inset: 0;
+  background: var(--color-background);
+  transform-origin: left;
+  transform: scaleX(0);
+}
+.film__progress .is-done b {
+  transform: scaleX(1);
+}
+.film__progress .is-now b {
+  animation: film-fill var(--film-hold) linear both;
+}
+.film[data-paused] .film__progress .is-now b {
+  animation-play-state: paused;
+}
+.film[data-reduced] .film__progress .is-now b,
+.film[data-stopped] .film__progress .is-now b {
+  animation: none;
+  transform: scaleX(1);
+}
+.film__controls {
+  position: absolute;
+  z-index: 3;
+  left: var(--film-pad);
+  right: var(--film-pad);
+  bottom: var(--film-pad);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  pointer-events: none;
+}
+.film__controls[hidden] {
+  display: none;
+}
+.film__controls > * {
+  pointer-events: auto;
+}
+.film__count {
+  padding: 0.7rem 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+.film__buttons {
+  display: flex;
+  gap: 0.375rem;
+}
+.film__btn {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 0.9rem;
+  border: 0;
+  /* A hairline, so the buttons still read as buttons on the paper end credits. */
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--color-foreground) 22%, transparent);
+  cursor: pointer;
+  font-size: 0.8125rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.film__btn[aria-disabled='true'] {
+  color: var(--color-muted-foreground);
+  cursor: default;
+}
+.film__btn:hover:not([aria-disabled='true']) {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.film__btn svg {
+  display: block;
+  width: 1.1rem;
+  height: 1.1rem;
+}
+.film__burn {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s var(--ease-focus, ease);
+}
+.film__burn.is-burning {
+  opacity: 1;
+  transition: none;
+}
+
+/* FILM mode: the frames stack in one screen and play. */
+.film[data-mode='film'] {
+  height: var(--film-h);
+  overflow: hidden;
+}
+.film[data-mode='film'] .film__frame {
+  position: absolute;
+  inset: 0;
+  height: auto;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 1.2s var(--ease-focus, ease),
+    visibility 0s linear 1.2s;
+}
+.film[data-mode='film'] .film__frame.is-on {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 1.2s var(--ease-focus, ease);
+}
+/* After the opening frame the title becomes a running title: just the name, smaller. */
+.film[data-rolling] .film__kicker,
+.film[data-rolling] .film__meta {
+  display: none;
+}
+.film[data-rolling] .film__title {
+  padding: 0.45rem 0.75rem 0.5rem;
+}
+.film[data-rolling] .film__h1 {
+  margin-top: 0;
+  font-size: clamp(1.125rem, 1rem + 0.6vw, 1.5rem);
+}
+/* The subtitle rides above the control row. */
+.film[data-mode='film'] .film__sub {
+  bottom: calc(var(--film-pad) + 3.75rem);
+}
+.film[data-mode='film'] .film__frame--end {
+  justify-content: safe center;
+  overflow-y: auto;
+  padding-top: 7rem;
+  padding-bottom: 6rem;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .film[data-mode='film'] .film__frame.is-on .focus-image__img {
+    animation:
+      film-push var(--film-hold) linear both,
+      film-focus 1.1s var(--ease-focus, ease) both;
   }
-  /* A lone portrait is set off to one side, not centred, alternating. */
-  .story-row--single {
-    grid-template-columns: repeat(12, minmax(0, 1fr));
+  /* The frame the film opens on paints sharp: no focus pull on the LCP. */
+  .film[data-mode='film'] .film__frame.is-first .focus-image__img {
+    animation: film-push var(--film-hold) linear both;
   }
-  .story-row--single figure {
-    grid-column: 1 / span 7;
+  .film[data-mode='film'] .film__frame.is-on:not(.is-first) .film__sub {
+    animation: film-sub 0.9s var(--ease-focus, ease) 0.35s both;
   }
-  .story-row--end figure {
-    grid-column: 6 / span 7;
+  .film[data-paused] .film__frame.is-on .focus-image__img,
+  .film[data-paused] .film__frame.is-on .film__sub {
+    animation-play-state: paused;
+  }
+  /* A frame that arrived by burning skips the crossfade and focus pull: the
+     canvas already showed it sharp, at the push-in's starting scale. */
+  .film[data-mode='film'] .film__frame.is-burned {
+    transition: none;
+  }
+  .film[data-mode='film'] .film__frame.is-on.is-burned .focus-image__img {
+    animation: film-push var(--film-hold) linear both;
+  }
+  .film[data-mode='film'] .film__frame.is-on.is-burned .film__sub {
+    animation-delay: 0s;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .film[data-mode='film'] .film__frame,
+  .film[data-mode='film'] .film__frame.is-on {
+    transition: none;
+  }
+}
+@keyframes film-push {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.06);
+  }
+}
+@keyframes film-focus {
+  from {
+    filter: blur(12px);
+  }
+  to {
+    filter: blur(0);
+  }
+}
+@keyframes film-sub {
+  from {
+    opacity: 0;
+    transform: translateY(0.625rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes film-fill {
+  to {
+    transform: scaleX(1);
+  }
+}
+@media (max-width: 40rem) {
+  .film__count {
+    display: none;
+  }
+  .film__controls {
+    justify-content: flex-end;
+  }
+  .film__btn {
+    padding: 0 0.75rem;
   }
 }
 

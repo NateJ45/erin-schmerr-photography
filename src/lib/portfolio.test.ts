@@ -14,6 +14,7 @@ import {
   proofItems,
   splitAfterWord,
   storyCast,
+  storyFrames,
   storySequence,
   withoutSeedPlaceholders,
   yearOf,
@@ -116,6 +117,18 @@ test('storySequence runs landscapes wide, pairs portraits and alternates lone po
     ['start', 'end', 'start'],
   );
   assert.deepEqual(storySequence([]), []);
+});
+
+test('storyFrames opens on the cover and never shows the same photo twice', () => {
+  const a = { asset: { _id: 'image-a-1080x1350-jpg' } };
+  const b = { asset: { _id: 'image-b-1080x1350-jpg' } };
+  const c = { asset: { _id: 'image-c-1350x1080-jpg' } };
+  assert.deepEqual(storyFrames(a, [b, a, c]), [a, b, c]);
+  assert.deepEqual(storyFrames(null, [b, c]), [b, c]);
+  assert.deepEqual(storyFrames(a, null), [a]);
+  const p1 = placeholderPhoto(1);
+  const p2 = placeholderPhoto(2);
+  assert.equal(storyFrames(p1, [p1, p2]).length, 3);
 });
 
 test('withoutSeedPlaceholders: seeded placeholders step aside once one real document exists', () => {
