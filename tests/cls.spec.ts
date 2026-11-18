@@ -53,7 +53,7 @@ for (const viewport of viewports) {
               hadRecentInput: boolean;
             })[]) {
               if (!entry.hadRecentInput) {
-                window.__shifts!.push({ value: entry.value, startTime: entry.startTime });
+                window.__shifts!.push({ value: entry.value, startTime: entry.startTime, src: ((entry as any).sources || []).map((x: any) => { const n = x.node; const d = n && n.nodeType === 1 ? n.tagName + "." + String(n.className).split(" ").slice(0, 2).join(".") : String(n && n.nodeName); return d + " y" + Math.round(x.previousRect.y) + "->" + Math.round(x.currentRect.y) + " h" + Math.round(x.previousRect.height) + "->" + Math.round(x.currentRect.height) + " w" + Math.round(x.previousRect.width) + "->" + Math.round(x.currentRect.width); }).join(" | ") } as any);
               }
             }
           }).observe({ type: 'layout-shift', buffered: true });
@@ -73,7 +73,7 @@ for (const viewport of viewports) {
         );
         await page.waitForTimeout(1000);
 
-        const { worst, total } = await page.evaluate(() => {
+        const { worst, total, detail } = await page.evaluate(() => {
           const shifts = window.__shifts ?? [];
           let worst = 0;
           let session = 0;
@@ -89,13 +89,13 @@ for (const viewport of viewports) {
             last = s.startTime;
             worst = Math.max(worst, session);
           }
-          return { worst, total: shifts.reduce((sum, s) => sum + s.value, 0) };
+          return { worst, total: shifts.reduce((sum, s) => sum + s.value, 0), detail: (shifts as any[]).filter((s) => s.value > 0.002).map((s) => s.value.toFixed(4) + " @" + Math.round(s.startTime) + " " + s.src).join(" || ") };
         });
 
         test.info().annotations.push({ type: 'CLS', description: worst.toFixed(4) });
         expect(
           worst,
-          `${route} at ${viewport.width}px: CLS ${worst.toFixed(4)} (all shifts ${total.toFixed(4)})`,
+          `${route} at ${viewport.width}px: CLS ${worst.toFixed(4)} (all shifts ${total.toFixed(4)}) DETAIL ${detail}`,
         ).toBeLessThan(LIMIT);
       });
     }
