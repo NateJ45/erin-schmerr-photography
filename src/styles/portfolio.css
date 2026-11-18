@@ -1,0 +1,183 @@
+/* Safe to edit by hand
+   =============================================================================
+   portfolio.css - the portfolio components' own CSS (src/components/portfolio/)
+   =============================================================================
+   Imported by the components that use it, so the per-page purge keeps it only
+   where it is drawn. Colours come from the brand tokens (globals.css, written by
+   apply-brand); nothing here edits them. DESIGN.md: square corners, no card
+   shadows, captions small, uppercase and tracked.
+
+   FOCUS IMAGE. Every photo sits over its own LQIP (the tiny preview Sanity
+   extracts on upload), blurred, so the frame is never an empty box while the
+   real file loads. The real <img> is drawn fully visible, so with JavaScript
+   off or under reduced motion the photo simply appears over its blur. The
+   `data-focus` attribute is the hook a later motion pass uses to animate blur
+   to sharp; any hidden start state it adds must sit under `html.motion`.
+   ============================================================================= */
+
+.focus-image {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0;
+  background-color: var(--color-muted);
+}
+
+.focus-image::before {
+  content: '';
+  position: absolute;
+  inset: -8%;
+  background-image: var(--focus-lqip, none);
+  background-position: center;
+  background-size: cover;
+  filter: blur(18px);
+}
+
+.focus-image__img {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Placeholder photos: a warm tonal gradient with soft grain and a visible label,
+   so a placeholder can never pass for a real photograph. The tones are fixed
+   (they stand in for prints, which do not change with the theme); the label
+   carries the theme's own ground and ink, so it reads in light and dark. */
+.focus-image--placeholder {
+  --ph-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  background-image: var(--ph-grain), var(--ph-gradient);
+  background-size:
+    160px 160px,
+    cover;
+  background-blend-mode: soft-light, normal;
+}
+
+.focus-image--paper {
+  --ph-gradient: linear-gradient(160deg, #f3eee7 0%, #e3d6c6 55%, #c9b49d 100%);
+}
+.focus-image--sand {
+  --ph-gradient: linear-gradient(200deg, #eae3d9 0%, #d8c3a8 50%, #a88a6c 100%);
+}
+.focus-image--dusk {
+  --ph-gradient: linear-gradient(170deg, #d6a898 0%, #9c6555 50%, #5a3830 100%);
+}
+.focus-image--ink {
+  --ph-gradient: linear-gradient(190deg, #5f514a 0%, #2f2824 55%, #12100e 100%);
+}
+
+.focus-image__label {
+  margin: 0.5rem;
+  padding: 0.15rem 0.45rem;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-size: 0.6875rem;
+  line-height: 1.4;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* Captions, credits and the small type around photos. */
+.portfolio-label {
+  font-size: var(--text-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-muted-foreground);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Credit block: role then name, two columns from the small breakpoint up. */
+.credit-block {
+  display: grid;
+  gap: 0.75rem 2rem;
+}
+@media (min-width: 40rem) {
+  .credit-block {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.credit-block > div {
+  display: grid;
+  gap: 0.125rem;
+  border-top: 1px solid var(--color-border);
+  padding-top: 0.5rem;
+}
+.credit-block dd {
+  margin: 0;
+}
+
+/* Story cards and the archive: plain responsive grids, no card chrome. */
+.story-grid {
+  display: grid;
+  gap: 3rem 1.5rem;
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 40rem) {
+  .story-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 64rem) {
+  .story-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.archive-grid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+@media (min-width: 48rem) {
+  .archive-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (min-width: 80rem) {
+  .archive-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* Links in the portfolio: an underline that sits close, in the accent. */
+.portfolio-link {
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+/* Published marquee: the names in one wrapping line, divided by a small rule.
+   A static strip for now; the slow, pausable scroll comes with the motion pass. */
+.published-marquee {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem 2.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Tear sheets: a row of prints, each slightly turned, so they read as a stack.
+   Turned only when motion is welcome; flat under reduced motion. */
+.tear-sheets {
+  display: grid;
+  gap: 2rem 1.5rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+@media (min-width: 64rem) {
+  .tear-sheets {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .tear-sheets > :nth-child(odd) .focus-image {
+    transform: rotate(-1.25deg);
+  }
+  .tear-sheets > :nth-child(even) .focus-image {
+    transform: rotate(1deg);
+  }
+}

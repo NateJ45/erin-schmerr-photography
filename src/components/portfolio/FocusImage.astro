@@ -1,0 +1,81 @@
+---
+// Safe to edit by hand
+// One portfolio photo (DESIGN.md "Focus image"). The real image comes from the
+// starter's SanityImage (srcset, hotspot, intrinsic size); under it sits the
+// photo's own LQIP, blurred, as the frame's background, so the box is never
+// empty while the file loads. `data-focus` marks the frame for the later motion
+// pass that animates blur to sharp. Nothing here hides the image: with
+// JavaScript off, or under reduced motion, the photo just appears over its blur.
+//
+// A photo with no asset is a PLACEHOLDER (src/lib/portfolio.ts): drawn as a
+// warm tonal gradient with a visible "Placeholder" label, in the shape it asks
+// for, so the routes look like themselves with no Sanity data and nobody can
+// mistake one for a real photograph.
+//
+// Shared by stories and press, so it carries no scaffold marker.
+import SanityImage from '@/components/SanityImage.astro';
+import { photoRatio, type PortfolioPhoto } from '@/lib/portfolio';
+import type { SanityImageObject } from '@/lib/pageBuilder.types';
+import '@/styles/portfolio.css';
+
+interface Props {
+  photo: PortfolioPhoto | null | undefined;
+  /** Largest width the frame ever renders at; the top of the srcset. */
+  width: number;
+  sizes?: string;
+  /** Crop to this width-over-height ratio (4 / 5 for a card); default is the photo's own shape. */
+  crop?: number;
+  loading?: 'lazy' | 'eager';
+  fetchpriority?: 'high' | 'low' | 'auto';
+  /** Override the photo's alt text (pass '' when the photo is decorative next to its own words). */
+  alt?: string;
+  class?: string;
+}
+
+const {
+  photo,
+  width,
+  sizes,
+  crop,
+  loading = 'lazy',
+  fetchpriority,
+  alt,
+  class: className,
+} = Astro.props;
+
+const ratio = crop ?? photoRatio(photo);
+const lqip = photo?.asset?.metadata?.lqip;
+const hasAsset = !!photo?.asset;
+const frameStyle = [`aspect-ratio: ${ratio.toFixed(4)}`, lqip ? `--focus-lqip: url("${lqip}")` : '']
+  .filter(Boolean)
+  .join('; ');
+const placeholderAlt = alt ?? photo?.alt ?? 'Placeholder photo';
+const tone = photo?.placeholder?.tone ?? 'paper';
+---
+
+{hasAsset ? (
+  <div class:list={['focus-image', className]} data-focus style={frameStyle}>
+    <SanityImage
+      source={photo as SanityImageObject}
+      width={width}
+      height={crop ? Math.round(width / crop) : undefined}
+      sizes={sizes}
+      loading={loading}
+      fetchpriority={fetchpriority}
+      alt={alt}
+      class="focus-image__img"
+    />
+  </div>
+) : (
+  <div
+    class:list={['focus-image', 'focus-image--placeholder', `focus-image--${tone}`, className]}
+    style={frameStyle}
+    role={placeholderAlt ? 'img' : undefined}
+    aria-label={placeholderAlt || undefined}
+    aria-hidden={placeholderAlt ? undefined : 'true'}
+  >
+    <span class="focus-image__label" aria-hidden="true">
+      Placeholder
+    </span>
+  </div>
+)}

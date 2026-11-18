@@ -1,0 +1,50 @@
+---
+// scaffold-file: stories
+// Safe to edit by hand
+// /stories/: every story, in the Studio's drag order (Portfolio > Stories), as a
+// grid of covers. With no Sanity data it shows the placeholder stories from
+// src/lib/storyQueries.ts, and says so.
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import StoryCard from '@/components/portfolio/StoryCard.astro';
+import { getSiteSettings } from '@/lib/queries';
+import { getStories } from '@/lib/storyQueries';
+import { breadcrumbSchema } from '@/lib/schemas';
+import { site } from '@/data/site';
+import '@/styles/portfolio.css';
+
+const [stories, siteSettings] = await Promise.all([getStories(), getSiteSettings()]);
+const placeholder = stories.every((s) => s.isPlaceholder);
+
+const schemas = [
+  breadcrumbSchema([
+    { name: 'Home', url: site.url },
+    { name: 'Stories', url: `${site.url}/stories/` },
+  ]),
+];
+---
+
+<BaseLayout
+  title={`Stories | ${site.name}`}
+  description="Portrait and editorial stories, each told as a sequence of photographs."
+  {schemas}
+  {siteSettings}
+  ogCard={{ kicker: 'Stories' }}
+>
+  <section class="bg-background" aria-labelledby="stories-heading">
+    <div class="mx-auto max-w-content px-m py-section-md">
+      <h1 id="stories-heading" class="font-display text-h1 leading-headline-tight">
+        Stories
+      </h1>
+      {placeholder && (
+        <p class="portfolio-label mt-4">
+          Placeholder stories, shown until the first one is published.
+        </p>
+      )}
+      <div class="story-grid mt-section-md">
+        {stories.map((story, i) => (
+          <StoryCard {story} loading={i < 3 ? 'eager' : 'lazy'} />
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

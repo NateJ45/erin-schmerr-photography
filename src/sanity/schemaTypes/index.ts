@@ -26,6 +26,12 @@ import { privatePage } from './privatePage';
 import { pageSectionSchemas, syncedSection } from './sections';
 import { richSectionSchemas } from './richSections';
 import { notFoundPage } from './notFoundPage';
+import { photo } from './photo';
+import { collaborator } from './collaborator'; // scaffold: stories
+import { story } from './story'; // scaffold: stories
+import { storyIndex } from './storyIndexSection'; // scaffold: stories
+import { publication } from './publication'; // scaffold: press
+import { pressSectionSchemas } from './pressSections'; // scaffold: press
 import { privacyPage } from './privacyPage';
 import { processPage } from './processPage'; // scaffold: process
 import { processStep } from './processStep'; // scaffold: process
@@ -56,6 +62,11 @@ export const schemaTypes = [
   // Every main page a page builder (card 190): blocks offered on their own page only.
   ...mainPageSectionSchemas,
   journalPostsSection, // scaffold: journal
+  // The portfolio's home page blocks (the stories and press capabilities).
+  storyIndex, // scaffold: stories
+  ...pressSectionSchemas, // scaffold: press
+  // One photograph (photo.ts): used by stories AND press, so in neither capability.
+  photo,
 
   // Singletons
   siteSettings,
@@ -82,6 +93,10 @@ export const schemaTypes = [
   processStep, // scaffold: process
   journalCategory, // scaffold: journal
   journalEntry, // scaffold: journal
+  // The portfolio: stories, the people credited on them, and the press list.
+  story, // scaffold: stories
+  collaborator, // scaffold: stories
+  publication, // scaffold: press
   // One issue of the email newsletter (card 127); subscribers live in D1, never here.
   newsletter,
   // Custom pages built from the section library (multi-instance, not a singleton)

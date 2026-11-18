@@ -1,0 +1,40 @@
+---
+// scaffold-file: stories
+// Safe to edit by hand
+// One story on an index: its cover cropped to 4:5, then the title in the display
+// face, the short line, and the place and month in small tracked type. The
+// whole card is one link. No card chrome (DESIGN.md: no frames, no shadows).
+import FocusImage from '@/components/portfolio/FocusImage.astro';
+import { formatMonthYear } from '@/lib/portfolio';
+import type { Story } from '@/lib/storyQueries';
+import '@/styles/portfolio.css';
+
+interface Props {
+  story: Story;
+  /** Heading level of the title, so the card fits the page's outline. */
+  level?: 'h2' | 'h3';
+  loading?: 'lazy' | 'eager';
+}
+
+const { story, level = 'h2', loading = 'lazy' } = Astro.props;
+const Heading = level;
+const meta = [story.location, formatMonthYear(story.date)].filter(Boolean).join(', ');
+---
+
+<article class="group">
+  <a href={`/stories/${story.slug}/`} class="block text-foreground no-underline">
+    <FocusImage
+      photo={story.cover}
+      width={800}
+      crop={4 / 5}
+      sizes="(min-width: 64rem) 30vw, (min-width: 40rem) 45vw, 100vw"
+      loading={loading}
+      alt=""
+    />
+    <Heading class="font-display mt-4 text-h4 leading-tight group-hover:underline">
+      {story.title}
+    </Heading>
+    {story.dek && <p class="mt-1 text-muted-foreground">{story.dek}</p>}
+    {meta && <p class="portfolio-label mt-2">{meta}</p>}
+  </a>
+</article>

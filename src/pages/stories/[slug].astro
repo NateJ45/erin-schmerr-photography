@@ -1,0 +1,189 @@
+---
+// scaffold-file: stories
+// Safe to edit by hand
+// /stories/<slug>/: one story. The cover, the title and its short line, the
+// photo sequence (each with its caption and the camera line read from the
+// file's EXIF), the credits, a "Published in" note when the story names a
+// publication, then the previous and next story in the Studio's order.
+//
+// getStaticPaths reads every story once and hands each page its own story and
+// its neighbours as props, so a page never re-queries. With no Sanity data it
+// builds the placeholder stories (src/lib/storyQueries.ts).
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import FocusImage from '@/components/portfolio/FocusImage.astro';
+import CreditBlock from '@/components/portfolio/CreditBlock.astro';
+import { getSiteSettings } from '@/lib/queries';
+import { getStories, type Story } from '@/lib/storyQueries';
+import { formatExif, formatMonthYear, photoRatio } from '@/lib/portfolio';
+import { breadcrumbSchema } from '@/lib/schemas';
+import { site } from '@/data/site';
+import '@/styles/portfolio.css';
+
+export async function getStaticPaths() {
+  const stories = await getStories();
+  return stories.map((story, i) => {
+    const prev = stories[i - 1] ?? null;
+    const next = stories[i + 1] ?? null;
+    return {
+      params: { slug: story.slug },
+      props: {
+        story,
+        prev: prev ? { title: prev.title, slug: prev.slug } : null,
+        next: next ? { title: next.title, slug: next.slug } : null,
+      },
+    };
+  });
+}
+
+interface Neighbour {
+  title: string;
+  slug: string;
+}
+
+const { story, prev, next } = Astro.props as {
+  story: Story;
+  prev: Neighbour | null;
+  next: Neighbour | null;
+};
+
+const siteSettings = await getSiteSettings();
+
+const when = formatMonthYear(story.date);
+const meta = [story.location, when].filter(Boolean).join(', ');
+const photos = story.photos ?? [];
+// A landscape cover runs the full content width; a portrait one is held to a
+// reading width so it does not fill three screens.
+const coverLandscape = photoRatio(story.cover) >= 1;
+const title = story.seoTitle || `${story.title} | ${site.name}`;
+const description = story.seoDescription || story.dek || `${story.title}, a story by ${site.name}.`;
+// scaffold: press
+const pub = story.publication;
+const pubLine = pub?.magazine ? [pub.magazine, pub.issue].filter(Boolean).join(', ') : '';
+// scaffold:end
+
+const schemas = [
+  breadcrumbSchema([
+    { name: 'Home', url: site.url },
+    { name: 'Stories', url: `${site.url}/stories/` },
+    { name: story.title, url: `${site.url}/stories/${story.slug}/` },
+  ]),
+];
+---
+
+<BaseLayout
+  {title}
+  {description}
+  {schemas}
+  {siteSettings}
+  seoImage={story.seoImage}
+  noindex={story.hideFromSearch === true}
+  ogType="article"
+  ogCard={{ kicker: 'Stories' }}
+>
+  <article class="bg-background" aria-labelledby="story-title">
+    <header class="mx-auto max-w-content px-m pt-section-md">
+      <p class="portfolio-label">
+        <a class="portfolio-link" href="/stories/">
+          Stories
+        </a>
+        {story.isPlaceholder && <span> · Placeholder</span>}
+      </p>
+      <h1 id="story-title" class="font-display mt-4 text-h1 leading-headline-tight">
+        {story.title}
+      </h1>
+      {story.dek && <p class="mt-4 max-w-2xl text-lg text-muted-foreground">{story.dek}</p>}
+      {meta && <p class="portfolio-label mt-4">{meta}</p>}
+    </header>
+
+    {story.cover && (
+      <div
+        class:list={[
+          'mx-auto mt-section-md px-m',
+          coverLandscape ? 'max-w-content' : 'max-w-[calc(48rem+2*var(--spacing-m))]',
+        ]}
+      >
+        <FocusImage
+          photo={story.cover}
+          width={coverLandscape ? 1800 : 1200}
+          sizes={
+            coverLandscape ? '(min-width: 82.5rem) 80rem, 100vw' : '(min-width: 48rem) 48rem, 100vw'
+          }
+          loading="eager"
+          fetchpriority="high"
+        />
+      </div>
+    )}
+
+    {photos.length > 0 && (
+      <ol class="mx-auto mt-section-md flex max-w-content list-none flex-col gap-section-md px-m">
+        {photos.map((photo) => {
+          const exif = formatExif(photo.exif);
+          const landscape = photoRatio(photo) >= 1;
+          return (
+            <li class:list={[landscape ? 'w-full' : 'mx-auto w-full max-w-3xl']}>
+              <figure>
+                <FocusImage
+                  photo={photo}
+                  width={landscape ? 1800 : 1200}
+                  sizes={
+                    landscape
+                      ? '(min-width: 82.5rem) 80rem, 100vw'
+                      : '(min-width: 48rem) 48rem, 100vw'
+                  }
+                />
+                {(photo.caption || exif) && (
+                  <figcaption class="mt-2 flex flex-wrap justify-between gap-x-6 gap-y-1">
+                    {photo.caption && <span class="portfolio-label">{photo.caption}</span>}
+                    {exif && <span class="portfolio-label">{exif}</span>}
+                  </figcaption>
+                )}
+              </figure>
+            </li>
+          );
+        })}
+      </ol>
+    )}
+
+    <div class="mx-auto mt-section-md max-w-content px-m">
+      <CreditBlock credits={story.credits} />
+      {/* scaffold: press */}
+      {pubLine && (
+        <p class="portfolio-label mt-8">
+          Published in{' '}
+          {pub?.url ? (
+            <a class="portfolio-link text-foreground" href={pub.url} rel="noopener">
+              {pubLine}
+            </a>
+          ) : (
+            <span class="text-foreground">{pubLine}</span>
+          )}
+        </p>
+      )}
+      {/* scaffold:end */}
+    </div>
+
+    <nav
+      class="mx-auto mt-section-md max-w-content border-t border-border px-m py-section-md"
+      aria-label="More stories"
+    >
+      <ul class="flex list-none flex-col justify-between gap-6 sm:flex-row">
+        <li>
+          {prev && (
+            <a href={`/stories/${prev.slug}/`} class="block text-foreground no-underline">
+              <span class="portfolio-label block">Previous story</span>
+              <span class="font-display text-h4 hover:underline">{prev.title}</span>
+            </a>
+          )}
+        </li>
+        <li class="sm:text-right">
+          {next && (
+            <a href={`/stories/${next.slug}/`} class="block text-foreground no-underline">
+              <span class="portfolio-label block">Next story</span>
+              <span class="font-display text-h4 hover:underline">{next.title}</span>
+            </a>
+          )}
+        </li>
+      </ul>
+    </nav>
+  </article>
+</BaseLayout>

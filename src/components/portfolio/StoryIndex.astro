@@ -1,0 +1,70 @@
+---
+// scaffold-file: stories
+// Safe to edit by hand
+// Page-builder block `storyIndex` (storyIndexSection.ts): the featured stories
+// as a grid of covers or a list of titles. It reads the stories itself
+// (getFeaturedStories), like the Journal posts block, so the block holds only
+// its heading, layout and count, and with no Sanity data it shows the
+// placeholder stories. The grid/list toggle and the hover-reveal of a cover in
+// list view (DESIGN.md "Story index") come with the motion pass.
+//
+// SELF_CONTAINED: draws on the plain page ground, no surface prop.
+import StoryCard from '@/components/portfolio/StoryCard.astro';
+import { getFeaturedStories } from '@/lib/storyQueries';
+import { formatMonthYear } from '@/lib/portfolio';
+import '@/styles/portfolio.css';
+
+interface Props {
+  heading?: string;
+  layout?: 'grid' | 'list';
+  limit?: number;
+  headingId?: string;
+}
+
+const {
+  heading = 'Selected stories',
+  layout = 'grid',
+  limit = 6,
+  headingId = 'story-index-heading',
+} = Astro.props;
+
+const stories = await getFeaturedStories(limit);
+---
+
+{stories.length > 0 && (
+  <section class="bg-background" aria-labelledby={headingId}>
+    <div class="mx-auto max-w-content px-m py-section-lg">
+      <div class="flex flex-wrap items-baseline justify-between gap-4">
+        <h2 id={headingId} class="font-display text-h2">
+          {heading}
+        </h2>
+        <a class="portfolio-label portfolio-link" href="/stories/">
+          All stories
+        </a>
+      </div>
+      {layout === 'list' ? (
+        <ol class="mt-8 list-none border-t border-border">
+          {stories.map((story) => (
+            <li class="border-b border-border">
+              <a
+                href={`/stories/${story.slug}/`}
+                class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 py-5 text-foreground no-underline hover:underline"
+              >
+                <span class="font-display text-h3">{story.title}</span>
+                <span class="portfolio-label">
+                  {[story.location, formatMonthYear(story.date)].filter(Boolean).join(', ')}
+                </span>
+              </a>
+            </li>
+          ))}
+        </ol>
+      ) : (
+        <div class="story-grid mt-8">
+          {stories.map((story) => (
+            <StoryCard {story} level="h3" />
+          ))}
+        </div>
+      )}
+    </div>
+  </section>
+)}

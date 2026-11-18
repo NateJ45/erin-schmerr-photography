@@ -22,10 +22,12 @@ A fresh clone builds with no Sanity project: pages render their built-in placeho
 | In the Studio                                          | On the site                                           |
 | ------------------------------------------------------ | ----------------------------------------------------- |
 | Stories (cover, photos, credits, publication)          | `/stories/` and `/stories/<slug>/`                    |
-| Photos (alt, caption, credits, camera details)         | inside stories and on `/archive/`                     |
+| Photos (alt, caption, archive switch)                  | inside stories and on `/archive/`                     |
 | Publications (magazine, issue, date, link, tear sheet) | `/press/`, the home page marquee and tear-sheet stack |
 | Collaborators (name, role, link)                       | the credit block on each story                        |
 | Pages, About, FAQ, Process, Testimonials               | `/about/`, `/sessions/` and any page you add          |
+
+Camera details (body, lens, focal length, aperture, shutter, ISO) are read from each photo's own file, never typed. Placeholder stories and publications: `npm run seed:portfolio` (dry by default).
 
 A published change goes live after the site rebuilds (the Sanity publish webhook triggers it).
 

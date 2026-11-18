@@ -54,6 +54,7 @@ const SINGLETON_TYPES = [
 
 const ORDERABLE_TYPES = [
   'processStep', // scaffold: process
+  'story', // scaffold: stories
 ] as const;
 
 const HIDDEN_FROM_DEFAULT = new Set<string>([
@@ -67,6 +68,8 @@ const HIDDEN_FROM_DEFAULT = new Set<string>([
   'faqCategory', // scaffold: faq
   'journalEntry', // scaffold: journal
   'journalCategory', // scaffold: journal
+  'collaborator', // scaffold: stories
+  'publication', // scaffold: press
   // No newsletter issues while the list lives elsewhere (ownNewsletter.ts, card 187).
   ...(OWN_NEWSLETTER ? [] : ['newsletter']),
   'page', // custom pages, placed explicitly under "Pages"
@@ -381,6 +384,53 @@ const fullDesk = (S: StructureBuilder, context: StructureResolverContext) =>
               S.documentTypeListItem('journalCategory')
                 .title('Categories')
                 .icon(typeIcon('journalCategory')),
+            ]),
+        ),
+      // scaffold:end
+
+      S.divider(),
+
+      // scaffold: stories
+      // Portfolio: the stories (drag to reorder; the site follows this order) and
+      // the people credited on them. The ids are load-bearing: kit.config.ts links
+      // to the panes portfolio;story and portfolio;collaborator.
+      S.listItem()
+        .id('portfolio')
+        .title('Portfolio')
+        .icon(brandIcon('image'))
+        .child(
+          S.list()
+            .title('Portfolio')
+            .items([
+              orderableDocumentListDeskItem({
+                type: 'story',
+                id: 'story',
+                title: 'Stories',
+                icon: brandIcon('image'),
+                S,
+                context,
+              }),
+              S.documentTypeListItem('collaborator')
+                .title('Collaborators')
+                .icon(brandIcon('people')),
+            ]),
+        ),
+      // scaffold:end
+
+      // scaffold: press
+      // Press: every publication, newest first. /press/ and the home page's
+      // Published in and Tear sheets blocks read this list.
+      S.listItem()
+        .id('press')
+        .title('Press')
+        .icon(brandIcon('document'))
+        .child(
+          S.list()
+            .title('Press')
+            .items([
+              S.documentTypeListItem('publication')
+                .title('Publications')
+                .icon(brandIcon('document')),
             ]),
         ),
       // scaffold:end
