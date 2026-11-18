@@ -19,25 +19,46 @@
   line-gap-override: 0%;
 }
 
-/* Quiet chrome: no brand stripe, and the desktop eyebrow strip sits on the page
-   ground instead of a tinted band. */
-.site-header > .h-1.bg-primary {
+/* Quiet chrome: no brand stripe and no eyebrow strip. The strip repeated the
+   tagline that the hero eyebrow and the footer already carry, and it squeezed
+   the wordmark and five nav items into one crowded row; the theme toggle it
+   held now sits in the nav row (Header.astro). */
+.site-header > .h-1.bg-primary,
+.site-header__eyebrow {
   display: none;
 }
-.site-header__eyebrow {
-  background: var(--background);
-  border-color: transparent;
-}
+
+/* One left edge (rule 17): the header row uses the page gutter (px-m), so the
+   wordmark lines up with every heading and photo under it. The starter's row
+   uses px-l, which put the header 24px inside the content at 1440. */
 .site-header__row {
   border-color: transparent;
+  padding-inline: var(--spacing-m);
 }
 
-/* Masthead nav: small, uppercase, tracked, like a magazine's section labels. */
+/* Masthead nav: small, uppercase, tracked, like a magazine's section labels.
+   Gaps tighten from the starter's spacing-l so the wordmark keeps its air at
+   1024 to 1280. */
+.site-header__nav {
+  column-gap: clamp(0.75rem, 1.8vw, 2rem);
+}
 .site-header__nav a,
 .site-header__nav button {
   font-size: 0.75rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
+}
+/* The wordmark scales with the viewport so the full row (wordmark, five nav
+   items, theme toggle, the inquiry button) fits from 1024 up without touching;
+   the button label never wraps. */
+@media (min-width: 1024px) {
+  .site-header__logo img {
+    height: clamp(1.625rem, 2.9vw, 2.75rem);
+    width: auto;
+  }
+  .site-header__row a {
+    white-space: nowrap;
+  }
 }
 
 /* The display face is a tall, narrow serif; it wants tight leading and a touch
@@ -77,4 +98,42 @@ h2 em {
     width: 100%;
     height: auto;
   }
+}
+
+/* Paper and hairlines, not bands (DESIGN.md: "sections separate by space and
+   hairline rules"). The starter's cadence alternates paper and paper-soft and
+   drops a sunburst ornament between same-ground sections; this site keeps the
+   cadence's rhythm (the spacing) but draws every content band on the page
+   ground, swaps the ornament for a hairline, and drops the warm glow
+   behind the testimonial. Footer and the deep CTA band keep their grounds. */
+main section.bg-muted {
+  /* The rule is drawn as a background line so it spans the content column,
+     like the divider hairline, rather than the full bleed. */
+  background: linear-gradient(var(--border), var(--border)) top center /
+    min(100% - 2 * var(--spacing-m), var(--container-content) - 2 * var(--spacing-m)) 1px no-repeat
+    var(--background);
+}
+/* A divider already drew the rule; do not draw a second one under it. */
+.section-divider--ornament + section.bg-muted {
+  background-image: none;
+}
+/* The quote block's own sunburst, above the quotation. */
+.surface-warm > div > span.font-display[aria-hidden='true'] {
+  display: none;
+}
+.surface-warm,
+.dark .surface-warm {
+  background-image: none;
+}
+.section-divider--ornament {
+  padding-block: 0;
+}
+.section-divider--ornament > span {
+  display: none;
+}
+.section-divider--ornament::before {
+  content: '';
+  display: block;
+  height: 1px;
+  background: var(--border);
 }
