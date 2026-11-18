@@ -266,3 +266,77 @@ html.motion [data-focus].is-focused .focus-image__img {
   filter: blur(0);
   transform: none;
 }
+
+/* ARCHIVE CANVAS (src/scripts/archive-canvas.ts). Only applies once the script
+   has switched the archive into canvas mode; the grid above is the default. */
+.archive {
+  padding-bottom: var(--spacing-section-md, 4rem);
+}
+.archive__controls {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+.archive__controls[hidden] {
+  display: none;
+}
+.archive__toggle {
+  min-height: 44px;
+  padding: 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--foreground);
+  background: none;
+  border: 0;
+  border-bottom: 1px solid currentColor;
+  cursor: pointer;
+}
+.archive--canvas {
+  padding-bottom: 0;
+}
+.archive--canvas .archive__viewport {
+  position: relative;
+  height: min(82vh, 56rem);
+  overflow: hidden;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  border-block: 1px solid var(--border);
+}
+.archive--canvas.is-dragging .archive__viewport {
+  cursor: grabbing;
+}
+.archive--canvas.is-dragging a {
+  pointer-events: none;
+}
+.archive--canvas .archive__viewport:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: -2px;
+}
+.archive__world {
+  position: absolute;
+  inset: 0 auto auto 0;
+  will-change: transform;
+}
+.archive--canvas .archive__plane {
+  position: absolute;
+  inset: 0 auto auto 0;
+  display: block;
+  margin: 0;
+  padding: 0;
+}
+.archive--canvas .archive__plane > li {
+  position: absolute;
+  width: 240px;
+}
+.archive--canvas .archive__plane img {
+  -webkit-user-drag: none;
+}
+/* Hover: the photo under the pointer stays bright, the rest dim a touch. */
+.archive--canvas .archive__plane > li {
+  transition: opacity 400ms var(--ease-focus, ease);
+}
+.archive--canvas:not(.is-dragging) .archive__world:hover .archive__plane > li:not(:hover) {
+  opacity: 0.72;
+}
