@@ -2,6 +2,8 @@
 
 Moved out of CLAUDE.md. Read when you add, remove or debug a route. The modules and archive paragraph is in .claude/rules/scaffold.md.
 
+This site removed `services` and `philosophy` at fork time and `faq`, `journal` and `process` on 2026-11-18; their rows below describe the starter, not this site.
+
 Core routes that ship with the starter. None of them is toggleable in the Studio; the ones a fork may not want are **scaffold capabilities**, removed from the source with `npm run scaffold -- --remove <name> --write`.
 
 | Path                  | Source                               | scaffold   | Notes                                                                                                                                                                  |

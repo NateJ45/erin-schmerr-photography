@@ -202,9 +202,6 @@ const announcementStyle = ANNOUNCEMENT_STYLES[announcement?.style ?? 'info'] ?? 
     {/* No canonical on a noindex page (the 404, /search/, a hidden page): "do not index this" and
         "this is the address to index" contradict each other (card 159). */}
     {!noindex && <link rel="canonical" href={canonical} />}
-    {/* scaffold: journal */}
-    <link rel="alternate" type="application/rss+xml" title={`${site.name} Journal`} href="/journal/rss.xml" />
-    {/* scaffold:end */}
     {noindex && <meta name="robots" content="noindex, follow" />}
 
     {/* Mobile browser UI chrome colour: the page's own ground in each theme.

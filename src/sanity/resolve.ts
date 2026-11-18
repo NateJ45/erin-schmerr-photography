@@ -33,10 +33,7 @@ import {
 export const SINGLETON_PREVIEW_PATHS: Record<string, string> = {
   homePage: '/preview',
   aboutPage: '/preview/about', // scaffold: about
-  processPage: '/preview/process', // scaffold: process
-  faqPage: '/preview/faq', // scaffold: faq
   contactPage: '/preview/contact',
-  journalPage: '/preview/journal', // scaffold: journal
   privacyPage: '/preview/privacy',
   notFoundPage: '/preview/404',
 };
@@ -84,17 +81,7 @@ export const resolve: PresentationPluginOptions['resolve'] = {
     }),
     // Collection docs have no draft-preview route of their own. Send each to
     // the page it renders on, with a note when a detail page exists live.
-    // scaffold: journal
-    journalEntry: {
-      locations: [{ title: 'Journal', href: '/preview/journal' }],
-      message: 'Journal entry pages preview on the live site after publish.',
-    },
-    // scaffold:end
-    processStep: { locations: [{ title: 'Process', href: '/preview/process' }] }, // scaffold: process
     testimonial: { locations: [{ title: 'Home', href: '/preview' }] }, // scaffold: testimonials
-    faqItem: { locations: [{ title: 'FAQ', href: '/preview/faq' }] }, // scaffold: faq
-    faqCategory: { locations: [{ title: 'FAQ', href: '/preview/faq' }] }, // scaffold: faq
-    journalCategory: { locations: [{ title: 'Journal', href: '/preview/journal' }] }, // scaffold: journal
     // The portfolio has no draft-preview route of its own: a story, a collaborator and a
     // publication show on the home page's blocks, and on their own pages after publish.
     // scaffold: stories

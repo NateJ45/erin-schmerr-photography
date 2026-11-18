@@ -27,9 +27,6 @@
 
 export const RESERVED_SLUGS = new Set([
   'about', // scaffold: about
-  'process', // scaffold: process
-  'faq', // scaffold: faq
-  'journal', // scaffold: journal
   'stories', // scaffold: stories
   'archive', // scaffold: stories
   'press', // scaffold: press

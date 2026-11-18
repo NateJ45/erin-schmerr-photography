@@ -27,11 +27,8 @@ import type { DocumentBadgeComponent, DocumentBadgeProps } from 'sanity';
 const SEO_PAGE_TYPES = new Set<string>([
   'homePage',
   'aboutPage', // scaffold: about
-  'processPage', // scaffold: process
   'portfolioPage',
-  'faqPage', // scaffold: faq
   'contactPage',
-  'journalPage', // scaffold: journal
   'shopPage',
   'giftPage',
   'resourcesPage',
@@ -43,7 +40,6 @@ const SEO_PAGE_TYPES = new Set<string>([
 // name to check on each.
 const PHOTO_FIELD: Record<string, string> = {
   project: 'heroImage',
-  journalEntry: 'coverImage', // scaffold: journal
   story: 'cover', // scaffold: stories
 };
 

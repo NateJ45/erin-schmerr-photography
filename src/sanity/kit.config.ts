@@ -33,7 +33,6 @@ import { HOURS_TIME_OPTIONS } from '../lib/business-hours';
 import { runPageCheck } from './actions/checkPage';
 import { PAGE_BUILDER_TYPES } from './pageBuilderConfig';
 import { OWN_NEWSLETTER, OWN_NEWSLETTER_JOBS } from './ownNewsletter';
-import { slugify } from '../lib/slugify'; // scaffold: journal
 
 /**
  * Page types with a Google description (seoDescription). Not journalEntry: a
@@ -43,10 +42,7 @@ import { slugify } from '../lib/slugify'; // scaffold: journal
 const SEO_TYPES = [
   'homePage',
   'aboutPage', // scaffold: about
-  'processPage', // scaffold: process
-  'faqPage', // scaffold: faq
   'contactPage',
-  'journalPage', // scaffold: journal
   'privacyPage',
   'page',
 ];
@@ -94,11 +90,6 @@ export const kitConfig: KitConfig = {
     popup: 'Popup',
     testimonial: 'Testimonial', // scaffold: testimonials
     libraryDocument: 'Document', // scaffold: documents
-    faqItem: 'Question and answer', // scaffold: faq
-    faqCategory: 'Question group', // scaffold: faq
-    journalEntry: 'Journal post', // scaffold: journal
-    journalCategory: 'Journal category', // scaffold: journal
-    processStep: 'Process step', // scaffold: process
     story: 'Story', // scaffold: stories
     collaborator: 'Collaborator', // scaffold: stories
     publication: 'Publication', // scaffold: press
@@ -126,9 +117,6 @@ export const kitConfig: KitConfig = {
         fixedPaths: [
           '/',
           '/about/', // scaffold: about
-          '/process/', // scaffold: process
-          '/faq/', // scaffold: faq
-          '/journal/', // scaffold: journal
           '/stories/', // scaffold: stories
           '/archive/', // scaffold: stories
           '/press/', // scaffold: press
@@ -138,7 +126,6 @@ export const kitConfig: KitConfig = {
         routes: {
           page: (slug) => `/${slug}/`,
           privatePage: (slug) => `/private/${slug}/`,
-          journalEntry: (slug) => `/journal/${slug}/`, // scaffold: journal
           story: (slug) => `/stories/${slug}/`, // scaffold: stories
         },
       }),
@@ -172,9 +159,6 @@ export const kitConfig: KitConfig = {
       links: [
         { title: 'Home', target: { doc: 'homePage' } },
         { title: 'About', target: { doc: 'aboutPage' } }, // scaffold: about
-        { title: 'Process', target: { doc: 'processPage' } }, // scaffold: process
-        { title: 'Questions', target: { doc: 'faqPage' } }, // scaffold: faq
-        { title: 'Journal (the list page)', target: { doc: 'journalPage' } }, // scaffold: journal
         { title: 'Contact', target: { doc: 'contactPage' } },
         { title: 'Privacy policy', target: { doc: 'privacyPage' } },
       ],
@@ -187,11 +171,9 @@ export const kitConfig: KitConfig = {
       links: [
         { title: 'Announcements', target: { pane: 'content;announcement' } },
         { title: 'Popups', target: { pane: 'content;popup' } },
-        { title: 'Journal posts', target: { pane: 'journal;journalEntry' } }, // scaffold: journal
         { title: 'Stories', target: { pane: 'portfolio;story' } }, // scaffold: stories
         { title: 'Collaborators', target: { pane: 'portfolio;collaborator' } }, // scaffold: stories
         { title: 'Publications', target: { pane: 'press;publication' } }, // scaffold: press
-        { title: 'Questions and answers', target: { pane: 'content;faqItem' } }, // scaffold: faq
         { title: 'Testimonials', target: { pane: 'content;testimonial' } }, // scaffold: testimonials
         { title: 'Documents', target: { pane: 'content;libraryDocument' } }, // scaffold: documents
       ],
@@ -384,31 +366,6 @@ export const kitConfig: KitConfig = {
   // new news post"), and can add a `note` for a site rule about photos.
   postPhoto: {
     galleryTypes: [...PAGE_BUILDER_TYPES],
-    // scaffold: journal
-    post: {
-      label: 'A new journal post',
-      type: 'journalEntry',
-      build: ({ title, alt, caption, image, now }) => ({
-        _type: 'journalEntry',
-        title,
-        slug: { _type: 'slug', current: slugify(title) },
-        excerpt: (caption || alt).slice(0, 220),
-        coverImage: image,
-        publishedAt: now.toISOString(),
-        body: [
-          {
-            _type: 'block',
-            _key: 'photo-intro',
-            style: 'normal',
-            markDefs: [],
-            children: [
-              { _type: 'span', _key: 'photo-intro-text', text: caption || alt, marks: [] },
-            ],
-          },
-        ],
-      }),
-    },
-    // scaffold:end
   },
 
   liveSlowAfterMinutes: 15,

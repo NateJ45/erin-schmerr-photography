@@ -48,53 +48,21 @@ export function pathForDoc(schemaType: string, doc: any): string | null {
     case 'aboutPage':
       return '/about';
     // scaffold:end
-    // scaffold: process
-    case 'processPage':
-      return '/process';
-    // scaffold:end
-    // scaffold: faq
-    case 'faqPage':
-      return '/faq';
-    // scaffold:end
     case 'contactPage':
       return '/contact';
-    // scaffold: journal
-    case 'journalPage':
-      return '/journal';
-    // scaffold:end
     case 'privacyPage':
       return '/privacy';
     case 'notFoundPage':
       return '/404';
     // Collections with their own detail route
-    // scaffold: journal
-    case 'journalEntry':
-      return slug ? `/journal/${slug}` : '/journal';
-    // scaffold:end
     // scaffold: stories
     case 'story':
       return slug ? `/stories/${slug}` : '/stories';
     // scaffold:end
     // Collections that render inside a parent page
-    // scaffold: process
-    case 'processStep':
-      return '/process';
-    // scaffold:end
     // scaffold: testimonials
     case 'testimonial':
       return '/';
-    // scaffold:end
-    // scaffold: faq
-    case 'faqItem':
-      return '/faq';
-    // scaffold:end
-    // scaffold: faq
-    case 'faqCategory':
-      return '/faq';
-    // scaffold:end
-    // scaffold: journal
-    case 'journalCategory':
-      return '/journal';
     // scaffold:end
     // scaffold: stories
     case 'collaborator':

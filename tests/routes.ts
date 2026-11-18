@@ -21,10 +21,7 @@
 export const routes: string[] = [
   '/',
   '/about/', // scaffold: about
-  '/process/', // scaffold: process
-  '/faq/', // scaffold: faq
   '/contact/',
-  '/journal/', // scaffold: journal
   '/stories/', // scaffold: stories
   '/archive/', // scaffold: stories
   '/press/', // scaffold: press

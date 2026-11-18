@@ -27,10 +27,8 @@ import VideoEmbed from '@/components/sections/VideoEmbed.astro';
 import FounderSection from '@/components/sections/FounderSection.astro'; // scaffold: about
 import TestimonialsSection from '@/components/sections/TestimonialsSection.astro'; // scaffold: testimonials
 import StorySection from '@/components/sections/StorySection.astro'; // scaffold: about
-import ProcessSection from '@/components/sections/ProcessSection.astro'; // scaffold: process
 import ServiceAreaSection from '@/components/sections/ServiceAreaSection.astro';
 import GuaranteeSection from '@/components/sections/GuaranteeSection.astro';
-import FaqSection from '@/components/sections/FaqSection.astro'; // scaffold: faq
 import LogoStrip from '@/components/sections/LogoStrip.astro';
 import TeamGrid from '@/components/sections/TeamGrid.astro';
 import EmbedSection from '@/components/sections/EmbedSection.astro';
@@ -41,7 +39,6 @@ import DocumentsList from '@/components/sections/DocumentsList.astro'; // scaffo
 // Every main page a page builder (card 190): the pieces Contact, Privacy and Journal drew in code.
 import ContactFormSection from '@/components/sections/ContactFormSection.astro';
 import PrivacyPolicy from '@/components/sections/PrivacyPolicy.astro';
-import JournalPosts from '@/components/sections/JournalPosts.astro'; // scaffold: journal
 // The portfolio's home page blocks; each reads its own stories or publications.
 import StoryIndex from '@/components/portfolio/StoryIndex.astro'; // scaffold: stories
 import CoverHero from '@/components/portfolio/CoverHero.astro'; // scaffold: stories
@@ -339,17 +336,6 @@ const editKeyOf = (block: unknown) => {
           surface={lightSurface(surface)}
           headingId={headingId}
         />
-      ) : // scaffold-branch: process
-      s._type === 'processSection' ? (
-        <ProcessSection
-          eyebrow={s.eyebrow}
-          headline={s.headline}
-          subhead={s.subhead}
-          steps={s.steps ?? []}
-          variant={s.variant ?? 'preview'}
-          cta={s.cta}
-          headingId={headingId}
-        />
       ) : s._type === 'serviceAreaSection' ? (
         <ServiceAreaSection
           eyebrow={s.eyebrow}
@@ -365,18 +351,6 @@ const editKeyOf = (block: unknown) => {
           text={s.text}
           siteSettingsText={s.siteSettingsText}
           surface={lightSurface(surface)}
-        />
-      ) : // scaffold-branch: faq
-      s._type === 'faqSection' ? (
-        <FaqSection
-          eyebrow={s.eyebrow}
-          headline={s.headline}
-          headingAccent={s.headingAccent}
-          subhead={s.subhead}
-          subheadRich={s.subheadRich}
-          items={s.items ?? []}
-          cta={s.cta}
-          headingId={headingId}
         />
       ) : s._type === 'logoStripSection' ? (
         <LogoStrip
@@ -429,13 +403,6 @@ const editKeyOf = (block: unknown) => {
         <ContactFormSection settings={s.settings} sidebar={s.sidebar !== false} />
       ) : s._type === 'privacyPolicySection' ? (
         <PrivacyPolicy lastUpdated={s.lastUpdated} body={s.body} />
-      ) : // scaffold-branch: journal
-      s._type === 'journalPostsSection' ? (
-        <JournalPosts
-          showCategories={s.showCategories !== false}
-          showNewsletter={s.showNewsletter !== false}
-          headingId={headingId}
-        />
       ) : // scaffold-branch: stories
       s._type === 'coverHero' ? (
         <CoverHero
