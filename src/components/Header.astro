@@ -374,6 +374,7 @@ function isGroupActive(items: { href: string }[]) {
                 isActive(item.href) ? 'font-semibold text-link' : 'text-foreground hover:text-link',
               ]}
               aria-current={isActive(item.href) ? 'page' : undefined}
+              data-label={item.label}
             >
               {item.label}
             </a>

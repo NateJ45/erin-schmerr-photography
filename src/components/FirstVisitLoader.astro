@@ -1,0 +1,52 @@
+---
+// Safe to edit by hand
+// First-visit loader (site plan, "Photographer loading transition"). On a
+// visitor's first page of the site, the name resolves from blur into focus on
+// the paper ground and the curtain lifts, about 1.1s in all. It never shows
+// again on that device (localStorage), and never at all with JavaScript off,
+// under reduced motion (html.motion is missing) or when storage is blocked.
+//
+// It hides nothing underneath: the page renders as normal behind a fixed,
+// pointer-transparent overlay, so the first-viewport test (card 213) and the
+// page's own paint are untouched; the overlay is aria-hidden and exempt.
+// The tiny script runs inline before the overlay is parsed, so a returning
+// visitor never sees a flash of it. Styles: src/styles/erin-motion.css.
+import { site } from '@/data/site';
+import { getSiteSettings } from '@/lib/queries';
+
+const siteSettings = await getSiteSettings();
+const name = siteSettings?.title ?? site.name;
+---
+
+<script is:inline>
+  (function () {
+    try {
+      var root = document.documentElement;
+      if (!root.classList.contains('motion')) return;
+      if (localStorage.getItem('es-first-visit-seen')) return;
+      localStorage.setItem('es-first-visit-seen', '1');
+      root.classList.add('first-visit');
+    } catch (_) {
+      /* storage blocked: no loader */
+    }
+  })();
+</script>
+<div class="first-visit-loader" aria-hidden="true" data-first-viewport-exempt>
+  <span class="first-visit-loader__name font-display">{name}</span>
+</div>
+<script is:inline>
+  (function () {
+    var el = document.querySelector('.first-visit-loader');
+    if (!el || !document.documentElement.classList.contains('first-visit')) return;
+    // Take it out of the page once the curtain has lifted (and as a fallback
+    // after 1.5s, in case the animation never runs in a background tab).
+    var done = function () {
+      document.documentElement.classList.remove('first-visit');
+      el.remove();
+    };
+    el.addEventListener('animationend', function (e) {
+      if (e.target === el) done();
+    });
+    setTimeout(done, 1500);
+  })();
+</script>
