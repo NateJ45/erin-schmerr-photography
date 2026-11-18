@@ -60,6 +60,10 @@ export const SELF_CONTAINED_TYPES = new Set([
   'coverHero', // scaffold: stories
   'publishedMarquee', // scaffold: press
   'tearSheetStack', // scaffold: press
+  'proofStrip', // scaffold: press
+  'craftNotes', // scaffold: stories
+  'crewSection', // scaffold: stories
+  'signedClose', // scaffold: stories
 ]);
 
 /** _type strings for blocks that receive alternating surface assignment. */

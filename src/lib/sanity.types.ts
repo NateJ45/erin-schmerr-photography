@@ -332,6 +332,7 @@ export type Story = {
   dek?: string;
   date?: string;
   location?: string;
+  startedFrom?: string;
   cover?: Photo;
   featured?: boolean;
   publication?: PublicationReference;
@@ -1202,6 +1203,18 @@ export type NavLink = {
   href?: string;
 };
 
+export type ProofStrip = {
+  _type: 'proofStrip';
+  heading?: string;
+  showPress?: boolean;
+  quotes?: Array<{
+    text?: string;
+    credit?: string;
+    _type: 'proofQuote';
+    _key: string;
+  }>;
+};
+
 export type TearSheetStack = {
   _type: 'tearSheetStack';
   heading?: string;
@@ -1213,11 +1226,69 @@ export type PublishedMarquee = {
   heading?: string;
 };
 
+export type SignedClose = {
+  _type: 'signedClose';
+  eyebrow?: string;
+  heading?: string;
+  body?: string;
+  cta?: CtaBlock;
+  signature?: string;
+};
+
+export type CrewSection = {
+  _type: 'crewSection';
+  eyebrow?: string;
+  heading?: string;
+  body?: Array<{
+    children?: Array<{
+      marks?: Array<string>;
+      text?: string;
+      _type: 'span';
+      _key: string;
+    }>;
+    style?: 'normal';
+    listItem?: never;
+    markDefs?: null;
+    level?: number;
+    _type: 'block';
+    _key: string;
+  }>;
+  crewHeading?: string;
+  crew?: Array<{
+    role?: string;
+    name?: string;
+    _type: 'crewRole';
+    _key: string;
+  }>;
+  link?: CtaBlock;
+};
+
+export type CraftNotes = {
+  _type: 'craftNotes';
+  eyebrow?: string;
+  heading?: string;
+  intro?: string;
+  notes?: Array<{
+    title?: string;
+    body?: string;
+    _type: 'craftNote';
+    _key: string;
+  }>;
+};
+
 export type CoverHero = {
   _type: 'coverHero';
   eyebrow?: string;
   headline?: string;
   subhead?: string;
+  portrait?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: 'image';
+  };
+  portraitAfterWord?: number;
   primaryCta?: CtaBlock;
   secondaryCta?: CtaBlock;
   limit?: number;
@@ -3418,6 +3489,18 @@ export type HomePage = {
     | ({
         _key: string;
       } & TearSheetStack)
+    | ({
+        _key: string;
+      } & ProofStrip)
+    | ({
+        _key: string;
+      } & CraftNotes)
+    | ({
+        _key: string;
+      } & CrewSection)
+    | ({
+        _key: string;
+      } & SignedClose)
   >;
   seoTitle?: string;
   seoDescription?: string;
@@ -3755,8 +3838,12 @@ export type AllSanitySchemaTypes =
   | BusinessInfo
   | SiteSettings
   | NavLink
+  | ProofStrip
   | TearSheetStack
   | PublishedMarquee
+  | SignedClose
+  | CrewSection
+  | CraftNotes
   | CoverHero
   | StoryIndex
   | PrivacyPolicySection

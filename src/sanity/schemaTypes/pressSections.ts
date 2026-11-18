@@ -66,4 +66,69 @@ export const tearSheetStack = defineType({
   },
 });
 
-export const pressSectionSchemas = [publishedMarquee, tearSheetStack];
+// The proof strip: a slow, pausable line of credited proof, the press features
+// from Publications (magazine and what ran) between short lines in your own
+// words with where you said them. ProofStrip.astro; the marquee works like the
+// Published one (still under reduced motion, without JS, or with few lines).
+export const proofStrip = defineType({
+  name: 'proofStrip',
+  title: 'Proof strip',
+  type: 'object',
+  icon: DocumentsIcon,
+  description:
+    'A slow line of press features (from Publications) and short quotes, each with where it came from.',
+  fields: [
+    defineField({
+      name: 'heading',
+      title: 'Label (read by screen readers)',
+      type: 'string',
+      initialValue: 'Press and interviews',
+      validation: (Rule) => Rule.max(60),
+    }),
+    defineField({
+      name: 'showPress',
+      title: 'Include the press features from Publications',
+      type: 'boolean',
+      initialValue: true,
+    }),
+    defineField({
+      name: 'quotes',
+      title: 'Quotes',
+      type: 'array',
+      validation: (Rule) => Rule.max(8),
+      of: [
+        {
+          type: 'object',
+          name: 'proofQuote',
+          title: 'Quote',
+          fields: [
+            defineField({
+              name: 'text',
+              title: 'The words',
+              type: 'string',
+              description: 'Without quotation marks; they are added for you.',
+              validation: (Rule) => Rule.required().max(140),
+            }),
+            defineField({
+              name: 'credit',
+              title: 'Where it came from',
+              type: 'string',
+              description: 'Like "Erin, in BleachFilm".',
+              validation: (Rule) => Rule.max(60),
+            }),
+          ],
+          preview: { select: { title: 'text', subtitle: 'credit' } },
+        },
+      ],
+    }),
+  ],
+  preview: {
+    select: { heading: 'heading', quotes: 'quotes' },
+    prepare: ({ heading, quotes }) => ({
+      title: heading || 'Proof strip',
+      subtitle: `Press features and ${Array.isArray(quotes) ? quotes.length : 0} quotes`,
+    }),
+  },
+});
+
+export const pressSectionSchemas = [publishedMarquee, tearSheetStack, proofStrip];

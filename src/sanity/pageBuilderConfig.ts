@@ -64,6 +64,8 @@ const SELF_FILLING_SECTIONS = [
   'coverHero', // scaffold: stories
   'publishedMarquee', // scaffold: press
   'tearSheetStack', // scaffold: press
+  // Its line is the press features; the quotes are extra.
+  'proofStrip', // scaffold: press
   'dynamicListSection',
   'guaranteeSection',
   // Its words are the channel's newest video, read at build time (card 197).

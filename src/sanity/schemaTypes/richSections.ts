@@ -509,6 +509,10 @@ export const HOME_SECTION_TYPES = [
   { type: 'storyIndex' }, // scaffold: stories
   { type: 'publishedMarquee' }, // scaffold: press
   { type: 'tearSheetStack' }, // scaffold: press
+  { type: 'proofStrip' }, // scaffold: press
+  { type: 'craftNotes' }, // scaffold: stories
+  { type: 'crewSection' }, // scaffold: stories
+  { type: 'signedClose' }, // scaffold: stories
 ];
 
 export const ABOUT_SECTION_TYPES = [

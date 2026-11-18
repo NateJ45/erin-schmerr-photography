@@ -44,6 +44,10 @@ import StoryIndex from '@/components/portfolio/StoryIndex.astro'; // scaffold: s
 import CoverHero from '@/components/portfolio/CoverHero.astro'; // scaffold: stories
 import PublishedMarquee from '@/components/portfolio/PublishedMarquee.astro'; // scaffold: press
 import TearSheetStack from '@/components/portfolio/TearSheetStack.astro'; // scaffold: press
+import ProofStrip from '@/components/portfolio/ProofStrip.astro'; // scaffold: press
+import CraftNotes from '@/components/portfolio/CraftNotes.astro'; // scaffold: stories
+import CrewList from '@/components/portfolio/CrewList.astro'; // scaffold: stories
+import SignedClose from '@/components/portfolio/SignedClose.astro'; // scaffold: stories
 import FormSection from '@/components/sections/FormSection.astro';
 import BuilderBlock from '@/components/builder-blocks/BuilderBlock.astro';
 import { isBuilderBlock } from '@/lib/builderBlocks.types';
@@ -134,19 +138,32 @@ const rows = classified.map((row, i) => ({ ...row, headingId: anchorIds[i] }));
 // without spending the budget: the accent passes to the page's own next step.
 const headerCta = resolveSiteSettings(await getSiteSettings()).headerCta;
 const own = (href: string) => !repeatsHeaderCta(href, headerCta);
-const ctaVariant = primaryBudget(rows, ({ block }) =>
-  block._type === 'ctaBandSection'
-    ? // A button left empty draws nothing (CtaLink), so it cannot hold the accent either.
-      !(block.cta && !block.cta.label && !block.cta.linkType && !block.cta.href) &&
-      own(ctaHref(block.cta))
-    : block._type === 'heroSection'
-      ? !!block.primaryCta && own(ctaHref(block.primaryCta))
-      : block._type === 'eventDetailsSection'
-        ? !!block.button?.label && own(ctaHref(block.button))
-        : // Card 193: the contact card's big Call button, and the steps rail's closing button.
-          block._type === 'contactCardSection'
-          ? block.callButtons === true
-          : block._type === 'stepsRailSection' && !!block.link?.label && own(ctaHref(block.link)),
+// scaffold: stories
+// The signed close (the portfolio's home block) is the page's one booking ask, so it holds the
+// accent even when the header's button goes to the same page: it is the closing note's whole
+// point, and the header button sits a screen or more away by then.
+const signedCloseAsk = (block: PageBuilderBlock) =>
+  block._type === 'signedClose' &&
+  !(block.cta && !block.cta.label && !block.cta.linkType && !block.cta.href);
+// scaffold:end
+const ctaVariant = primaryBudget(
+  rows,
+  ({ block }) =>
+    signedCloseAsk(block) || // scaffold: stories
+    (block._type === 'ctaBandSection'
+      ? // A button left empty draws nothing (CtaLink), so it cannot hold the accent either.
+        !(block.cta && !block.cta.label && !block.cta.linkType && !block.cta.href) &&
+        own(ctaHref(block.cta))
+      : block._type === 'heroSection'
+        ? !!block.primaryCta && own(ctaHref(block.primaryCta))
+        : block._type === 'eventDetailsSection'
+          ? !!block.button?.label && own(ctaHref(block.button))
+          : // Card 193: the contact card's big Call button, and the steps rail's closing button.
+            block._type === 'contactCardSection'
+            ? block.callButtons === true
+            : block._type === 'stepsRailSection' &&
+              !!block.link?.label &&
+              own(ctaHref(block.link))),
 );
 
 // The board grammar (brand.config.json layout.hero = 'board', card 188): every section opens with
@@ -395,6 +412,8 @@ const editKeyOf = (block: unknown) => {
           primaryCta={s.primaryCta}
           secondaryCta={s.secondaryCta}
           limit={s.limit}
+          portrait={s.portrait}
+          portraitAfterWord={s.portraitAfterWord}
           headingId={headingId}
         />
       ) : // scaffold-branch: stories
@@ -411,6 +430,45 @@ const editKeyOf = (block: unknown) => {
       ) : // scaffold-branch: press
       s._type === 'tearSheetStack' ? (
         <TearSheetStack heading={s.heading} limit={s.limit} headingId={headingId} />
+      ) : // scaffold-branch: press
+      s._type === 'proofStrip' ? (
+        <ProofStrip
+          heading={s.heading}
+          showPress={s.showPress !== false}
+          quotes={s.quotes}
+          headingId={headingId}
+        />
+      ) : // scaffold-branch: stories
+      s._type === 'craftNotes' ? (
+        <CraftNotes
+          eyebrow={s.eyebrow}
+          heading={s.heading}
+          intro={s.intro}
+          notes={s.notes}
+          headingId={headingId}
+        />
+      ) : // scaffold-branch: stories
+      s._type === 'crewSection' ? (
+        <CrewList
+          eyebrow={s.eyebrow}
+          heading={s.heading}
+          body={s.body}
+          crewHeading={s.crewHeading}
+          crew={s.crew}
+          link={s.link}
+          headingId={headingId}
+        />
+      ) : // scaffold-branch: stories
+      s._type === 'signedClose' ? (
+        <SignedClose
+          eyebrow={s.eyebrow}
+          heading={s.heading}
+          body={s.body}
+          cta={s.cta}
+          signature={s.signature}
+          headingId={headingId}
+          primaryVariant={ctaVariant(rowIndex)}
+        />
       ) : s._type === 'dynamicListSection' ? (
         <DynamicList
           eyebrow={s.eyebrow}
