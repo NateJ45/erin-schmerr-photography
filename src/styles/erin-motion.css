@@ -9,10 +9,8 @@
    2. Variable-weight nav hover: the darkroom nav label thickens on hover. The
       bold width is reserved by an invisible copy of the label, so nothing in
       the row moves. Hover-capable pointers only; touch keeps the plain link.
-   3. Story parallax: each photo in a story's sequence drifts a little inside
-      its frame as it crosses the screen. CSS scroll-driven animation, so no
-      script; browsers without it, touch screens and reduced motion get the
-      still photo.
+   3. Retired 2026-11-18: the story sequence's scroll drift (the story page is
+      a film now, src/scripts/story-film.ts).
    4. The darkroom chrome: hover prints in the header, the contact sheet's
       frames developing, the end credits rolling up. */
 
@@ -89,30 +87,7 @@ html.first-visit .first-visit-loader {
   }
 }
 
-/* ---- 3. Story parallax ------------------------------------------------------ */
-@supports (animation-timeline: view()) {
-  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
-    /* clip, not hidden: a hidden frame is a scroll container, and view() would
-       track the frame (which never scrolls) instead of the page. */
-    .story-sequence .focus-image {
-      overflow: clip;
-    }
-    .story-sequence .focus-image__img {
-      scale: 1.08;
-      animation: story-drift linear both;
-      animation-timeline: view();
-      animation-range: cover;
-    }
-  }
-}
-@keyframes story-drift {
-  from {
-    translate: 0 -3.5%;
-  }
-  to {
-    translate: 0 3.5%;
-  }
-}
+/* ---- 3. (retired) Story parallax: the story page is a film now (portfolio.css). */
 
 /* ---- 4. The darkroom chrome (2026-11-18) ------------------------------------ */
 /* Header: a small print beside the hovered nav item pulls from blur to sharp. A

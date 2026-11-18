@@ -1,17 +1,21 @@
 ---
 // scaffold-file: stories
 // Safe to edit by hand
-// /stories/<slug>/: one story, set like a magazine feature. The opener puts the
-// cover beside the title, its short line, where and when, the credits and the
-// "Published in" note (a landscape cover runs full bleed above them instead).
-// Then the photo sequence in an editorial rhythm (storySequence: landscapes
-// wide, portraits paired as a spread, a lone portrait set off to one side),
-// each with its caption and the camera line read from the file's EXIF, and a
-// closing "Next story" with its cover (the first story follows the last), plus
-// a quiet link back to the previous story. Before it, a case-study close:
-// "How this was made" (where the idea came from, the place, the cast, derived
-// from the credits by storyCast) beside "Want a session like this?" and a
-// link to the contact page.
+// /stories/<slug>/: one story, played as a slideshow film (picked 2026-11-18,
+// design-directions "direction I"; DESIGN.md "Story page"). The cover and then
+// the photos (storyFrames) are full-screen frames: a portrait shown whole over
+// its own blurred LQIP on a wide screen, the caption as a subtitle on a paper
+// chip, the title on a chip at the top. src/scripts/story-film.ts stacks them in
+// one screen and plays them (4.8s holds, a slow push-in, segmented progress,
+// Pause/Play, Previous/Next, arrow keys, Space, swipe) and burns each print into
+// the next with src/scripts/film-burn.ts (WebGL, where CORS allows; else a
+// crossfade with a focus pull). The cast, the story's line, place and date and
+// "Published in" are the end credits, the film's last frame. Without
+// JavaScript all of it is a vertical run of full-bleed frames, first frame
+// first. After the film: "How this was made" (where the idea came from, the
+// place, the cast from storyCast) beside "Want a session like this?", then
+// "Next story" with its cover (the first story follows the last) and a quiet
+// link back to the previous story.
 //
 // getStaticPaths reads every story once and hands each page its own story and
 // its neighbours as props, so a page never re-queries. With no Sanity data it
@@ -22,7 +26,8 @@ import CreditBlock from '@/components/portfolio/CreditBlock.astro';
 import CtaLink from '@/components/CtaLink.astro';
 import { getSiteSettings } from '@/lib/queries';
 import { getStories, type Story } from '@/lib/storyQueries';
-import { formatExif, formatMonthYear, photoRatio, storyCast, storySequence } from '@/lib/portfolio';
+import { formatExif, formatMonthYear, photoRatio, storyCast, storyFrames } from '@/lib/portfolio';
+import { urlFor } from '@/lib/sanity';
 import { breadcrumbSchema } from '@/lib/schemas';
 import { storySchema } from '@/lib/portfolio-schemas';
 import { site } from '@/data/site';
@@ -65,11 +70,26 @@ const siteSettings = await getSiteSettings();
 
 const when = formatMonthYear(story.date);
 const meta = [story.location, when].filter(Boolean).join(', ');
-const photos = story.photos ?? [];
-const sequence = storySequence(photos);
-// A landscape cover runs full bleed above the opener; a portrait one sits
-// beside the title as the left page of a spread.
-const coverLandscape = photoRatio(story.cover) >= 1;
+// The burn reads each photo through WebGL at this width. It is not a srcset
+// step (src/lib/imageLadder.ts), so its CORS request never meets a cached
+// non-CORS copy of the same file.
+const BURN_WIDTH = 1280;
+const frames = storyFrames(story.cover, story.photos).map((photo, i) => {
+  const ratio = photoRatio(photo);
+  return {
+    photo,
+    first: i === 0,
+    portrait: ratio < 1,
+    ratio,
+    // The subtitle: her caption, else the photo's own description.
+    caption: (photo.caption ?? '').trim() || (photo.alt ?? '').trim(),
+    exif: formatExif(photo.exif),
+    lqip: photo.asset?.metadata?.lqip ?? '',
+    burnSrc: photo.asset ? urlFor(photo).width(BURN_WIDTH).quality(70).auto('format').url() : '',
+    x: photo.hotspot?.x ?? 0.5,
+    y: photo.hotspot?.y ?? 0.5,
+  };
+});
 const hasCredits = (story.credits ?? []).some((c) => c?.name);
 // "How this was made": only the facts this story has.
 const cast = storyCast(story.credits, story.location);
@@ -113,56 +133,74 @@ const shareImage = story.seoImage ?? (story.cover?.asset ? story.cover : undefin
   ogCard={{ kicker: 'Stories' }}
 >
   <article class="story bg-background" aria-labelledby="story-title">
-    {story.cover && coverLandscape && (
-      <div class="story-cover--wide">
-        <FocusImage
-          photo={story.cover}
-          width={2400}
-          crop={16 / 9}
-          sizes="100vw"
-          loading="eager"
-          fetchpriority="high"
-          pull={false}
-        />
-      </div>
-    )}
-
-    <header
-      class:list={[
-        'story-opener mx-auto max-w-content px-m',
-        story.cover && !coverLandscape ? 'story-opener--spread' : 'story-opener--plain',
-      ]}
+    <section
+      class="film"
+      data-film
+      aria-roledescription="film"
+      aria-label={`${story.title}, frame by frame`}
     >
-      {story.cover && !coverLandscape && (
-        <div class="story-opener__cover">
-          <FocusImage
-            photo={story.cover}
-            width={1200}
-            sizes="(min-width: 64rem) 50vw, 100vw"
-            loading="eager"
-            fetchpriority="high"
-            pull={false}
-          />
-        </div>
-      )}
-      <div class="story-opener__text">
-        <p class="portfolio-label">
+      <div class="film__title film__chip">
+        <p class="film__kicker">
           <a class="portfolio-link" href="/stories/">
             Stories
           </a>
           {story.isPlaceholder && <span> · Placeholder</span>}
         </p>
-        <h1 id="story-title" class="story-title font-display">
+        <h1 id="story-title" class="film__h1 font-display">
           {story.title}
         </h1>
-        {story.dek && <p class="story-dek text-muted-foreground">{story.dek}</p>}
-        {meta && <p class="portfolio-label mt-6">{meta}</p>}
-        {(hasCredits || pubLine) && (
-          <div class="story-opener__credits">
-            <CreditBlock credits={story.credits} />
+        {meta && <p class="film__meta">{meta}</p>}
+      </div>
+
+      <ol class="film__frames">
+        {frames.map((f, i) => (
+          <li
+            class:list={[
+              'film__frame',
+              f.portrait ? 'film__frame--portrait' : 'film__frame--landscape',
+            ]}
+            data-film-frame
+            data-caption={f.caption || undefined}
+            data-burn-src={f.burnSrc || undefined}
+            data-lqip={f.lqip || undefined}
+            data-ratio={f.ratio.toFixed(4)}
+            data-x={f.x.toFixed(3)}
+            data-y={f.y.toFixed(3)}
+            data-first-viewport-exempt={i === 0 ? undefined : ''}
+            aria-label={`Frame ${i + 1} of ${frames.length + 1}`}
+          >
+            <FocusImage
+              photo={f.photo}
+              width={f.portrait ? 1600 : 2400}
+              sizes={f.portrait ? '(min-aspect-ratio: 1/1) 85vh, 100vw' : '100vw'}
+              loading={f.first ? 'eager' : 'lazy'}
+              fetchpriority={f.first ? 'high' : 'low'}
+              class="film__pic"
+              pull={false}
+            />
+            {(f.caption || f.exif) && (
+              <p class="film__sub film__chip">
+                {f.caption}
+                {f.exif && <span class="film__exif">{f.exif}</span>}
+              </p>
+            )}
+          </li>
+        ))}
+        <li
+          class="film__frame film__frame--end"
+          data-film-frame
+          data-end
+          data-first-viewport-exempt
+          aria-label={`Frame ${frames.length + 1} of ${frames.length + 1}, end credits`}
+        >
+          <div class="film__end">
+            <p class="film__end-title font-display">{hasCredits ? 'Starring' : 'The end'}</p>
+            {hasCredits && <CreditBlock credits={story.credits} heading="The cast and crew" />}
+            {story.dek && <p class="film__end-dek text-muted-foreground">{story.dek}</p>}
+            {meta && <p class="portfolio-label mt-4">{meta}</p>}
             {/* scaffold: press */}
             {pubLine && (
-              <p class="portfolio-label mt-6">
+              <p class="portfolio-label mt-4">
                 Published in{' '}
                 {pub?.url ? (
                   <a class="portfolio-link text-foreground" href={pub.url} rel="noopener">
@@ -174,48 +212,56 @@ const shareImage = story.seoImage ?? (story.cover?.asset ? story.cover : undefin
               </p>
             )}
             {/* scaffold:end */}
+            <p class="film__end-links">
+              <button type="button" class="film__btn film__chip" data-film-again hidden>
+                Watch again
+              </button>
+              <a class="portfolio-label portfolio-link" href="#story-made-heading">
+                How this was made
+              </a>
+            </p>
           </div>
-        )}
-      </div>
-    </header>
-
-    {sequence.length > 0 && (
-      <ol class="story-sequence mx-auto max-w-content list-none px-m">
-        {sequence.map((row) => (
-          <li
-            class:list={[
-              'story-row',
-              `story-row--${row.kind}`,
-              row.kind === 'single' && `story-row--${row.align}`,
-            ]}
-          >
-            {row.photos.map((photo) => {
-              const exif = formatExif(photo.exif);
-              return (
-                <figure>
-                  <FocusImage
-                    photo={photo}
-                    width={row.kind === 'wide' ? 1800 : 1200}
-                    crop={row.kind === 'pair' ? 4 / 5 : undefined}
-                    sizes={
-                      row.kind === 'wide'
-                        ? '(min-width: 82.5rem) 80rem, 100vw'
-                        : '(min-width: 48rem) 50vw, 100vw'
-                    }
-                  />
-                  {(photo.caption || exif) && (
-                    <figcaption class="mt-2 flex flex-wrap justify-between gap-x-6 gap-y-1">
-                      {photo.caption && <span class="portfolio-label">{photo.caption}</span>}
-                      {exif && <span class="portfolio-label">{exif}</span>}
-                    </figcaption>
-                  )}
-                </figure>
-              );
-            })}
-          </li>
-        ))}
+        </li>
       </ol>
-    )}
+
+      <div class="film__progress" data-film-progress aria-hidden="true" hidden></div>
+      <div class="film__controls" data-film-controls hidden>
+        <span class="film__count film__chip" data-film-count aria-hidden="true"></span>
+        <span class="film__buttons">
+          <button
+            type="button"
+            class="film__btn film__chip"
+            data-film-prev
+            aria-label="Previous frame"
+          >
+            <svg
+              viewBox="0 0 20 20"
+              aria-hidden="true"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+            >
+              <path d="M12.5 4.5 7 10l5.5 5.5" />
+            </svg>
+          </button>
+          <button type="button" class="film__btn film__chip" data-film-play>
+            Pause
+          </button>
+          <button type="button" class="film__btn film__chip" data-film-next aria-label="Next frame">
+            <svg
+              viewBox="0 0 20 20"
+              aria-hidden="true"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+            >
+              <path d="M7.5 4.5 13 10l-5.5 5.5" />
+            </svg>
+          </button>
+        </span>
+      </div>
+      <p class="sr-only" data-film-live aria-live="polite"></p>
+    </section>
 
     <section
       class="story-made split mx-auto max-w-content px-m"
@@ -278,3 +324,7 @@ const shareImage = story.seoImage ?? (story.cover?.asset ? story.cover : undefin
     </nav>
   </article>
 </BaseLayout>
+
+<script>
+  import '@/scripts/story-film';
+</script>

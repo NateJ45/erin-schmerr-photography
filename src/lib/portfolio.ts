@@ -186,6 +186,29 @@ export function storySequence<T extends PortfolioPhoto>(photos: T[]): SequenceRo
 }
 
 /**
+ * The frames of a story's film (src/pages/stories/[slug].astro): the cover
+ * first, then the photos in order. A photo that is the cover again (the same
+ * asset) is not shown twice. Placeholder photos have no asset and all stay.
+ */
+export function storyFrames<T extends PortfolioPhoto>(
+  cover: T | null | undefined,
+  photos: T[] | null | undefined,
+): T[] {
+  const out: T[] = [];
+  const seen = new Set<string>();
+  for (const photo of [cover, ...(photos ?? [])]) {
+    if (!photo) continue;
+    const id = photo.asset?._id;
+    if (id) {
+      if (seen.has(id)) continue;
+      seen.add(id);
+    }
+    out.push(photo);
+  }
+  return out;
+}
+
+/**
  * The seeded placeholder documents (ids starting "placeholder-", from
  * scripts/seed-portfolio.mjs) step aside as soon as one real document of the
  * same type exists, so real work never shares a list with "Placeholder story
