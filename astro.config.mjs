@@ -264,7 +264,7 @@ export default defineConfig({
   // Canonical tags and the sitemap use /page/, so every internal link does too
   // (src/lib/href.ts). Without this, a no-slash link 307s to the slashed URL.
   trailingSlash: 'always',
-  site: 'https://example.com',
+  site: 'https://erin-schmerr-photography.nathanjnixon86.workers.dev',
   output: 'static',
   // 2026-08-28: no sessions anywhere in this template (there is no gated area
   // or login), so opt out. Left on, @astrojs/cloudflare v14 auto-declares a
