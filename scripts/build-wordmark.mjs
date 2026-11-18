@@ -1,13 +1,13 @@
 // Draws the site wordmark as outlined SVG paths (src/assets/logo-light.svg and
 // logo-dark.svg) from Instrument Serif, so it renders in the brand face even as
 // an <img>, where web fonts never load. Re-run after a name change:
-//   node scripts/build-wordmark.mjs "Erin Schmerr" "Photography"
-// The brand name is still an open question for the client, so this is a script,
-// not a hand-drawn file.
+//   node scripts/build-wordmark.mjs "Tate" "Fine Art Photography"
+// The name became Tate Fine Art Photography on 2026-11-18 (her business name);
+// it stays a script so a later change is one command.
 import { readFileSync, writeFileSync } from 'node:fs';
 import opentype from 'opentype.js';
 
-const [name = 'Erin Schmerr', sub = 'Photography'] = process.argv.slice(2);
+const [name = 'Tate', sub = 'Fine Art Photography'] = process.argv.slice(2);
 const dir = 'node_modules/@fontsource/instrument-serif/files/';
 const load = (f) => {
   const buf = readFileSync(dir + f);

@@ -1,6 +1,6 @@
 # Erin Schmerr Photography website: CLAUDE.md
 
-Always-loaded rules for this repo, the portfolio site for Erin Schmerr, a fine-art portrait photographer in Cincinnati and West Chester, Ohio. This file stays under 200 lines on purpose. File-specific rules live in `.claude/rules/*.md` and load only when you touch matching files; long reference lives in `docs/claude/` and `docs/agent/` and is read on demand. The docs map at the bottom lists every one of them.
+Always-loaded rules for this repo, the portfolio site for Erin Schmerr, a fine-art portrait photographer in Cincinnati and West Chester, Ohio, whose business is **Tate Fine Art Photography** (the site name and wordmark since 2026-11-18; `brand/brand.config.json`, `scripts/build-wordmark.mjs`, Site settings title). The repo, Worker and pre-launch address keep the old `erin-schmerr-photography` slug. This file stays under 200 lines on purpose. File-specific rules live in `.claude/rules/*.md` and load only when you touch matching files; long reference lives in `docs/claude/` and `docs/agent/` and is read on demand. The docs map at the bottom lists every one of them.
 
 **This file is client-safe**: the repo is public and may be handed to the client, so it holds technical orientation only. Prices, contract text, strategy, opinions about people, private contacts and credentials never go in this repo (files, commits, PRs, issues, code comments).
 

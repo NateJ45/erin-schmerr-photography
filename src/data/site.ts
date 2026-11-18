@@ -20,7 +20,7 @@ function slugify(s: string): string {
 // All derived fields (studio, storageKeyPrefix, themeStorageKey) are computed
 // from `name` at module load time — they are never rewritten by the script and
 // can never go stale across reskins.
-const _name = 'Erin Schmerr Photography';
+const _name = 'Tate Fine Art Photography';
 const _domain = 'erin-schmerr-photography.nathanjnixon86.workers.dev';
 const _slug = slugify(_name);
 

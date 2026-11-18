@@ -1,4 +1,4 @@
-# Erin Schmerr Photography
+# Tate Fine Art Photography (Erin Schmerr)
 
 The portfolio site for Erin Schmerr, a fine-art portrait photographer in Cincinnati and West Chester, Ohio. A credits-first editorial portfolio: stories (shoots) with their credits and publications, an archive of every image, a press page, and a session inquiry.
 
