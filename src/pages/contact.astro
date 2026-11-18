@@ -14,17 +14,22 @@ import SectionRenderer from '@/components/SectionRenderer.astro';
 import { getContactPage, getSiteSettings } from '@/lib/queries';
 import { breadcrumbSchema } from '@/lib/schemas';
 import { site } from '@/data/site';
+import { firstReal, pageDescription, pageTitle } from '@/lib/page-meta';
 import Hero from '@/components/Hero.astro';
 import ContactFormSection from '@/components/sections/ContactFormSection.astro';
 
 const [page, siteSettings] = await Promise.all([getContactPage(), getSiteSettings()]);
 
-const title = page?.seoTitle ?? `Contact ${site.name}`;
-const description = page?.seoDescription ?? 'Send us a message.';
+// Real words only (src/lib/page-meta.ts): a seeded placeholder in the Studio is skipped.
+const title = pageTitle(page?.seoTitle, 'Book a session');
+const description = pageDescription(
+  page?.seoDescription,
+  'Tell me about the portrait you have in mind, the era, the story or the film, and I’ll write back to plan a session in Cincinnati or West Chester, Ohio.',
+);
 
-const heroEyebrow = page?.heroEyebrow ?? 'Get in Touch.';
-const heroHeadline = page?.heroHeadline ?? 'Start the Conversation.';
-const heroSubhead = page?.heroSubhead ?? '';
+const heroEyebrow = firstReal(page?.heroEyebrow) ?? 'Get in Touch.';
+const heroHeadline = firstReal(page?.heroHeadline) ?? 'Start the Conversation.';
+const heroSubhead = firstReal(page?.heroSubhead) ?? '';
 
 // The Page layout, when the editor has built one. Empty means the classic layout below.
 const sections = page?.pageBuilder?.length ? page.pageBuilder : null;

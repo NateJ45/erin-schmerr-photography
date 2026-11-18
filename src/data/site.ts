@@ -30,6 +30,11 @@ export const site = {
   url: `https://${_domain}`,
   // BCP 47 language tag for the <html lang> attribute. Change if the site is not in English.
   lang: 'en',
+  // The site's own description: the last fallback for every page's meta description
+  // (src/lib/page-meta.ts), so no page ever ships a starter placeholder. Her voice,
+  // first person, no em-dashes (rule 2). A page's own SEO description in the Studio wins.
+  description:
+    'I’m Erin Schmerr, a fine-art portrait photographer in Cincinnati and West Chester, Ohio. I make portraits that look like they were found in an old album.',
   // IANA time zone the site's calendar runs on: which day "today" is for a
   // dated notice, a countdown or an event's past dates (the builder kit,
   // PORTS.md card 173), a short link's last day (card 171), and the times in

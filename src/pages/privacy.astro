@@ -20,17 +20,20 @@ import PrivacyPolicy from '@/components/sections/PrivacyPolicy.astro';
 import { getPrivacyPage, getSiteSettings } from '@/lib/queries';
 import { breadcrumbSchema } from '@/lib/schemas';
 import { site } from '@/data/site';
+import { firstReal, pageDescription, pageTitle } from '@/lib/page-meta';
 
 const [page, siteSettings] = await Promise.all([getPrivacyPage(), getSiteSettings()]);
 
-const title = page?.seoTitle ?? `Privacy Policy · ${site.name}`;
-const description =
-  page?.seoDescription ??
-  'How we handle the information you share when you reach out or subscribe.';
+// Real words only (src/lib/page-meta.ts): a seeded placeholder in the Studio is skipped.
+const title = pageTitle(page?.seoTitle, 'Privacy policy');
+const description = pageDescription(
+  page?.seoDescription,
+  'How I handle what you send me through this site, and what the site measures.',
+);
 
-const heroEyebrow = page?.heroEyebrow ?? 'Transparency first.';
-const heroHeadline = page?.heroHeadline ?? 'Privacy Policy';
-const heroSubhead = page?.heroSubhead ?? '';
+const heroEyebrow = firstReal(page?.heroEyebrow) ?? 'Transparency first.';
+const heroHeadline = firstReal(page?.heroHeadline) ?? 'Privacy Policy';
+const heroSubhead = firstReal(page?.heroSubhead) ?? '';
 
 // The Page layout, when the editor has built one. Empty means the classic layout below.
 const sections = page?.pageBuilder?.length ? page.pageBuilder : null;

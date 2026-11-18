@@ -11,12 +11,17 @@ import SectionRenderer from '@/components/SectionRenderer.astro';
 import { getProcessPage, getSiteSettings } from '@/lib/queries';
 import { breadcrumbSchema } from '@/lib/schemas';
 import { site } from '@/data/site';
+import { pageDescription, pageTitle } from '@/lib/page-meta';
 import { DEFAULT_PROCESS_SECTIONS } from '@/data/defaultSections';
 
 const [page, siteSettings] = await Promise.all([getProcessPage(), getSiteSettings()]);
 
-const title = page?.seoTitle ?? `Our Process · ${site.name}`;
-const description = page?.seoDescription ?? 'How we work, step by step.';
+// Real words only (src/lib/page-meta.ts): a seeded placeholder in the Studio is skipped.
+const title = pageTitle(page?.seoTitle, 'How a session works');
+const description = pageDescription(
+  page?.seoDescription,
+  'How a portrait session with me works, from the first message to the finished photographs.',
+);
 
 const sections = page?.pageBuilder?.length ? page.pageBuilder : DEFAULT_PROCESS_SECTIONS;
 

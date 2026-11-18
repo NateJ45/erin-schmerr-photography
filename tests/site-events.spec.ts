@@ -5,8 +5,8 @@ import { settle } from './helpers';
 // Visitor actions sent to GA4 (PORTS.md card 217)
 // =============================================================================
 // src/components/analytics/SiteEvents.astro reads a clicked link's address and
-// sends a named event, using the starter's EMPTY events map (src/config/events.ts),
-// so only the built-in rules run. The real tag never loads under Playwright
+// sends a named event, using the built-in rules plus this site's map
+// (src/config/events.ts; its rules are pinned at the bottom). The real tag never loads under Playwright
 // (navigator.webdriver), so each test stubs window.gtag before the page runs and
 // reads the calls back. Links are clicked with navigation cancelled, so nothing
 // leaves the site. A fork that fills its map pins its own rules here.
@@ -94,4 +94,117 @@ test('a missing page sends page_not_found with the path', async ({ page }) => {
   const hit = calls.find((c) => c[1] === 'page_not_found');
   expect(hit, JSON.stringify(calls)).toBeTruthy();
   expect(hit![2]).toMatchObject({ missing_path: '/no-such-page-xyz/' });
+});
+
+// =============================================================================
+// This site's own rules (src/config/events.ts, 2026-11-18)
+// =============================================================================
+// Booking links, her Instagram and Facebook, links out to press features, and the
+// contact form's generate_lead. A collaborator's Instagram is not hers, so it stays
+// an ordinary outbound_click.
+// =============================================================================
+
+test.describe('site events: this site’s rules', () => {
+  test.beforeEach(async ({ page }) => {
+    await stub(page);
+    await page.goto('/');
+    await settle(page);
+  });
+
+  const cases: [string, string, string, Record<string, unknown>][] = [
+    ['the booking page', '/contact/', 'book_click', { destination: 'contact_page' }],
+    ['a booking link with a topic', '/contact/?about=Sessions', 'book_click', {}],
+    [
+      'her Instagram',
+      'https://www.instagram.com/tatefineartphotography/',
+      'social_click',
+      { platform: 'instagram' },
+    ],
+    [
+      'her Facebook page',
+      'https://www.facebook.com/StellinaFineArtPhotography/',
+      'social_click',
+      { platform: 'facebook' },
+    ],
+    [
+      'a press feature',
+      'https://www.bleachfilm.com/erin-schmerr-we-all-look-good-in-pink',
+      'press_click',
+      { destination: 'bleachfilm.com' },
+    ],
+    [
+      'an interview',
+      'https://canvasrebel.com/meet-erin-schmerr/',
+      'press_click',
+      { destination: 'canvasrebel.com' },
+    ],
+    [
+      'a collaborator’s Instagram',
+      'https://www.instagram.com/some.model/',
+      'outbound_click',
+      { destination: 'instagram.com' },
+    ],
+  ];
+
+  for (const [name, href, event, params] of cases) {
+    test(`${name} sends ${event}`, async ({ page }) => {
+      const calls = await clickLink(page, href);
+      expect(calls.length, JSON.stringify(calls)).toBe(1);
+      expect(calls[0][1], JSON.stringify(calls)).toBe(event);
+      expect(calls[0][2]).toMatchObject(params);
+    });
+  }
+
+  test('a "Book a session" link in the footer says so', async ({ page }) => {
+    const calls = await clickLink(page, '/contact/', 'footer');
+    expect(calls[0]).toEqual([
+      'event',
+      'book_click',
+      expect.objectContaining({ location: 'footer' }),
+    ]);
+  });
+});
+
+// The privacy wording for these rules (it shows only in a build with the GA4 id) is pinned
+// in src/lib/site-events-config.test.ts.
+
+test('a sent contact form sends generate_lead', async ({ page }) => {
+  await stub(page);
+  // The form's own endpoint answers yes, so nothing leaves the test.
+  await page.route(/\/api\/contact\/?(\?.*)?$/, (route) =>
+    route.fulfill({ status: 200, contentType: 'application/json', body: '{"ok":true}' }),
+  );
+  await page.goto('/contact/', { waitUntil: 'domcontentloaded' });
+  const form = page.locator('form[aria-busy]');
+  await form.scrollIntoViewIfNeeded();
+  const name = page.locator('#name');
+  // Wait for the island: a controlled input keeps what is typed once React owns it.
+  await expect(async () => {
+    await name.fill('Probe');
+    await page.waitForTimeout(150);
+    await expect(name).toHaveValue('Probe');
+  }).toPass({ timeout: 10_000 });
+
+  // Fill every visible required field with something valid.
+  for (const field of await form.locator('[required]:visible').all()) {
+    const tag = await field.evaluate((el) => el.tagName.toLowerCase());
+    const type = (await field.getAttribute('type')) ?? '';
+    if (tag === 'select') {
+      const values = await field
+        .locator('option')
+        .evaluateAll((os) => os.map((o) => (o as HTMLOptionElement).value).filter(Boolean));
+      await field.selectOption(values[0]);
+    } else if (type === 'checkbox' || type === 'radio') {
+      await field.check();
+    } else if (type === 'email') {
+      await field.fill('probe@example.com');
+    } else {
+      await field.fill('A probe message from the test suite.');
+    }
+  }
+  await form.locator('button[type="submit"]').click();
+
+  await expect
+    .poll(async () => (await events(page)).find((c) => c[1] === 'generate_lead')?.[2] ?? null)
+    .toMatchObject({ form_name: 'contact' });
 });

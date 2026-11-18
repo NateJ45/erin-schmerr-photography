@@ -13,6 +13,7 @@ import { getSiteSettings } from '@/lib/queries';
 import { getPublications } from '@/lib/pressQueries';
 import { formatMonthYear, groupByYear } from '@/lib/portfolio';
 import { breadcrumbSchema } from '@/lib/schemas';
+import { personSchema } from '@/lib/site-graph';
 import { site } from '@/data/site';
 import '@/styles/portfolio.css';
 
@@ -25,12 +26,14 @@ const schemas = [
     { name: 'Home', url: site.url },
     { name: 'Press', url: `${site.url}/press/` },
   ]),
+  // The photographer with every feature that has a web address (src/lib/site-graph.ts).
+  personSchema(publications),
 ];
 ---
 
 <BaseLayout
   title={`Press | ${site.name}`}
-  description="Where the work has been published, with the tear sheets."
+  description="Where my work has been published: magazine features and interviews, with the tear sheets."
   {schemas}
   {siteSettings}
   ogCard={{ kicker: 'Press' }}

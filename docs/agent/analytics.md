@@ -42,7 +42,9 @@ was not found, search words (withheld when they look like an email address or a 
 | `page_not_found`                   | the 404 page (`[data-page-not-found]`)                               | `missing_path`, `from_site`                         |
 | `js_error`                         | an error in the site's own scripts, at most three a page view        | `error_message`, `error_source`                     |
 
-Any other event name in the map (`calendar_add`, `app_click`, `social_click`) is the site's own. `location` is the page
+Any other event name in the map (`calendar_add`, `app_click`, `social_click`) is the site's own.
+
+**This site's map (2026-11-18):** `book_click` for any link to `/contact/` (the "Book a session" buttons and footer link), `social_click` with `platform` for her own Instagram and Facebook pages only (a collaborator's Instagram stays an `outbound_click`), `press_click` with `destination` for the press hosts in `src/config/events.ts` or any page with her name in its address. Add a host there when a new feature has a link. Pinned in `tests/site-events.spec.ts` with the contact form's `generate_lead`. `location` is the page
 region: `header`, `footer`, `nav`, `aside` or `page`.
 
 GA4's Enhanced Measurement also counts outbound clicks and file downloads. A site with it on can put `outbound_click`
