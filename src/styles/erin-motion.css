@@ -89,6 +89,11 @@ html.first-visit .first-visit-loader {
 /* ---- 3. Story parallax ------------------------------------------------------ */
 @supports (animation-timeline: view()) {
   @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    /* clip, not hidden: a hidden frame is a scroll container, and view() would
+       track the frame (which never scrolls) instead of the page. */
+    .story-sequence .focus-image {
+      overflow: clip;
+    }
     .story-sequence .focus-image__img {
       scale: 1.08;
       animation: story-drift linear both;
