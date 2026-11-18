@@ -16,6 +16,8 @@ sequence).
 
 ## Waiting on a human
 
+- **Her originals and her review of the Instagram import (2026-11-18).** The live stories, press and archive are her Instagram copies (1080 to 1440px, some with magazine logos on the page), titled, dated and alt-texted by us. Waiting on her: originals to replace them, real names for the collaborators (most are Instagram handles), the publication dates (taken from post dates) and the story titles and short lines. Children, family and client sessions were left out on purpose; she adds any she wants. Then retire the `placeholder-*` documents with a backup-then-delete script (rule 16) and refresh `ci/sanity-snapshot.ndjson.gz` in the same PR as any test that names a placeholder.
+
 - **The `e2e` job is pinned to ubuntu-24.04 (2026-10-30).** `ubuntu-latest` moved to 26.04, where Playwright's WebKit will not launch, so every `[webkit-iphone]` test failed. `ci.yml` now says `runs-on: ubuntu-24.04` on that job only. Unpin it once a Playwright release supports 26.04 (try it on a branch first). Starter PORTS.md card and vault gotcha `playwright-webkit-ubuntu-26-04`.
 
 ### 32. Card 136: GA4 and Search Console against a real property (opened 2026-10-19)

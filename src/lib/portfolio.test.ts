@@ -12,6 +12,7 @@ import {
   photoRatio,
   placeholderPhoto,
   storySequence,
+  withoutSeedPlaceholders,
   yearOf,
 } from './portfolio.ts';
 
@@ -112,4 +113,16 @@ test('storySequence runs landscapes wide, pairs portraits and alternates lone po
     ['start', 'end', 'start'],
   );
   assert.deepEqual(storySequence([]), []);
+});
+
+test('withoutSeedPlaceholders: seeded placeholders step aside once one real document exists', () => {
+  const seedOnly = [{ _id: 'placeholder-story-one' }, { _id: 'drafts.placeholder-story-two' }];
+  assert.deepEqual(withoutSeedPlaceholders(seedOnly), seedOnly);
+  const mixed = [
+    { _id: 'placeholder-story-one' },
+    { _id: 'ig-story-abc' },
+    { _id: 'drafts.placeholder-x' },
+  ];
+  assert.deepEqual(withoutSeedPlaceholders(mixed), [{ _id: 'ig-story-abc' }]);
+  assert.deepEqual(withoutSeedPlaceholders([]), []);
 });

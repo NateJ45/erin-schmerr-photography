@@ -181,6 +181,12 @@
 .published-marquee-wrap[data-marquee] > [aria-hidden='true'] {
   display: none;
 }
+/* A grid item's min-width is auto, so without this the wrap grows to the
+   whole scrolling track on a phone (one column) and the page scrolls sideways
+   once the names are longer than the screen. */
+.published-marquee-wrap {
+  min-width: 0;
+}
 .published-marquee__pause {
   justify-self: start;
   min-height: 44px;
@@ -236,7 +242,11 @@
     align-items: center;
   }
 }
+/* --n is the number of sheets (TearSheetStack.astro). Each sheet is at most
+   52% of the row and 18rem, and narrower when more sheets are fanned, so n
+   sheets overlapping by half always fit: width * (1 + (n - 1) / 2) <= 100%. */
 .tear-stack__sheets {
+  --sheet: min(52%, 18rem, calc(100% / (0.5 + var(--n, 2) * 0.5)));
   display: flex;
   margin: 0;
   padding: 1.5rem 0 1.5rem;
@@ -244,13 +254,13 @@
 .tear-stack__sheets > li {
   position: relative;
   z-index: calc(10 - var(--i));
-  flex: 0 0 min(52%, 18rem);
+  flex: 0 0 var(--sheet);
   transition:
     transform 500ms var(--ease-focus, ease),
     z-index 0s;
 }
 .tear-stack__sheets > li + li {
-  margin-left: calc(min(52%, 18rem) * -0.5);
+  margin-left: calc(var(--sheet) * -0.5);
 }
 .tear-stack__sheets .focus-image {
   box-shadow: 0 1px 0 var(--color-border);

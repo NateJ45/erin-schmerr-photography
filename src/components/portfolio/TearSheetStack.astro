@@ -36,7 +36,7 @@ const sheets = (await getPublications()).filter((p) => p.tearSheet).slice(0, Mat
         </a>
       </div>
       <div class="tear-stack mt-10">
-        <ul class="tear-stack__sheets list-none" aria-hidden="true">
+        <ul class="tear-stack__sheets list-none" aria-hidden="true" style={`--n: ${sheets.length}`}>
           {sheets.map((pub, i) => (
             <li style={`--i: ${i}`} data-sheet={i}>
               <FocusImage
