@@ -37,7 +37,14 @@ const {
 const bg = surfaceClass(surface);
 const widthClass = width === 'narrow' ? 'max-w-prose' : 'max-w-content';
 const alignClass = align === 'center' ? 'text-center' : '';
-const proseClass = ['text-foreground/85 text-lg leading-relaxed', heading ? 'mt-l' : '', alignClass]
+// The body keeps a reading measure (about 70 characters a line) even when the
+// section runs the full content width; centred text centres its column.
+const proseClass = [
+  'text-foreground/85 text-lg leading-relaxed max-w-[40em]',
+  heading ? 'mt-l' : '',
+  alignClass,
+  align === 'center' ? 'mx-auto' : '',
+]
   .filter(Boolean)
   .join(' ');
 ---
