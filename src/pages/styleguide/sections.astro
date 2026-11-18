@@ -311,22 +311,6 @@ const SECTIONS: Record<string, unknown>[] = [
     attribution: 'The founder',
   },
   // scaffold:end
-  // scaffold: services
-  {
-    _type: 'servicesGridSection',
-    _key: 'services',
-    eyebrow: 'Services',
-    headline: 'What we do',
-    variant: 'grid',
-    services: ['First service', 'Second service', 'Third service'].map((name, i) => ({
-      _id: `svc${i}`,
-      name,
-      price: 'From $100',
-      shortDescription: 'A short description of this service.',
-      slug: { current: `service-${i}` },
-    })),
-  },
-  // scaffold:end
   // scaffold: testimonials
   {
     _type: 'testimonialsSection',
@@ -337,18 +321,6 @@ const SECTIONS: Record<string, unknown>[] = [
       _id: `t${n}`,
       quote: 'A fixed quotation so the card has a body to wrap.',
       attribution: `Person ${n}`,
-    })),
-  },
-  // scaffold:end
-  // scaffold: philosophy
-  {
-    _type: 'valuesSection',
-    _key: 'values',
-    eyebrow: 'What we believe',
-    headline: 'Our values',
-    points: ['Care', 'Honesty', 'Craft'].map((title) => ({
-      title,
-      description: 'One sentence on what this means in practice.',
     })),
   },
   // scaffold:end
