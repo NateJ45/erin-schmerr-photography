@@ -18,7 +18,16 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
-const schema = readFileSync(new URL('../sanity/schemaTypes/sections.ts', import.meta.url), 'utf8');
+// sections.ts plus the portfolio blocks, which live in their own schema files.
+const schema = ['sections.ts', 'storyIndexSection.ts', 'pressSections.ts']
+  .map((f) => {
+    try {
+      return readFileSync(new URL(`../sanity/schemaTypes/${f}`, import.meta.url), 'utf8');
+    } catch {
+      return ''; // removed by the scaffold
+    }
+  })
+  .join('\n');
 const defaults = readFileSync(new URL('../data/defaultSections.ts', import.meta.url), 'utf8');
 
 /** Every `name: '...'` and `proseBody('...')` inside one block's defineType (nested names included, which only loosens the check). */

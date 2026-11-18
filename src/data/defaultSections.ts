@@ -24,18 +24,35 @@ export const DEFAULT_HOME_SECTIONS: PageBuilderBlock[] = [
   {
     _type: 'heroSection',
     _key: 'default-home-hero',
-    eyebrow: 'Your City, Your State.',
-    headline: 'Your Headline Goes Here.',
-    subhead: 'One or two sentences on what you do and who it is for. Replace this in the Studio.',
+    eyebrow: 'Fine-art portraits, Cincinnati and West Chester.',
+    headline: 'Portraits, slowly brought into focus.',
+    subhead:
+      'Placeholder: one or two sentences in your own words about the portraits you make and who they are for.',
     size: 'tall',
-    primaryCta: { _type: 'ctaBlock', label: 'Start a Conversation', href: '/contact/' },
-    secondaryCta: { _type: 'ctaBlock', label: 'About Us', href: '/about/' }, // scaffold: about
+    primaryCta: { _type: 'ctaBlock', label: 'Book a session', href: '/contact/' },
+    secondaryCta: { _type: 'ctaBlock', label: 'See the stories', href: '/stories/' }, // scaffold: stories
   },
+  // scaffold: stories
+  {
+    _type: 'storyIndex',
+    _key: 'default-home-stories',
+    heading: 'Selected stories',
+    layout: 'grid',
+    limit: 4,
+  },
+  // scaffold:end
+  // scaffold: press
+  {
+    _type: 'publishedMarquee',
+    _key: 'default-home-published',
+    heading: 'Published in',
+  },
+  // scaffold:end
   {
     _type: 'richTextSection',
     _key: 'default-home-intro',
-    eyebrow: 'Welcome.',
-    heading: 'A Short Introduction Goes Here.',
+    eyebrow: 'About',
+    heading: 'Placeholder: how it started.',
     body: [
       {
         _type: 'block',
@@ -45,73 +62,27 @@ export const DEFAULT_HOME_SECTIONS: PageBuilderBlock[] = [
           {
             _type: 'span',
             _key: 'default-home-intro-p1-s1',
-            text: `Welcome to ${site.name}. Replace this with a few sentences on who you are, who you serve and what a visitor should do next. Edit it in Sanity Studio under the Home Page document.`,
+            text: 'Placeholder: a few lines about how you came to photography and what draws you to fine-art portraits. Edit it in the Studio under the Home page.',
           },
         ],
       },
     ],
   },
+  // scaffold: press
   {
-    _type: 'statSection',
-    _key: 'default-home-stats',
-    stats: [
-      {
-        _type: 'statItem',
-        _key: 'default-home-stat-1',
-        number: 5,
-        suffix: '+',
-        label: 'A Number Worth Knowing',
-      },
-      {
-        _type: 'statItem',
-        _key: 'default-home-stat-2',
-        number: 50,
-        suffix: '+',
-        label: 'Another Number',
-      },
-      {
-        _type: 'statItem',
-        _key: 'default-home-stat-3',
-        number: 100,
-        suffix: '%',
-        label: 'A Third Number',
-      },
-    ],
+    _type: 'tearSheetStack',
+    _key: 'default-home-tearsheets',
+    heading: 'Tear sheets',
+    limit: 4,
   },
-  {
-    _type: 'imageTextSection',
-    _key: 'default-home-services-intro',
-    eyebrow: 'What We Do.',
-    heading: 'Our Services.',
-    body: [
-      {
-        _type: 'block',
-        _key: 'default-home-services-intro-p1',
-        style: 'normal',
-        children: [
-          {
-            _type: 'span',
-            _key: 'default-home-services-intro-p1-s1',
-            text: 'Say in a sentence or two what you offer. Once your Sanity Studio is seeded, this section will display your real services.',
-          },
-        ],
-      },
-    ],
-    imageSide: 'right',
-  },
-  {
-    _type: 'quoteSection',
-    _key: 'default-home-quote',
-    quote: 'A short, real quote from someone you have helped goes here. Replace it in the Studio.',
-    attribution: 'Name, Role',
-  },
+  // scaffold:end
   {
     _type: 'ctaBandSection',
     _key: 'default-home-cta',
-    eyebrow: 'Ready to Begin?',
-    headline: 'Ready to Talk?',
-    subhead: "Let's start with a conversation.",
-    cta: { _type: 'ctaBlock', label: 'Start a Conversation', href: '/contact/' },
+    eyebrow: 'Sessions',
+    headline: "Let's make something quiet and beautiful.",
+    subhead: 'Placeholder: a line on how booking works.',
+    cta: { _type: 'ctaBlock', label: 'Book a session', href: '/contact/' },
   },
 ];
 
