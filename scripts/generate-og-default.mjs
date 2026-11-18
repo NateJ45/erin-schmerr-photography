@@ -12,7 +12,7 @@ const root = resolve(__dirname, '..');
 
 const result = await renderOg({
   wordmark: 'Erin Schmerr Photography',
-  tagline: ['Your tagline goes here.'],
+  tagline: ['Fine-art portraits, Cincinnati and West Chester, Ohio.'],
   outPath: resolve(root, 'public/og-default.png'),
   theme: OG_THEME,
 });

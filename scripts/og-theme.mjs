@@ -5,10 +5,10 @@
 // sync-check). `npm run apply-brand` rewrites the values below from brand/brand.config.json by
 // regex: keep the two-space indent and single quotes, or a rebrand fails on this file.
 export const OG_THEME = {
-  bg: '#FBFBFA', // --background (light)
-  primary: '#586577', // --color-primary
-  primaryDark: '#434E5C', // --color-primary-dark
-  accent: '#2A2D31', // --color-accent
-  taupe: '#AAB0B8', // --color-secondary
-  fontDisplay: 'Libre Baskerville, Georgia, Cambria, Times New Roman, serif',
+  bg: '#F3EEE7', // --background (light)
+  primary: '#7A4A40', // --color-primary
+  primaryDark: '#633A31', // --color-primary-dark
+  accent: '#1F1B18', // --color-accent
+  taupe: '#B9A999', // --color-secondary
+  fontDisplay: 'Instrument Serif, Georgia, Cambria, Times New Roman, serif',
 };

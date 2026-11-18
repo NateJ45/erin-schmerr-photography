@@ -85,8 +85,8 @@ import { brandIcons, typeIcon, withBrandPreviews } from './src/sanity/brandIcons
 // These two lines are REWRITTEN by `npm run apply-brand` from
 // brand/brand.config.json (studio.fonts.display / studio.fonts.body). Keep them
 // as single-quoted one-line string literals or the rewrite will not match.
-const DISPLAY_STACK = '"Libre Baskerville", Georgia, "Times New Roman", serif';
-const BODY_STACK = '"Inter Variable", system-ui, -apple-system, sans-serif';
+const DISPLAY_STACK = '"Instrument Serif", Georgia, "Times New Roman", serif';
+const BODY_STACK = '"Instrument Sans Variable", system-ui, -apple-system, sans-serif';
 const STUDIO_FONTS = { display: DISPLAY_STACK, body: BODY_STACK };
 
 const studioTheme = buildStudioTheme(STUDIO_FONTS);

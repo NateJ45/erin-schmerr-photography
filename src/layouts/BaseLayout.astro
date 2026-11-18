@@ -34,6 +34,8 @@ import '@/styles/globals.css';
 // Imported AFTER globals.css so the brand :root declarations in globals.css win
 // the cascade over starwind.css's fallback :root defaults.
 import '@/styles/starwind.css';
+// The site's own layer (DESIGN.md): quiet chrome, masthead nav, display tuning.
+import '@/styles/erin.css';
 // The printed page (PORTS.md card 155): motion at rest, black on white. Last on purpose.
 import '@/styles/print.css';
 
@@ -202,8 +204,8 @@ const announcementStyle = ANNOUNCEMENT_STYLES[announcement?.style ?? 'info'] ?? 
         apply-brand did not touch them, so every fork painted its phone browser
         chrome in a palette it had otherwise replaced, and the values did not
         even match the starter's own brand.config.json. */}
-    <meta name="theme-color" content="#FBFBFA" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#17191C" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#F3EEE7" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#12100E" media="(prefers-color-scheme: dark)" />
 
     {/* THE ICON SET, all rendered from public/favicon.svg by `npm run favicon`.
         The SVG is what modern browsers take; the .ico answers the bare
