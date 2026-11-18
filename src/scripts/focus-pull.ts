@@ -6,10 +6,14 @@
 // photo visible for someone with JavaScript off or reduced motion.
 
 const FOCUSED = 'is-focused';
+const PENDING = 'is-pending';
 
 function sharpen(frame: Element) {
   const img = frame.querySelector('img');
-  const done = () => frame.classList.add(FOCUSED);
+  const done = () => {
+    frame.classList.add(FOCUSED);
+    frame.classList.remove(PENDING);
+  };
   if (!img || (img.complete && img.naturalWidth > 0)) return done();
   img.decode().then(done, done);
 }
@@ -34,7 +38,17 @@ function init() {
     },
     { rootMargin: '0px 0px -8% 0px' },
   );
-  frames.forEach((f) => io.observe(f));
+  // Only what is below the fold right now gets the hidden start; a frame on
+  // the first screen is left exactly as it painted.
+  const fold = window.innerHeight;
+  frames.forEach((f) => {
+    if (f.getBoundingClientRect().top < fold) {
+      f.classList.add(FOCUSED);
+      return;
+    }
+    f.classList.add(PENDING);
+    io.observe(f);
+  });
 }
 
 init();

@@ -44,7 +44,7 @@ function setup(root: HTMLElement) {
   const items = Array.from(pl.children) as HTMLElement[];
   if (items.length < 4) return; // too few photos to loop; the grid is better
 
-  ctl.hidden = false;
+  ctl.removeAttribute('data-waiting');
   let on = false;
   let world: HTMLElement | null = null;
   let tileW = 0;
@@ -130,6 +130,18 @@ function setup(root: HTMLElement) {
         world.append(copy);
       }
     }
+    // Every photo can land on screen now, so none may wait in the focus pull's
+    // hidden start (focus-pull.ts marks below-the-fold frames pending at load).
+    // Show them at once, not by fading in: switch the transition off for the
+    // one frame it takes to change class, so nothing on screen starts faded.
+    const imgs = Array.from(world.querySelectorAll<HTMLElement>('.focus-image__img'));
+    imgs.forEach((img) => (img.style.transition = 'none'));
+    world.querySelectorAll('[data-focus]').forEach((f) => {
+      f.classList.remove('is-pending');
+      f.classList.add('is-focused');
+    });
+    void world.offsetHeight; // commit the change before the transition returns
+    imgs.forEach((img) => (img.style.transition = ''));
     vp.tabIndex = 0;
     vp.setAttribute('role', 'region');
     vp.setAttribute('aria-label', 'Archive canvas. Drag, or use the arrow keys, to move around.');

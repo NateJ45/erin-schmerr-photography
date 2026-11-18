@@ -192,8 +192,10 @@
   display: inline-flex;
   gap: 1.25rem;
 }
-.story-index__toggle[hidden] {
-  display: none;
+/* Waiting for its script: invisible but holding its space, so showing it
+   shifts nothing. */
+.story-index__toggle[data-waiting] {
+  visibility: hidden;
 }
 .story-index__toggle button {
   min-height: 44px;
@@ -249,17 +251,22 @@
   }
 }
 
-/* FOCUS PULL (DESIGN.md signature). Under html.motion only, so with JS off or
-   reduced motion the photo is simply there. src/scripts/focus-pull.ts adds
-   .is-focused once the frame is in view and its image has decoded. */
+/* FOCUS PULL (DESIGN.md signature). Nothing starts hidden in CSS alone: at
+   load src/scripts/focus-pull.ts marks only the frames BELOW the fold
+   .is-pending (blurred, faded), then swaps that for .is-focused as each one
+   arrives and its image has decoded. So a photo in the first screen paints at
+   once (LCP, PORTS.md card 213), and with JS off or reduced motion every photo
+   is simply there. */
 html.motion [data-focus] .focus-image__img {
-  opacity: 0;
-  filter: blur(14px);
-  transform: scale(1.025);
   transition:
     opacity 900ms var(--ease-focus, ease),
     filter 1200ms var(--ease-focus, ease),
     transform 1400ms var(--ease-focus, ease);
+}
+html.motion [data-focus].is-pending .focus-image__img {
+  opacity: 0;
+  filter: blur(14px);
+  transform: scale(1.025);
 }
 html.motion [data-focus].is-focused .focus-image__img {
   opacity: 1;
@@ -277,8 +284,8 @@ html.motion [data-focus].is-focused .focus-image__img {
   align-items: center;
   gap: 1.5rem;
 }
-.archive__controls[hidden] {
-  display: none;
+.archive__controls[data-waiting] {
+  visibility: hidden;
 }
 .archive__toggle {
   min-height: 44px;
@@ -386,13 +393,15 @@ html.motion .cover-hero.is-running .cover-hero__slide.is-active .focus-image__im
 .cover-hero__scrim {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    to top,
-    rgb(18 16 14 / 0.82) 0%,
-    rgb(18 16 14 / 0.58) 45%,
-    rgb(18 16 14 / 0.22) 75%,
-    rgb(18 16 14 / 0) 100%
-  );
+  background:
+    linear-gradient(
+      to top,
+      rgb(18 16 14 / 0.86) 0%,
+      rgb(18 16 14 / 0.62) 58%,
+      rgb(18 16 14 / 0.2) 85%,
+      rgb(18 16 14 / 0) 100%
+    ),
+    rgb(18 16 14 / 0.4);
 }
 .cover-hero__body {
   position: relative;
@@ -409,7 +418,10 @@ html.motion .cover-hero.is-running .cover-hero__slide.is-active .focus-image__im
   text-transform: uppercase;
 }
 .cover-hero__title {
-  max-width: 14ch;
+  /* In em, not ch: ch is the width of the CURRENT font's zero, so it changed
+     when Instrument Serif replaced its fallback and the title re-wrapped (CLS on
+     Linux CI). 6.5em is what 14ch measures in Instrument Serif. */
+  max-width: 6.5em;
   margin-top: 0.75rem;
   font-size: clamp(2.75rem, 8vw, 7.5rem);
   line-height: 0.95;

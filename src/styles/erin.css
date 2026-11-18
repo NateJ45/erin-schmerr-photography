@@ -3,6 +3,22 @@
    Tokens come from brand.config.json via apply-brand; this file only reshapes
    the starter's chrome so the photographs carry the page. */
 
+/* Metric-matched stand-in for the body face while it loads (as font-fallbacks.css
+   does for the display face, card 188). Instrument Sans ships only as woff2, which
+   the generator cannot read, so these numbers were measured with fontkitten from
+   instrument-sans-latin-wght-normal.woff2 (default instance, weight 400: upm 1000,
+   hhea 970 / -250, weighted width 458) and run through scripts/lib/font-fallback.mjs.
+   Arial on Windows and Mac, its metric twins on Linux, so the hero's sentences
+   break where the real face will and nothing moves when it arrives. */
+@font-face {
+  font-family: 'Instrument Sans Variable Fallback';
+  src: local('Arial'), local('Liberation Sans'), local('Arimo');
+  size-adjust: 102.74%;
+  ascent-override: 94.42%;
+  descent-override: 24.33%;
+  line-gap-override: 0%;
+}
+
 /* Quiet chrome: no brand stripe, and the desktop eyebrow strip sits on the page
    ground instead of a tinted band. */
 .site-header > .h-1.bg-primary {

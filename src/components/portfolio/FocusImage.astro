@@ -30,6 +30,8 @@ interface Props {
   /** Override the photo's alt text (pass '' when the photo is decorative next to its own words). */
   alt?: string;
   class?: string;
+  /** Take part in the focus pull (default). The cover hero turns it off: its slide fade does the work. */
+  pull?: boolean;
 }
 
 const {
@@ -41,6 +43,7 @@ const {
   fetchpriority,
   alt,
   class: className,
+  pull = true,
 } = Astro.props;
 
 const ratio = crop ?? photoRatio(photo);
@@ -54,7 +57,11 @@ const tone = photo?.placeholder?.tone ?? 'paper';
 ---
 
 {hasAsset ? (
-  <div class:list={['focus-image', className]} data-focus style={frameStyle}>
+  <div
+    class:list={['focus-image', className]}
+    data-focus={pull ? '' : undefined}
+    style={frameStyle}
+  >
     <SanityImage
       source={photo as SanityImageObject}
       width={width}
