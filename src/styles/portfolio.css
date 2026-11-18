@@ -925,3 +925,160 @@ html.motion [data-focus].is-focused .focus-image__img {
 .story-next__link:focus-visible .story-next__title {
   text-decoration-color: currentColor;
 }
+
+/* COVER PORTRAIT: her face set inside the cover headline (CoverHero.astro), a
+   small square-cornered frame sized in em so it follows the headline at every
+   width, sitting on the baseline like a word. */
+.cover-portrait {
+  display: inline-block;
+  width: 1.15em;
+  height: 0.86em;
+  margin-inline: 0.02em;
+  overflow: hidden;
+  vertical-align: -0.08em;
+  background: var(--color-muted);
+}
+.cover-portrait img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* PROOF STRIP (home, ProofStrip.astro): the Published marquee's machinery
+   (.published-marquee-wrap, [data-marquee], the Pause button) with longer
+   items: a press name or a quote in the display face, its credit small beside
+   it. Hairline below; the cover slides sit above. */
+.proof-strip__inner {
+  display: grid;
+  gap: 0.75rem;
+  padding-block: clamp(1.75rem, 3.5vw, 2.75rem);
+}
+.proof-strip__line {
+  gap: 1rem 3.5rem;
+  align-items: baseline;
+}
+.proof-item {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.75rem;
+  white-space: nowrap;
+}
+.proof-item__text {
+  font-size: clamp(1.25rem, 2.2vw, 1.625rem);
+  line-height: 1.2;
+}
+.proof-item--quote .proof-item__text {
+  font-style: italic;
+}
+/* Still (wrapping) line on a phone: let a long quote wrap rather than run off. */
+.published-marquee-wrap:not([data-marquee]) .proof-item,
+html:not(.motion) .proof-item {
+  white-space: normal;
+}
+@media (prefers-reduced-motion: reduce) {
+  .proof-item {
+    white-space: normal;
+  }
+}
+
+/* CRAFT NOTES (home, CraftNotes.astro): heading in the text track of the
+   shared split (.split, card 91), held in view from 1024 up; the numbered
+   notes in the other track, parted by hairlines. */
+@media (min-width: 64rem) {
+  .craft-notes {
+    align-items: start;
+  }
+  .craft-notes__head {
+    position: sticky;
+    top: 7rem;
+  }
+}
+.craft-notes__list {
+  margin: 0;
+  padding: 0;
+  border-bottom: 1px solid var(--color-border);
+}
+.craft-note {
+  display: grid;
+  grid-template-columns: 3.5rem minmax(0, 1fr);
+  gap: 1rem;
+  padding-block: 1.5rem;
+  border-top: 1px solid var(--color-border);
+}
+.craft-note__n {
+  font-size: 2rem;
+  font-style: italic;
+  line-height: 1;
+  color: var(--color-muted-foreground);
+  font-variant-numeric: tabular-nums;
+}
+.craft-note__title {
+  font-size: clamp(1.5rem, 2.4vw, 2rem);
+  line-height: 1.1;
+}
+
+/* CREW LIST (home, CrewList.astro): the paragraph and the crew list on the
+   shared split (.split, card 91); the crew is set like a story credit. */
+@media (min-width: 48rem) {
+  .crew {
+    align-items: start;
+  }
+}
+.crew__body {
+  max-width: 36rem;
+}
+.crew__body p:first-child {
+  margin-top: 0;
+}
+.crew__credits {
+  grid-template-columns: minmax(0, 1fr);
+}
+.crew__credits dd {
+  font-size: 1.5rem;
+  line-height: 1.2;
+}
+
+/* SIGNED CLOSE (home, SignedClose.astro): a big heading, then the note, the
+   one filled button and the signature in the display italic. No script font. */
+@media (min-width: 64rem) {
+  .signed-close {
+    align-items: end;
+  }
+}
+.signed-close__title {
+  max-width: 12em;
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  line-height: 0.98;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+.signed-close__sign {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  margin-top: 2.5rem;
+}
+.signed-close__name {
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  font-style: italic;
+  line-height: 1;
+  color: var(--color-foreground);
+}
+
+/* HOW THIS WAS MADE (story page): a short case-study close before "Next
+   story": where the idea came from, the place, the cast, and the ask. */
+.story-made {
+  padding-block: clamp(3rem, 6vw, 5rem);
+  border-top: 1px solid var(--color-border);
+}
+@media (min-width: 48rem) {
+  .story-made {
+    align-items: start;
+  }
+}
+.story-made__ask {
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  line-height: 1.05;
+}

@@ -687,6 +687,72 @@ const SECTIONS: Record<string, unknown>[] = [
   // scaffold:end
   { _type: 'publishedMarquee', _key: 'published-marquee', heading: 'As published in' }, // scaffold: press
   { _type: 'tearSheetStack', _key: 'tear-sheets', heading: 'In print', limit: 4 }, // scaffold: press
+  // scaffold: press
+  {
+    _type: 'proofStrip',
+    _key: 'proof-strip',
+    heading: 'Press and interviews',
+    showPress: true,
+    quotes: [
+      { _key: 'q1', text: 'A short line in your own words.', credit: 'You, in an interview' },
+      { _key: 'q2', text: 'A second line, said somewhere else.', credit: 'You, in a magazine' },
+    ],
+  },
+  // scaffold:end
+  // scaffold: stories
+  {
+    _type: 'craftNotes',
+    _key: 'craft-notes',
+    heading: 'How I get the look',
+    intro: 'A sentence on the craft behind the pictures.',
+    notes: [
+      {
+        _key: 'n1',
+        title: 'Grain on purpose',
+        body: 'A sentence on why it looks the way it does.',
+      },
+      { _key: 'n2', title: 'A slower shutter', body: 'A sentence on how it is done.' },
+      { _key: 'n3', title: 'Edited by hand', body: 'A sentence on the edit.' },
+    ],
+  },
+  {
+    _type: 'crewSection',
+    _key: 'crew',
+    eyebrow: 'About',
+    heading: 'One person, start to finish.',
+    body: [
+      {
+        _type: 'block',
+        _key: 'b1',
+        style: 'normal',
+        markDefs: [],
+        children: [
+          {
+            _type: 'span',
+            _key: 's1',
+            marks: [],
+            text: 'A short paragraph on who makes the work and why.',
+          },
+        ],
+      },
+    ],
+    crewHeading: 'The crew',
+    crew: [
+      { _key: 'c1', role: 'Concept', name: 'Your name' },
+      { _key: 'c2', role: 'Wardrobe', name: 'Your name' },
+      { _key: 'c3', role: 'Photography', name: 'Your name' },
+    ],
+  },
+  {
+    _type: 'signedClose',
+    _key: 'signed-close',
+    eyebrow: 'Booking sessions',
+    heading: 'Bring me a decade, a character or a story.',
+    body: 'A sentence or two on how to get in touch, and that you read every message yourself.',
+    cta: { _type: 'ctaBlock', label: 'Get in touch', href: '/contact/' },
+    signature: 'Your name',
+  },
+  // scaffold:end
   // ── Hours and location (card 196) ──────────────────────────────────────────
   // These two fill themselves from Business info; on the wall they carry the
   // made-up facts below instead (the `facts` key exists only for fixtures).

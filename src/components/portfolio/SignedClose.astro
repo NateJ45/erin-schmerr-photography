@@ -1,0 +1,67 @@
+---
+// scaffold-file: stories
+// Safe to edit by hand
+// Page-builder block `signedClose` (storyIndexSection.ts): the last word on
+// the home page, as a short signed note on the page's own paper (no dark
+// panel). A large heading on the left; on the right the note, the one filled
+// button and the signature, set in the display face's italic (DESIGN.md: no
+// script font). Stacks on a phone, on the one left edge.
+//
+// The button is the page's one booking ask: SectionRenderer gives this block
+// the accent even when the header's button goes to the same place
+// (primaryBudget, card 158), and passes `secondary` only when an earlier
+// section already drew a filled button.
+//
+// SELF_CONTAINED: plain page ground, no surface prop.
+import CtaLink from '@/components/CtaLink.astro';
+import type { ProjectedCtaBlock } from '@/lib/pageBuilder.types';
+import '@/styles/portfolio.css';
+
+interface Props {
+  eyebrow?: string;
+  heading?: string;
+  body?: string;
+  cta?: ProjectedCtaBlock | null;
+  signature?: string;
+  headingId?: string;
+  primaryVariant?: 'primary' | 'secondary';
+}
+
+const {
+  eyebrow,
+  heading = '',
+  body,
+  cta,
+  signature,
+  headingId = 'signed-close-heading',
+  primaryVariant = 'primary',
+} = Astro.props;
+---
+
+<section class="bg-background" aria-labelledby={headingId}>
+  <div class="signed-close split mx-auto max-w-content px-m py-section-lg">
+    <div class="signed-close__head">
+      {eyebrow && <p class="portfolio-label mb-4">{eyebrow}</p>}
+      <h2 id={headingId} class="signed-close__title font-display">
+        {heading}
+      </h2>
+    </div>
+    <div class="signed-close__note">
+      {body && <p class="text-lg text-muted-foreground">{body}</p>}
+      <div class="mt-8">
+        <CtaLink
+          cta={cta}
+          variant={primaryVariant}
+          fallbackHref="/contact/"
+          fallbackLabel="Get in touch"
+        />
+      </div>
+      {signature && (
+        <p class="signed-close__sign">
+          <span class="portfolio-label">Signed,</span>
+          <span class="signed-close__name font-display">{signature}</span>
+        </p>
+      )}
+    </div>
+  </div>
+</section>

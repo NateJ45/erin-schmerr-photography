@@ -196,3 +196,75 @@ export function withoutSeedPlaceholders<T extends { _id?: string | null }>(rows:
   const isSeed = (r: T) => (r._id ?? '').replace(/^drafts./, '').startsWith('placeholder-');
   return rows.some((r) => !isSeed(r)) ? rows.filter((r) => !isSeed(r)) : rows;
 }
+
+/**
+ * The cover hero's headline split around its inline portrait: the words up to
+ * and including word number `after`, and the rest. Spaces stay with the words,
+ * so the two halves join back into the headline. Stega markers sit at the end
+ * of an encoded string, so they ride along with the second half untouched.
+ */
+export function splitAfterWord(text: string, after: number): [string, string] {
+  const parts = text.split(/(\s+)/);
+  // parts alternates word, space, word, ...: word n ends at index 2n - 2.
+  const cut = Math.max(1, Math.floor(after)) * 2 - 1;
+  if (cut >= parts.length) return [text, ''];
+  return [parts.slice(0, cut).join(''), parts.slice(cut + 1).join('')];
+}
+
+/**
+ * The cast of a story for "How this was made": the credited names, without a
+ * venue that is already named as the place (a story set at the American Sign
+ * Museum credits the museum too). Derived from the credits (rule 15).
+ */
+export function storyCast(
+  credits: { name?: string | null; role?: string | null }[] | null | undefined,
+  location: string | null | undefined,
+): string[] {
+  const place = (location ?? '').toLowerCase();
+  const names = (credits ?? [])
+    .map((c) => c?.name?.trim() ?? '')
+    .filter((name) => name && !(place && place.includes(name.toLowerCase())));
+  return [...new Set(names)];
+}
+
+export interface ProofItem {
+  kind: 'press' | 'quote';
+  text: string;
+  credit?: string;
+}
+
+/**
+ * The proof strip's line: each press feature once (the magazine, and what ran
+ * when the issue is named), with the quotes spread evenly between them, so two
+ * quotes never sit side by side while there are features to part them.
+ */
+export function proofItems(
+  publications: { magazine?: string | null; issue?: string | null }[],
+  quotes: { text?: string | null; credit?: string | null }[],
+): ProofItem[] {
+  const seen = new Set<string>();
+  const press: ProofItem[] = [];
+  for (const p of publications) {
+    const magazine = p.magazine?.trim();
+    if (!magazine) continue;
+    const issue = p.issue?.trim();
+    const key = `${magazine}|${issue ?? ''}`.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    press.push({ kind: 'press', text: magazine, credit: issue || undefined });
+  }
+  const said: ProofItem[] = quotes
+    .filter((q) => q?.text?.trim())
+    .map((q) => ({ kind: 'quote', text: q.text!.trim(), credit: q.credit?.trim() || undefined }));
+  if (said.length === 0) return press;
+  const out: ProofItem[] = [];
+  const gap = press.length / said.length;
+  let next = 0;
+  said.forEach((quote, i) => {
+    const upTo = Math.round(gap * (i + 1));
+    while (next < upTo && next < press.length) out.push(press[next++]);
+    out.push(quote);
+  });
+  while (next < press.length) out.push(press[next++]);
+  return out;
+}

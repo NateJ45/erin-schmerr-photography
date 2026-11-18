@@ -44,6 +44,8 @@ export interface Story {
   dek?: string | null;
   date?: string | null;
   location?: string | null;
+  /** The decade, book or film the shoot started from ("How this was made"). */
+  startedFrom?: string | null;
   featured?: boolean | null;
   cover?: PortfolioPhoto | null;
   photos?: PortfolioPhoto[] | null;
@@ -65,7 +67,7 @@ export interface ArchivePhoto extends PortfolioPhoto {
 
 // A credit's role falls back to the person's usual role (derived, never retyped).
 const STORY_PROJECTION = `{
-  _id, title, "slug": slug.current, dek, date, location, featured,
+  _id, title, "slug": slug.current, dek, date, location, startedFrom, featured,
   cover${PHOTO_PROJECTION},
   photos[]${PHOTO_PROJECTION},
   "credits": credits[defined(collaborator)]{
