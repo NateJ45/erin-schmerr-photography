@@ -60,6 +60,7 @@ export const SELF_CONTAINED_TYPES = new Set([
   'journalPostsSection', // scaffold: journal
   // The portfolio blocks sit on the plain page ground (DESIGN.md: no tinted bands).
   'storyIndex', // scaffold: stories
+  'coverHero', // scaffold: stories
   'publishedMarquee', // scaffold: press
   'tearSheetStack', // scaffold: press
 ]);

@@ -1339,6 +1339,16 @@ export type PublishedMarquee = {
   heading?: string;
 };
 
+export type CoverHero = {
+  _type: 'coverHero';
+  eyebrow?: string;
+  headline?: string;
+  subhead?: string;
+  primaryCta?: CtaBlock;
+  secondaryCta?: CtaBlock;
+  limit?: number;
+};
+
 export type StoryIndex = {
   _type: 'storyIndex';
   heading?: string;
@@ -4133,6 +4143,9 @@ export type HomePage = {
       } & DynamicListSection)
     | ({
         _key: string;
+      } & CoverHero)
+    | ({
+        _key: string;
       } & StoryIndex)
     | ({
         _key: string;
@@ -4488,6 +4501,7 @@ export type AllSanitySchemaTypes =
   | NavLink
   | TearSheetStack
   | PublishedMarquee
+  | CoverHero
   | StoryIndex
   | JournalPostsSection
   | PrivacyPolicySection

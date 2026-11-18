@@ -64,6 +64,7 @@ const SELF_FILLING_SECTIONS = [
   'journalPostsSection', // scaffold: journal
   // The portfolio blocks fill themselves from Stories and Publications.
   'storyIndex', // scaffold: stories
+  'coverHero', // scaffold: stories
   'publishedMarquee', // scaffold: press
   'tearSheetStack', // scaffold: press
   'dynamicListSection',

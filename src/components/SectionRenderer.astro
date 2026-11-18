@@ -44,6 +44,7 @@ import PrivacyPolicy from '@/components/sections/PrivacyPolicy.astro';
 import JournalPosts from '@/components/sections/JournalPosts.astro'; // scaffold: journal
 // The portfolio's home page blocks; each reads its own stories or publications.
 import StoryIndex from '@/components/portfolio/StoryIndex.astro'; // scaffold: stories
+import CoverHero from '@/components/portfolio/CoverHero.astro'; // scaffold: stories
 import PublishedMarquee from '@/components/portfolio/PublishedMarquee.astro'; // scaffold: press
 import TearSheetStack from '@/components/portfolio/TearSheetStack.astro'; // scaffold: press
 import FormSection from '@/components/sections/FormSection.astro';
@@ -416,6 +417,17 @@ const editKeyOf = (block: unknown) => {
         <JournalPosts
           showCategories={s.showCategories !== false}
           showNewsletter={s.showNewsletter !== false}
+          headingId={headingId}
+        />
+      ) : // scaffold-branch: stories
+      s._type === 'coverHero' ? (
+        <CoverHero
+          eyebrow={s.eyebrow}
+          headline={s.headline ?? ''}
+          subhead={s.subhead}
+          primaryCta={s.primaryCta}
+          secondaryCta={s.secondaryCta}
+          limit={s.limit}
           headingId={headingId}
         />
       ) : // scaffold-branch: stories

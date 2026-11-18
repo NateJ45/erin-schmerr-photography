@@ -907,6 +907,7 @@ const SITE_INSERT_GROUPS: InsertGroup[] = [
     name: 'portfolio',
     title: 'Portfolio',
     of: [
+      'coverHero', // scaffold: stories
       'storyIndex', // scaffold: stories
       'publishedMarquee', // scaffold: press
       'tearSheetStack', // scaffold: press

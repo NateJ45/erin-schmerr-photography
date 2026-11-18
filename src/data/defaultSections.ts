@@ -21,18 +21,18 @@ import type { PageBuilderBlock } from '@/lib/pageBuilder.types';
 // ── Home page ────────────────────────────────────────────────────────────────
 
 export const DEFAULT_HOME_SECTIONS: PageBuilderBlock[] = [
+  // scaffold: stories
   {
-    _type: 'heroSection',
+    _type: 'coverHero',
     _key: 'default-home-hero',
     eyebrow: 'Fine-art portraits, Cincinnati and West Chester.',
     headline: 'Portraits, slowly brought into focus.',
     subhead:
       'Placeholder: one or two sentences in your own words about the portraits you make and who they are for.',
-    size: 'tall',
+    limit: 5,
     primaryCta: { _type: 'ctaBlock', label: 'Book a session', href: '/contact/' },
-    secondaryCta: { _type: 'ctaBlock', label: 'See the stories', href: '/stories/' }, // scaffold: stories
+    secondaryCta: { _type: 'ctaBlock', label: 'See the stories', href: '/stories/' },
   },
-  // scaffold: stories
   {
     _type: 'storyIndex',
     _key: 'default-home-stories',
