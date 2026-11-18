@@ -22,7 +22,14 @@ interface Props {
 const { variant = 'ornament', class: extraClass = '' } = Astro.props as Props;
 ---
 
-<div class:list={['mx-auto max-w-content px-m py-m text-center', extraClass]} aria-hidden="true">
+<div
+  class:list={[
+    'section-divider mx-auto max-w-content px-m py-m text-center',
+    `section-divider--${variant}`,
+    extraClass,
+  ]}
+  aria-hidden="true"
+>
   {variant === 'ornament' && (
     <span class="font-display text-2xl tracking-[0.6em] text-link select-none">✺</span>
   )}

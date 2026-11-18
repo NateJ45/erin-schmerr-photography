@@ -11,6 +11,7 @@ import {
   groupByYear,
   photoRatio,
   placeholderPhoto,
+  storySequence,
   yearOf,
 } from './portfolio.ts';
 
@@ -86,4 +87,29 @@ test('collaboratorHref prefers the website, then Instagram', () => {
   );
   assert.equal(collaboratorHref({ instagram: '@handle' }), 'https://www.instagram.com/handle/');
   assert.equal(collaboratorHref({}), null);
+});
+
+test('storySequence runs landscapes wide, pairs portraits and alternates lone portraits', () => {
+  const p = (ratio: 'portrait' | 'landscape', n: number) => ({
+    ...placeholderPhoto(n, 'x'),
+    placeholder: { tone: 'paper' as const, ratio },
+  });
+  const rows = storySequence([
+    p('portrait', 1),
+    p('landscape', 2),
+    p('portrait', 3),
+    p('portrait', 4),
+    p('portrait', 5),
+    p('landscape', 6),
+    p('portrait', 7),
+  ]);
+  assert.deepEqual(
+    rows.map((r) => r.kind),
+    ['single', 'wide', 'pair', 'single', 'wide', 'single'],
+  );
+  assert.deepEqual(
+    rows.filter((r) => r.kind === 'single').map((r) => (r.kind === 'single' ? r.align : '')),
+    ['start', 'end', 'start'],
+  );
+  assert.deepEqual(storySequence([]), []);
 });

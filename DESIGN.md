@@ -40,6 +40,7 @@ Direction chosen 2026-11-17 for the build on placeholder content. Two answers fr
 - **Light is the default, dark ships too** (rule 3). Dark is a deep warm black, not grey, so prints read like a gallery wall.
 - **No polish-layer chrome.** No brand stripe, no card lift, no tinted bands around photos. Sections separate by space and hairline rules.
 - **Square corners.** Radius 0 on photos, buttons and fields.
+- **One left edge, one row of chrome** (2026-11-17). The header has no eyebrow strip (its tagline already sits in the hero and the footer); the theme toggle lives in the nav row, and the row uses the page gutter so the wordmark lines up with every heading below it. Content bands all sit on paper: the starter's paper-soft cadence, sunburst ornaments and testimonial glow are switched off in `src/styles/erin.css`, and sections part with a content-width hairline. The footer defaults to the compact style (brand row on top, left-aligned at every width); an editor's choice in Site settings still wins.
 
 ## 2. Colors
 
@@ -72,6 +73,7 @@ Flat. Nothing floats except the lightbox and the phone menu. Depth comes from ph
 - **Published marquee** (`PublishedMarquee.astro`): "As published in" on the left and the magazine names in one line beside it (stacked on phones). The slow, pausable scroll comes with the motion pass.
 - **Tear-sheet stack** (`TearSheetStack.astro`): the newest tear sheets fanned and overlapping like prints on a table, with the list of features beside them; pointing at a feature or a sheet lifts that sheet. Reduced motion keeps the overlap and drops the turn and lift.
 - **Press page** (`src/pages/press.astro`): an index by year. The year sits in a left rail that stays in view (from 1024 up) while its features pass; each feature is a row with its tear sheet, issue and date, the magazine large, the excerpt and a "Read the feature" link.
+- **Story page** (`src/pages/stories/[slug].astro`): a magazine feature. The opener sets a portrait cover beside the title, short line, place and date, credits and "Published in" (a landscape cover runs full bleed above them). The sequence comes from `storySequence()` in `src/lib/portfolio.ts`: a landscape runs wide, two portraits in a row sit side by side, a lone portrait is set off to one side, alternating. It closes on "Next story" with its cover (the first story follows the last).
 - **Archive canvas** (`ArchiveCanvas.astro`): every photo on a draggable canvas; a plain grid on touch and under reduced motion.
 - **Buttons:** one family (rule 17). Text links with an underline that draws in; the single filled Dusk button is the inquiry.
 

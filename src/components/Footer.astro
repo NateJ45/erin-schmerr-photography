@@ -180,7 +180,10 @@ const here = publicPath(Astro.url.pathname);
 const whereNext = siteSettings?.whereNext?.length
   ? whereNextRows(siteSettings.whereNext, here, await getAllPageSlugs())
   : [];
-const compact = footerStyle(siteSettings?.footerStyle) === 'compact';
+// This site defaults to the compact footer (card 191): brand row on top, columns
+// left-aligned at every width, matching the left-aligned pages above it. An
+// editor's explicit choice in Site settings still wins.
+const compact = footerStyle(siteSettings?.footerStyle ?? 'compact') === 'compact';
 const secondary = chrome.headerSecondary;
 const pickedBar = pickActionBar(siteSettings?.actionBars, here);
 // A bar with no line of its own shows today's hours from the business facts (card 198).
@@ -526,7 +529,16 @@ const actionBar =
         )}
         <OpenStatus facts={facts} class="biz-center-sm pt-xs" />
       </div>
-      <p class="mt-s text-sm text-foreground/75">{site.name}</p>
+      {/* The inquiry is the one action this column always offers; the business
+          name already sits in the brand row and the copyright line. */}
+      <p class="mt-s text-sm">
+        <a
+          href="/contact/"
+          class="inline-flex min-h-[44px] items-center text-link underline underline-offset-4 transition-colors hover:text-primary-dark"
+        >
+          Send an inquiry
+        </a>
+      </p>
       {socialLinksToRender.length > 0 && (
         <ul class="mt-m flex list-none flex-wrap justify-center gap-s p-0 text-sm md:justify-start">
           {socialLinksToRender.map((link) => {

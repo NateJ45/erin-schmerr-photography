@@ -138,6 +138,8 @@ test.describe('wayfinding', () => {
     await expect(page.locator('.where-next')).toHaveCount(0);
     await expect(page.locator('div[data-action-bar]')).toHaveCount(0);
     await expect(page.locator('.mobile-menu--groups')).toHaveCount(0);
-    await expect(page.locator('.site-footer--compact')).toHaveCount(0);
+    // This site defaults to the compact footer (Footer.astro), so an unset
+    // footer style draws compact here rather than the starter's columns.
+    await expect(page.locator('.site-footer--compact')).toHaveCount(1);
   });
 });
