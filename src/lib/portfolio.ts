@@ -184,3 +184,15 @@ export function storySequence<T extends PortfolioPhoto>(photos: T[]): SequenceRo
   }
   return rows;
 }
+
+/**
+ * The seeded placeholder documents (ids starting "placeholder-", from
+ * scripts/seed-portfolio.mjs) step aside as soon as one real document of the
+ * same type exists, so real work never shares a list with "Placeholder story
+ * one". With only placeholders, they all stay. Nothing is deleted: retiring
+ * the seeded documents is a backup-then-delete script (rule 16).
+ */
+export function withoutSeedPlaceholders<T extends { _id?: string | null }>(rows: T[]): T[] {
+  const isSeed = (r: T) => (r._id ?? '').replace(/^drafts./, '').startsWith('placeholder-');
+  return rows.some((r) => !isSeed(r)) ? rows.filter((r) => !isSeed(r)) : rows;
+}

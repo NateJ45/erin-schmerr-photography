@@ -6,7 +6,7 @@ Always-loaded rules for this repo, the portfolio site for Erin Schmerr, a fine-a
 
 **Read this first.** Project records, rules and status are kept privately by the studio, outside this folder. Before doing any work, read the session guide: `C:\Users\natha\Documents\Claude\Projects\_vault\projects\erin-schmerr-photography-session-guide.md`. Also read `~/.claude/CLAUDE.md` and the Projects `CLAUDE.md`.
 
-**Placeholder content.** Until the client sends originals, every photo is a licence-free placeholder that reads as one, and copy that needs her words is marked. Never put her published photos in the repo or the dataset without her originals and say-so.
+**Her work, interim copies.** Since 2026-11-18, with her OK, the stories, press and archive show her own work taken from her Instagram (16 stories, 7 press entries; `ig-*` ids, written by `scripts/import-stories.mjs` from a manifest kept outside the repo). These are Instagram-sized stand-ins; her originals replace them when they arrive. The seeded `placeholder-*` documents stay in the dataset but step aside once a real one exists (`withoutSeedPlaceholders()`, `src/lib/portfolio.ts`); CI still builds from the placeholder snapshot. Copy that needs her words is still marked. Never put her photographs in the repo itself.
 
 **Read `docs/PENDING.md` early in a session.** It is the live registry of open loops: queued work, known gaps, and waiting-on-a-human items. If you finish or discover one, update it in the same commit.
 

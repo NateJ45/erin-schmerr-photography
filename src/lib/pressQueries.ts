@@ -9,7 +9,12 @@
 // =============================================================================
 
 import { sanityFetch } from './sanity';
-import { PHOTO_PROJECTION, placeholderPhoto, type PortfolioPhoto } from './portfolio';
+import {
+  PHOTO_PROJECTION,
+  placeholderPhoto,
+  withoutSeedPlaceholders,
+  type PortfolioPhoto,
+} from './portfolio';
 
 export interface Publication {
   _id: string;
@@ -53,7 +58,8 @@ export async function getPublications(): Promise<Publication[]> {
     {},
     [],
   );
-  return rows.length ? rows : PLACEHOLDER_PUBLICATIONS;
+  const real = withoutSeedPlaceholders(rows);
+  return real.length ? real : PLACEHOLDER_PUBLICATIONS;
 }
 
 /** Each magazine name once, in order of its newest appearance. */

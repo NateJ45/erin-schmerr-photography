@@ -15,7 +15,12 @@
 // =============================================================================
 
 import { sanityFetch } from './sanity';
-import { PHOTO_PROJECTION, placeholderPhoto, type PortfolioPhoto } from './portfolio';
+import {
+  PHOTO_PROJECTION,
+  placeholderPhoto,
+  withoutSeedPlaceholders,
+  type PortfolioPhoto,
+} from './portfolio';
 
 export interface StoryCredit {
   _key: string;
@@ -125,7 +130,8 @@ export async function getStories(): Promise<Story[]> {
     {},
     [],
   );
-  return rows.length ? rows : PLACEHOLDER_STORIES;
+  const real = withoutSeedPlaceholders(rows);
+  return real.length ? real : PLACEHOLDER_STORIES;
 }
 
 /** The stories ticked Featured (all of them when none is), up to `limit`. */
