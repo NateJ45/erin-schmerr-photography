@@ -58,6 +58,10 @@ export const SELF_CONTAINED_TYPES = new Set([
   'contactFormSection',
   'privacyPolicySection',
   'journalPostsSection', // scaffold: journal
+  // The portfolio blocks sit on the plain page ground (DESIGN.md: no tinted bands).
+  'storyIndex', // scaffold: stories
+  'publishedMarquee', // scaffold: press
+  'tearSheetStack', // scaffold: press
 ]);
 
 /** _type strings for blocks that receive alternating surface assignment. */

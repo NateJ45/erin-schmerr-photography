@@ -902,6 +902,16 @@ const SITE_INSERT_GROUPS: InsertGroup[] = [
       'journalPostsSection', // scaffold: journal
     ],
   },
+  {
+    // The portfolio's home page blocks, filled from Stories and Publications.
+    name: 'portfolio',
+    title: 'Portfolio',
+    of: [
+      'storyIndex', // scaffold: stories
+      'publishedMarquee', // scaffold: press
+      'tearSheetStack', // scaffold: press
+    ],
+  },
 ];
 
 export const SECTION_INSERT_MENU: ArrayOptions['insertMenu'] = {

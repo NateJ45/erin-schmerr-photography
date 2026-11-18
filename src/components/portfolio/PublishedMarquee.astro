@@ -1,0 +1,43 @@
+---
+// scaffold-file: press
+// Safe to edit by hand
+// Page-builder block `publishedMarquee` (pressSections.ts): each magazine name
+// from Publications, once, in a strip. Static for now: the slow, pausable
+// scroll (DESIGN.md "Published marquee") comes with the motion pass, and this
+// wrapping line stays as its reduced-motion form. Reads the publications
+// itself, so it shows the placeholder names with no Sanity data.
+//
+// SELF_CONTAINED: draws on the plain page ground, no surface prop.
+import { getPublications, magazineNames } from '@/lib/pressQueries';
+import '@/styles/portfolio.css';
+
+interface Props {
+  heading?: string;
+  headingId?: string;
+}
+
+const { heading = 'As published in', headingId = 'published-marquee-heading' } = Astro.props;
+const names = magazineNames(await getPublications());
+---
+
+{names.length > 0 && (
+  <section class="border-y border-border bg-background" aria-labelledby={headingId}>
+    <div class="mx-auto max-w-content px-m py-section-md text-center">
+      <h2 id={headingId} class="portfolio-label">
+        {heading}
+      </h2>
+      <ul class="published-marquee mt-6">
+        {names.map((name) => (
+          <li>
+            <a
+              class="font-display text-h3 text-foreground no-underline hover:underline"
+              href="/press/"
+            >
+              {name}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+)}

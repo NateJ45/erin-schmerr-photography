@@ -71,6 +71,10 @@ export function pathForDoc(schemaType: string, doc: any): string | null {
     case 'journalEntry':
       return slug ? `/journal/${slug}` : '/journal';
     // scaffold:end
+    // scaffold: stories
+    case 'story':
+      return slug ? `/stories/${slug}` : '/stories';
+    // scaffold:end
     // Collections that render inside a parent page
     // scaffold: process
     case 'processStep':
@@ -91,6 +95,14 @@ export function pathForDoc(schemaType: string, doc: any): string | null {
     // scaffold: journal
     case 'journalCategory':
       return '/journal';
+    // scaffold:end
+    // scaffold: stories
+    case 'collaborator':
+      return '/stories';
+    // scaffold:end
+    // scaffold: press
+    case 'publication':
+      return '/press';
     // scaffold:end
     // Generic custom pages live at /<slug>.
     case 'page':

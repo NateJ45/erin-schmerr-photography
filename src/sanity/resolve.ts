@@ -95,6 +95,24 @@ export const resolve: PresentationPluginOptions['resolve'] = {
     faqItem: { locations: [{ title: 'FAQ', href: '/preview/faq' }] }, // scaffold: faq
     faqCategory: { locations: [{ title: 'FAQ', href: '/preview/faq' }] }, // scaffold: faq
     journalCategory: { locations: [{ title: 'Journal', href: '/preview/journal' }] }, // scaffold: journal
+    // The portfolio has no draft-preview route of its own: a story, a collaborator and a
+    // publication show on the home page's blocks, and on their own pages after publish.
+    // scaffold: stories
+    story: {
+      locations: [{ title: 'Home', href: '/preview' }],
+      message: 'Story pages preview on the live site after publish.',
+    },
+    collaborator: {
+      locations: [{ title: 'Home', href: '/preview' }],
+      message: 'Credits show on the live story pages after publish.',
+    },
+    // scaffold:end
+    // scaffold: press
+    publication: {
+      locations: [{ title: 'Home', href: '/preview' }],
+      message: 'The press page updates on the live site after publish.',
+    },
+    // scaffold:end
     // The banner, the header and footer, and the contact details all render
     // site-wide (BaseLayout, Header, Footer, and the siteSettings query, which
     // folds businessInfo in), so each one is "Shown on every page".

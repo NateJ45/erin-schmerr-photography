@@ -22,7 +22,8 @@ test('isReservedSlug returns false for a custom slug', () => {
 // pinned as FREE. A module coming back out of the archive puts its slug back
 // (archive/README.md step 3) and this test moves with it.
 test('a route the starter does not serve is not reserved', () => {
-  for (const slug of ['portfolio', 'shop', 'press', 'resources', 'guides', 'quiz', 'calculator']) {
+  // 'press' left this list when the portfolio's press capability gave it a page.
+  for (const slug of ['portfolio', 'shop', 'resources', 'guides', 'quiz', 'calculator']) {
     assert.equal(isReservedSlug(slug), false, `${slug} should be free`);
   }
 });
@@ -55,6 +56,13 @@ test('every reserved slug is a route this repo serves, a scaffolded one, or a bu
     'process',
     'faq',
     'journal',
+    // The portfolio (src/pages/stories/, archive.astro, press.astro).
+    'stories', // scaffold: stories
+    'archive', // scaffold: stories
+    'press', // scaffold: press
+    // Planned, not built yet: reserved on purpose so the sessions page can land
+    // at its address (src/lib/reservedSlugs.ts says why).
+    'sessions',
     'contact',
     'privacy',
     '404',

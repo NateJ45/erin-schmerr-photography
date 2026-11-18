@@ -42,6 +42,10 @@ import DocumentsList from '@/components/sections/DocumentsList.astro'; // scaffo
 import ContactFormSection from '@/components/sections/ContactFormSection.astro';
 import PrivacyPolicy from '@/components/sections/PrivacyPolicy.astro';
 import JournalPosts from '@/components/sections/JournalPosts.astro'; // scaffold: journal
+// The portfolio's home page blocks; each reads its own stories or publications.
+import StoryIndex from '@/components/portfolio/StoryIndex.astro'; // scaffold: stories
+import PublishedMarquee from '@/components/portfolio/PublishedMarquee.astro'; // scaffold: press
+import TearSheetStack from '@/components/portfolio/TearSheetStack.astro'; // scaffold: press
 import FormSection from '@/components/sections/FormSection.astro';
 import BuilderBlock from '@/components/builder-blocks/BuilderBlock.astro';
 import { isBuilderBlock } from '@/lib/builderBlocks.types';
@@ -414,6 +418,20 @@ const editKeyOf = (block: unknown) => {
           showNewsletter={s.showNewsletter !== false}
           headingId={headingId}
         />
+      ) : // scaffold-branch: stories
+      s._type === 'storyIndex' ? (
+        <StoryIndex
+          heading={s.heading}
+          layout={s.layout === 'list' ? 'list' : 'grid'}
+          limit={s.limit}
+          headingId={headingId}
+        />
+      ) : // scaffold-branch: press
+      s._type === 'publishedMarquee' ? (
+        <PublishedMarquee heading={s.heading} headingId={headingId} />
+      ) : // scaffold-branch: press
+      s._type === 'tearSheetStack' ? (
+        <TearSheetStack heading={s.heading} limit={s.limit} headingId={headingId} />
       ) : s._type === 'dynamicListSection' ? (
         <DynamicList
           eyebrow={s.eyebrow}

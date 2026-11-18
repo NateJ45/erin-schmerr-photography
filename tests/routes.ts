@@ -25,6 +25,9 @@ export const routes: string[] = [
   '/faq/', // scaffold: faq
   '/contact/',
   '/journal/', // scaffold: journal
+  '/stories/', // scaffold: stories
+  '/archive/', // scaffold: stories
+  '/press/', // scaffold: press
   '/privacy/',
 ];
 

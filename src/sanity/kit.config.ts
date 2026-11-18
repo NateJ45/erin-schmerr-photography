@@ -99,6 +99,9 @@ export const kitConfig: KitConfig = {
     journalEntry: 'Journal post', // scaffold: journal
     journalCategory: 'Journal category', // scaffold: journal
     processStep: 'Process step', // scaffold: process
+    story: 'Story', // scaffold: stories
+    collaborator: 'Collaborator', // scaffold: stories
+    publication: 'Publication', // scaffold: press
   },
 
   weekStartsOn: 1,
@@ -126,6 +129,9 @@ export const kitConfig: KitConfig = {
           '/process/', // scaffold: process
           '/faq/', // scaffold: faq
           '/journal/', // scaffold: journal
+          '/stories/', // scaffold: stories
+          '/archive/', // scaffold: stories
+          '/press/', // scaffold: press
           '/contact/',
           '/privacy/',
         ],
@@ -133,6 +139,7 @@ export const kitConfig: KitConfig = {
           page: (slug) => `/${slug}/`,
           privatePage: (slug) => `/private/${slug}/`,
           journalEntry: (slug) => `/journal/${slug}/`, // scaffold: journal
+          story: (slug) => `/stories/${slug}/`, // scaffold: stories
         },
       }),
       // Card 123: words still starting "Example:" from a page template, and the
@@ -181,6 +188,9 @@ export const kitConfig: KitConfig = {
         { title: 'Announcements', target: { pane: 'content;announcement' } },
         { title: 'Popups', target: { pane: 'content;popup' } },
         { title: 'Journal posts', target: { pane: 'journal;journalEntry' } }, // scaffold: journal
+        { title: 'Stories', target: { pane: 'portfolio;story' } }, // scaffold: stories
+        { title: 'Collaborators', target: { pane: 'portfolio;collaborator' } }, // scaffold: stories
+        { title: 'Publications', target: { pane: 'press;publication' } }, // scaffold: press
         { title: 'Questions and answers', target: { pane: 'content;faqItem' } }, // scaffold: faq
         { title: 'Testimonials', target: { pane: 'content;testimonial' } }, // scaffold: testimonials
         { title: 'Documents', target: { pane: 'content;libraryDocument' } }, // scaffold: documents

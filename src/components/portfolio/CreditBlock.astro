@@ -1,0 +1,46 @@
+---
+// scaffold-file: stories
+// Safe to edit by hand
+// A story's credits, set like a magazine credit (DESIGN.md "Credit block"): a
+// definition list of role, then the person's name, linked to their website or
+// Instagram when they have one. Draws nothing when there are no credits.
+import { collaboratorHref } from '@/lib/portfolio';
+import type { StoryCredit } from '@/lib/storyQueries';
+import '@/styles/portfolio.css';
+
+interface Props {
+  credits: StoryCredit[] | null | undefined;
+  heading?: string;
+  headingId?: string;
+}
+
+const { credits, heading = 'Credits', headingId = 'story-credits' } = Astro.props;
+const rows = (credits ?? []).filter((c) => c?.name);
+---
+
+{rows.length > 0 && (
+  <section aria-labelledby={headingId}>
+    <h2 id={headingId} class="portfolio-label mb-4">
+      {heading}
+    </h2>
+    <dl class="credit-block">
+      {rows.map((c) => {
+        const href = collaboratorHref(c);
+        return (
+          <div>
+            <dt class="portfolio-label">{c.role || 'Credit'}</dt>
+            <dd class="text-foreground">
+              {href ? (
+                <a class="portfolio-link" href={href} rel="noopener">
+                  {c.name}
+                </a>
+              ) : (
+                c.name
+              )}
+            </dd>
+          </div>
+        );
+      })}
+    </dl>
+  </section>
+)}

@@ -44,6 +44,7 @@ const SEO_PAGE_TYPES = new Set<string>([
 const PHOTO_FIELD: Record<string, string> = {
   project: 'heroImage',
   journalEntry: 'coverImage', // scaffold: journal
+  story: 'cover', // scaffold: stories
 };
 
 // The live document being edited: prefer the draft, fall back to the published

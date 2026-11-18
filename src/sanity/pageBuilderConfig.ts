@@ -62,6 +62,10 @@ const SELF_FILLING_SECTIONS = [
   'contactFormSection',
   'privacyPolicySection',
   'journalPostsSection', // scaffold: journal
+  // The portfolio blocks fill themselves from Stories and Publications.
+  'storyIndex', // scaffold: stories
+  'publishedMarquee', // scaffold: press
+  'tearSheetStack', // scaffold: press
   'dynamicListSection',
   'faqSection', // scaffold: faq
   'guaranteeSection',
