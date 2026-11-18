@@ -72,6 +72,7 @@ Flat. Nothing floats except the lightbox and the phone menu. Depth comes from ph
 - **Story index** (`StoryIndex.astro`): selected stories as a grid or a list, with a toggle; in list view, hovering a title reveals its cover.
 - **Published marquee** (`PublishedMarquee.astro`): the magazine names in a slow, pausable strip.
 - **Tear-sheet stack** (`TearSheetStack.astro`): publication tear sheets fanned like a stack of prints.
+- **Story page** (`src/pages/stories/[slug].astro`): a magazine feature. The opener sets a portrait cover beside the title, short line, place and date, credits and "Published in" (a landscape cover runs full bleed above them). The sequence comes from `storySequence()` in `src/lib/portfolio.ts`: a landscape runs wide, two portraits in a row sit side by side, a lone portrait is set off to one side, alternating. It closes on "Next story" with its cover (the first story follows the last).
 - **Archive canvas** (`ArchiveCanvas.astro`): every photo on a draggable canvas; a plain grid on touch and under reduced motion.
 - **Buttons:** one family (rule 17). Text links with an underline that draws in; the single filled Dusk button is the inquiry.
 

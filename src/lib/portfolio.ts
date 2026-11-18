@@ -151,3 +151,36 @@ export function collaboratorHref(c: {
   const handle = c.instagram?.replace(/^@/, '').trim();
   return handle ? `https://www.instagram.com/${handle}/` : null;
 }
+
+/** One row of a story's photo sequence (/stories/<slug>/). */
+export type SequenceRow<T> =
+  | { kind: 'wide'; photos: [T] }
+  | { kind: 'pair'; photos: [T, T] }
+  | { kind: 'single'; photos: [T]; align: 'start' | 'end' };
+
+/**
+ * Lays a story's photos out as an editorial sequence instead of one column of
+ * same-width frames: a landscape photo runs wide, two portraits in a row sit
+ * side by side as a spread, and a portrait on its own is set off to one side,
+ * alternating, so the page has a rhythm whatever order the photos come in.
+ */
+export function storySequence<T extends PortfolioPhoto>(photos: T[]): SequenceRow<T>[] {
+  const rows: SequenceRow<T>[] = [];
+  let singles = 0;
+  for (let i = 0; i < photos.length; i++) {
+    const photo = photos[i];
+    if (photoRatio(photo) >= 1) {
+      rows.push({ kind: 'wide', photos: [photo] });
+      continue;
+    }
+    const next = photos[i + 1];
+    if (next && photoRatio(next) < 1) {
+      rows.push({ kind: 'pair', photos: [photo, next] });
+      i++;
+      continue;
+    }
+    rows.push({ kind: 'single', photos: [photo], align: singles % 2 === 0 ? 'start' : 'end' });
+    singles++;
+  }
+  return rows;
+}
