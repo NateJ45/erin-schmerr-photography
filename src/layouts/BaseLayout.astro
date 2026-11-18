@@ -36,6 +36,8 @@ import '@/styles/globals.css';
 import '@/styles/starwind.css';
 // The site's own layer (DESIGN.md): quiet chrome, masthead nav, display tuning.
 import '@/styles/erin.css';
+import '@/styles/erin-motion.css';
+import FirstVisitLoader from '@/components/FirstVisitLoader.astro';
 // The printed page (PORTS.md card 155): motion at rest, black on white. Last on purpose.
 import '@/styles/print.css';
 
@@ -337,6 +339,8 @@ const announcementStyle = ANNOUNCEMENT_STYLES[announcement?.style ?? 'info'] ?? 
   </head>
   <body class="min-h-screen flex flex-col">
     <a href="#main" class="skip-link">Skip to main content</a>
+    {/* First-visit loader (this site; erin-motion.css). Draws nothing after the first page. */}
+    <FirstVisitLoader />
 
     {/* Optional announcement banner. Renders above the header when an active
         announcement exists in Sanity. Scrolls away with the page content.

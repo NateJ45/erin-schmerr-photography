@@ -1,0 +1,107 @@
+/* Erin Schmerr Photography: the site plan's interactions (2026-11-17).
+   Loaded after erin.css (BaseLayout). Each effect has a reduced-motion and a
+   touch fallback, and nothing here gives a first-viewport element a hidden
+   start state (tests/first-viewport.spec.ts, card 213):
+
+   1. First-visit loader (FirstVisitLoader.astro): the name pulls into focus on
+      paper, then the curtain lifts. Only under html.first-visit, which the
+      component's inline script sets once per device and only under html.motion.
+   2. Variable-weight nav hover: Instrument Sans Variable thickens on hover. The
+      bold width is reserved by an invisible copy of the label, so nothing in
+      the row moves. Hover-capable pointers only; touch keeps the plain link.
+   3. Story parallax: each photo in a story's sequence drifts a little inside
+      its frame as it crosses the screen. CSS scroll-driven animation, so no
+      script; browsers without it, touch screens and reduced motion get the
+      still photo. */
+
+/* ---- 1. First-visit loader ------------------------------------------------ */
+.first-visit-loader {
+  display: none;
+}
+html.first-visit .first-visit-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: var(--spacing-m);
+  background: var(--background);
+  pointer-events: none;
+  animation: first-visit-lift 1100ms var(--ease-focus) both;
+}
+.first-visit-loader__name {
+  font-size: clamp(2.25rem, 6vw, 4.5rem);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: var(--foreground);
+  text-align: center;
+  animation: first-visit-focus 700ms var(--ease-focus) both;
+}
+@keyframes first-visit-focus {
+  from {
+    filter: blur(12px);
+    opacity: 0;
+    transform: scale(1.03);
+  }
+  to {
+    filter: blur(0);
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes first-visit-lift {
+  0%,
+  68% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+/* ---- 2. Variable-weight nav hover ------------------------------------------ */
+.site-nav > a[data-label] {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+}
+/* Reserve the hovered width: an invisible, zero-height copy at the hover weight. */
+.site-nav > a[data-label]::before {
+  content: attr(data-label);
+  height: 0;
+  overflow: hidden;
+  visibility: hidden;
+  font-weight: 620;
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .site-nav > a[data-label] {
+    transition:
+      font-weight 300ms var(--ease-focus),
+      color 300ms var(--ease-focus);
+  }
+  .site-nav > a[data-label]:hover,
+  .site-nav > a[data-label]:focus-visible {
+    font-weight: 620;
+  }
+}
+
+/* ---- 3. Story parallax ------------------------------------------------------ */
+@supports (animation-timeline: view()) {
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .story-sequence .focus-image__img {
+      scale: 1.08;
+      animation: story-drift linear both;
+      animation-timeline: view();
+      animation-range: cover;
+    }
+  }
+}
+@keyframes story-drift {
+  from {
+    translate: 0 -3.5%;
+  }
+  to {
+    translate: 0 3.5%;
+  }
+}

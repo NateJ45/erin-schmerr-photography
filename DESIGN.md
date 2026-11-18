@@ -76,7 +76,7 @@ Flat. Nothing floats except the lightbox and the phone menu. Depth comes from ph
 
 ## 6. Do's and Don'ts
 
-Motion: slow optical easing `cubic-bezier(0.22, 1, 0.36, 1)`, 700 to 1200ms for focus pulls, 300ms for UI. Scrolling stays native (rule 5). Every effect has a reduced-motion and a touch fallback, and hidden start states sit under `html.motion` so the page reads without JavaScript.
+Motion: slow optical easing `cubic-bezier(0.22, 1, 0.36, 1)`, 700 to 1200ms for focus pulls, 300ms for UI. Scrolling stays native (rule 5). Every effect has a reduced-motion and a touch fallback, and hidden start states sit under `html.motion` so the page reads without JavaScript. The site plan's interactions live in `src/styles/erin-motion.css`: a first-visit loader (`FirstVisitLoader.astro`: the name pulls into focus and the curtain lifts in 1.1s, once per device, never under reduced motion or with storage blocked; it hides nothing underneath), a variable-weight nav hover (Instrument Sans thickens, with the bold width reserved so nothing moves; hover pointers only) and a slow drift of story photos inside their frames (CSS scroll-driven; still on touch, under reduced motion and where unsupported).
 
 **Do**
 
