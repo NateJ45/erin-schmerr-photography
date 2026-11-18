@@ -1,104 +1,92 @@
 ---
-name: NCS Astro + Sanity Starter (neutral defaults)
-description: PLACEHOLDER design system. The neutral Slate, Ink and Paper defaults the starter ships; a fork replaces all of it.
+name: Erin Schmerr Photography, Soft Focus Editorial
+description: Warm paper, a big editorial serif, almost no chrome; photos resolve from blur into focus.
 colors:
-  slate: '#586577'
-  slate-dark: '#434E5C'
-  ink: '#2A2D31'
-  ink-dark: '#1E2024'
-  paper: '#FBFBFA'
-  paper-soft: '#F3F4F2'
-  divider: '#E6E7E5'
-  muted-text: '#5F6469'
-  mist: '#AAB0B8'
-  sage: '#9DB0A6'
-  dark-ground: '#17191C'
-  dark-card: '#202327'
-  dark-primary: '#8A96A6'
+  paper: '#F3EEE7'
+  paper-soft: '#EAE3D9'
+  ink: '#1F1B18'
+  muted-text: '#655C54'
+  dusk: '#7A4A40'
+  divider: '#D9CFC2'
+  dark-ground: '#12100E'
+  dark-card: '#1C1916'
+  dark-ink: '#EEE7DD'
+  dark-muted: '#A99F94'
+  dark-dusk: '#D6A898'
 typography:
   display:
-    fontFamily: 'Libre Baskerville, Georgia, Times New Roman, serif'
-    fontSize: 'clamp(2.5rem, 6vw, 5rem)'
+    fontFamily: 'Instrument Serif, Georgia, Times New Roman, serif'
+    fontSize: 'clamp(3rem, 9vw, 8.5rem)'
   body:
-    fontFamily: 'Inter Variable, system-ui, sans-serif'
+    fontFamily: 'Instrument Sans Variable, system-ui, sans-serif'
 rounded:
-  base: '0.5rem'
-spacing:
-  xs: 'clamp(0.25rem, 0.5vw, 0.5rem)'
-  s: 'clamp(0.5rem, 1vw, 1rem)'
-  m: 'clamp(1rem, 2vw, 1.5rem)'
-  l: 'clamp(2rem, 4vw, 3rem)'
-  section-md: 'clamp(3rem, 6vw, 5rem)'
-  section-lg: 'clamp(4rem, 8vw, 7rem)'
+  base: '0'
 components:
   button-primary:
-    backgroundColor: '{colors.slate-dark}'
-    textColor: '#FFFFFF'
+    backgroundColor: '{colors.dusk}'
+    textColor: '{colors.paper}'
     rounded: '{rounded.base}'
     height: '44px'
 ---
 
-# Design System: NCS Starter (placeholder)
+# Design System: Soft Focus Editorial
 
-> **PLACEHOLDER, NOT A DESIGN.** This file documents the neutral defaults the starter ships so that agents on a fresh fork know what to replace. It is not a client's identity and must not be copied into one. A fork rewrites this file from its own tokens (`brand/brand.config.json`, then `npm run apply-brand`, then `src/styles/globals.css`) and removes this banner. The CSS wins if this file and the code disagree. Audience and tone placeholders are in `PRODUCT.md`.
+Direction chosen 2026-11-17 for the build on placeholder content. Two answers from the client can still move it: the brand name (wordmark only) and whether she prefers a dark site (both themes ship, so that is a default swap). The CSS wins if this file and the code disagree: tokens live in `brand/brand.config.json`, written into `src/styles/globals.css` by `npm run apply-brand`; the site's own layer is `src/styles/erin.css`.
 
 ## 1. Overview
 
-**Creative North Star: [PLACEHOLDER].** The starter has no creative north star; a fork must name its own. What ships is a quiet, neutral surface so that nothing here is mistaken for a decision.
+**Creative North Star: everything comes into focus.** A fine-art portrait portfolio that feels like a printed art book: warm paper, a large editorial serif, photos given room, and motion that behaves like a lens pulling focus.
 
-- **Light and dark both ship.** A three-state toggle (light, dark, system) is persisted to `localStorage["theme"]`, and CLAUDE.md rule 3 says to build and check in both. (A fork may retire dark mode, as First Baptist Muncie did, but that is a project decision.)
-- **Polish layer defaults.** A repeating 2px brand-colour stripe is the starter's signature (header, drawer, footer, cards, closing panel); a soft card lift on hover; a faint paper grain (`body::before`, 4% opacity, 6% in dark); a warm radial tint on alternating bands (`.surface-warm`, driven by `--tint-rgb`).
-- **Page builder owns the rhythm.** `SectionRenderer` alternates paper and soft-paper surfaces automatically; blocks carry no colour field (rule 9).
-- **One grammar per page** (rule 17): one heading system, one left edge, one button family.
-- TODO(Nathan): decide whether `PORTS.md` should carry a card for "forks rewrite PRODUCT.md and DESIGN.md", so existing client repos know the shape. Not added here (scope was the two files and a CLAUDE.md pointer).
+- **Light is the default, dark ships too** (rule 3). Dark is a deep warm black, not grey, so prints read like a gallery wall.
+- **No polish-layer chrome.** No brand stripe, no card lift, no tinted bands around photos. Sections separate by space and hairline rules.
+- **Square corners.** Radius 0 on photos, buttons and fields.
 
 ## 2. Colors
 
-Neutral Slate, Ink and Paper, declared in the `@theme` block of `src/styles/globals.css` and mirrored in `brand.config.json`. Reference by utility (`bg-primary`, `text-foreground`, `border-border`), never by hex in components.
+| Role                                  | Light           | Dark                 | Contrast on ground |
+| ------------------------------------- | --------------- | -------------------- | ------------------ |
+| Ground                                | Paper `#F3EEE7` | `#12100E`            |                    |
+| Soft band                             | `#EAE3D9`       | `#1C1916`            |                    |
+| Text                                  | Ink `#1F1B18`   | `#EEE7DD`            | 14.8 / 15.5        |
+| Muted text                            | `#655C54`       | `#A99F94`            | 5.7 / 7.3          |
+| Accent (links, the one filled button) | Dusk `#7A4A40`  | `#D6A898`            | 6.3 / 9.0          |
+| Hairline                              | `#D9CFC2`       | `oklch(1 0 0 / 12%)` | decorative         |
 
-- **Primary (Slate)** `#586577`; **Slate Dark** `#434E5C` is the button ground and link colour (it clears AA on small labels where plain Slate does not).
-- **Ink** `#2A2D31` for headings and body, **Ink Dark** `#1E2024` for the dark panel.
-- **Paper** `#FBFBFA` page, **Paper Soft** `#F3F4F2` alternating band, divider `#E6E7E5`, muted text `#5F6469`.
-- **Secondary** `#AAB0B8` and **tertiary** `#9DB0A6` are decorative, used sparingly.
-- **Dark theme:** ground `#17191C`, card `#202327`, primary lifted to `#8A96A6`, borders `oklch(1 0 0 / 12%)`.
-- `--tint-rgb` (88, 101, 119 in light, 138, 150, 166 in dark) feeds the polish-layer overlays; update it with the primary.
-- Every token must clear WCAG AA on every surface it appears on (4.5:1 body, 3:1 large text and UI). `src/lib/theme-tokens.test.ts` is the gate; fix the token, not the assertion.
-- [PLACEHOLDER: the project's palette, with role, hex and measured contrast for each.]
+Dusk is the only colour. It is used for links, the inquiry button and text selection, never as a section background.
 
 ## 3. Typography
 
-- **Display:** Libre Baskerville (400 and 700), a serif; fallback Georgia. **Body and UI:** Inter Variable. Mono is the system stack, and a script slot (`--font-script`) exists but is off by default.
-- **Scale:** `--text-h1` clamp(2.5rem, 6vw, 5rem), h2 clamp(2rem, 4vw, 3rem), h3 clamp(1.5rem, 2.5vw, 2rem), h4 clamp(1.25rem, 2vw, 1.5rem), h5 clamp(1.125rem, 1.5vw, 1.25rem), h6 1rem. Eyebrows are uppercase with `--tracking-eyebrow` 0.18em; hero headlines use `--leading-headline-tight` 1.05.
-- `apply-brand` does not install font packages: `npm install @fontsource/...` first (rule 12), then run `npm run build` (rule 13).
-- [PLACEHOLDER: the project's faces, weights, and where each is used.]
+- **Display: Instrument Serif** (400, roman and italic). Story titles and page heads run very large and tight (`leading 0.95`, slight negative tracking). Italic carries emphasis inside titles.
+- **Body and UI: Instrument Sans Variable.** Credits, captions and the nav set small, uppercase, tracked (0.14em) so they read like a magazine masthead.
+- Numbers in credits and EXIF use tabular figures.
 
 ## 4. Elevation
 
-Soft and light by default: marketing cards rest on a low-opacity shadow that deepens on hover (`.card-lift`, a 2px rise), and surfaces otherwise separate by the paper and soft-paper cadence and by the 2px brand stripe. Radius base is `0.5rem` (`--radius`, with `sm` to `4xl` derived from it). [PLACEHOLDER: the project's elevation philosophy.]
+Flat. Nothing floats except the lightbox and the phone menu. Depth comes from photos, not shadows.
 
 ## 5. Components
 
-- **Buttons (`CtaLink.astro`).** Two looks, `primary` (filled, Slate Dark ground, white label) and `secondary` (outlined), plus an `onDark` toggle for dark surfaces (a `class` override does not work, because Tailwind v4 utility order lets the link colour win). Generous padding, uppercase tracking, 44px minimum tap target. Note: the file's header comment still says "bronze" from the Reid Design fork; the live colours are Slate. Forks usually replace both variants with one family (rule 17).
-- **Header, footer, mobile drawer.** Server-rendered desktop nav (rule 4), a brand stripe, theme toggle, `MobileNav.astro` drawer (a native `<dialog>`), header compaction on scroll (transforms only).
-- **Touch targets.** Every link, button and form control is at least 44 by 44px at phone width (scan: `scripts/measure-tap-targets.mjs`). Footer column links and form controls carry real `min-h-[44px]`; standalone underlined links use the invisible `.hit-44` area so nothing visible moves (PORTS.md cards 82 and 83).
-- **Hero.** `Hero.astro` with `HeroBackground.astro` for image heroes and an entry stagger (`.hero-entry-stagger`).
-- **Sections.** The page-builder blocks under `src/components/sections/` render through `SectionRenderer.astro`; cards (service, journal, testimonial, project) share the stripe and card lift.
-- [PLACEHOLDER: the project's own component vocabulary and signature objects.]
+- **Focus image** (`FocusImage.astro`): every photo renders over its own LQIP blur and resolves to sharp as it loads and enters view. Reduced motion shows it sharp at once.
+- **Credit block** (`CreditBlock.astro`): a two-column definition list (role, then linked name), set like a magazine credit.
+- **Story index** (`StoryIndex.astro`): selected stories as a grid or a list, with a toggle; in list view, hovering a title reveals its cover.
+- **Published marquee** (`PublishedMarquee.astro`): the magazine names in a slow, pausable strip.
+- **Tear-sheet stack** (`TearSheetStack.astro`): publication tear sheets fanned like a stack of prints.
+- **Archive canvas** (`ArchiveCanvas.astro`): every photo on a draggable canvas; a plain grid on touch and under reduced motion.
+- **Buttons:** one family (rule 17). Text links with an underline that draws in; the single filled Dusk button is the inquiry.
 
 ## 6. Do's and Don'ts
 
-Motion defaults: interaction easing `cubic-bezier(0.16, 1, 0.3, 1)` at 440ms; `[data-reveal]` scroll reveals, a grid stagger, a hero entry stagger and an image curtain exist as opt-ins; scrolling is the browser's own (anchors glide under `no-preference`, the router resets the position on navigation; rule 5); reduced motion zeroes all of it. Each fork decides which of these to keep: Stone Steps and FBCM both pruned reveals.
+Motion: slow optical easing `cubic-bezier(0.22, 1, 0.36, 1)`, 700 to 1200ms for focus pulls, 300ms for UI. Scrolling stays native (rule 5). Every effect has a reduced-motion and a touch fallback, and hidden start states sit under `html.motion` so the page reads without JavaScript.
 
 **Do**
 
-- Replace this file, `PRODUCT.md`, `docs/brand/voice.md` and the neutral palette and fonts before a fork ships.
-- Measure every new colour pair in both themes before using it.
-- Use utilities backed by the tokens; never hardcode hex in components.
-- Run the fork-residue check (rule 11, PORTS.md card 44).
+- Let photos run full bleed or with generous margins; keep captions small.
+- Credit every person on a story, linked where they have a page.
+- Use placeholder images that read as placeholders until originals arrive.
 
 **Don't**
 
-- Don't ship the starter's Slate, Libre Baskerville and Inter as a client's identity.
-- Don't add a colour or surface field to a block.
-- Don't copy another client's design language into a fork.
+- Don't frame photos in cards, shadows or rounded corners.
+- Don't use a script font, blush pink, or wedding-template copy.
+- Don't distort photos with shaders beyond the hero's one focus effect.
 - Don't write an em-dash in public copy.

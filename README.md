@@ -1,120 +1,48 @@
-<a href="https://nixoncreativestudio.com/work/"><img src="https://raw.githubusercontent.com/NateJ45/NateJ45/main/assets/cards/ncs-astro-sanity-starter.png" alt="NCS Astro + Sanity Starter, the foundation under every Nixon Creative Studio site" width="100%"></a>
+# Erin Schmerr Photography
 
-<p align="center"><a href="https://nixoncreativestudio.com/work/">The sites built on it</a> · <a href="https://nixoncreativestudio.com/">Nixon Creative Studio</a></p>
+The portfolio site for Erin Schmerr, a fine-art portrait photographer in Cincinnati and West Chester, Ohio. A credits-first editorial portfolio: stories (shoots) with their credits and publications, an archive of every image, a press page, and a session inquiry.
 
-<div align="center">
+Built on **Astro 7 + Sanity v6 + Cloudflare Workers**, forked from Nixon Creative Studio's `ncs-astro-sanity-starter`. Content is edited in the Sanity Studio embedded at `/studio`.
 
-# NCS Astro + Sanity Starter
+Pre-launch address: https://erin-schmerr-photography.nathanjnixon86.workers.dev
 
-**A page-builder-first starter for small-business sites: Astro, Sanity and Cloudflare Workers, with editing on the page itself.**
-
-[![CI](https://github.com/NateJ45/ncs-astro-sanity-starter/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/NateJ45/ncs-astro-sanity-starter/actions/workflows/ci.yml)
-![Astro 7](https://img.shields.io/badge/Astro-7-BC52EE?logo=astro&logoColor=white)
-![Sanity v6](https://img.shields.io/badge/Sanity-v6-F36458?logo=sanity&logoColor=white)
-![Tailwind 4](https://img.shields.io/badge/Tailwind-4-06B6D4?logo=tailwindcss&logoColor=white)
-![React 19](https://img.shields.io/badge/React-19-149ECA?logo=react&logoColor=white)
-![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers-F38020?logo=cloudflare&logoColor=white)
-![License: PolyForm Strict](https://img.shields.io/badge/License-PolyForm%20Strict-lightgrey.svg)
-
-</div>
-
-## Why teams of one use it
-
-- **Edit on the page.** The Sanity Studio is embedded at `/studio` with a live draft preview: click the words you want to change, and add, duplicate, reorder or remove whole sections in place.
-- **Reskin in one command.** Palette, fonts, radius and a layout block (header, hero, density, card style) come from one brand config, so the next site does not look like the last one.
-- **Improvements travel.** `PORTS.md` is the registry of port cards that carry fixes to every site built from this starter (85 cards so far), and `scripts/sync-check.mjs` reports when a site's shared files have drifted.
-
-Quality gates in CI: Playwright on Chromium and a WebKit iPhone profile, axe accessibility checks, Lighthouse, and visual regression. A workflow for encrypted Sanity dataset backups ships in the template, and extra capabilities are opt-in modules (`modules/events`, `modules/resources`). Licensed under the [PolyForm Strict License 1.0.0](LICENSE); security reports go through [SECURITY.md](SECURITY.md).
-
----
-
-# NCS Astro + Sanity Starter
-
-A reusable, production-grade starter for small-business marketing sites on **Astro + Sanity + Cloudflare Workers**, by [Nixon Creative Studio](https://nixoncreativestudio.com). It is the foundation the studio's client sites are built on, so a polished, editor-friendly site is an afternoon of setup instead of a month of plumbing.
-
----
-
-## Why it exists
-
-Every client project kept re-solving the same problems: a theme system, SEO, image handling, forms, a typed CMS layer, an editor guide, and a way to reskin the brand quickly. So those got extracted from a finished client build into one well-documented starting point. What is left for each new project is the part that should be unique: its brand identity and its content.
-
-## What it is
-
-**Page-builder-first.** The core pages (home, about, services, process) render from Sanity `pageBuilder` arrays through a shared `SectionRenderer`, and any page created in the Studio gets its own `/[slug]` route automatically. Editors compose pages from a palette of sections; no code changes to add or rearrange a page.
-
-**Batteries included, opt-in.** The infrastructure is already standing: theme tokens with light and dark, SEO and structured data, an animation and polish layer, forms plumbing, image handling, a typed Sanity layer, and an in-Studio editor guide. Extra capabilities live in a **module library** you enable per project, so a site carries only what it uses.
-
-**Edit on the page, not in a form.** The Sanity Studio is embedded at `/studio` and ships with a live draft preview: an editor picks a page from a list, sees it exactly as visitors will, clicks the words they want to change, and adds, duplicates, reorders or removes whole sections right on the page. Unpublished drafts stream in as they type. The public site stays fully static; the preview is the only part that runs server-side.
-
-**A real adoption path.** A one-command brand reskin (palette, fonts, radius and, since PORTS card 72, a `layout` block that picks header, hero, section density and card style), a starter dataset seed, and a documented Foundation-vs-safe-to-edit taxonomy (which files need a planned session and which are safe to touch) mean a new build follows a runbook instead of guesswork. The gotchas that cost time in production are written down where you will hit them.
-
-## Provenance
-
-Extracted and genericized from a finished client build, and hardened across every project since. The lineage runs from a Reid Design build, through this starter, into the church and school sites the studio has shipped. Its default copy, palette and logo are labelled placeholders for any organisation (PORTS.md cards 44 and 207), so a fork that forgets one ships an obvious placeholder, not another business's words. It is not a minimal scaffold: it ships with the patterns and the documented landmines of real, live work.
-
----
-
-## Stack
-
-- **Astro 7** (static output plus a few SSR preview routes) + TypeScript strict mode
-- **Sanity v6** headless CMS, Studio embedded at `/studio` (schemas in `src/sanity/schemaTypes/`)
-- **Tailwind 4** via `@tailwindcss/vite` (brand tokens in `src/styles/globals.css`)
-- **React 19** islands for interactivity; Astro components for everything static
-- **shadcn/ui** primitives; **Cloudflare Workers** hosting via `npm run deploy`
+Until the client's own photos and copy arrive, every image and most text is a labelled placeholder.
 
 ## Getting started
 
-**To adopt this for a new client, read [`docs/bootstrap/NEW-PROJECT.md`](docs/bootstrap/NEW-PROJECT.md) first.** It is the single entry point: identity setup, design reskin, module enable, seed, and deploy, in order. Read [`CLAUDE.md`](./CLAUDE.md) before changing anything for the Foundation taxonomy and code style.
-
 ```sh
-npm install
-npm run dev
+npm ci
+npm run dev        # http://localhost:4321, Studio at /studio
 ```
 
-A fresh clone builds and runs with no Sanity project at all: pages render their built-in default sections. To turn on the CMS and the live preview you need three things, all covered in `docs/bootstrap/NEW-PROJECT.md`:
+A fresh clone builds with no Sanity project: pages render their built-in placeholder content. To use the CMS locally, copy `.env.example` to `.env` and `.dev.vars.example` to `.dev.vars` and fill in the project id and tokens (they are not in the repo).
 
-1. `PUBLIC_SANITY_PROJECT_ID` in `.env` (see `.env.example`).
-2. `SANITY_TOKEN` as a Worker runtime secret (see `.dev.vars.example`; `npx wrangler secret put SANITY_TOKEN` in production).
-3. Your origins on the Sanity project's CORS allow list: `npx sanity cors add http://localhost:4321 --credentials`, and the same for the deployed URL.
+## Content
 
-Without steps 2 and 3 the public site is unaffected; only the embedded Studio and the preview are off, and the preview routes say so instead of erroring.
+| In the Studio                                          | On the site                                           |
+| ------------------------------------------------------ | ----------------------------------------------------- |
+| Stories (cover, photos, credits, publication)          | `/stories/` and `/stories/<slug>/`                    |
+| Photos (alt, caption, credits, camera details)         | inside stories and on `/archive/`                     |
+| Publications (magazine, issue, date, link, tear sheet) | `/press/`, the home page marquee and tear-sheet stack |
+| Collaborators (name, role, link)                       | the credit block on each story                        |
+| Pages, About, FAQ, Process, Testimonials               | `/about/`, `/sessions/` and any page you add          |
 
-## Choosing a design direction
-
-Before a reskin, explore: `docs/templates/design-brief.md` (brief), `npm run references -- <urls>` (reference screenshots into `docs/references/`), the `/design-directions` command (3 or 4 static homepage mockups in `docs/design-directions/<date>-<slug>/`, screenshotted with `npm run directions:shoot`), then `/reskin`. Detail: OPERATIONS.md, "Design directions".
+A published change goes live after the site rebuilds (the Sanity publish webhook triggers it).
 
 ## Quality gates
 
-Every site in this family runs the same checks, and a fork inherits them (PORTS.md card 35).
-
 ```sh
 npm run check        # astro check + eslint
-npm run check:full   # typegen + build + unit tests
-npm run format:check # prettier
-npm run check:links  # linkinator over dist/client
-npm test             # Playwright: smoke, axe light, axe dark, reflow
-npx lhci autorun     # Lighthouse against the built dist/client
+npm run typegen      # after any schema change, before build
+npm run build
+npm run test:unit
+npm test             # Playwright: smoke, axe light and dark, reflow
 ```
 
-`ci.yml` runs the first five in two parallel jobs on every push and PR; `lighthouse.yml`
-runs the audit separately. Accessibility is a hard gate at 100, LCP 4500ms and CLS 0.1
-are hard, performance / SEO / best-practices are warnings. The Playwright suites run on
-Chromium and a real WebKit iPhone profile, because that is where a Tailwind focus ring
-on a `<select>` turns out to be invisible.
+`ci.yml` runs these on every push and PR; `lighthouse.yml` runs Lighthouse; `deploy.yml` ships `main` to Cloudflare. `sanity-backup.yml` makes a nightly encrypted dataset backup and `uptime.yml` checks the live pages hourly.
 
-`dependabot-lockfile.yml` runs only on Dependabot's PRs. When Dependabot's npm writes a
-lockfile that CI's npm rejects (`Missing: ... from lock file`), it rebuilds the lock with
-CI's npm, commits it to the PR and re-runs `ci.yml` (PORTS.md card 226).
-
-Two more workflows ship dormant, gated on repo secrets and variables that do not exist
-in the template: `sanity-backup.yml` (nightly encrypted dataset export: full on Mondays and manual runs, documents only other nights, kept 14 days) and `uptime.yml`
-(hourly 200 check on four key pages). Set the secrets and uncomment the schedule to turn
-either on. `publish-due.yml` works the same way.
-
----
-
-Maintained by [Nixon Creative Studio](https://nixoncreativestudio.com).
+Design context: `PRODUCT.md` and `DESIGN.md`. Agent orientation: `CLAUDE.md`. Operations: `OPERATIONS.md`.
 
 ## License
 
-Copyright 2026 Nathan Nixon / Nixon Creative Studio. Released under the [PolyForm Strict License 1.0.0](LICENSE): you may read and use it for noncommercial purposes, but not redistribute it, change it or build on it.
+Copyright 2026 Nathan Nixon / Nixon Creative Studio. The starter code is released under the [PolyForm Strict License 1.0.0](LICENSE). Photographs shown on the site belong to their photographer and are not covered by that licence.
