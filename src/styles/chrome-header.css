@@ -1,0 +1,485 @@
+/* Erin Schmerr Photography: the header and the phone menu, "the boutique bar" and
+   "the boutique drop" (2026-11-20; DESIGN.md, Components). Replaces the darkroom
+   film-leader header and contact-sheet menu. Loaded after erin.css (BaseLayout).
+   Markup: src/components/Header.astro and MobileNav.astro.
+
+   Quiet luxury on warm paper: the brand faces only, square corners, hairlines,
+   no shadows, one outlined button family. Every effect has a reduced-motion
+   fallback, and nothing in the first viewport starts hidden (card 213): the
+   only hidden start states are inside the closed menu dialog. */
+
+/* ---- Header: the bar ------------------------------------------------------- */
+.bq-header {
+  /* Compaction (globals.css, card 157): a gentle tighten, not the starter's. */
+  --hdr-tighten: 0.75rem;
+}
+/* Flat: when the page has moved, a hairline under the bar instead of a shadow. */
+.site-header.bq-header[data-scrolled] {
+  box-shadow: 0 1px 0 var(--border);
+}
+
+/* One left edge (rule 17): the row uses the page gutter, like every heading below. */
+.bq-header__row {
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.5rem var(--spacing-m);
+}
+@media (min-width: 1024px) {
+  .bq-header__row {
+    padding-block: 1rem;
+  }
+}
+
+.bq-header__brand {
+  display: flex;
+  align-items: center;
+  gap: clamp(1.25rem, 3vw, 3rem);
+  min-width: 0;
+}
+.bq-header__logo {
+  transition: opacity 300ms var(--ease-focus);
+}
+.bq-header__logo:hover {
+  opacity: 0.7;
+}
+.bq-header .site-header__logo img {
+  height: auto;
+  width: 100%;
+}
+@media (max-width: 1023.98px) {
+  .bq-header .site-header__logo {
+    max-width: min(15rem, calc(100vw - 9.5rem));
+  }
+}
+@media (min-width: 1024px) {
+  .bq-header .site-header__logo img {
+    width: auto;
+    height: clamp(1.375rem, 1.9vw, 1.75rem);
+  }
+}
+
+/* The place block: two small serif lines beside the wordmark (M. Fisher's address). */
+.bq-place {
+  display: none;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 0.9375rem;
+  line-height: 1.2;
+  color: var(--foreground);
+  white-space: nowrap;
+}
+.bq-place span {
+  display: block;
+}
+@media (min-width: 768px) {
+  .bq-place {
+    display: block;
+  }
+}
+/* Between 1024 and 1180 the nav needs the room. */
+@media (min-width: 1024px) and (max-width: 1179.98px) {
+  .bq-place {
+    display: none;
+  }
+}
+
+/* The nav: small Instrument Sans, set plainly. */
+.bq-header__nav {
+  gap: clamp(1rem, 1.8vw, 1.75rem);
+}
+.bq-nav {
+  display: flex;
+  align-items: center;
+  gap: clamp(1rem, 1.9vw, 1.875rem);
+}
+.bq-nav__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  min-height: 44px;
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  color: var(--foreground);
+  text-decoration: none;
+  cursor: pointer;
+  list-style: none;
+  transition: opacity 300ms var(--ease-focus);
+}
+.bq-nav__link::-webkit-details-marker {
+  display: none;
+}
+/* The page you are on: a hairline under its name. */
+.bq-nav__link[aria-current='page'] {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.45em;
+}
+/* Dim the others (after Quadplex 80): one link hovered or focused, the rest step back. */
+@media (hover: hover) {
+  .bq-header__nav:has(.bq-nav__link:hover, .bq-nav__link:focus-visible)
+    .bq-nav__link:not(:hover, :focus-visible) {
+    opacity: 0.38;
+  }
+}
+.bq-nav__menu {
+  display: none;
+  margin-top: 0.25rem;
+  padding: 0.5rem 0;
+  background: var(--background);
+  border: 1px solid var(--border);
+}
+.site-nav__group[open] > .bq-nav__menu {
+  display: grid;
+}
+.bq-nav__sub {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding-inline: 1rem;
+  font-size: 0.8125rem;
+  color: var(--foreground);
+  text-decoration: none;
+}
+.bq-nav__sub:hover,
+.bq-nav__sub[aria-current='page'] {
+  text-decoration: underline;
+  text-underline-offset: 0.35em;
+}
+
+/* Buttons: one family (rule 17). Outlined, square, small tracked capitals; the hover
+   fills with ink. "Get in touch" in the bar and the menu, "Menu" and "Close". */
+.bq-button,
+.bq-menu-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding-inline: 1.25rem;
+  border: 1px solid var(--foreground);
+  border-radius: 0;
+  background: transparent;
+  color: var(--foreground);
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 300ms var(--ease-focus),
+    color 300ms var(--ease-focus);
+}
+.bq-menu-button {
+  min-width: 44px;
+  padding-inline: 0.95rem;
+}
+@media (hover: hover) {
+  .bq-button:hover,
+  .bq-menu-button:hover {
+    background: var(--foreground);
+    color: var(--background);
+  }
+}
+.bq-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  color: var(--foreground);
+  transition: opacity 300ms var(--ease-focus);
+}
+.bq-icon-button:hover {
+  opacity: 0.6;
+}
+.bq-nav__link:focus-visible,
+.bq-nav__sub:focus-visible,
+.bq-button:focus-visible,
+.bq-menu-button:focus-visible,
+.bq-icon-button:focus-visible,
+.bq-header__logo:focus-visible,
+.bq-line__link:focus-visible,
+.bq-drop__small:focus-visible,
+.bq-drop__contact a:focus-visible {
+  outline: 1px solid var(--foreground);
+  outline-offset: 4px;
+}
+
+.bq-header__phone {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+@media (min-width: 1024px) {
+  .bq-header__phone {
+    display: none;
+  }
+}
+
+/* ---- Phone menu: the drop ------------------------------------------------- */
+/* The dialog covers the screen (transparent); the paper panel drops from the top and
+   stops short, so a strip of the page stays visible, dimmed, below it. A tap on that
+   strip lands on the dialog itself and closes the menu (MobileNav.astro). */
+.mobile-menu.bq-drop {
+  inset: 0;
+  width: 100%;
+  height: 100dvh;
+}
+.bq-drop::backdrop {
+  background: rgb(31 27 24 / 0.5);
+}
+.mobile-menu.bq-drop .mobile-menu__panel {
+  display: flex;
+  flex-direction: column;
+  height: calc(100dvh - 4.5rem);
+  overflow-x: hidden;
+  overflow-y: auto;
+  background: var(--background);
+  color: var(--foreground);
+  box-shadow: none;
+}
+.bq-drop__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.5rem var(--spacing-m);
+}
+.bq-drop__title,
+.bq-drop__group-label {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+/* The lines and one photo frame (the Exo Ape detail). On a phone the frame sits under
+   the lines, set off to the right like a print on a page; from 560px it stands beside
+   them. */
+.bq-drop__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  gap: 1.5rem;
+  padding: clamp(0.75rem, 3vh, 2rem) var(--spacing-m) 1.5rem;
+}
+@media (min-width: 560px) {
+  .bq-drop__body {
+    grid-template-columns: minmax(0, 1fr) clamp(10rem, 30vw, 15rem);
+    align-items: start;
+  }
+}
+.bq-drop__group + .bq-drop__group {
+  margin-top: 1.25rem;
+}
+.bq-drop__group-label {
+  padding-bottom: 0.25rem;
+}
+.bq-drop__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.bq-line__link {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  min-height: 44px;
+  color: var(--foreground);
+  text-decoration: none;
+}
+.bq-line__num {
+  flex: none;
+  min-width: 1.9rem;
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted-foreground);
+}
+/* Each line is its own clip, so the words can roll up through it. */
+.bq-line__clip {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  padding-bottom: 0.06em;
+}
+.bq-line__label {
+  display: block;
+  font-family: var(--font-display);
+  font-size: clamp(2.375rem, 12vw, 4rem);
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  overflow-wrap: anywhere;
+}
+.bq-line__link[aria-current='page'] .bq-line__label {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.12em;
+}
+/* Dim the others here too, for a mouse on a tablet. */
+@media (hover: hover) {
+  .bq-line__label {
+    transition: opacity 300ms var(--ease-focus);
+  }
+  .bq-drop__nav:has(.bq-line__link:hover) .bq-line__link:not(:hover) .bq-line__label {
+    opacity: 0.38;
+  }
+}
+
+/* The photo frame: every line's photo stacked, the shown one faded in. */
+.bq-frame {
+  position: relative;
+  justify-self: end;
+  width: min(52%, 13rem);
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: var(--muted);
+}
+@media (min-width: 560px) {
+  .bq-frame {
+    position: sticky;
+    top: 0;
+    width: 100%;
+  }
+}
+.bq-frame__photo {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 900ms var(--ease-focus);
+}
+.bq-frame__photo.is-shown {
+  opacity: 1;
+}
+.bq-frame__photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* Tonal stand-ins for a line with no photo yet (placeholders read as placeholders). */
+.bq-tone--dusk {
+  background: linear-gradient(160deg, #8c5d51, #3a2420);
+}
+.bq-tone--sand {
+  background: linear-gradient(160deg, #d9c8b2, #8f7a63);
+}
+.bq-tone--ink {
+  background: linear-gradient(160deg, #4a423b, #15120f);
+}
+.bq-tone--paper {
+  background: linear-gradient(160deg, #efe7dc, #bfb2a2);
+}
+
+/* The foot: the inquiry, then how to reach her. */
+.bq-drop__foot {
+  display: grid;
+  gap: 0.25rem;
+  margin-top: auto;
+  padding: 1rem var(--spacing-m) 1.25rem;
+  border-top: 1px solid var(--border);
+}
+.bq-drop__cta {
+  justify-self: start;
+  margin-bottom: 0.5rem;
+}
+.bq-drop__small,
+.bq-drop__contact a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 44px;
+  font-size: 0.875rem;
+  color: var(--foreground);
+  text-decoration: none;
+}
+.bq-drop__small {
+  justify-self: start;
+}
+.bq-drop__contact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.25rem;
+}
+.bq-drop__contact a {
+  overflow-wrap: anywhere;
+}
+
+/* ---- The drop's motion (after Vero) --------------------------------------- */
+/* Open: the panel unclips from the top in 500ms; the lines roll up, 50ms apart.
+   Close (MobileNav.astro adds .is-leaving): the clip runs back up in 400ms. */
+@media (prefers-reduced-motion: no-preference) {
+  .mobile-menu.bq-drop[open] .mobile-menu__panel {
+    animation: bq-drop-down 500ms cubic-bezier(0.25, 0.1, 0.25, 1) both;
+  }
+  .mobile-menu.bq-drop.is-leaving .mobile-menu__panel {
+    animation: bq-drop-up 400ms cubic-bezier(0.25, 0.1, 0.25, 1) both;
+  }
+  .bq-drop[open] .bq-line__label {
+    animation: bq-roll 1000ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: calc(150ms + var(--i, 0) * 50ms);
+  }
+  .bq-drop[open] .bq-line__num,
+  .bq-drop[open] .bq-frame,
+  .bq-drop[open] .bq-drop__foot {
+    animation: bq-rise 900ms cubic-bezier(0.22, 1, 0.36, 1) 300ms both;
+  }
+}
+.bq-drop[open]::backdrop {
+  animation: bq-fade 300ms ease-out both;
+}
+.bq-drop.is-leaving::backdrop {
+  animation: bq-fade 400ms ease-in reverse both;
+}
+/* Reduced motion: a plain fade, nothing rolls. */
+@media (prefers-reduced-motion: reduce) {
+  .mobile-menu.bq-drop[open] .mobile-menu__panel {
+    animation: bq-fade 200ms ease-out both;
+  }
+}
+@keyframes bq-drop-down {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes bq-drop-up {
+  from {
+    clip-path: inset(0 0 0 0);
+  }
+  to {
+    clip-path: inset(0 0 100% 0);
+  }
+}
+@keyframes bq-roll {
+  from {
+    transform: translateY(105%);
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes bq-rise {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes bq-fade {
+  from {
+    opacity: 0;
+  }
+}

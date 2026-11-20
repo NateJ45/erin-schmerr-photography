@@ -1,14 +1,18 @@
 ---
 // Foundation, edit with care
-// The phone menu: "the contact sheet" (DESIGN.md, Components; 2026-11-18; PORTS.md card 157
-// for the dialog machinery).
+// The phone menu: "the boutique drop" (DESIGN.md, Components; 2026-11-20; PORTS.md card 157
+// for the dialog machinery). Replaces the darkroom contact sheet of 2026-11-18.
 //
-// The "Menu" button opens a full-screen native <dialog>: her featured story covers laid out
-// as small frames on a black film ground, sprocket holes down both edges and a frame number
-// under each, with every page's name set large in Instrument Serif on a paper chip over its
-// frame. The page you are on is ringed in grease pencil. As the sheet opens the frames
-// develop one after another (blur to sharp, 60ms apart; erin-motion.css); reduced motion
-// shows them developed at once. "Book a session" sits under the sheet.
+// After Vero, with one detail from Exo Ape. The "Menu" button opens a native <dialog>: a
+// paper panel drops from the top (a clip reveal, 500ms) and covers most of the screen, while
+// a strip of the page stays visible, dimmed, below it; a tap on that strip closes the menu.
+// The pages are large Instrument Serif lines numbered I., II., III. that roll up through
+// clipped lines one after another as it opens (50ms apart). Beside them sits one photo frame
+// (the Exo Ape detail): touching or focusing a link cross-fades it to that page's photo (a
+// picture the site already shows for it, else a featured story cover), and while nothing is
+// touched it cycles gently through them. The page you are on is underlined. At the foot:
+// "Get in touch", email, phone and Instagram. Reduced motion: the panel and the photo just
+// fade, nothing rolls or cycles.
 //
 // The browser does the dialog work: showModal() gives the focus trap, Escape, the inert page
 // behind and focus back on the button. The "Close" button sits where "Menu" was. The page
@@ -16,18 +20,18 @@
 // With JavaScript off the "Menu" button is a real link to the footer (#site-footer), whose
 // page list reaches every page, so nothing is hidden behind a script.
 //
-// With Site settings > Phone menu groups filled in (card 191), the frames come in labelled
-// groups: each group's name is an h2 that labels its list. No groups = one sheet of frames.
+// With Site settings > Phone menu groups filled in (card 191), the lines come in labelled
+// groups: each group's name is an h2 that labels its list. No groups = one list.
 //
 // Images: lazy, inside a closed dialog, so a page that never opens the menu fetches none.
+// Styles: src/styles/chrome-header.css.
 
-import { Mail, Phone, Search } from 'lucide-react';
+import { Phone } from 'lucide-react';
 import { IconBrandInstagram, IconBrandFacebook } from '@tabler/icons-react';
 import { telHref } from '@/lib/phone';
 import type { NavItem } from '@/lib/siteSettings';
 import type { PhoneMenuGroup } from '@/lib/wayfinding';
-import GreasePencil from './darkroom/GreasePencil.astro';
-import { frameNumber, type ChromePrint } from './darkroom/chrome-data';
+import type { ChromePrint } from './darkroom/chrome-data';
 
 interface Props {
   links: NavItem[];
@@ -38,7 +42,7 @@ interface Props {
     socialInstagram?: string;
     socialFacebook?: string;
   } | null;
-  /** Kept for callers; the contact sheet has no logo at its foot. */
+  /** Kept for callers; the menu draws no logo. */
   brandName?: string;
   /** The menu's primary button: the header's own button. */
   cta?: { show: boolean; label: string; href: string };
@@ -46,11 +50,11 @@ interface Props {
   secondary?: { label: string; href: string } | null;
   /** Visitor search is on (card 126). */
   search?: boolean;
-  /** Card 191: Site settings > Phone menu groups, resolved. Empty = one sheet. */
+  /** Card 191: Site settings > Phone menu groups, resolved. Empty = one list. */
   groups?: PhoneMenuGroup[];
-  /** The page being viewed (publicPath), so its frame is ringed. */
+  /** The page being viewed (publicPath), so its line is marked. */
   current?: string;
-  /** The featured story covers (chrome-data.ts), cycled across the frames. */
+  /** The featured story covers (chrome-data.ts), cycled through the photo frame. */
   frames?: ChromePrint[];
   /** A page's own picture, where the site already shows one. */
   pagePrints?: Record<string, ChromePrint>;
@@ -59,7 +63,7 @@ interface Props {
 const {
   links,
   siteSettings,
-  cta = { show: true, label: 'Book a session', href: '/contact/' },
+  cta = { show: true, label: 'Get in touch', href: '/contact/' },
   secondary = null,
   search = false,
   groups = [],
@@ -72,19 +76,44 @@ const grouped = groups.length > 0;
 const isCurrent = (href: string) =>
   !!current && (href === '/' ? current === '/' : current.startsWith(href.replace(/\/?$/, '/')));
 
-// Dropdown groups in the top menu become frames of their own on the sheet.
+// Dropdown groups in the top menu become lines of their own here.
 const flat = links.flatMap((item) =>
   item.kind === 'flat' ? [{ label: item.label, href: item.href }] : item.items,
 );
-const sheets = grouped
+const lists = grouped
   ? groups.map((g) => ({ title: g.title, links: g.links }))
   : [{ title: '', links: flat }];
 
-const tones: ChromePrint['tone'][] = ['dusk', 'sand', 'ink', 'paper'];
+/** I., II., III. ... the line numbers. */
+function roman(n: number): string {
+  const table: [number, string][] = [
+    [10, 'X'],
+    [9, 'IX'],
+    [5, 'V'],
+    [4, 'IV'],
+    [1, 'I'],
+  ];
+  let out = '';
+  for (const [v, s] of table) {
+    while (n >= v) {
+      out += s;
+      n -= v;
+    }
+  }
+  return out;
+}
+
+// One photo per line: the page's own picture, else the covers in turn.
+const tones: ChromePrint['tone'][] = ['sand', 'dusk', 'paper', 'ink'];
 const printAt = (href: string, i: number): ChromePrint =>
   pagePrints[href] ?? frames[i % Math.max(1, frames.length)] ?? { tone: tones[i % 4] };
+const allLinks = lists.flatMap((l) => l.links);
+const prints = allLinks.map((link, i) => printAt(link.href, i));
+const startAt = Math.max(
+  0,
+  allLinks.findIndex((l) => isCurrent(l.href)),
+);
 
-const tagline = siteSettings?.tagline;
 const email = siteSettings?.email;
 const phone = siteSettings?.phone;
 const ig = siteSettings?.socialInstagram;
@@ -94,143 +123,165 @@ let n = 0;
 
 <div class="site-header__menu">
   {/* A link until the script below takes it over: with JavaScript off it jumps to the footer. */}
-  <a href="#site-footer" aria-controls="site-menu" data-menu-open class="dk-menu-button">
+  <a href="#site-footer" aria-controls="site-menu" data-menu-open class="bq-menu-button">
     Menu
   </a>
 
   <dialog
     id="site-menu"
-    class={grouped ? 'mobile-menu dk-sheet mobile-menu--groups' : 'mobile-menu dk-sheet'}
+    class={grouped ? 'mobile-menu bq-drop mobile-menu--groups' : 'mobile-menu bq-drop'}
     aria-labelledby="site-menu-title"
     data-menu
   >
-    <div class="mobile-menu__panel dk-sheet__panel">
-      <div class="dk-sheet__top">
-        <p id="site-menu-title" class="dk-sheet__title">
+    <div class="mobile-menu__panel bq-drop__panel">
+      <div class="bq-drop__top">
+        <p id="site-menu-title" class="bq-drop__title">
           Menu
         </p>
-        <span class="dk-sheet__edge" aria-hidden="true">
-          Tate 400 · contact sheet
-        </span>
-        <button type="button" class="dk-menu-button dk-menu-button--close" data-menu-close>
+        <button type="button" class="bq-menu-button" data-menu-close>
           Close
         </button>
       </div>
 
-      <nav class="dk-sheet__nav" aria-label="Primary mobile">
-        {sheets.map((sheet, gi) => (
-          <div class={grouped ? 'mobile-menu__group dk-sheet__group' : 'dk-sheet__group'}>
-            {sheet.title && (
-              <h2 id={`site-menu-group-${gi}`} class="dk-sheet__group-label">
-                {sheet.title}
-              </h2>
-            )}
-            <ul
-              class="dk-sheet__frames"
-              aria-labelledby={sheet.title ? `site-menu-group-${gi}` : undefined}
-            >
-              {sheet.links.map((link) => {
-                const i = n++;
-                const p = printAt(link.href, i);
-                const here = isCurrent(link.href);
-                return (
-                  <li class="dk-frame" style={`--i: ${i}`}>
-                    <a
-                      href={link.href}
-                      class="dk-frame__link"
-                      aria-current={here ? 'page' : undefined}
-                    >
-                      <span class={`dk-frame__photo dk-tone--${p.tone}`} aria-hidden="true">
-                        {p.src && (
-                          <img
-                            src={p.src}
-                            srcset={p.srcset}
-                            alt=""
-                            width="160"
-                            height="200"
-                            loading="lazy"
-                            decoding="async"
-                          />
-                        )}
-                      </span>
-                      <span class="dk-frame__chip">
-                        <span class="dk-frame__label">{link.label}</span>
-                        {here && <GreasePencil />}
-                      </span>
-                      <span class="dk-frame__num" aria-hidden="true">
-                        {frameNumber(i)}
-                        <span>{'▸'}</span>
-                      </span>
-                    </a>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        ))}
-      </nav>
+      <div class="bq-drop__body">
+        <nav class="bq-drop__nav" aria-label="Primary mobile">
+          {lists.map((list, gi) => (
+            <div class={grouped ? 'mobile-menu__group bq-drop__group' : 'bq-drop__group'}>
+              {list.title && (
+                <h2 id={`site-menu-group-${gi}`} class="bq-drop__group-label">
+                  {list.title}
+                </h2>
+              )}
+              <ul
+                class="bq-drop__list"
+                aria-labelledby={list.title ? `site-menu-group-${gi}` : undefined}
+              >
+                {list.links.map((link) => {
+                  const i = n++;
+                  return (
+                    <li class="bq-line" style={`--i: ${i}`}>
+                      <a
+                        href={link.href}
+                        class="bq-line__link"
+                        data-frame={i}
+                        aria-current={isCurrent(link.href) ? 'page' : undefined}
+                      >
+                        <span class="bq-line__num" aria-hidden="true">
+                          {roman(i + 1)}.
+                        </span>
+                        <span class="bq-line__clip">
+                          <span class="bq-line__label">{link.label}</span>
+                        </span>
+                      </a>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          ))}
+        </nav>
 
-      <div class="dk-sheet__actions">
+        {/* The one photo frame (decorative): every line's photo stacked, one shown. */}
+        <div class="bq-frame" aria-hidden="true" data-frames>
+          {prints.map((p, i) => (
+            <span
+              class:list={['bq-frame__photo', `bq-tone--${p.tone}`, { 'is-shown': i === startAt }]}
+            >
+              {p.src && (
+                <img
+                  src={p.src}
+                  srcset={p.srcset}
+                  alt=""
+                  width="160"
+                  height="200"
+                  loading="lazy"
+                  decoding="async"
+                />
+              )}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <div class="bq-drop__foot">
         {cta.show && (
-          <a href={cta.href} class="dk-button dk-button--safelight dk-sheet__cta">
-            <span class="dk-safelight" aria-hidden="true"></span>
+          <a href={cta.href} class="bq-button bq-drop__cta">
             {cta.label}
           </a>
         )}
         {secondary && (
-          <a href={secondary.href} class="dk-button dk-button--paper dk-sheet__cta">
+          <a href={secondary.href} class="bq-drop__small">
             {secondary.label}
           </a>
         )}
         {/* Visitor search (card 126). A real link to /search/, so it works without the script. */}
         {search && (
-          <a href="/search/" data-menu-search class="dk-sheet__search">
-            <Search size={18} aria-hidden="true" />
+          <a href="/search/" data-menu-search class="bq-drop__small">
             Search the site
           </a>
         )}
+        {(email || phone || ig || fb) && (
+          <div class="bq-drop__contact">
+            {email && <a href={`mailto:${email}`}>{email}</a>}
+            {phone && (
+              <a href={telHref(phone)}>
+                <Phone size={14} aria-hidden="true" />
+                {phone}
+              </a>
+            )}
+            {ig && (
+              <a href={ig} target="_blank" rel="noopener noreferrer">
+                <IconBrandInstagram size={16} stroke={1.5} aria-hidden="true" />
+                Instagram
+              </a>
+            )}
+            {fb && (
+              <a href={fb} target="_blank" rel="noopener noreferrer">
+                <IconBrandFacebook size={16} stroke={1.5} aria-hidden="true" />
+                Facebook
+              </a>
+            )}
+          </div>
+        )}
       </div>
-
-      {tagline && <p class="dk-sheet__tagline">{tagline}</p>}
-
-      {(email || phone || ig || fb) && (
-        <div class="dk-sheet__contact">
-          {email && (
-            <a href={`mailto:${email}`}>
-              <Mail size={16} aria-hidden="true" />
-              {email}
-            </a>
-          )}
-          {phone && (
-            <a href={telHref(phone)}>
-              <Phone size={16} aria-hidden="true" />
-              {phone}
-            </a>
-          )}
-          {ig && (
-            <a href={ig} target="_blank" rel="noopener noreferrer">
-              <IconBrandInstagram size={18} stroke={1.5} aria-hidden="true" />
-              Instagram
-            </a>
-          )}
-          {fb && (
-            <a href={fb} target="_blank" rel="noopener noreferrer">
-              <IconBrandFacebook size={18} stroke={1.5} aria-hidden="true" />
-              Facebook
-            </a>
-          )}
-        </div>
-      )}
     </div>
   </dialog>
 </div>
 
 <script>
   // Open and close the menu. The focus trap, Escape, the inert page behind and focus back on the
-  // hamburger are the native <dialog>'s own. The header is swapped on every View Transitions
+  // button are the native <dialog>'s own. The header is swapped on every View Transitions
   // navigation, so the listeners are delegated from the document and bound once.
   const menu = () => document.querySelector<HTMLDialogElement>('dialog[data-menu]');
   const trigger = () => document.querySelector<HTMLAnchorElement>('[data-menu-open]');
+  const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---- The photo frame: cross-fade to the touched line's photo, else cycle gently. ----
+  const CYCLE_MS = 3600;
+  let cycle: number | undefined;
+  let shown = 0;
+
+  function show(i: number) {
+    const photos = menu()?.querySelectorAll<HTMLElement>('.bq-frame__photo');
+    if (!photos?.length) return;
+    shown = ((i % photos.length) + photos.length) % photos.length;
+    photos.forEach((p, k) => p.classList.toggle('is-shown', k === shown));
+  }
+  function stopCycle() {
+    if (cycle) window.clearInterval(cycle);
+    cycle = undefined;
+  }
+  function startCycle() {
+    stopCycle();
+    if (reduced()) return;
+    cycle = window.setInterval(() => show(shown + 1), CYCLE_MS);
+  }
+  function pick(target: EventTarget | null) {
+    const link = (target as Element | null)?.closest?.<HTMLElement>('[data-frame]');
+    if (!link || !menu()?.contains(link)) return;
+    stopCycle();
+    show(Number(link.dataset.frame));
+  }
 
   // The hamburger is a link to the footer until now: make it the button it acts as.
   function upgrade() {
@@ -245,13 +296,36 @@ let n = 0;
   function open() {
     const d = menu();
     if (!d || d.open) return;
+    d.classList.remove('is-leaving');
+    const start = d.querySelector('.bq-frame__photo.is-shown');
+    shown = start ? Array.from(start.parentElement!.children).indexOf(start) : 0;
     d.showModal();
     trigger()?.setAttribute('aria-expanded', 'true');
+    startCycle();
   }
 
-  function close() {
+  // Closing plays the drop in reverse (400ms) before the dialog really closes; reduced motion
+  // and a navigation close at once.
+  function close(now = false) {
     const d = menu();
-    if (d?.open) d.close();
+    stopCycle();
+    if (!d?.open) return;
+    if (now || reduced() || d.classList.contains('is-leaving')) {
+      d.classList.remove('is-leaving');
+      d.close();
+      return;
+    }
+    d.classList.add('is-leaving');
+    const panel = d.querySelector('.bq-drop__panel');
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      d.classList.remove('is-leaving');
+      if (d.open) d.close();
+    };
+    panel?.addEventListener('animationend', finish, { once: true });
+    window.setTimeout(finish, 500);
   }
 
   const w = window as typeof window & { __menuBound?: boolean };
@@ -273,7 +347,7 @@ let n = 0;
         }
         const d = menu();
         if (!d?.open || !d.contains(target)) return;
-        // The backdrop: a click outside the panel lands on the dialog element itself.
+        // The strip of page below the panel: a click there lands on the dialog element itself.
         if (target === d || target.closest('[data-menu-close]')) {
           close();
           return;
@@ -287,21 +361,40 @@ let n = 0;
           // The search dialog's own click listener would read this click as "a link inside the
           // open dialog" and shut it again the moment it opened.
           e.stopImmediatePropagation();
-          close();
+          close(true);
           window.dispatchEvent(new CustomEvent('site-search:open'));
           return;
         }
         // Any other link closes the menu as it is followed.
-        if (target.closest('a')) close();
+        if (target.closest('a')) close(true);
       },
       true,
     );
 
-    // Keep the trigger's state right whichever way the menu closed (X, Escape, backdrop, a link).
+    // Escape: play the reverse drop too (the browser would otherwise close at once).
+    document.addEventListener(
+      'cancel',
+      (e) => {
+        if (!(e.target as Element)?.matches?.('dialog[data-menu]')) return;
+        e.preventDefault();
+        close();
+      },
+      true,
+    );
+
+    // The photo follows the line a finger or the keyboard is on.
+    document.addEventListener('pointerover', (e) => pick(e.target), { passive: true });
+    document.addEventListener('touchstart', (e) => pick(e.target), { passive: true });
+    document.addEventListener('focusin', (e) => {
+      if ((e.target as Element)?.matches?.(':focus-visible')) pick(e.target);
+    });
+
+    // Keep the trigger's state right whichever way the menu closed (Close, Escape, the strip, a link).
     document.addEventListener(
       'close',
       (e) => {
         if ((e.target as Element)?.matches?.('dialog[data-menu]')) {
+          stopCycle();
           trigger()?.setAttribute('aria-expanded', 'false');
         }
       },
@@ -310,7 +403,7 @@ let n = 0;
 
     // Close as a View Transitions navigation starts (Back or Forward too), so the page behind is
     // not left inert under the swap.
-    document.addEventListener('astro:before-preparation', close);
+    document.addEventListener('astro:before-preparation', () => close(true));
     document.addEventListener('astro:page-load', upgrade);
   }
   upgrade();
