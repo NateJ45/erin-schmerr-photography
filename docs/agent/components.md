@@ -107,7 +107,7 @@ The Portable Text renderer (`JournalPortableText.tsx`) detects image orientation
 - `SectionDivider.astro` -- brand ornament between sections that share a background color (variants: `ornament` (default) / `line` / `dots`).
 - `JournalPortableText.tsx` -- journal body renderer with custom block types (pullQuote, beforeAfter, sourceCard, tipCallout, imageGallery, divider, videoEmbed) + a `sourcedFrom` annotation mark for inline vendor mentions. Adds the `.prose-drop-cap` float cap to the first paragraph and renders blockquotes as `.prose-blockquote`.
 - `FaqAccordion.tsx` -- shadcn Accordion wrapper. **Note:** `src/components/ui/accordion.tsx` is customized -- the original `h-(--radix-accordion-content-height)` lock on the inner content div was removed (caused a big empty-space bug after expand), and the trigger no longer carries `text-sm font-medium` so consumer typography wins the cascade. If you reinstall via `npx shadcn add` it will revert; reapply both changes.
-- `ThemeToggle.tsx`, `BackToTop.tsx`, `SanityImage.astro`, `CtaLink.astro`.
+- `ThemeToggle.tsx`, `BackToTop.tsx` (not rendered since 2026-11-20; the footer's small print ends with a "Back to top" link), `SanityImage.astro`, `CtaLink.astro` (this site's square button family since 2026-11-20, `src/styles/cta.css`).
 
 **Sanity Studio components (in `src/sanity/components/`):**
 

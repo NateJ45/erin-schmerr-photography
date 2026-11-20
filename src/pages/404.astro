@@ -1,56 +1,74 @@
 ---
-import { withTrailingSlash } from '@/lib/href';
 // Safe to edit by hand
-// Custom 404. Warm, on-brand, clear paths back.
+// =============================================================================
+// 404, "Lost" (2026-11-20, replaced the starter's two-column page)
+// =============================================================================
+// A magazine spread for a missing page. "Lost" is set across the whole column
+// in Bodoni Moda, cut out of the paper so one of her photographs shows through
+// the letters (background-clip: text, never a blend mode). Under an ink rule:
+// the real heading and a line in her voice, then the ways back set like a
+// contents page (I. The stories, II. Book a session, III. The home page), and
+// a small credit naming the photograph in the letters.
 //
-// With site search on (site.search.enabled, card 126), a search box comes
-// first: a plain GET form to /search/?q=..., so it works without JavaScript.
-// Under it, always, the site's suggested pages (site.search.suggestions), so a
-// site with search off still offers somewhere useful to go (card 158).
+// The photo: the 404 document's own image (Studio, "Page not found"), else the
+// first featured story's cover; with no real photo the letters are ink. The
+// knockout word is decorative (aria-hidden, data-contrast-decorative) and prints
+// as plain ink. With motion allowed it racks from soft to sharp once on load.
 //
-// Layout: two-column on desktop (text + photograph), stacked on mobile. The
-// photo is sourced from Sanity and can be replaced with any photo.
-// Asset is referenced by _ref so it pipes through the same SanityImage
-// CDN/transform pipeline as every other photo on the site.
-
+// Words: the 404 document's headline and line when someone has written their
+// own; the starter's seeded words ("That page wandered off.") count as none.
+// The ways back are fixed routes, not the document's button fields, because
+// they are this site's own pages. With site search on, a search field comes
+// first (a plain GET form to /search/, so it works without JavaScript).
+// =============================================================================
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { getNotFoundPage, getSiteSettings } from '@/lib/queries';
-import SanityImage from '@/components/SanityImage.astro';
+import { getFeaturedStories } from '@/lib/storyQueries';
+import { urlFor } from '@/lib/sanity';
 import { site } from '@/data/site';
+import '@/styles/portfolio.css';
+import '@/styles/page-quiet.css';
 
-const [notFoundPage, siteSettings] = await Promise.all([getNotFoundPage(), getSiteSettings()]);
+const [notFoundPage, siteSettings, featured] = await Promise.all([
+  getNotFoundPage(),
+  getSiteSettings(),
+  getFeaturedStories(1),
+]);
 
-// No fallback photo: until the singleton has an image the page is words only,
-// one column. (It used to point at a photo asset in the original client
-// build's dataset, which no other project has.)
+// The starter seeded these; they are not this site's words.
+const SEEDED = /wandered off|it happens\. maybe a link is old/i;
+const own = (v: string | null | undefined) => (v && !SEEDED.test(v) ? v : null);
 
-const seoTitle = notFoundPage?.seoTitle ?? 'Page not found';
+const seoTitle = own(notFoundPage?.seoTitle) ?? 'Page not found';
 const seoDescription =
-  notFoundPage?.seoDescription ??
-  'That page wandered off. Head back to the homepage or get in touch.';
-
-const eyebrow = notFoundPage?.eyebrow ?? '404';
-const headline = notFoundPage?.headline ?? 'That page wandered off.';
+  own(notFoundPage?.seoDescription) ??
+  'This page is lost. The stories and portraits are all still here.';
+const headline = own(notFoundPage?.headline) ?? 'This page has slipped out of frame.';
 const body =
-  notFoundPage?.body ??
-  "It happens. Maybe a link is old, maybe the URL has a typo. Either way, here's where to head next.";
+  own(notFoundPage?.body) ??
+  'The link may be old, or a letter went astray on the way here. Every portrait is still where I left it.';
 
-const primaryLabel = notFoundPage?.primaryCtaLabel ?? 'Back home';
-const primaryHref = withTrailingSlash(notFoundPage?.primaryCtaHref) ?? '/';
-// A CORE route, not /portfolio: the portfolio is an opt-in module that a fresh
-// clone does not build, so the old default shipped a 404 page whose own button
-// 404s. A project that turns the module on can point this at /portfolio in the
-// Studio.
-const secondaryLabel = notFoundPage?.secondaryCtaLabel ?? 'Back to the home page';
-const secondaryHref = withTrailingSlash(notFoundPage?.secondaryCtaHref) ?? '/';
-const tertiaryLabel = notFoundPage?.tertiaryCtaLabel ?? 'Get in touch';
-const tertiaryHref = withTrailingSlash(notFoundPage?.tertiaryCtaHref) ?? '/contact/';
+// The photograph in the letters, and what to credit it to.
+const story = featured.find((s) => s.cover?.asset);
+const photo = notFoundPage?.heroImage?.asset ? notFoundPage.heroImage : story?.cover;
+const fill = photo?.asset ? urlFor(photo).width(2000).fit('max').auto('format').url() : null;
+const hotspot = (photo as { hotspot?: { x?: number; y?: number } } | undefined)?.hotspot;
+const fillPos =
+  hotspot && typeof hotspot.x === 'number' && typeof hotspot.y === 'number'
+    ? `${(hotspot.x * 100).toFixed(1)}% ${(hotspot.y * 100).toFixed(1)}%`
+    : '50% 40%';
+const knockStyle = fill ? `--nf-fill: url("${fill}"); --nf-pos: ${fillPos}` : undefined;
+const credit = notFoundPage?.heroImage?.asset
+  ? null
+  : story
+    ? { title: story.title, href: `/stories/${story.slug}/` }
+    : null;
 
-// Hand-written in src/data/site.ts, so they already end in a slash (rule 19).
-const suggestions = site.search.suggestions ?? [];
-
-const photo = notFoundPage?.heroImage;
-const caption = notFoundPage?.heroImage?.caption ?? '';
+const ways = [
+  { n: 'I.', label: 'The stories', note: 'Every sitting, as a short film', href: '/stories/' },
+  { n: 'II.', label: 'Book a session', note: 'Tell me what you have in mind', href: '/contact/' },
+  { n: 'III.', label: 'The home page', note: 'Start again from the cover', href: '/' },
+];
 ---
 
 <BaseLayout
@@ -60,121 +78,73 @@ const caption = notFoundPage?.heroImage?.caption ?? '';
   noindex
   flow="full"
 >
-  {/* THE SHARED SPLIT (PORTS.md card 91). Words first, photo on the narrow track; it was
-      1fr / 1.1fr at `md`, so its seam sat left of every other band's. The photo stays
-      first in the DOM for the stacked phone order and `lg:order-2` puts it on the right. */}
-  <section
-    class:list={['mx-auto max-w-content items-center px-m py-section-lg', photo && 'split']}
-    aria-labelledby="not-found-heading"
-    data-page-not-found
-  >
-    {/* Text column. Search (when the site has it), suggested pages, then the
-        buttons back.
-        Centered on mobile so the lone-element page reads as a sympathetic
-        "you're off-path" moment; left-aligned on desktop where the
-        two-column layout needs the text anchored beside the photo column. */}
-    <div class="text-center lg:text-left">
-      <p class="mb-s text-xs tracking-eyebrow text-foreground/80 uppercase">{eyebrow}</p>
-      <h1
-        id="not-found-heading"
-        class="font-display text-h1 leading-headline-tight text-foreground"
+  <section class="nf" aria-labelledby="not-found-heading" data-page-not-found>
+    <div class="nf__frame mx-auto max-w-content px-m">
+      <p class="nf__masthead portfolio-label" aria-hidden="true">
+        <span>No. 404</span>
+        <span>Not found</span>
+      </p>
+      <p
+        class:list={['nf__knock font-display', fill && 'nf__knock--photo']}
+        style={knockStyle}
+        aria-hidden="true"
+        data-contrast-decorative
       >
-        {headline}
-      </h1>
-      <p class="mx-auto mt-m max-w-xl text-lg leading-relaxed text-foreground/80 lg:mx-0">{body}</p>
+        Lost
+      </p>
+    </div>
 
-      {site.search.enabled && (
-        <form
-          class="mx-auto mt-l max-w-xl text-left lg:mx-0"
-          role="search"
-          action="/search/"
-          method="get"
-        >
-          <label for="not-found-search" class="mb-xs block text-sm font-semibold text-foreground">
-            Search the site
-          </label>
-          <div class="flex gap-s">
+    <div class="nf__body mx-auto max-w-content px-m">
+      <div class="nf__words">
+        <h1 id="not-found-heading" class="nf__title font-display">
+          {headline}
+        </h1>
+        <p class="nf__line">{body}</p>
+        {credit && (
+          <p class="nf__credit portfolio-label">
+            In the letters: <a href={credit.href}>{credit.title}</a>
+          </p>
+        )}
+      </div>
+
+      <nav class="nf__ways" aria-labelledby="not-found-ways">
+        <h2 id="not-found-ways" class="portfolio-label">
+          Where to go from here
+        </h2>
+
+        {site.search.enabled && (
+          <form class="nf__search" role="search" action="/search/" method="get">
+            <label for="not-found-search" class="sr-only">
+              Search the site
+            </label>
             <input
               id="not-found-search"
-              class="min-h-[44px] min-w-0 flex-1 rounded-sm border border-border-soft bg-background px-m text-base text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none"
               type="search"
               name="q"
               autocomplete="off"
               enterkeyhint="search"
               placeholder={site.search.placeholder}
             />
-            <button
-              type="submit"
-              class="press-tactile inline-flex min-h-[44px] items-center rounded-sm border border-primary px-m text-xs font-semibold tracking-eyebrow text-link uppercase hover:bg-accent"
-            >
+            <button type="submit" class="bq-button">
               Search
             </button>
-          </div>
-        </form>
-      )}
-
-      {suggestions.length > 0 && (
-        <nav
-          class="mx-auto mt-l max-w-xl text-center lg:mx-0 lg:text-left"
-          aria-labelledby="not-found-suggestions"
-        >
-          <p id="not-found-suggestions" class="mb-xs text-sm font-semibold text-foreground">
-            Pages people often look for
-          </p>
-          <ul class="flex flex-wrap justify-center gap-x-m gap-y-xs lg:justify-start" role="list">
-            {suggestions.map((l) => (
-              <li>
-                <a
-                  href={l.href}
-                  class="inline-flex min-h-[44px] items-center text-link underline underline-offset-4 hover:text-primary-dark"
-                >
-                  {l.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      )}
-
-      <div class="mt-l flex flex-wrap justify-center gap-m lg:justify-start">
-        <a
-          href={primaryHref}
-          class="press-tactile inline-flex items-center rounded-sm bg-primary-dark px-l py-s text-xs font-semibold tracking-eyebrow text-white uppercase hover:bg-accent-dark"
-        >
-          {primaryLabel}
-        </a>
-        <a
-          href={secondaryHref}
-          class="press-tactile inline-flex items-center rounded-sm border border-primary px-l py-s text-xs font-semibold tracking-eyebrow text-link uppercase hover:bg-accent"
-        >
-          {secondaryLabel}
-        </a>
-        <a
-          href={tertiaryHref}
-          class="press-tactile inline-flex items-center rounded-sm border border-border-soft px-l py-s text-xs font-semibold tracking-eyebrow text-foreground/85 uppercase hover:border-primary hover:text-primary-dark"
-        >
-          {tertiaryLabel}
-        </a>
-      </div>
-    </div>
-
-    {/* Photo column. Stacks above the text on mobile (lg:order-2 swaps it on
-        desktop so the eye lands on text first, photo balances right). */}
-    {photo && (
-      <figure class="order-first lg:order-2">
-        <SanityImage
-          source={photo}
-          width={1200}
-          sizes="(min-width: 1024px) 45vw, 100vw"
-          quality={75}
-          class="h-auto w-full rounded-md"
-        />
-        {caption && (
-          <figcaption class="mt-s text-right text-xs tracking-eyebrow text-foreground/80 uppercase">
-            {caption}
-          </figcaption>
+          </form>
         )}
-      </figure>
-    )}
+
+        <ol class="nf__list list-none">
+          {ways.map((w) => (
+            <li>
+              <a href={w.href} class="nf__way">
+                <span class="nf__num font-display" aria-hidden="true">
+                  {w.n}
+                </span>
+                <span class="nf__label font-display">{w.label}</span>
+                <span class="nf__note">{w.note}</span>
+              </a>
+            </li>
+          ))}
+        </ol>
+      </nav>
+    </div>
   </section>
 </BaseLayout>

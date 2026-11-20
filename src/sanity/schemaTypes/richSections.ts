@@ -4,8 +4,9 @@
 // section rendered through a site component, with no client-specific copy,
 // names, or domain vocabulary baked in.
 //
-// Per-page curated lists (HOME_SECTION_TYPES, ABOUT_SECTION_TYPES, etc.) each
-// equal the general SECTION_TYPES plus the rich types that belong on that page.
+// Per-page curated lists (HOME_SECTION_TYPES, ABOUT_SECTION_TYPES, etc.). Since
+// 2026-11-20 Home, About, Contact and Privacy take this site's own blocks only;
+// Services and Process still take the general SECTION_TYPES (see the lists).
 // Register only via richSectionSchemas in studio/schemaTypes/index.ts.
 //
 // SectionRenderer (src/components/SectionRenderer.astro) maps every _type here
@@ -489,8 +490,9 @@ export const richSectionSchemas = [
 
 export const RICH_SECTION_TYPES = richSectionSchemas.map((s) => ({ type: s.name }));
 
-// Per-page curated lists. Each is SECTION_TYPES (11 general) plus the rich
-// types that make sense on that page. Editors only see relevant blocks.
+// Per-page curated lists. Services and Process are SECTION_TYPES (the general
+// library) plus the rich types that make sense on that page; Home, About,
+// Contact and Privacy are this site's own blocks only (see below).
 // U7 additions:
 //   faqSection        -> HOME, ABOUT, SERVICES (inline FAQ on any marketing page)
 //   logoStripSection  -> all pages (already in SECTION_TYPES via pageSectionSchemas)
@@ -498,12 +500,28 @@ export const RICH_SECTION_TYPES = richSectionSchemas.map((s) => ({ type: s.name 
 //   teamSection       -> HOME, ABOUT
 // Church-reverse-port additions:
 //   dynamicListSection -> HOME, ABOUT (auto-pull latest content; generic small-biz sources)
+//
+// THIS SITE'S OWN BLOCKS ONLY (2026-11-20, "no starter left"). Home, About, Contact and Privacy
+// offer only the blocks drawn for Tate Fine Art Photography; the starter's general library
+// (hero, rich text, the builder kit, the rich people blocks) is no longer offered on them. Their
+// code and schemas stay (PORTABLE files, sync-check, and the custom pages and old process page
+// still hold some), and the Studio's insert menu hides them on every other page builder too
+// (SITE_BLOCK_TYPES in sections.ts, applied by PageBuilderInput.tsx). Checked before the trim:
+// no published document or draft on these four pages held a starter block.
+//
+// SITE_GENERAL_TYPES are the site blocks that fit on any of these pages. A NEW SITE BLOCK THAT
+// BELONGS ON EVERY PAGE GOES IN THE MARKED SLOT BELOW (the sitting-guide invitation, a
+// magazine block); one for a single page goes in that page's list. Add it to its insert-menu
+// group in sections.ts (SITE_INSERT_GROUPS) as well, or the menu will not show it.
+export const SITE_GENERAL_TYPES = [
+  { type: 'kindWords' }, // scaffold: testimonials
+  { type: 'pressContents' }, // scaffold: press
+  { type: 'signedClose' }, // scaffold: stories
+  // ── Other workstreams' site-wide blocks merge in here (append; keep both sides). ──
+];
+
 export const HOME_SECTION_TYPES = [
-  ...SECTION_TYPES,
-  { type: 'founderSection' }, // scaffold: about
-  { type: 'testimonialsSection' }, // scaffold: testimonials
-  { type: 'teamSection' },
-  { type: 'dynamicListSection' },
+  ...SITE_GENERAL_TYPES,
   // The portfolio's home page blocks (storyIndexSection.ts, pressSections.ts).
   { type: 'coverHero' }, // scaffold: stories
   { type: 'storyIndex' }, // scaffold: stories
@@ -512,27 +530,22 @@ export const HOME_SECTION_TYPES = [
   { type: 'proofStrip' }, // scaffold: press
   { type: 'craftNotes' }, // scaffold: stories
   { type: 'crewSection' }, // scaffold: stories
-  { type: 'signedClose' }, // scaffold: stories
+  // ── Home-only site blocks merge in here (append). ──
 ];
 
-// The general library plus the people-page blocks. Contact and Privacy build on this list, not on
-// ABOUT_SECTION_TYPES, so the About page's own blocks stay on the About page.
-const PEOPLE_SECTION_TYPES = [
-  ...SECTION_TYPES,
-  { type: 'storySection' }, // scaffold: about
-  { type: 'teamSection' },
-  { type: 'dynamicListSection' },
-];
+// Contact and Privacy build on the site-wide list, not on ABOUT_SECTION_TYPES, so the About
+// page's own blocks stay on the About page.
+const PEOPLE_SECTION_TYPES = [...SITE_GENERAL_TYPES];
 
 export const ABOUT_SECTION_TYPES = [
   ...PEOPLE_SECTION_TYPES,
-  // The boutique About page (aboutSections.ts, 2026-11-20), its contents line and its close.
+  // The boutique About page (aboutSections.ts, 2026-11-20); its contents line and its close
+  // come from SITE_GENERAL_TYPES.
   { type: 'aboutOpening' }, // scaffold: about
   { type: 'aboutStory' }, // scaffold: about
   { type: 'aboutApproach' }, // scaffold: about
   { type: 'processFigures' }, // scaffold: about
-  { type: 'pressContents' }, // scaffold: press
-  { type: 'signedClose' }, // scaffold: stories
+  // ── About-only site blocks merge in here (append). ──
 ];
 
 export const SERVICES_SECTION_TYPES = [

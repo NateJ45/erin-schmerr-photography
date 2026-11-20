@@ -409,3 +409,13 @@ body:has(main :is(.signed-close, [data-final-cta])) .bqf-invite {
 .bqf-small a:hover {
   color: var(--primary);
 }
+/* "Back to top" (2026-11-20, replaced the floating round button): ink, small tracked capitals,
+   last in the row. */
+.bqf-small > .bqf-small__top {
+  margin-left: auto;
+  gap: 0.4rem;
+  color: var(--foreground);
+  font-size: 0.6875rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}

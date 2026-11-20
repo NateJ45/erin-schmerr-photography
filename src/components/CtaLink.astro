@@ -1,5 +1,6 @@
 ---
 import { ctaHref } from '@/lib/cta-href';
+import '@/styles/cta.css';
 // Safe to edit by hand
 // Resolves a Sanity ctaBlock to the right <a href>:
 //   - internal: maps the referenced page _type to its route (homePage → /, etc.)
@@ -7,19 +8,13 @@ import { ctaHref } from '@/lib/cta-href';
 //   - email: builds a mailto: link
 //   - phone: builds a tel: link
 //
-// Two visual variants + a tone modifier:
-//   - "primary" — Bronze CTA pill (per CLAUDE.md: bg-primary-dark + text-white, NOT bg-primary,
-//     to clear WCAG AA on small label text; hover state goes to Charcoal Dark)
-//   - "secondary" — outlined link with bronze border + text-link, theme-aware in both modes
-//   - `onDark` toggle — for CTAs sitting over a dark surface (hero image overlay,
-//     Charcoal Dark Final CTA panel). Swaps the secondary variant from bronze
-//     text-on-light to cream text-on-transparent so it's actually legible
-//     against the dark background. Passing a `class` override to recolor used
-//     to work, but Tailwind v4 generates utilities alphabetically and
-//     `text-link` > `text-bg` in the cascade — the bronze always won. Use
-//     onDark={true} from now on instead of overriding via className.
+// Two visual variants + a tone modifier (this site's button family, below):
+//   - "primary": the one filled Dusk button.
+//   - "secondary": the outlined ink button.
+//   - `onDark`: for a CTA over a photograph; paper outline and text. Use it rather than a
+//     `class` override to recolour.
 //
-// Both variants share generous padding, uppercase tracking, and a 44×44 minimum tap target.
+// Both variants share small tracked capitals and a 44px minimum tap target.
 
 interface CtaBlock {
   label?: string;
@@ -63,29 +58,21 @@ const label = cta?.label ?? fallbackLabel;
 const isExternal = cta?.linkType === 'external';
 const newTab = cta?.openInNewTab || isExternal;
 
-// Per CLAUDE.md: bg-primary + white at button label sizes hits only 4.05:1 (under AA 4.5:1).
-// Use bg-primary-dark (#7A5D4C) + literal text-white → 5.5:1. Hover deepens to Charcoal Dark.
-//
-// Focus ring offset uses --background by default, but under onDark we offset
-// against transparent so the ring still reads on the photographic surface.
-const baseClasses = onDark
-  ? 'press-tactile inline-flex items-center justify-center min-h-[44px] px-l py-s text-xs font-semibold uppercase tracking-[0.18em] rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-transparent'
-  : 'press-tactile inline-flex items-center justify-center min-h-[44px] px-l py-s text-xs font-semibold uppercase tracking-[0.18em] rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background';
-
-// onDark swaps the secondary variant from bronze-on-light to cream-on-transparent.
-// The primary variant keeps the bronze button — bronze on top of the dark hero
-// gradient still reads at 5.5:1 (white-on-bronze-dark) and stays visually anchored.
-const variantClasses = (() => {
-  if (variant === 'primary') {
-    return onDark
-      ? 'bg-primary-dark text-white hover:bg-primary'
-      : 'bg-primary-dark text-white hover:bg-accent-dark';
-  }
-  // secondary
-  return onDark
-    ? 'border border-white/70 text-white hover:bg-white/10 hover:border-white'
-    : 'border border-primary text-link hover:bg-accent';
-})();
+// THIS SITE'S BUTTON FAMILY (2026-11-20, "no starter left"; styles in src/styles/cta.css). The
+// starter's pressable rounded pill and bronze outline are gone: every CtaLink is now square,
+// small tracked Jost capitals, no shadow, no press scale.
+//   primary    the page's one filled Dusk button (paper on Dusk, 6.3:1); fills with ink on hover.
+//   secondary  the header's outlined ink button (`.bq-button` look); fills with ink on hover.
+//   onDark     the same over a photograph: paper outline and paper text.
+const baseClasses = 'tate-cta';
+const variantClasses =
+  variant === 'primary'
+    ? onDark
+      ? 'tate-cta--primary tate-cta--on-dark'
+      : 'tate-cta--primary'
+    : onDark
+      ? 'tate-cta--secondary tate-cta--on-dark'
+      : 'tate-cta--secondary';
 ---
 
 {!isEmpty && (

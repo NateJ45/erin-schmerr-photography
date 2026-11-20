@@ -27,7 +27,7 @@
 // and tested there; this file is only the dialog.
 // =============================================================================
 
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { insert, PatchEvent, setIfMissing, useClient, type ArrayOfObjectsInputProps } from 'sanity';
 import { Box, Button, Card, Dialog, Flex, Stack, Text } from '@sanity/ui';
 import { BlockElementIcon } from '@sanity/icons/BlockElement';
@@ -40,6 +40,7 @@ import {
   type PatternDoc,
 } from '../../lib/authoring';
 import { sectionLabel } from '../../lib/page-checks';
+import { SITE_BLOCK_TYPES } from '../schemaTypes/sections';
 
 const API = { apiVersion: '2025-01-01' } as const;
 
@@ -53,7 +54,16 @@ export function PageBuilderInput(props: ArrayOfObjectsInputProps) {
   const [patterns, setPatterns] = useState<Pattern[] | null>(null);
   const [failed, setFailed] = useState(false);
 
-  const allowed = (schemaType.of ?? []).map((t) => t.name);
+  // NO STARTER LEFT (2026-11-20): offer only this site's own blocks (SITE_BLOCK_TYPES, the
+  // types in the insert menu's site groups, sections.ts). The array still ACCEPTS everything
+  // its schema lists, so a page that holds an older starter block opens and renders as before;
+  // the block just is not offered in "+ Add item" or "Insert a saved section". An array with no
+  // site block at all (the old process page) keeps its full list rather than an empty menu.
+  const offered = useMemo(() => {
+    const of = (schemaType.of ?? []).filter((t) => SITE_BLOCK_TYPES.has(t.name));
+    return of.length ? { ...schemaType, of } : schemaType;
+  }, [schemaType]);
+  const allowed = (offered.of ?? []).map((t) => t.name);
   const acceptsSynced = allowed.includes('syncedSection');
 
   const openDialog = useCallback(() => {
@@ -79,7 +89,7 @@ export function PageBuilderInput(props: ArrayOfObjectsInputProps) {
 
   return (
     <Stack gap={3}>
-      {props.renderDefault(props)}
+      {props.renderDefault({ ...props, schemaType: offered })}
       {!readOnly && (
         <Flex>
           <Button

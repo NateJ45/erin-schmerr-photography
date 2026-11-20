@@ -8,19 +8,25 @@
 // A page builder since card 190 (ported from FBC Auburn): when the document's Page layout has
 // sections, they render through SectionRenderer, and the policy is the "Privacy policy text"
 // block (src/components/sections/PrivacyPolicy.astro, which also holds the built-in fallback
-// copy and the analytics-aware wording). With an EMPTY Page layout the page draws exactly what it
-// always did: the hero fields, then that same block fed by the document's own body and date.
-// scripts/main-pages-builder.mjs seeds the Page layout when the editor should be able to
-// rearrange the page.
+// copy and the analytics-aware wording). With an EMPTY Page layout the page draws its own
+// masthead, then that same block fed by the document's own body and date.
+//
+// The site's own layout (2026-11-20, replaced the starter Hero): a masthead on paper, "(Privacy)"
+// small over the title very large in Bodoni Moda with its last word in italic (or the words the
+// editor wrapped in underscores), and one line under it; then the policy as a magazine's small
+// print, a contents rail beside numbered, ruled sections (PrivacyPolicy.astro, page-quiet.css).
+// The policy's words are unchanged in meaning.
 
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import SectionRenderer from '@/components/SectionRenderer.astro';
-import Hero from '@/components/Hero.astro';
 import PrivacyPolicy from '@/components/sections/PrivacyPolicy.astro';
 import { getPrivacyPage, getSiteSettings } from '@/lib/queries';
 import { breadcrumbSchema } from '@/lib/schemas';
+import { cinemaRuns } from '@/lib/portfolio';
 import { site } from '@/data/site';
 import { firstReal, pageDescription, pageTitle } from '@/lib/page-meta';
+import '@/styles/portfolio.css';
+import '@/styles/page-quiet.css';
 
 const [page, siteSettings] = await Promise.all([getPrivacyPage(), getSiteSettings()]);
 
@@ -31,9 +37,11 @@ const description = pageDescription(
   'How I handle what you send me through this site, and what the site measures.',
 );
 
-const heroEyebrow = firstReal(page?.heroEyebrow) ?? 'Transparency first.';
-const heroHeadline = firstReal(page?.heroHeadline) ?? 'Privacy Policy';
-const heroSubhead = firstReal(page?.heroSubhead) ?? '';
+const heroHeadline = firstReal(page?.heroHeadline) ?? 'Privacy policy';
+const heroSubhead =
+  firstReal(page?.heroSubhead) ??
+  'What happens to what you send me, and what this site measures, in plain words.';
+const titleRuns = cinemaRuns(heroHeadline);
 
 // The Page layout, when the editor has built one. Empty means the classic layout below.
 const sections = page?.pageBuilder?.length ? page.pageBuilder : null;
@@ -51,14 +59,13 @@ const schemas = [
     <SectionRenderer {sections} idPrefix="privacy" />
   ) : (
     <>
-      {/* Hero: text variant, short height. */}
-      <Hero
-        eyebrow={heroEyebrow}
-        headline={heroHeadline}
-        subhead={heroSubhead}
-        headingId="privacy-hero-heading"
-        size="short"
-      />
+      <header class="pq-mast mx-auto max-w-content px-m" aria-labelledby="privacy-hero-heading">
+        <p class="pq-mast__kicker portfolio-label">(Privacy)</p>
+        <h1 id="privacy-hero-heading" class="pq-mast__title font-display">
+          {titleRuns.map((r) => (r.italic ? <em>{r.text}</em> : r.text))}
+        </h1>
+        {heroSubhead && <p class="pq-mast__line">{heroSubhead}</p>}
+      </header>
 
       <PrivacyPolicy lastUpdated={page?.lastUpdated} body={page?.body} />
     </>

@@ -34,6 +34,7 @@ import { siteSettings } from './siteSettings';
 import { studioGuide } from './studioGuide';
 import { studioNotes } from './studioNotes';
 import { testimonial } from './testimonial'; // scaffold: testimonials
+import { kindWords } from './kindWordsSection'; // scaffold: testimonials
 import { libraryDocument } from './libraryDocument'; // scaffold: documents
 
 export const schemaTypes = [
@@ -62,6 +63,8 @@ export const schemaTypes = [
   ...pressSectionSchemas, // scaffold: press
   // The About page's own blocks (aboutSections.ts).
   ...aboutSectionSchemas, // scaffold: about
+  // Kind words (kindWordsSection.ts): clients' words beside their portraits, from Testimonials.
+  kindWords, // scaffold: testimonials
   // One photograph (photo.ts): used by stories AND press, so in neither capability.
   photo,
 
