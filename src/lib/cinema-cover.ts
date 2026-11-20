@@ -61,7 +61,7 @@ export function usableCutout(
 }
 
 /**
- * The masthead's lines: the title in capitals, on one line when it is short
+ * The masthead's lines: the title as typed, on one line when it is short
  * (10 characters or fewer) and otherwise split at the word break that makes
  * the two lines most even. `chars` is the longest line's length, which the
  * stylesheet turns into a size that fits the screen's width.
@@ -70,7 +70,7 @@ export function mastheadLines(title: string | null | undefined): {
   lines: string[];
   chars: number;
 } {
-  const plain = cinemaPlain(title).replace(/\s+/g, ' ').trim().toUpperCase();
+  const plain = cinemaPlain(title).replace(/\s+/g, ' ').trim();
   const words = plain.split(' ').filter(Boolean);
   if (plain.length <= 10 || words.length < 2) return { lines: [plain], chars: plain.length || 1 };
   let best = [plain];
@@ -85,6 +85,20 @@ export function mastheadLines(title: string | null | undefined): {
     }
   }
   return { lines: best, chars: bestLong };
+}
+
+/**
+ * A masthead line as runs: on the LAST line the last word is set in italic
+ * (the cinema's one italic word, like every other title on the home page).
+ */
+export function mastheadRuns(line: string, last: boolean): { text: string; italic: boolean }[] {
+  if (!last) return [{ text: line, italic: false }];
+  const at = line.lastIndexOf(' ');
+  if (at < 0) return [{ text: line, italic: true }];
+  return [
+    { text: line.slice(0, at + 1), italic: false },
+    { text: line.slice(at + 1), italic: true },
+  ];
 }
 
 /** "x% y%" fractions of the cover's hotspot (the photo's object-position), default centre. */

@@ -44,12 +44,12 @@
   --img-h: max(var(--frame-h), calc(100vw / var(--ar, 0.8)));
   /* The frame lands at the top of the screen under the sticky header. */
   --mast-top-clear: 6rem;
-  /* As big as the width allows: about 0.72em a capital, never over 26vw, and
-     two lines never over 62% of the frame. */
+  /* As big as the width allows: about 0.56em a letter in Bodoni Moda (mixed
+     case), never over 26vw, and never over half the frame's height. */
   --mast-fs: min(
     26vw,
-    calc(96vw / (var(--mast-chars, 8) * 0.72)),
-    calc(31svh / var(--mast-lines, 1) * 2 / 1.68)
+    calc(96vw / (var(--mast-chars, 8) * 0.56)),
+    calc(50svh / (var(--mast-lines, 1) * 0.84))
   );
   color: #f3eee7;
   background: #12100e;
@@ -113,10 +113,12 @@
   font-size: var(--mast-fs);
   font-weight: 400;
   line-height: 0.84;
-  letter-spacing: -0.02em;
+  letter-spacing: var(--display-track-lg, -0.015em);
   text-align: center;
   color: #f3eee7;
-  text-shadow: 0 0.02em 0.12em rgb(18 16 14 / 0.28);
+  text-shadow:
+    0 0.01em 0.04em rgb(18 16 14 / 0.25),
+    0 0.02em 0.3em rgb(18 16 14 / 0.3);
   pointer-events: none;
 }
 .cover__mast-line {
@@ -153,6 +155,8 @@
   max-width: min(24rem, 42vw);
 }
 .cover__col--right {
+  /* Clear of the floating back-to-top button in the corner. */
+  margin-bottom: 3.5rem;
   align-items: flex-end;
   text-align: right;
 }
@@ -292,7 +296,7 @@ html.showcase-intro .cinema-open [data-hero-cut] {
 @media (max-width: 767px) {
   .cine--cover {
     --mast-top-clear: 5rem;
-    --mast-fs: min(24vw, calc(94vw / (var(--mast-chars, 8) * 0.72)));
+    --mast-fs: min(24vw, calc(94vw / (var(--mast-chars, 8) * 0.56)));
   }
   /* The cover lines stack at the foot, left-aligned. */
   .cover__lines {
@@ -306,6 +310,7 @@ html.showcase-intro .cinema-open [data-hero-cut] {
   .cover__col,
   .cover__col--right {
     max-width: 100%;
+    margin-bottom: 0;
     align-items: flex-start;
     text-align: left;
   }

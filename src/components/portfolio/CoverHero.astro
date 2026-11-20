@@ -54,7 +54,7 @@ import FocusImage from '@/components/portfolio/FocusImage.astro';
 import CoverCutout from '@/components/portfolio/CoverCutout.astro';
 import { getFeaturedStories, type Story } from '@/lib/storyQueries';
 import { cinemaRuns, photoRatio } from '@/lib/portfolio';
-import { coverVars, mastheadLines, starring, usableCutout } from '@/lib/cinema-cover';
+import { coverVars, mastheadLines, mastheadRuns, starring, usableCutout } from '@/lib/cinema-cover';
 import { urlFor } from '@/lib/sanity';
 import '@/styles/portfolio.css';
 import '@/styles/cinema-cover.css';
@@ -128,7 +128,9 @@ const CYCLE: { layout: Layout; side?: 'left' | 'right' }[] = [
 // The cover lines' small facts.
 const yearOfStory = (s: Story) => (s.publication?.date ?? s.date ?? '').slice(0, 4) || null;
 const magazineLine = (s: Story) =>
-  [s.publication?.magazine, yearOfStory(s)].filter(Boolean).join(', ');
+  s.publication?.magazine
+    ? [s.publication.magazine, yearOfStory(s)].filter(Boolean).join(', ')
+    : '';
 
 const headRuns = cinemaRuns(headline);
 // Her name is set very large (two lines); a longer headline steps down a size
@@ -381,9 +383,11 @@ const openStarring = first ? starring(first) : [];
                 data-contrast-decorative
                 data-cover-mast
               >
-                {mast.lines.map((l) => (
+                {mast.lines.map((l, li) => (
                   <span class="cover__mast-line" data-contrast-decorative>
-                    {l}
+                    {mastheadRuns(l, li === mast.lines.length - 1).map((r) =>
+                      r.italic ? <em data-contrast-decorative>{r.text}</em> : r.text,
+                    )}
                   </span>
                 ))}
               </p>
@@ -418,9 +422,11 @@ const openStarring = first ? starring(first) : [];
                   data-contrast-decorative
                   data-cover-echo
                 >
-                  {mast.lines.map((l) => (
+                  {mast.lines.map((l, li) => (
                     <span class="cover__mast-line" data-contrast-decorative>
-                      {l}
+                      {mastheadRuns(l, li === mast.lines.length - 1).map((r) =>
+                        r.italic ? <em data-contrast-decorative>{r.text}</em> : r.text,
+                      )}
                     </span>
                   ))}
                 </p>
