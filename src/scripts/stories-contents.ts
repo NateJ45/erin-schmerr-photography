@@ -1,7 +1,9 @@
 // scaffold-file: stories
 // Safe to edit by hand
-// The /stories/ List / Grid toggle (StoriesContents.astro). Shows the toggle
-// (it stays hidden without JavaScript, where the list is the only view), keeps
+// The /stories/ List / Grid toggle (StoriesContents.astro). The inline script
+// there shows the toggle before first paint (so it never pushes the list down);
+// this unhides it again as a fallback after a client-side navigation. It stays
+// hidden without JavaScript, where the list is the only view. This keeps
 // aria-pressed in step with the root's data-view, and remembers the choice per
 // visitor in localStorage. Storage can throw (private windows, blocked site
 // data), so every read and write is wrapped and a failure only forgets.

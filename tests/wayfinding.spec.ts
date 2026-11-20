@@ -69,16 +69,26 @@ test.describe('wayfinding', () => {
 
   // This site's footer (2026-11-20, Footer.astro) draws the footer columns as ONE stacked
   // list, whatever the footer style, so the starter's "two by two" check is replaced by this.
-  test('footer: one stacked page list, and the giant wordmark fits a phone', async ({ page }) => {
+  test('footer: one stacked page list, and the giant name fits a phone', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 });
+    // At rest: with motion on, the footer's page list rises in a stagger as it scrolls in
+    // (Footer.astro), so boxes read at load are mid-transform and can look side by side.
+    await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto(ROUTE, { waitUntil: 'load' });
     const items = page.locator('#site-footer nav[aria-label="Footer"] li');
     const a = await items.nth(0).boundingBox();
     const b = await items.nth(1).boundingBox();
     expect(b!.y).toBeGreaterThan(a!.y + a!.height - 1);
     expect(Math.abs(a!.x - b!.x)).toBeLessThan(2);
-    const mark = page.locator('#site-footer [data-bqf-mark]');
-    await expect(mark).toBeVisible();
+    // The giant name (the jewel close, "Tate" with her photos through its letters) is the
+    // footer's link home, named in full for assistive tech, and stays inside a phone's width.
+    const name = page.locator('#site-footer [data-bqf-name]');
+    await expect(name).toBeVisible();
+    await expect(name).toHaveAttribute('href', '/');
+    await expect(name).toHaveAccessibleName(/ home$/);
+    const box = await name.boundingBox();
+    expect(box!.x).toBeGreaterThanOrEqual(0);
+    expect(box!.x + box!.width).toBeLessThanOrEqual(375);
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
       375,
     );

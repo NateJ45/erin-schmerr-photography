@@ -1,10 +1,8 @@
 // Safe to edit by hand
-// The booking funnel's motion (DESIGN.md "Booking funnel"), GSAP 3.15 with SplitText and
-// ScrollTrigger, the same machinery as src/scripts/about-motion.ts:
+// The booking funnel's motion (DESIGN.md "Booking funnel"), GSAP 3.15 with ScrollTrigger:
 //
-//   1. The overlap headline (OverlapCover.astro): BOTH copies, the ink heading and its clipped
-//      paper twin, are split into their real lines and rise out of line masks together
-//      (1.3s a line, 0.09s apart, expo.out), so the twin never parts from the heading.
+//   1. The overlap headline (OverlapCover.astro): both copies, the ink heading and its clipped
+//      paper twin, rise 28px into place together (1.3s, expo.out), never hidden on the way.
 //   2. The cover photo settles from a slow 1.08 zoom over 2.4s.
 //   3. Anything marked [data-funnel-rise] (the steps' huge numerals, the guide's contents
 //      rows) comes up 3rem and into full opacity as it scrolls in, once.
@@ -14,9 +12,8 @@
 // Scrolling stays native (rule 5). Set up on astro:page-load, torn down on astro:before-swap.
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { SplitText } from 'gsap/SplitText';
 
-gsap.registerPlugin(ScrollTrigger, SplitText);
+gsap.registerPlugin(ScrollTrigger);
 
 let mm: gsap.MatchMedia | null = null;
 
@@ -29,23 +26,13 @@ function setup(): void {
   mm = gsap.matchMedia();
   mm.add('(prefers-reduced-motion: no-preference)', () => {
     covers.forEach((cover) => {
-      cover.querySelectorAll<HTMLElement>('[data-funnel-split]').forEach((title) => {
-        SplitText.create(title, {
-          type: 'lines',
-          mask: 'lines',
-          autoSplit: true,
-          onSplit(self) {
-            self.masks.forEach((m) => (m as HTMLElement).classList.add('fc-line-mask'));
-            return gsap.from(self.lines, {
-              yPercent: 112,
-              duration: 1.3,
-              stagger: 0.09,
-              delay: 0.15,
-              ease: 'expo.out',
-            });
-          },
-        });
-      });
+      // The headline rises a short way into place, both copies together (their shared grid
+      // cell, so the ink and its paper twin never part), and is never hidden on the way
+      // (2026-11-20): it is the page's first-screen h1, which must not start masked or faded
+      // and wait on JavaScript (tests/first-viewport.spec.ts; the Stories and Press titles
+      // made the same change). It used to rise line by line out of SplitText masks.
+      const titles = cover.querySelector<HTMLElement>('.fc__titles');
+      if (titles) gsap.from(titles, { y: 28, duration: 1.3, delay: 0.1, ease: 'expo.out' });
       const img = cover.querySelector<HTMLElement>('.fc__img');
       if (img) gsap.from(img, { scale: 1.08, duration: 2.4, ease: 'power3.out' });
     });

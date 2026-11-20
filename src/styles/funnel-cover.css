@@ -129,6 +129,10 @@
 }
 .fc__title--ink {
   color: var(--color-foreground);
+  /* The inverse of the paper twin's clip: the ink is drawn only on the paper side, never
+     under the photo (where the twin used to hide it). The outer sides reach 0.5em past the
+     box so italic overhangs and tall capitals are never cut. */
+  clip-path: inset(min(var(--fc-rise), calc(100% - 0.75em)) -0.5em -0.5em -0.5em);
 }
 .fc__title--ink em {
   color: var(--color-link);
@@ -205,6 +209,9 @@
   .fc__title--paper {
     clip-path: inset(0 0 0 var(--fc-seam));
   }
+  .fc__title--ink {
+    clip-path: inset(-0.5em calc(100% - var(--fc-seam)) -0.5em -0.5em);
+  }
   .fc__eyebrow {
     margin-bottom: 1.5rem;
   }
@@ -245,16 +252,13 @@
   outline-offset: 3px;
 }
 
-/* Motion's line masks (SplitText): room for descenders and the italic's overhang. */
-.fc-line-mask {
-  padding-bottom: 0.08em;
-  margin-bottom: -0.08em;
-  padding-right: 0.08em;
-}
-
 @media print {
   .fc__title--paper,
   .fc__veil {
     display: none;
+  }
+  /* Print draws the ink headline whole, since the paper twin is gone. */
+  .fc__title--ink {
+    clip-path: none;
   }
 }

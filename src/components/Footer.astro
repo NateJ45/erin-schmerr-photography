@@ -687,15 +687,34 @@ const actionBar =
     const maxScroll = () => ScrollTrigger.maxScroll(window) - 1;
     // Lazy pictures above can grow the page after the first measure: re-measure when it
     // does, so the reveal still ends exactly at the foot of the page.
+    //
+    // Never while the page is moving (2026-11-20, tests/builder-blocks.spec.ts "hub"): a
+    // refresh puts the scroll back where it measured it, which cancels a smooth in-page jump
+    // half way (a hub chip, "Back to top", "Begin your request" all stopped short as lazy
+    // pictures grew the page under them). So the refresh waits until the scrolling has been
+    // still for a moment. For the same reason ScrollTrigger's own refresh on `load` is off:
+    // this observer already re-measures whenever the load grows the page.
+    ScrollTrigger.config({ autoRefreshEvents: 'visibilitychange,DOMContentLoaded,resize' });
     let refreshTimer = 0;
-    const grow = new ResizeObserver(() => {
+    let lastScroll = 0;
+    const onScroll = () => {
+      lastScroll = performance.now();
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    const refreshWhenStill = () => {
       clearTimeout(refreshTimer);
-      refreshTimer = window.setTimeout(() => ScrollTrigger.refresh(), 200);
-    });
+      const wait = Math.max(200, 300 - (performance.now() - lastScroll));
+      refreshTimer = window.setTimeout(() => {
+        if (performance.now() - lastScroll < 250) refreshWhenStill();
+        else ScrollTrigger.refresh();
+      }, wait);
+    };
+    const grow = new ResizeObserver(refreshWhenStill);
     grow.observe(document.body);
     cleanups.push(() => {
       grow.disconnect();
       clearTimeout(refreshTimer);
+      window.removeEventListener('scroll', onScroll);
     });
     const stageTop = stage.getBoundingClientRect().top + window.scrollY;
     if (stageTop - window.innerHeight <= 0 || maxScroll() - (stageTop - window.innerHeight) < 120) {
@@ -703,6 +722,10 @@ const actionBar =
     }
 
     ctx.add(() => {
+      // At rest until reached (2026-11-20): every tween below starts when the footer's top
+      // meets the bottom of the screen, and immediateRender: false keeps its "before" look
+      // (the lifted content, the inset window, the lowered name) off the page until then, so
+      // a page loaded at the top shows the footer finished, never covered (axe, Lighthouse).
       // Juan Mora: the content travels from 20vw above to rest while the page lifts off it.
       const lift = () => -Math.min(window.innerWidth * 0.2, window.innerHeight * 0.3);
       gsap.fromTo(
@@ -711,6 +734,7 @@ const actionBar =
         {
           y: 0,
           ease: 'none',
+          immediateRender: false,
           scrollTrigger: {
             trigger: stage,
             start: 'top bottom',
@@ -727,6 +751,7 @@ const actionBar =
         {
           clipPath: 'inset(0% 0% 0% 0% round 0rem 0rem 0rem 0rem)',
           ease: 'none',
+          immediateRender: false,
           scrollTrigger: {
             trigger: stage,
             start: 'top bottom',
@@ -745,6 +770,7 @@ const actionBar =
           {
             yPercent: -9,
             ease: 'none',
+            immediateRender: false,
             scrollTrigger: { trigger: stage, start: 'top bottom', end: maxScroll, scrub: 1.2 },
           },
         );
@@ -757,6 +783,7 @@ const actionBar =
           {
             yPercent: 0,
             ease: 'back.out(1.4)',
+            immediateRender: false,
             scrollTrigger: {
               trigger: name.parentElement,
               start: 'top bottom',

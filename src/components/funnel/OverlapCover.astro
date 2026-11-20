@@ -71,14 +71,13 @@ const hasImage = Boolean((image as { asset?: unknown } | null | undefined)?.asse
     <div class="fc__type">
       {eyebrow && <p class="fc__eyebrow portfolio-label">{eyebrow}</p>}
       <div class="fc__titles">
-        <H class="fc__title fc__title--ink font-display" id={id} data-funnel-split>
+        <H class="fc__title fc__title--ink font-display" id={id} data-first-viewport-clip>
           {parts.map(([t, em]) => (em ? <em>{t}</em> : t))}
         </H>
         <p
           class="fc__title fc__title--paper font-display"
           aria-hidden="true"
           data-contrast-decorative
-          data-funnel-split
         >
           {parts.map(([t, em]) => (em ? <em>{t}</em> : t))}
         </p>

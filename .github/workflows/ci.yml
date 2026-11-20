@@ -153,9 +153,7 @@ jobs:
       # than ordinary suites: theme-tokens (contrast over the @theme palette),
       # layout-variants and section-fields. Nothing else in this pipeline can
       # catch a palette edit that pushes body text under threshold.
-      # TESTS PAUSED 2026-11-20 until the design is final (Nathan). Re-enable: docs/PENDING.md.
       - name: Unit tests
-        if: ${{ false }}
         run: npm run test:unit
 
   # Builds the site ONCE. Everything downstream reuses what this uploads.
@@ -238,10 +236,8 @@ jobs:
   # The Playwright suite, sharded. fullyParallel is on in playwright.config.ts,
   # so --shard splits at TEST granularity: even by COUNT, not by time (see
   # PORTS.md card 70, "Weighted shards", when one project dominates the runtime).
-  # TESTS PAUSED 2026-11-20 until the design is final (Nathan). Re-enable: docs/PENDING.md.
   e2e:
     name: e2e (shard ${{ matrix.shard }}/3)
-    if: ${{ false }}
     needs: [site]
     # Pinned (2026-10-30): ubuntu-latest moved to 26.04, where Playwright's
     # WebKit fails to launch, so every webkit-iphone test died. Unpin once
@@ -390,9 +386,6 @@ jobs:
     needs: [e2e]
     runs-on: ubuntu-latest
     steps:
-      # TESTS PAUSED 2026-11-20 until the design is final (Nathan). Re-enable: docs/PENDING.md.
-      # Passes while paused so the required 'test' check still reports. To restore,
-      # put back the two lines below and drop the echo.
-      #   echo "e2e=${{ needs.e2e.result }}"
-      #   [ "${{ needs.e2e.result }}" = "success" ]
-      - run: echo "Tests paused until the design is final (e2e=${{ needs.e2e.result }})."
+      - run: |
+          echo "e2e=${{ needs.e2e.result }}"
+          [ "${{ needs.e2e.result }}" = "success" ]

@@ -60,9 +60,7 @@ env:
   PUBLIC_SANITY_DATASET: ${{ vars.PUBLIC_SANITY_DATASET }}
 
 jobs:
-  # TESTS PAUSED 2026-11-20 until the design is final (Nathan). Re-enable: docs/PENDING.md.
   lighthouse:
-    if: ${{ github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
 
     steps:
