@@ -32,6 +32,8 @@ export const RESERVED_SLUGS = new Set([
   'press', // scaffold: press
   'contact',
   'privacy',
+  // The sitting guide, the booking funnel's lead magnet (/guide/ and /guide/read/).
+  'guide',
   // The fixed-data wall the visual-regression suite shoots (PORTS.md card 37).
   // noindex and out of the sitemap, but a real built route, so a custom page
   // must not be able to shadow it.
