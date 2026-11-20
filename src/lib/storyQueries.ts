@@ -37,6 +37,29 @@ export interface StoryPublication {
   url?: string | null;
 }
 
+/** Where the person is in a cut-out, as fractions (0-1) of the image. */
+export interface CutoutSubject {
+  top: number;
+  bottom: number;
+  left: number;
+  right: number;
+  headTop: number;
+  headBottom: number;
+  headX: number;
+  coverage?: number;
+}
+
+export interface CoverCutout {
+  /** The cover asset it was made from; a mismatch means the cover changed (stale). */
+  cutoutOf?: string | null;
+  subject?: CutoutSubject | null;
+  asset?: {
+    _id: string;
+    url: string;
+    metadata?: { dimensions?: { width: number; height: number; aspectRatio: number } };
+  } | null;
+}
+
 export interface Story {
   _id: string;
   title: string;
@@ -48,6 +71,8 @@ export interface Story {
   startedFrom?: string | null;
   featured?: boolean | null;
   cover?: PortfolioPhoto | null;
+  /** The person in the cover on a transparent ground (scripts/make-cutouts.mjs). */
+  coverCutout?: CoverCutout | null;
   photos?: PortfolioPhoto[] | null;
   credits?: StoryCredit[] | null;
   publication?: StoryPublication | null;
@@ -69,6 +94,10 @@ export interface ArchivePhoto extends PortfolioPhoto {
 const STORY_PROJECTION = `{
   _id, title, "slug": slug.current, dek, date, location, startedFrom, featured,
   cover${PHOTO_PROJECTION},
+  "coverCutout": coverCutout{
+    cutoutOf, subject,
+    asset->{ _id, url, metadata{ dimensions{ width, height, aspectRatio } } }
+  },
   photos[]${PHOTO_PROJECTION},
   "credits": credits[defined(collaborator)]{
     _key,

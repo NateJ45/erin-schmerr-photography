@@ -19,6 +19,7 @@ import {
 import { dropRedirectsOverLivePages } from './src/lib/redirect-guard.ts';
 import { fixSanityDedupeAlias } from './src/lib/sanity-dedupe-alias.ts';
 import { studioConfigModule } from './src/lib/studio-route.ts';
+import { localCutouts } from './src/lib/local-cutouts.ts';
 import { isSitemapPage } from './src/lib/sitemap-filter.ts';
 import {
   STATIC_REDIRECT_LIMIT,
@@ -340,7 +341,9 @@ export default defineConfig({
     // SANITY_ASTRO_DISABLE_MODULE_DEDUPE=1 (the Studio then fails to hydrate).
     // Full story: src/lib/sanity-dedupe-alias.ts and PORTS.md card 60.
     // studioConfigModule(): the `sanity:studio` module for /studio (see above).
-    plugins: [tailwindcss(), fixSanityDedupeAlias(), studioConfigModule()],
+    // localCutouts(): dev-only cut-outs from a folder outside the repo (CINEMA_CUTOUTS_DIR,
+    // scripts/make-cutouts.mjs); a build always gets null.
+    plugins: [tailwindcss(), fixSanityDedupeAlias(), studioConfigModule(), localCutouts()],
     // @sanity/ui ships an ESM build that Vite's dependency pre-bundler
     // mis-scans on this stack (MISSING_EXPORT errors for styled-components).
     // Excluding it from pre-bundling matches presacademy's working config; it

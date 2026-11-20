@@ -82,6 +82,40 @@ export const story = defineType({
       group: 'story',
       description: 'Opens the story and shows on its card.',
     }),
+    // Derived, never typed (rule 15): scripts/make-cutouts.mjs writes it. The
+    // person in the cover on a transparent ground, at the cover's own size, so
+    // the home page can set the title BEHIND them (DESIGN.md "Cover frame").
+    // `cutoutOf` is the cover asset it was made from: when the cover changes,
+    // the site ignores the stale cut-out until the script is run again.
+    defineField({
+      name: 'coverCutout',
+      title: 'Cover cut-out (made automatically)',
+      type: 'image',
+      group: 'story',
+      readOnly: true,
+      description:
+        'Made by a script from the cover photo, for the home page. Nothing to do here: change the cover and it is remade.',
+      fields: [
+        defineField({ name: 'cutoutOf', title: 'Made from', type: 'string', readOnly: true }),
+        defineField({
+          name: 'subject',
+          title: 'Where the person is',
+          type: 'object',
+          readOnly: true,
+          options: { collapsible: true, collapsed: true },
+          fields: [
+            'top',
+            'bottom',
+            'left',
+            'right',
+            'headTop',
+            'headBottom',
+            'headX',
+            'coverage',
+          ].map((name) => defineField({ name, type: 'number', readOnly: true })),
+        }),
+      ],
+    }),
     defineField({
       name: 'featured',
       title: 'Featured',
