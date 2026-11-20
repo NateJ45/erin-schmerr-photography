@@ -21,69 +21,36 @@ import type { PageBuilderBlock } from '@/lib/pageBuilder.types';
 // ── Home page ────────────────────────────────────────────────────────────────
 
 export const DEFAULT_HOME_SECTIONS: PageBuilderBlock[] = [
+  // The home "Cinema" (2026-11-20): the cover hero's frames, her magazines as a
+  // contents line, then the signed close. The same three blocks
+  // scripts/set-home-cinema.mjs writes to the dataset.
   // scaffold: stories
   {
     _type: 'coverHero',
     _key: 'default-home-hero',
-    eyebrow: 'Fine-art portraits, Cincinnati and West Chester.',
-    headline: 'Portraits, slowly brought into focus.',
-    subhead:
-      'Placeholder: one or two sentences in your own words about the portraits you make and who they are for.',
-    limit: 5,
-    primaryCta: { _type: 'ctaBlock', label: 'Book a session', href: '/contact/' },
-    secondaryCta: { _type: 'ctaBlock', label: 'See the stories', href: '/stories/' },
-  },
-  {
-    _type: 'storyIndex',
-    _key: 'default-home-stories',
-    heading: 'Selected stories',
-    layout: 'grid',
-    limit: 4,
+    headline: 'Your _Name_',
+    subhead: 'Placeholder: what you photograph, and where',
+    limit: 8,
   },
   // scaffold:end
   // scaffold: press
   {
-    _type: 'publishedMarquee',
-    _key: 'default-home-published',
-    heading: 'Published in',
+    _type: 'pressContents',
+    _key: 'default-home-press',
+    heading: 'As seen in',
   },
   // scaffold:end
+  // scaffold: stories
   {
-    _type: 'richTextSection',
-    _key: 'default-home-intro',
-    eyebrow: 'About',
-    heading: 'Placeholder: how it started.',
-    body: [
-      {
-        _type: 'block',
-        _key: 'default-home-intro-p1',
-        style: 'normal',
-        children: [
-          {
-            _type: 'span',
-            _key: 'default-home-intro-p1-s1',
-            text: 'Placeholder: a few lines about how you came to photography and what draws you to fine-art portraits. Edit it in the Studio under the Home page.',
-          },
-        ],
-      },
-    ],
-  },
-  // scaffold: press
-  {
-    _type: 'tearSheetStack',
-    _key: 'default-home-tearsheets',
-    heading: 'Tear sheets',
-    limit: 4,
-  },
-  // scaffold:end
-  {
-    _type: 'ctaBandSection',
-    _key: 'default-home-cta',
+    _type: 'signedClose',
+    _key: 'default-home-close',
     eyebrow: 'Sessions',
-    headline: "Let's make something quiet and beautiful.",
-    subhead: 'Placeholder: a line on how booking works.',
+    heading: 'Placeholder: a line that invites a booking.',
+    body: 'Placeholder: a sentence on how booking works.',
     cta: { _type: 'ctaBlock', label: 'Book a session', href: '/contact/' },
+    signature: 'Your name',
   },
+  // scaffold:end
 ];
 
 // ── About page ───────────────────────────────────────────────────────────────

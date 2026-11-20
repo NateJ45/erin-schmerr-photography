@@ -583,201 +583,229 @@ html.motion [data-focus].is-focused .focus-image__img {
   opacity: 0.72;
 }
 
-/* COVER HERO (CoverHero.astro, src/scripts/cover-hero.ts). The home showcase:
-   Martin Briceno's layout with the Vault Reveal Hero's opening. Full bleed,
-   the screen minus the paper header strip. The text colours are fixed light
-   because they always sit on a photo under the scrim. */
-.cover-hero {
+/* COVER HERO (CoverHero.astro, src/scripts/cover-hero.ts). The home cinema
+   (2026-11-20, after kaatdm.com): an opening frame, then one full-screen frame
+   per featured story in three alternating layouts (full bleed, overlap,
+   knockout). Photo frames are dark because they are photographs; the overlap
+   and knockout frames sit on the site's own paper (rule 3: light only). */
+.cinema {
+  position: relative;
+}
+.cinema__frames {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* The photo in any frame: the cover fills its box. */
+.cinema__photo {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #12100e;
+}
+.cinema .cinema__frame-img {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  aspect-ratio: auto !important;
+}
+/* A portrait-shaped cover on a wide screen shows whole over a blurred,
+   darkened copy of itself (the frame's own LQIP), so a 1080px Instagram copy is
+   never blown up into a soft full-width crop. Full-screen frames only. */
+@media (min-width: 768px) {
+  .cinema-open .cinema__photo--portrait .focus-image__img,
+  .cine--bleed .cinema__photo--portrait .focus-image__img {
+    object-fit: contain;
+  }
+  .cinema-open .cinema__photo--portrait .focus-image::before,
+  .cine--bleed .cinema__photo--portrait .focus-image::before {
+    filter: blur(28px) brightness(0.6);
+  }
+}
+
+/* The small tracked line, the counter and the display italic. */
+.cinema__line {
+  font-size: 0.75rem;
+  line-height: 1.5;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+.cinema__count {
+  position: absolute;
+  z-index: 3;
+  top: 50%;
+  right: max(1.25rem, env(safe-area-inset-right, 0px));
+  transform: translateY(-50%);
+  writing-mode: vertical-rl;
+  font-size: 0.6875rem;
+  letter-spacing: 0.2em;
+  font-variant-numeric: tabular-nums;
+}
+.cinema em {
+  font-style: italic;
+}
+/* Over a photograph the italic word keeps the type's own paper colour (the
+   site's dusk italic is for paper grounds only: on a dark photo it drops
+   below AA). */
+.cinema-open em,
+.cine--bleed em,
+.cine__type--over em {
+  color: inherit;
+}
+.cinema a {
+  color: inherit;
+  text-decoration: none;
+}
+.cinema a:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
+}
+.cinema .line-mask {
+  overflow: clip;
+  overflow-clip-margin: 0.06em;
+}
+.cinema .line {
+  padding-bottom: 0.18em;
+  margin-bottom: -0.18em;
+}
+
+/* Knockout type: the cover shows through the letters. Always an aria-hidden,
+   data-contrast-decorative duplicate of a real title. */
+.cinema-knock {
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  background-image: var(--knock-fill, linear-gradient(160deg, #7a4a40, #1f1b18));
+  background-size: cover;
+  background-position: center;
+  -webkit-background-clip: text;
+  background-clip: text;
+  text-shadow: none;
+}
+
+/* ---- The opening frame -------------------------------------------------- */
+.cover-hero.cinema-open {
   position: relative;
   min-height: max(34rem, calc(100svh - var(--site-header-h, 3.5rem)));
-  display: flex;
+  display: grid;
+  place-items: center;
   overflow: hidden;
   color: #f3eee7;
   background: #12100e;
 }
 .cover-hero__media,
 .cover-hero__image,
-.cover-hero__slide,
 .cover-hero__overlay {
   position: absolute;
   inset: 0;
 }
-.cover-hero__slide {
-  opacity: 0;
-}
-.cover-hero__slide.is-active {
-  opacity: 1;
-}
-.cover-hero .cover-hero__frame {
-  position: absolute;
-  inset: 0;
-  height: 100%;
-  aspect-ratio: auto !important;
-}
-/* A portrait cover shows whole over its own blurred LQIP (the focus-image frame
-   paints that blur) from tablet up; on a phone it fills the screen. */
-@media (min-width: 768px) {
-  .cover-hero .cover-hero__slide--portrait .focus-image__img {
-    object-fit: contain;
-  }
-}
-/* The Reveal Hero's 0.4 black, warmed to the site's ink and taken to 0.6 so the
-   small story line keeps AA over a pale photograph (contrast.spec), with more at
-   the top and foot where the headline, credits and thumbnails sit. */
+/* A flat veil (the name and small line sit mid-photo) and more at the foot,
+   where the credit sits: the small type keeps AA over a pale photograph. */
 .cover-hero__overlay {
   background:
-    linear-gradient(to bottom, rgb(18 16 14 / 0.45) 0%, rgb(18 16 14 / 0) 22%),
-    linear-gradient(to top, rgb(18 16 14 / 0.55) 0%, rgb(18 16 14 / 0) 38%), rgb(18 16 14 / 0.6);
+    linear-gradient(to top, rgb(18 16 14 / 0.6) 0%, rgb(18 16 14 / 0) 40%), rgb(18 16 14 / 0.5);
 }
-
-/* The stage: three rows on the page's own left edge (rule 17). */
-.cover-hero__stage {
+.cinema-open__words {
   position: relative;
   z-index: 3;
-  width: 100%;
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-  grid-template-columns: minmax(0, 1fr);
-  padding-block: clamp(1.25rem, 3.5vh, 2rem);
-  text-shadow: 0 1px 14px rgb(18 16 14 / 0.3);
-}
-.cover-hero__top {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 1.5rem;
-}
-.cover-hero__headline {
-  font-size: clamp(1.125rem, 1.6vw, 1.375rem);
-  line-height: 1.25;
-  max-width: 26em;
-}
-.cover-hero__links {
-  display: flex;
-  gap: 1.5rem;
-  flex-shrink: 0;
-  font-size: 0.75rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-.cover-hero__links a {
-  display: inline-block;
-  white-space: nowrap;
-  padding-block: 0.75rem;
-  text-decoration: underline;
-  text-decoration-color: rgb(243 238 231 / 0.45);
-  text-underline-offset: 0.35em;
-  transition: text-decoration-color 200ms ease;
-}
-.cover-hero__links a:hover {
-  text-decoration-color: currentColor;
-}
-
-/* The middle band: title at mid-left, the story's line at mid-right. */
-.cover-hero__middle {
-  align-self: center;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 2rem;
-  padding-block: 2rem;
-}
-/* Each slot stacks every story's panel in one grid cell, so the slot keeps the
-   height of its tallest panel and only the active one shows. */
-.cover-hero__stack {
-  display: grid;
-  min-width: 0;
-}
-.cover-hero__stack > [data-panel] {
   grid-area: 1 / 1;
-  visibility: hidden;
+  padding: 4rem 1rem;
+  text-align: center;
+  text-shadow: 0 1px 18px rgb(18 16 14 / 0.3);
 }
-.cover-hero__stack > [data-panel].is-active {
-  visibility: visible;
+/* Her name, huge, on two lines (88px to 330px); a longer headline a size down. */
+.cinema-open__name {
+  font-size: clamp(5.5rem, 22vw, 20.625rem);
+  font-weight: 400;
+  line-height: 0.86;
+  text-wrap: balance;
 }
-.cover-hero__story {
-  font-size: clamp(2.75rem, 7vw, 6.5rem);
-  line-height: 0.95;
-  max-width: 9em;
+.cinema-open__name--long {
+  font-size: clamp(3rem, 9vw, 9rem);
+  line-height: 0.92;
 }
-.cover-hero__story a {
-  display: block;
+.cinema-open__sub {
+  margin-top: 1.25rem;
 }
-.cover-hero__deks {
-  justify-items: end;
-}
-.cover-hero__dek {
-  font-family: var(--font-display);
-  font-style: italic;
-  font-size: clamp(1.125rem, 1.7vw, 1.5rem);
-  line-height: 1.3;
-  max-width: 20em;
-  text-align: right;
-}
-
-/* The foot: credit columns at the left, the thumbnail strip at the right. */
-.cover-hero__bottom {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 2rem;
-}
-.cover-hero__cols {
-  display: flex;
-  gap: 2.5rem;
-  font-size: 0.875rem;
-  line-height: 1.35;
-}
-.cover-hero__cols dt {
-  opacity: 0.6;
-}
-.cover-hero__thumbs {
-  display: flex;
-  gap: 0.375rem;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-/* The thumbnails not on screen are dimmed by a dark veil, not by opacity: the
-   picture itself stays fully shown (card 213) and its hidden title prints. */
-.cover-hero__thumb {
-  display: block;
-  position: relative;
-  width: clamp(4.5rem, 6.5vw, 5.5rem);
-}
-.cover-hero__thumb::after {
-  content: '';
+/* The knockout duplicate: a layer over the whole frame whose background is the
+   cover at the photo's own size and crop point (cover, or contain over cover
+   for a portrait on a wide screen, like the photo layer), clipped to the
+   letters of a copy of the words set exactly over the real ones (same grid
+   cell, same padding, a hidden copy of the small line). Seen only while the
+   opening runs. */
+.cinema-open__knock {
   position: absolute;
   inset: 0;
-  background: rgb(18 16 14 / 0.55);
-  transition: opacity 400ms ease;
-  pointer-events: none;
-}
-.cover-hero__thumb:hover::after,
-.cover-hero__thumb.is-active::after {
+  z-index: 4;
+  display: grid;
+  place-items: center;
+  visibility: hidden;
   opacity: 0;
+  pointer-events: none;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  background-image: var(--knock-fill, linear-gradient(160deg, #7a4a40, #1f1b18));
+  background-size: cover;
+  background-position: var(--knock-pos, 50% 50%);
+  background-repeat: no-repeat;
+  /* Until the photo is in hand the letters are her dusk, never invisible. */
+  background-color: #7a4a40;
+  -webkit-background-clip: text;
+  background-clip: text;
 }
-.cover-hero__thumb .cover-hero__thumb-img {
-  aspect-ratio: 16 / 10;
+@media (min-width: 768px) {
+  .cinema-open__knock.is-portrait {
+    background-image: var(--knock-fill), var(--knock-fill);
+    background-size: contain, cover;
+    background-position: center, var(--knock-pos, 50% 50%);
+  }
 }
-
-/* SplitText's line masks (the Vault's text-reveal block): a little room under
-   each line so descenders are not clipped by the mask. */
-.cover-hero .line-mask {
-  overflow: clip;
-  overflow-clip-margin: 0.06em;
+.cinema-open__knock .cinema-open__words {
+  text-shadow: none;
 }
-.cover-hero .line {
-  padding-bottom: 0.18em;
-  margin-bottom: -0.18em;
+.cinema-open__knock em {
+  color: transparent;
+}
+.cinema-open__ghost {
+  visibility: hidden;
+}
+/* While the opening runs the real name carries no shadow, so no halo shows
+   round the knockout letters on the paper. */
+html.showcase-intro .cinema-open__words,
+html.showcase-running .cinema-open__words {
+  text-shadow: none;
+}
+.cinema-open__credit {
+  position: absolute;
+  z-index: 3;
+  left: 0;
+  right: 0;
+  bottom: clamp(1.25rem, 5vh, 2.75rem);
+  padding-inline: 3rem;
+  text-align: center;
+}
+.cinema-open__credit a {
+  display: inline-block;
+  padding-block: 0.75rem;
+}
+.cinema-open .cinema__count {
+  color: #f3eee7;
 }
 
 /* Before the opening runs (html.showcase-intro, set by the component's inline
-   script on a first full load): the header and the words wait, and the photo
-   starts as the Reveal Hero's narrow window. GSAP takes over from here. */
+   script on a first full load): paper, the knockout name, and the photo as the
+   Reveal Hero's narrow window behind it. GSAP takes over from here. The h1 is
+   never hidden (card 213): the knockout copy covers it letter for letter. */
+html.showcase-intro .cinema-open {
+  background: var(--color-background);
+}
+html.showcase-intro .cinema-open__knock {
+  visibility: visible;
+  opacity: 1;
+}
 html.showcase-intro .site-header,
-html.showcase-intro .cover-hero [data-reveal-lines],
-html.showcase-intro .cover-hero [data-hero-fade],
+html.showcase-intro .cinema-open [data-reveal-lines],
+html.showcase-intro .cinema-open [data-hero-fade],
 html.showcase-intro .cover-hero__overlay {
   opacity: 0;
   visibility: hidden;
@@ -786,73 +814,284 @@ html.showcase-intro .cover-hero__media {
   clip-path: polygon(50% 20%, 50% 20%, 50% 80%, 50% 80%);
 }
 
-/* Paper (print.css, card 155): a page printed mid-opening prints at rest. The
-   !important beats GSAP's inline opacity and clip on the header and words. */
+/* ---- The story frames --------------------------------------------------- */
+/* Each a full screen. The gentle snap (proximity, never mandatory; rule 5)
+   lands a frame's top at the top of the screen: the negative scroll margin
+   cancels the page's scroll-padding for the sticky header (card 223). */
+.cine {
+  position: relative;
+  height: 100svh;
+  overflow: hidden;
+  scroll-snap-align: start;
+  scroll-margin-top: -6.75rem;
+}
+@media (min-width: 64rem) {
+  .cine {
+    scroll-margin-top: -5.5rem;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  html:has([data-cinema-frame]) {
+    scroll-snap-type: y proximity;
+  }
+}
+.cine__type {
+  position: relative;
+  z-index: 2;
+}
+.cine__title {
+  font-weight: 400;
+}
+
+/* a. Full bleed: the title centred near the foot over a dark foot gradient
+   that keeps the small line at AA over a pale photograph. */
+.cine--bleed {
+  color: #f3eee7;
+  background: #12100e;
+}
+.cine--bleed::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    rgb(18 16 14 / 0.8) 0%,
+    rgb(18 16 14 / 0.65) 25%,
+    rgb(18 16 14 / 0) 55%
+  );
+}
+.cine--bleed .cine__type {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
+  padding-inline: 2.5rem;
+  text-align: center;
+  text-shadow: 0 1px 16px rgb(18 16 14 / 0.35);
+}
+.cine--bleed .cine__title {
+  font-size: clamp(2.25rem, 5.2vw, 4.875rem);
+  line-height: 1;
+  text-wrap: balance;
+}
+.cine--bleed .cine__line {
+  margin-top: 0.75rem;
+}
+.cine--bleed .cinema__count {
+  color: #f3eee7;
+}
+
+/* b. Overlap and c. knockout sit on paper. */
+.cine--overlap,
+.cine--knock {
+  color: var(--color-foreground);
+  background: var(--color-background);
+}
+
+/* b. Overlap: the photo inset (58% wide, offset left or right), the title huge
+   across its edge. The huge title is display type in two aria-hidden copies in
+   the same place: ink, and paper clipped to the photo's box, so it reads ink on
+   paper and paper on the photo (a veil on the photo's lower half keeps the
+   paper part at AA for large type). The real title is the ink caption on the
+   paper side, level with the photo's top, so no text node straddles two grounds. */
+.cine--overlap .cine__photo {
+  inset: 10svh auto auto 6%;
+  width: 58%;
+  height: 80svh;
+}
+.cine--overlap.cine--right .cine__photo {
+  left: auto;
+  right: 6%;
+}
+.cine--overlap .cine__photo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgb(18 16 14 / 0) 30%,
+    rgb(18 16 14 / 0.55) 55%,
+    rgb(18 16 14 / 0.55) 100%
+  );
+}
+.cine--overlap .cine__type {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 52svh 4% 0 40%;
+}
+.cine--overlap.cine--right .cine__type {
+  align-items: flex-end;
+  padding: 52svh 40% 0 4%;
+  text-align: right;
+}
+.cine--overlap .cine__title {
+  font-size: clamp(4rem, 9vw, 10rem);
+  line-height: 0.92;
+  text-wrap: balance;
+}
+.cine__caption {
+  position: absolute;
+  z-index: 2;
+  top: 10svh;
+  left: 67%;
+  right: 4%;
+}
+.cine--right .cine__caption {
+  left: 4%;
+  right: 67%;
+  text-align: right;
+}
+.cine__cap-title {
+  font-size: clamp(1.5rem, 2.2vw, 2.25rem);
+  font-weight: 400;
+  line-height: 1.05;
+}
+.cine__caption .cine__line {
+  margin-top: 0.5rem;
+}
+.cine__type--over {
+  color: var(--color-background);
+  pointer-events: none;
+  clip-path: inset(10svh 36% calc(100% - 90svh) 6%);
+}
+.cine--right .cine__type--over {
+  clip-path: inset(10svh 6% calc(100% - 90svh) 36%);
+}
+
+/* c. Knockout: the title cut out of the paper so the cover shows through it,
+   beside the whole photo; the real title is the ink caption under it. */
+.cine--knock .cine__photo {
+  inset: 8svh 6% auto auto;
+  width: 44%;
+  height: 84svh;
+}
+.cine__knock {
+  position: absolute;
+  z-index: 2;
+  top: 8svh;
+  left: 6%;
+  width: 46%;
+  font-size: clamp(5rem, 10.5vw, 13.75rem);
+  line-height: 0.86;
+  font-weight: 400;
+}
+.cine--knock .cine__type {
+  position: absolute;
+  left: 6%;
+  bottom: 8svh;
+  width: 40%;
+}
+.cine--knock .cine__title {
+  font-size: clamp(1.75rem, 2.6vw, 2.5rem);
+  line-height: 1.05;
+}
+.cine--knock .cine__line {
+  margin-top: 0.5rem;
+}
+
+/* Hover: the title link underlines softly. */
+.cine__title a:hover,
+.cine__cap-title a:hover,
+.cinema-open__credit a:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+
+/* Phones: the overlap stacks, the title over the photo's bottom edge; the
+   knockout title sits above the photo. Nothing scrolls sideways. */
+@media (max-width: 767px) {
+  .cine--overlap .cine__photo,
+  .cine--overlap.cine--right .cine__photo {
+    inset: 8svh 1rem auto 1rem;
+    width: auto;
+    height: 64svh;
+  }
+  .cine--overlap .cine__type,
+  .cine--overlap.cine--right .cine__type {
+    align-items: flex-start;
+    padding: 65svh 1rem 0;
+    text-align: left;
+  }
+  .cine--overlap .cine__title {
+    font-size: clamp(3rem, 14vw, 5rem);
+  }
+  .cine__caption,
+  .cine--right .cine__caption {
+    top: auto;
+    bottom: 5svh;
+    left: 1rem;
+    right: 1rem;
+    text-align: left;
+  }
+  .cine__type--over,
+  .cine--right .cine__type--over {
+    clip-path: inset(8svh 1rem calc(100% - 72svh) 1rem);
+  }
+  .cine--knock .cine__photo {
+    inset: 32svh 1rem auto 1rem;
+    width: auto;
+    height: 46svh;
+  }
+  .cine__knock {
+    top: 7svh;
+    left: 1rem;
+    right: 1rem;
+    width: auto;
+    font-size: clamp(3.5rem, 18vw, 6.5rem);
+  }
+  .cine--knock .cine__type {
+    left: 1rem;
+    right: 3rem;
+    bottom: 6svh;
+    width: auto;
+  }
+  .cine--bleed .cine__type {
+    bottom: calc(4rem + env(safe-area-inset-bottom, 0px));
+  }
+  .cinema__count {
+    right: 0.5rem;
+  }
+  /* On paper the photo fills the width less its gutters, so the counter would
+     sit on the photo's edge: the full-screen frames keep it, these drop it. */
+  .cine--overlap .cinema__count,
+  .cine--knock .cinema__count {
+    display: none;
+  }
+}
+
+/* Paper (print.css, card 155): everything at rest, and the knockout and
+   clipped copies as plain ink (the opening's knockout duplicate is left out,
+   since the real h1 is right under it). */
 @media print {
   .site-header,
-  .cover-hero [data-reveal-lines],
-  .cover-hero [data-hero-fade],
-  .cover-hero .line {
+  .cinema [data-reveal-lines],
+  .cinema [data-hero-fade],
+  .cinema [data-frame-slide],
+  .cinema .line,
+  .cinema img {
     opacity: 1 !important;
-    transform: none !important;
-  }
-  /* Visibility only where it belongs: the other stories' panels stay hidden. */
-  .site-header,
-  .cover-hero__headline,
-  .cover-hero [data-panel].is-active [data-reveal-lines],
-  .cover-hero [data-hero-fade] {
     visibility: visible !important;
+    transform: none !important;
+    filter: none !important;
   }
   .cover-hero__media {
     clip-path: none !important;
   }
-}
-.cover-hero a:focus-visible {
-  outline: 2px solid #f3eee7;
-  outline-offset: 3px;
-}
-
-/* Phones and narrow tablets: the title and its line stack, the credits sit
-   above a strip of thumbnails that scrolls sideways (Briceno's touch layout). */
-@media (max-width: 767px) {
-  .cover-hero__top {
-    flex-direction: column;
-    gap: 0.25rem;
+  .cinema-open__knock {
+    display: none !important;
   }
-  .cover-hero__links {
-    gap: 1.25rem;
-  }
-  .cover-hero__middle {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 1rem;
-  }
-  .cover-hero__deks {
-    justify-items: start;
-  }
-  .cover-hero__dek {
-    text-align: left;
-  }
-  .cover-hero__bottom {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 1.25rem;
-  }
-  .cover-hero__cols {
-    gap: 1.5rem;
-    font-size: 0.8125rem;
-  }
-  .cover-hero__thumbs {
-    overflow-x: auto;
-    scrollbar-width: none;
-    margin-inline: calc(-1 * var(--spacing-l));
-    padding-inline: var(--spacing-l);
-  }
-  .cover-hero__thumbs li {
-    flex-shrink: 0;
-  }
-  .cover-hero__thumb {
-    width: 5rem;
+  .cinema-knock,
+  .cine__type--over {
+    background: none !important;
+    color: #1f1b18 !important;
+    -webkit-text-fill-color: #1f1b18 !important;
   }
 }
 

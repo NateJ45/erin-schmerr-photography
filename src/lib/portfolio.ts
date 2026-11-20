@@ -234,6 +234,49 @@ export function splitAfterWord(text: string, after: number): [string, string] {
   return [parts.slice(0, cut).join(''), parts.slice(cut + 1).join('')];
 }
 
+/** One run of a cinema title: italic or not. */
+export interface TitleRun {
+  text: string;
+  italic: boolean;
+}
+
+/**
+ * The home cinema's titles (CoverHero.astro) set one word in the display
+ * italic, the way the approved mockup did ("Erin *Schmerr*", "Just *Ken*").
+ * Words the editor wrapped in underscores are the italic ones; with none, the
+ * last word is, when there are two or more. A lone underscore is kept as
+ * written. Stega markers sit at the end of an encoded string, so they ride
+ * along with the last run.
+ */
+export function cinemaRuns(text: string | null | undefined): TitleRun[] {
+  const source = text ?? '';
+  if (/_[^_]+_/.test(source)) {
+    const runs: TitleRun[] = [];
+    let last = 0;
+    for (const m of source.matchAll(/_([^_]+)_/g)) {
+      const at = m.index ?? 0;
+      if (at > last) runs.push({ text: source.slice(last, at), italic: false });
+      runs.push({ text: m[1], italic: true });
+      last = at + m[0].length;
+    }
+    if (last < source.length) runs.push({ text: source.slice(last), italic: false });
+    return runs.filter((r) => r.text.length > 0);
+  }
+  const at = source.trimEnd().search(/\S+$/);
+  if (at <= 0) return source ? [{ text: source, italic: false }] : [];
+  return [
+    { text: source.slice(0, at), italic: false },
+    { text: source.slice(at), italic: true },
+  ];
+}
+
+/** A cinema title as plain words (underscores dropped), for alt text and labels. */
+export function cinemaPlain(text: string | null | undefined): string {
+  return cinemaRuns(text)
+    .map((r) => r.text)
+    .join('');
+}
+
 /**
  * The first decade a piece of text names, as its first year (1950 for
  * "1950s"), or null. Reads "1950s" and "1950's", and the short "'60s" (with a
