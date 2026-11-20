@@ -175,8 +175,9 @@
   margin: 0;
   width: fit-content;
   padding: 0.35rem 0.65rem 0.4rem;
-  color: var(--color-foreground);
-  background: rgb(243 238 231 / 0.95);
+  /* Fixed ink on fixed paper: the chip reads the same whatever the theme. */
+  color: rgb(31 27 24);
+  background: rgb(243 238 231);
   box-shadow: 0 0.5rem 1.5rem -0.75rem rgb(18 16 14 / 0.55);
   pointer-events: auto;
 }
