@@ -1,17 +1,17 @@
 ---
 // scaffold-file: stories
 // Safe to edit by hand
-// /stories/: every story as a film reel (StoryReel.astro, picked 2026-11-18),
-// in chapters by decade, each chapter in the Studio's drag order (Portfolio >
+// /stories/: every story as a magazine's contents page, a List / Grid toggle
+// (StoriesContents.astro, 2026-11-20; replaced the film reel of 2026-11-18),
+// in sections by decade, each in the Studio's drag order (Portfolio >
 // Stories). With no Sanity data it shows the placeholder stories from
 // src/lib/storyQueries.ts, and says so.
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import StoryReel from '@/components/portfolio/StoryReel.astro';
+import StoriesContents from '@/components/magazine/StoriesContents.astro';
 import { getSiteSettings } from '@/lib/queries';
 import { getStories } from '@/lib/storyQueries';
 import { breadcrumbSchema } from '@/lib/schemas';
 import { site } from '@/data/site';
-import '@/styles/portfolio.css';
 
 const [stories, siteSettings] = await Promise.all([getStories(), getSiteSettings()]);
 const placeholder = stories.every((s) => s.isPlaceholder);
@@ -31,5 +31,5 @@ const schemas = [
   {siteSettings}
   ogCard={{ kicker: 'Stories' }}
 >
-  <StoryReel {stories} {placeholder} />
+  <StoriesContents {stories} {placeholder} />
 </BaseLayout>
