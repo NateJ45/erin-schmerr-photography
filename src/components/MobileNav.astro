@@ -1,18 +1,28 @@
 ---
 // Foundation, edit with care
-// The phone menu: "the boutique drop" (DESIGN.md, Components; 2026-11-20; PORTS.md card 157
-// for the dialog machinery). Replaces the darkroom contact sheet of 2026-11-18.
+// The site menu: "the jewel flood" (DESIGN.md, Components; 2026-11-20; PORTS.md card 157 for
+// the dialog machinery). Replaces the same day's paper "boutique drop". Despite the file name
+// it is the menu at EVERY width now: the "Menu" button sits at the end of the header row on a
+// desktop too, beside the server-rendered nav (rule 4 keeps that nav).
 //
-// After Vero, with one detail from Exo Ape. The "Menu" button opens a native <dialog>: a
-// paper panel drops from the top (a clip reveal, 500ms) and covers most of the screen, while
-// a strip of the page stays visible, dimmed, below it; a tap on that strip closes the menu.
-// The pages are large Bodoni Moda lines numbered I., II., III. that roll up through
-// clipped lines one after another as it opens (50ms apart). Beside them sits one photo frame
-// (the Exo Ape detail): touching or focusing a link cross-fades it to that page's photo (a
-// picture the site already shows for it, else a featured story cover), and while nothing is
-// touched it cycles gently through them. The page you are on is underlined. At the foot:
-// "Get in touch", email, phone and Instagram. Reduced motion: the panel and the photo just
-// fade, nothing rolls or cycles.
+// Built from two Details references (2026-11-20):
+//   - Details Vault "Reveal Navigation 2.0" (vault:navigation-07): coloured sheets stacked
+//     behind the panel, each unclipping a beat after the one before, and the menu button
+//     whose label rolls and whose mark turns. The Vault piece clips the PAGE itself inside a
+//     100dvh scroll box; this site keeps the browser's own scroll (rule 5), so here the
+//     sheets and the panel are clip layers inside the dialog and the page behind is pushed
+//     up a little instead (the Radaville detail below).
+//   - Radaville Studio (details.so/inspo/radaville-uugkpt): the full-screen panel that slides
+//     up over the page while the page is pushed back (1.1s, cubic-bezier(0.76, 0, 0.24, 1));
+//     huge serif page names rising out of their own line masks, 0.1s apart; on hover a name
+//     swaps letter by letter from roman to italic (scaleX, staggered over 0.18s); a preview
+//     photo in the lower right that turns in from below for the hovered page; numbered info
+//     columns (contact, where, follow) on the right that fade in last.
+//
+// Order of the opening: an amber sheet, a magenta sheet, then the wine panel rise from the
+// bottom, 80ms apart; the page behind lifts 4rem; the names roll up; the info and the photo
+// arrive. Closing runs it the other way: the names leave upwards, the panel and sheets clip
+// away to the top, the page settles. Reduced motion: the panel fades, nothing rolls or turns.
 //
 // The browser does the dialog work: showModal() gives the focus trap, Escape, the inert page
 // behind and focus back on the button. The "Close" button sits where "Menu" was. The page
@@ -20,18 +30,16 @@
 // With JavaScript off the "Menu" button is a real link to the footer (#site-footer), whose
 // page list reaches every page, so nothing is hidden behind a script.
 //
-// With Site settings > Phone menu groups filled in (card 191), the lines come in labelled
+// With Site settings > Phone menu groups filled in (card 191), the names come in labelled
 // groups: each group's name is an h2 that labels its list. No groups = one list.
 //
 // Images: lazy, inside a closed dialog, so a page that never opens the menu fetches none.
-// Styles: src/styles/chrome-header.css.
+// Styles: src/styles/chrome-header.css ("The menu").
 
-import { Phone } from 'lucide-react';
-import { IconBrandInstagram, IconBrandFacebook } from '@tabler/icons-react';
-import { telHref } from '@/lib/phone';
 import type { NavItem } from '@/lib/siteSettings';
 import type { PhoneMenuGroup } from '@/lib/wayfinding';
 import type { ChromePrint } from './darkroom/chrome-data';
+import { telHref } from '@/lib/phone';
 
 interface Props {
   links: NavItem[];
@@ -42,8 +50,10 @@ interface Props {
     socialInstagram?: string;
     socialFacebook?: string;
   } | null;
-  /** Kept for callers; the menu draws no logo. */
+  /** The wordmark's name, for the menu's own wordmark. */
   brandName?: string;
+  /** The paper-coloured wordmark (logo-dark.svg) the menu draws on wine. */
+  logoSrc?: string;
   /** The menu's primary button: the header's own button. */
   cta?: { show: boolean; label: string; href: string };
   /** The optional second header button (card 187). */
@@ -54,15 +64,19 @@ interface Props {
   groups?: PhoneMenuGroup[];
   /** The page being viewed (publicPath), so its line is marked. */
   current?: string;
-  /** The featured story covers (chrome-data.ts), cycled through the photo frame. */
+  /** The featured story covers (chrome-data.ts), for the preview photo. */
   frames?: ChromePrint[];
   /** A page's own picture, where the site already shows one. */
   pagePrints?: Record<string, ChromePrint>;
+  /** The header's place block lines ("Cincinnati", "West Chester, Ohio"). */
+  place?: string[];
 }
 
 const {
   links,
   siteSettings,
+  brandName = 'Home',
+  logoSrc,
   cta = { show: true, label: 'Get in touch', href: '/contact/' },
   secondary = null,
   search = false,
@@ -70,6 +84,7 @@ const {
   current,
   frames = [],
   pagePrints = {},
+  place = [],
 } = Astro.props;
 
 const grouped = groups.length > 0;
@@ -84,24 +99,11 @@ const lists = grouped
   ? groups.map((g) => ({ title: g.title, links: g.links }))
   : [{ title: '', links: flat }];
 
-/** I., II., III. ... the line numbers. */
-function roman(n: number): string {
-  const table: [number, string][] = [
-    [10, 'X'],
-    [9, 'IX'],
-    [5, 'V'],
-    [4, 'IV'],
-    [1, 'I'],
-  ];
-  let out = '';
-  for (const [v, s] of table) {
-    while (n >= v) {
-      out += s;
-      n -= v;
-    }
-  }
-  return out;
-}
+/** 01, 02, 03 ... the line numbers (Radaville's superscript page numbers). */
+const num = (n: number) => String(n).padStart(2, '0');
+
+/** A name as letters, so the hover can swap it letter by letter. */
+const letters = (label: string) => Array.from(label);
 
 // One photo per line: the page's own picture, else the covers in turn.
 const tones: ChromePrint['tone'][] = ['sand', 'dusk', 'paper', 'ink'];
@@ -118,59 +120,137 @@ const email = siteSettings?.email;
 const phone = siteSettings?.phone;
 const ig = siteSettings?.socialInstagram;
 const fb = siteSettings?.socialFacebook;
+// The info columns, numbered like Radaville's: only the ones with something in them.
+const info = [
+  (email || phone) && 'contact',
+  place.length > 0 && 'where',
+  (ig || fb) && 'follow',
+].filter(Boolean) as string[];
 let n = 0;
 ---
 
 <div class="site-header__menu">
   {/* A link until the script below takes it over: with JavaScript off it jumps to the footer. */}
-  <a href="#site-footer" aria-controls="site-menu" data-menu-open class="bq-menu-button">
-    Menu
+  <a href="#site-footer" aria-controls="site-menu" data-menu-open class="jw-toggle">
+    <span class="jw-toggle__label" aria-hidden="true">
+      <span class="jw-toggle__roll">
+        <span>Menu</span>
+        <span>Menu</span>
+      </span>
+    </span>
+    <span class="sr-only">Menu</span>
+    <span class="jw-toggle__mark" aria-hidden="true">
+      <svg
+        viewBox="0 0 24 24"
+        width="16"
+        height="16"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.5"
+        stroke-linecap="round"
+      >
+        <path d="M18 6 6 18"></path>
+        <path d="m6 6 12 12"></path>
+      </svg>
+    </span>
   </a>
 
   <dialog
     id="site-menu"
-    class={grouped ? 'mobile-menu bq-drop mobile-menu--groups' : 'mobile-menu bq-drop'}
+    class={grouped ? 'mobile-menu jw-menu mobile-menu--groups' : 'mobile-menu jw-menu'}
     aria-labelledby="site-menu-title"
     data-menu
   >
-    <div class="mobile-menu__panel bq-drop__panel">
-      <div class="bq-drop__top">
-        <p id="site-menu-title" class="bq-drop__title">
+    {/* The stacked sheets (Vault navigation-07): they rise just ahead of the panel. */}
+    <span class="jw-sheet jw-sheet--amber" aria-hidden="true"></span>
+    <span class="jw-sheet jw-sheet--magenta" aria-hidden="true"></span>
+
+    <div class="mobile-menu__panel jw-menu__panel">
+      <div class="jw-menu__top">
+        <a href="/" class="jw-menu__brand" aria-label={`${brandName} home`}>
+          {logoSrc ? (
+            <img src={logoSrc} alt="" width="258" height="25" decoding="async" loading="lazy" />
+          ) : (
+            <span>{brandName}</span>
+          )}
+        </a>
+        <p id="site-menu-title" class="sr-only">
           Menu
         </p>
-        <button type="button" class="bq-menu-button" data-menu-close>
-          Close
+        <button type="button" class="jw-toggle jw-toggle--close" data-menu-close>
+          <span class="jw-toggle__label" aria-hidden="true">
+            <span class="jw-toggle__roll">
+              <span>Close</span>
+              <span>Close</span>
+            </span>
+          </span>
+          <span class="sr-only">Close menu</span>
+          <span class="jw-toggle__mark" aria-hidden="true">
+            <svg
+              viewBox="0 0 24 24"
+              width="16"
+              height="16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            >
+              <path d="M18 6 6 18"></path>
+              <path d="m6 6 12 12"></path>
+            </svg>
+          </span>
         </button>
       </div>
 
-      <div class="bq-drop__body">
-        <nav class="bq-drop__nav" aria-label="Primary mobile">
+      <div class="jw-menu__body">
+        <nav class="jw-menu__nav" aria-label="Primary mobile">
           {lists.map((list, gi) => (
-            <div class={grouped ? 'mobile-menu__group bq-drop__group' : 'bq-drop__group'}>
+            <div class={grouped ? 'mobile-menu__group jw-group' : 'jw-group'}>
               {list.title && (
-                <h2 id={`site-menu-group-${gi}`} class="bq-drop__group-label">
+                <h2 id={`site-menu-group-${gi}`} class="jw-group__label">
                   {list.title}
                 </h2>
               )}
               <ul
-                class="bq-drop__list"
+                class="jw-list"
                 aria-labelledby={list.title ? `site-menu-group-${gi}` : undefined}
               >
                 {list.links.map((link) => {
                   const i = n++;
+                  const chars = letters(link.label);
                   return (
-                    <li class="bq-line" style={`--i: ${i}`}>
+                    <li class="jw-line" style={`--i: ${i}`}>
                       <a
                         href={link.href}
-                        class="bq-line__link"
+                        class="jw-line__link"
                         data-frame={i}
                         aria-current={isCurrent(link.href) ? 'page' : undefined}
                       >
-                        <span class="bq-line__num" aria-hidden="true">
-                          {roman(i + 1)}.
+                        <span class="jw-line__clip">
+                          <span class="jw-line__roll">
+                            <span class="sr-only">{link.label}</span>
+                            <span class="jw-word" aria-hidden="true" style={`--n: ${chars.length}`}>
+                              {chars.map((c, ci) => (
+                                <span class="jw-char" style={`--c: ${ci}`}>
+                                  {c}
+                                </span>
+                              ))}
+                            </span>
+                            <span
+                              class="jw-word jw-word--alt"
+                              aria-hidden="true"
+                              style={`--n: ${chars.length}`}
+                            >
+                              {chars.map((c, ci) => (
+                                <span class="jw-char" style={`--c: ${ci}`}>
+                                  {c}
+                                </span>
+                              ))}
+                            </span>
+                          </span>
                         </span>
-                        <span class="bq-line__clip">
-                          <span class="bq-line__label">{link.label}</span>
+                        <span class="jw-line__num" aria-hidden="true">
+                          {num(i + 1)}
                         </span>
                       </a>
                     </li>
@@ -181,67 +261,96 @@ let n = 0;
           ))}
         </nav>
 
-        {/* The one photo frame (decorative): every line's photo stacked, one shown. */}
-        <div class="bq-frame" aria-hidden="true" data-frames>
-          {prints.map((p, i) => (
-            <span
-              class:list={['bq-frame__photo', `bq-tone--${p.tone}`, { 'is-shown': i === startAt }]}
-            >
-              {p.src && (
-                <img
-                  src={p.src}
-                  srcset={p.srcset}
-                  alt=""
-                  width="160"
-                  height="200"
-                  loading="lazy"
-                  decoding="async"
-                />
-              )}
-            </span>
-          ))}
+        <div class="jw-menu__side">
+          {info.length > 0 && (
+            <dl class="jw-info">
+              {info.map((kind, k) => (
+                <div class="jw-info__block">
+                  <dt>
+                    <span class="jw-info__num">{num(k + 1)}</span>
+                    {kind === 'contact' ? 'Contact' : kind === 'where' ? 'Where' : 'Follow'}
+                  </dt>
+                  {kind === 'contact' && (
+                    <>
+                      {email && (
+                        <dd>
+                          <a href={`mailto:${email}`}>{email}</a>
+                        </dd>
+                      )}
+                      {phone && (
+                        <dd>
+                          <a href={telHref(phone)}>{phone}</a>
+                        </dd>
+                      )}
+                    </>
+                  )}
+                  {kind === 'where' && place.map((line) => <dd>{line}</dd>)}
+                  {kind === 'follow' && (
+                    <>
+                      {ig && (
+                        <dd>
+                          <a href={ig} target="_blank" rel="noopener noreferrer">
+                            Instagram
+                          </a>
+                        </dd>
+                      )}
+                      {fb && (
+                        <dd>
+                          <a href={fb} target="_blank" rel="noopener noreferrer">
+                            Facebook
+                          </a>
+                        </dd>
+                      )}
+                    </>
+                  )}
+                </div>
+              ))}
+            </dl>
+          )}
+
+          {/* The preview photo (decorative): every line's photo stacked, one shown. */}
+          <div class="jw-frame" aria-hidden="true" data-frames>
+            {prints.map((p, i) => (
+              <span
+                class:list={[
+                  'jw-frame__photo',
+                  `bq-tone--${p.tone}`,
+                  { 'is-shown': i === startAt },
+                ]}
+              >
+                {p.src && (
+                  <img
+                    src={p.src}
+                    srcset={p.srcset}
+                    alt=""
+                    width="160"
+                    height="200"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                )}
+              </span>
+            ))}
+          </div>
         </div>
       </div>
 
-      <div class="bq-drop__foot">
+      <div class="jw-menu__foot">
         {cta.show && (
-          <a href={cta.href} class="bq-button bq-drop__cta">
+          <a href={cta.href} class="jw-button">
             {cta.label}
           </a>
         )}
         {secondary && (
-          <a href={secondary.href} class="bq-drop__small">
+          <a href={secondary.href} class="jw-small">
             {secondary.label}
           </a>
         )}
         {/* Visitor search (card 126). A real link to /search/, so it works without the script. */}
         {search && (
-          <a href="/search/" data-menu-search class="bq-drop__small">
+          <a href="/search/" data-menu-search class="jw-small">
             Search the site
           </a>
-        )}
-        {(email || phone || ig || fb) && (
-          <div class="bq-drop__contact">
-            {email && <a href={`mailto:${email}`}>{email}</a>}
-            {phone && (
-              <a href={telHref(phone)}>
-                <Phone size={14} aria-hidden="true" />
-                {phone}
-              </a>
-            )}
-            {ig && (
-              <a href={ig} target="_blank" rel="noopener noreferrer">
-                <IconBrandInstagram size={16} stroke={1.5} aria-hidden="true" />
-                Instagram
-              </a>
-            )}
-            {fb && (
-              <a href={fb} target="_blank" rel="noopener noreferrer">
-                <IconBrandFacebook size={16} stroke={1.5} aria-hidden="true" />
-                Facebook
-              </a>
-            )}
-          </div>
         )}
       </div>
     </div>
@@ -255,17 +364,24 @@ let n = 0;
   const menu = () => document.querySelector<HTMLDialogElement>('dialog[data-menu]');
   const trigger = () => document.querySelector<HTMLAnchorElement>('[data-menu-open]');
   const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const root = document.documentElement;
 
-  // ---- The photo frame: cross-fade to the touched line's photo, else cycle gently. ----
+  // ---- The preview photo: turn in the hovered line's photo, else cycle gently. ----
   const CYCLE_MS = 3600;
   let cycle: number | undefined;
   let shown = 0;
 
   function show(i: number) {
-    const photos = menu()?.querySelectorAll<HTMLElement>('.bq-frame__photo');
+    const photos = menu()?.querySelectorAll<HTMLElement>('.jw-frame__photo');
     if (!photos?.length) return;
-    shown = ((i % photos.length) + photos.length) % photos.length;
-    photos.forEach((p, k) => p.classList.toggle('is-shown', k === shown));
+    const next = ((i % photos.length) + photos.length) % photos.length;
+    if (next === shown && photos[next].classList.contains('is-shown')) return;
+    // The outgoing photo stays underneath while the new one turns in over it.
+    photos.forEach((p, k) => {
+      p.classList.toggle('is-prev', k === shown && k !== next);
+      p.classList.toggle('is-shown', k === next);
+    });
+    shown = next;
   }
   function stopCycle() {
     if (cycle) window.clearInterval(cycle);
@@ -283,7 +399,7 @@ let n = 0;
     show(Number(link.dataset.frame));
   }
 
-  // The hamburger is a link to the footer until now: make it the button it acts as.
+  // The button is a link to the footer until now: make it the button it acts as.
   function upgrade() {
     const t = trigger();
     if (!t || t.dataset.menuReady !== undefined) return;
@@ -297,42 +413,53 @@ let n = 0;
     const d = menu();
     if (!d || d.open) return;
     d.classList.remove('is-leaving');
-    const start = d.querySelector('.bq-frame__photo.is-shown');
+    const start = d.querySelector('.jw-frame__photo.is-shown');
     shown = start ? Array.from(start.parentElement!.children).indexOf(start) : 0;
     d.showModal();
+    // The page behind lifts while the sheets rise (chrome-header.css, "The page push").
+    root.classList.add('menu-push');
     trigger()?.setAttribute('aria-expanded', 'true');
     startCycle();
   }
 
-  // Closing plays the drop in reverse (400ms) before the dialog really closes; reduced motion
-  // and a navigation close at once.
+  function settle(d: HTMLDialogElement) {
+    d.classList.remove('is-leaving');
+    root.classList.remove('menu-push');
+    if (d.open) d.close();
+  }
+
+  // Closing plays the flood in reverse before the dialog really closes; reduced motion and a
+  // navigation close at once.
   function close(now = false) {
     const d = menu();
     stopCycle();
-    if (!d?.open) return;
+    if (!d?.open) {
+      root.classList.remove('menu-push');
+      return;
+    }
     if (now || reduced() || d.classList.contains('is-leaving')) {
-      d.classList.remove('is-leaving');
-      d.close();
+      settle(d);
       return;
     }
     d.classList.add('is-leaving');
-    const panel = d.querySelector('.bq-drop__panel');
+    root.classList.remove('menu-push');
+    // The amber sheet clips away last.
+    const last = d.querySelector('.jw-sheet--amber');
     let done = false;
     const finish = () => {
       if (done) return;
       done = true;
-      d.classList.remove('is-leaving');
-      if (d.open) d.close();
+      settle(d);
     };
-    panel?.addEventListener('animationend', finish, { once: true });
-    window.setTimeout(finish, 500);
+    last?.addEventListener('animationend', finish, { once: true });
+    window.setTimeout(finish, 1300);
   }
 
   const w = window as typeof window & { __menuBound?: boolean };
   if (!w.__menuBound) {
     w.__menuBound = true;
 
-    // Capture phase: the hamburger is a same-page #link, which Astro's router would otherwise take.
+    // Capture phase: the button is a same-page #link, which Astro's router would otherwise take.
     document.addEventListener(
       'click',
       (e) => {
@@ -347,8 +474,7 @@ let n = 0;
         }
         const d = menu();
         if (!d?.open || !d.contains(target)) return;
-        // The strip of page below the panel: a click there lands on the dialog element itself.
-        if (target === d || target.closest('[data-menu-close]')) {
+        if (target.closest('[data-menu-close]')) {
           close();
           return;
         }
@@ -371,7 +497,7 @@ let n = 0;
       true,
     );
 
-    // Escape: play the reverse drop too (the browser would otherwise close at once).
+    // Escape: play the reverse flood too (the browser would otherwise close at once).
     document.addEventListener(
       'cancel',
       (e) => {
@@ -382,19 +508,20 @@ let n = 0;
       true,
     );
 
-    // The photo follows the line a finger or the keyboard is on.
+    // The photo follows the line a pointer, a finger or the keyboard is on.
     document.addEventListener('pointerover', (e) => pick(e.target), { passive: true });
     document.addEventListener('touchstart', (e) => pick(e.target), { passive: true });
     document.addEventListener('focusin', (e) => {
       if ((e.target as Element)?.matches?.(':focus-visible')) pick(e.target);
     });
 
-    // Keep the trigger's state right whichever way the menu closed (Close, Escape, the strip, a link).
+    // Keep the trigger's state right whichever way the menu closed (Close, Escape, a link).
     document.addEventListener(
       'close',
       (e) => {
         if ((e.target as Element)?.matches?.('dialog[data-menu]')) {
           stopCycle();
+          root.classList.remove('menu-push');
           trigger()?.setAttribute('aria-expanded', 'false');
         }
       },
