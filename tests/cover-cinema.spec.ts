@@ -11,17 +11,22 @@
 // only run when a frame holds a real photo.
 import { test, expect, type Page } from '@playwright/test';
 
-async function home(page: Page, { seen = true } = {}) {
-  await page.addInitScript((seenIntro) => {
-    try {
-      localStorage.setItem('es-first-visit-seen', '1');
-      if (seenIntro) sessionStorage.setItem('tate-intro', '1');
-      // Automated browsers skip the opening unless asked (CoverHero.astro).
-      else sessionStorage.setItem('tate-intro-test', '1');
-    } catch {
-      /* storage blocked: the opening and the loader skip themselves */
-    }
-  }, seen);
+async function home(page: Page, { seen = true, motion = false } = {}) {
+  await page.addInitScript(
+    ({ seenIntro, frameMotion }) => {
+      try {
+        localStorage.setItem('es-first-visit-seen', '1');
+        if (seenIntro) sessionStorage.setItem('tate-intro', '1');
+        // Automated browsers skip the opening unless asked (CoverHero.astro).
+        else sessionStorage.setItem('tate-intro-test', '1');
+        // ...and see the story frames at rest unless asked (cover-hero.ts).
+        if (frameMotion) sessionStorage.setItem('tate-motion-test', '1');
+      } catch {
+        /* storage blocked: the opening and the loader skip themselves */
+      }
+    },
+    { seenIntro: seen, frameMotion: motion },
+  );
   await page.goto('/', { waitUntil: 'load' });
 }
 
@@ -105,17 +110,42 @@ test.describe('motion', () => {
     await expect(page.locator('html')).not.toHaveClass(/showcase-intro/);
   });
 
-  test('a frame arrives in focus and its title settles', async ({ page }) => {
-    await home(page);
-    const frame = page.locator('[data-cinema-frame]').first();
-    test.skip((await frame.count()) === 0, 'no second featured story');
-    await frame.scrollIntoViewIfNeeded();
-    const title = frame.locator('h2');
-    await expect(title).toBeVisible();
-    // Once played, the line masks are gone and the photo is sharp.
-    await expect(frame.locator('.line')).toHaveCount(0, { timeout: 5000 });
-    const img = frame.locator('img').first();
-    if (await img.count()) await expect(img).toHaveCSS('filter', 'none');
+  // The 2026-11-20 live bug: a frame stopped at its snap point after a real wheel
+  // scroll stayed soft and its title half-risen. The motion is time-based, so
+  // wherever the visitor stops the frame ends exactly at rest.
+  test('a frame reached with the wheel ends sharp, its title fully in', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await home(page, { motion: true });
+    const frame = page.locator('[data-cinema-frame][data-layout="overlap"]').first();
+    test.skip((await frame.count()) === 0, 'no overlap frame in this dataset');
+    // Before it arrives it waits below its mask: the motion really is on.
+    await expect(frame.locator('.line').first()).toBeAttached();
+
+    await page.mouse.move(640, 400);
+    for (let i = 0; i < 40; i++) {
+      const top = await frame.evaluate((el) => el.getBoundingClientRect().top);
+      if (top <= 120) break;
+      await page.mouse.wheel(0, Math.min(240, top - 60));
+      await page.waitForTimeout(60);
+    }
+    await page.waitForTimeout(2000);
+
+    const rest = await frame.evaluate((el) => {
+      const img = el.querySelector('img');
+      const titles = [...el.querySelectorAll<HTMLElement>('[data-frame-slide]')];
+      return {
+        top: Math.round(el.getBoundingClientRect().top),
+        filter: img ? getComputedStyle(img).filter : 'none',
+        imgTransform: img ? getComputedStyle(img).transform : 'none',
+        titleTransforms: titles.map((t) => getComputedStyle(t).transform),
+        lines: el.querySelectorAll('.line').length,
+      };
+    });
+    expect(rest.top).toBeLessThan(200);
+    expect(['none', 'blur(0px)']).toContain(rest.filter);
+    expect(['none', 'matrix(1, 0, 0, 1, 0, 0)']).toContain(rest.imgTransform);
+    for (const t of rest.titleTransforms) expect(['none', 'matrix(1, 0, 0, 1, 0, 0)']).toContain(t);
+    expect(rest.lines).toBe(0);
   });
 });
 
