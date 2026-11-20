@@ -72,6 +72,7 @@ function setup(root: HTMLElement): Cleanup {
   const image = root.querySelector<HTMLElement>('[data-hero-image]');
   const overlay = root.querySelector<HTMLElement>('[data-hero-overlay]');
   const knock = root.querySelector<HTMLElement>('[data-hero-knock]');
+  const cut = root.querySelector<HTMLElement>('[data-hero-cut]');
   const header = document.querySelector<HTMLElement>('.site-header');
   const ctx = gsap.context(() => {}, root);
   const splits: SplitText[] = [];
@@ -106,6 +107,7 @@ function setup(root: HTMLElement): Cleanup {
       }
       if (header) gsap.set(header, { autoAlpha: 0 });
       gsap.set(fades, { autoAlpha: 0 });
+      if (cut) gsap.set(cut, { autoAlpha: 0 });
       // The class set the start with CSS until now; GSAP owns it from here.
       html.classList.remove('showcase-intro');
 
@@ -115,6 +117,7 @@ function setup(root: HTMLElement): Cleanup {
           gsap.set([media, image], { clearProps: 'clipPath,transform' });
           gsap.set(open, { clearProps: 'backgroundColor' });
           if (knock) gsap.set(knock, { clearProps: 'opacity,visibility,transform' });
+          if (cut) gsap.set(cut, { clearProps: 'opacity,visibility,transform,scale' });
           if (header) gsap.set(header, { clearProps: 'opacity,visibility' });
           lineSplits.forEach((s) => s.revert());
           html.classList.remove('showcase-running');
@@ -146,6 +149,15 @@ function setup(root: HTMLElement): Cleanup {
         .to(overlay, { autoAlpha: 1, duration: 0.9, ease: 'power2.out' }, 1.3);
       // The knockout gives way to the real, paper-coloured name as the photo fills.
       if (knock) tl.to(knock, { autoAlpha: 0, duration: 0.9, ease: 'power2.inOut' }, 1.3);
+      // As a cover: once the photo is full bleed, the person steps in front of
+      // her name (the cut-out fades up over it, settling from a touch larger).
+      if (cut)
+        tl.fromTo(
+          cut,
+          { autoAlpha: 0, scale: 1.03 },
+          { autoAlpha: 1, scale: 1, duration: 0.9, ease: 'power2.out' },
+          2.75,
+        );
       if (header) tl.to(header, { autoAlpha: 1, duration: 1, ease: 'expo.out' }, 'content');
       tl.to(fades, { autoAlpha: 1, duration: 1, ease: 'expo.out' }, 'content');
       if (lines.length)
@@ -181,9 +193,34 @@ function setup(root: HTMLElement): Cleanup {
       splitLines,
     );
     const lines = frameSplits.flatMap((s) => s.lines);
-    const img = frame.querySelector<HTMLElement>('.cine__photo img');
-    const slides = frame.querySelectorAll<HTMLElement>('[data-frame-slide]');
     const layout = frame.dataset.layout;
+    // A cover frame racks the photo AND the cut-out together (same blur, same
+    // scale, same moment), so the person never drifts off her own photograph.
+    const imgs =
+      layout === 'cover'
+        ? [...frame.querySelectorAll<HTMLElement>('.cover__depth img')]
+        : [...frame.querySelectorAll<HTMLElement>('.cine__photo img')].slice(0, 1);
+    const img = imgs.length ? imgs : null;
+    const slides = frame.querySelectorAll<HTMLElement>('[data-frame-slide]');
+    // Cover: the masthead's letters rise from behind the person, one by one,
+    // through line masks; the echo outline draws in after them; the cover
+    // lines fade up in turn.
+    const mast = frame.querySelector<HTMLElement>('[data-cover-mast]');
+    const echo = frame.querySelector<HTMLElement>('[data-cover-echo]');
+    const coverLines = frame.querySelectorAll<HTMLElement>('[data-cover-line]');
+    // Each masthead line is split on its own (one nowrap line, so one mask).
+    const mastChars: Element[] = [];
+    for (const lineEl of mast ? mast.querySelectorAll<HTMLElement>('.cover__mast-line') : []) {
+      const s = SplitText.create(lineEl, {
+        type: 'lines,chars',
+        mask: 'lines',
+        linesClass: 'line',
+        aria: 'none',
+      });
+      [...s.lines, ...s.chars].forEach((el) => el.setAttribute('data-contrast-decorative', ''));
+      mastChars.push(...s.chars);
+      frameSplits.push(s);
+    }
     // The overlap titles drift toward the photo's far side; the knockout leftward.
     const dx = frame.classList.contains('cine--right') ? -48 : 48;
     const entry: Built = { tl: gsap.timeline(), splits: frameSplits, played: false };
@@ -201,6 +238,9 @@ function setup(root: HTMLElement): Cleanup {
           // Exactly at rest, whatever the eases left behind.
           if (img) gsap.set(img, { clearProps: 'filter,scale,transform' });
           if (slides.length) gsap.set(slides, { clearProps: 'x,transform' });
+          if (coverLines.length)
+            gsap.set(coverLines, { clearProps: 'opacity,visibility,transform' });
+          if (echo) gsap.set(echo, { clearProps: 'opacity,visibility' });
           // The lines have done their work: back to plain text, so a later
           // resize re-wraps naturally.
           entry.splits.forEach((s) => s.revert());
@@ -221,7 +261,23 @@ function setup(root: HTMLElement): Cleanup {
           { yPercent: 0, duration: 1, stagger: 0.08, ease: 'expo.out' },
           0.1,
         );
-      if (slides.length && layout !== 'bleed')
+      if (mastChars.length)
+        tl.fromTo(
+          mastChars,
+          { yPercent: 115 },
+          { yPercent: 0, duration: 1.1, stagger: 0.04, ease: 'expo.out' },
+          0.15,
+        );
+      if (echo)
+        tl.fromTo(echo, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.9, ease: 'power2.out' }, 0.9);
+      if (coverLines.length)
+        tl.fromTo(
+          coverLines,
+          { autoAlpha: 0, y: 18 },
+          { autoAlpha: 1, y: 0, duration: 0.8, stagger: 0.09, ease: 'expo.out' },
+          0.45,
+        );
+      if (slides.length && layout !== 'bleed' && layout !== 'cover')
         tl.fromTo(
           slides,
           { x: layout === 'knock' ? -32 : dx },
@@ -241,6 +297,64 @@ function setup(root: HTMLElement): Cleanup {
     built.set(frame, entry);
   };
   frames.forEach(build);
+
+  // Depth on the cover frames. As a cover scrolls through, the masthead, its
+  // outline echo and the cover lines move at different rates against the
+  // photo and the person (which stay together, so they always register): the
+  // person seems to stand off the page. Scrubbed, but CENTRED on rest: when the
+  // frame's top is at the top of the screen (where the snap lands) every offset
+  // is exactly 0. On a desktop pointer the same layers also lean a few pixels
+  // toward the cursor; none on touch.
+  const covers = frames.filter((f) => f.dataset.layout === 'cover');
+  const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const pointerOffs: (() => void)[] = [];
+  for (const frame of covers) {
+    const layers: [HTMLElement | null, number, number][] = [
+      // [element, scroll travel as a share of the screen height, cursor px]
+      [frame.querySelector<HTMLElement>('[data-cover-mast]'), 0.06, 8],
+      [frame.querySelector<HTMLElement>('[data-cover-echo]'), 0.1, 14],
+      [frame.querySelector<HTMLElement>('[data-cover-lines]'), -0.03, -4],
+    ];
+    ctx.add(() => {
+      for (const [el, travel] of layers) {
+        if (!el) continue;
+        gsap.fromTo(
+          el,
+          { y: () => innerHeight * travel },
+          {
+            y: () => -innerHeight * travel,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: frame,
+              start: 'top bottom',
+              end: 'bottom top',
+              scrub: true,
+              invalidateOnRefresh: true,
+            },
+          },
+        );
+      }
+    });
+    if (!finePointer) continue;
+    const movers = layers
+      .filter(([el]) => !!el)
+      .map(([el, , px]) => ({
+        to: gsap.quickTo(el!, 'x', { duration: 0.6, ease: 'power3.out' }),
+        px,
+      }));
+    const onMove = (e: PointerEvent) => {
+      const r = frame.getBoundingClientRect();
+      const dx = (e.clientX - r.left) / r.width - 0.5;
+      for (const m of movers) m.to(dx * 2 * m.px);
+    };
+    const onLeave = () => movers.forEach((m) => m.to(0));
+    frame.addEventListener('pointermove', onMove);
+    frame.addEventListener('pointerleave', onLeave);
+    pointerOffs.push(() => {
+      frame.removeEventListener('pointermove', onMove);
+      frame.removeEventListener('pointerleave', onLeave);
+    });
+  }
 
   // Safety nets. When scrolling stops, any frame on screen that has not
   // finished and is not playing (it never got its trigger, or something
@@ -290,6 +404,7 @@ function setup(root: HTMLElement): Cleanup {
     window.removeEventListener('scrollend', onScrollEnd);
     document.removeEventListener('visibilitychange', onScrollEnd);
     window.clearTimeout(resizeTimer);
+    pointerOffs.forEach((off) => off());
     ctx.revert();
     splits.forEach((s) => s.revert());
     built.forEach((b) => b.splits.forEach((s) => s.revert()));
