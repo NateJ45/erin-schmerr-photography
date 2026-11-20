@@ -1,0 +1,186 @@
+---
+// scaffold-file: stories
+// Safe to edit by hand
+// /stories/ as a magazine's contents page (DESIGN.md "Stories contents",
+// 2026-11-20; replaced the film reel of 2026-11-18). After davidspaeth.com's
+// Images/List toggle and clementgrellier.fr's floating preview (Details
+// voyTQPKp3dU0hluXAXv2Mq), rebuilt in this site's paper and ink.
+//
+// One markup, two views (src/styles/magazine.css):
+// - LIST (the default): each story is one ruled row reading
+//   "Publication: Story title (count)" in big Bodoni Moda, the lead in its
+//   italic. The lead is the magazine the story ran in, else the decade its look
+//   comes from (contentsLead(), src/lib/magazine.ts), so the reel's decade
+//   chapters live on as the contents' sections: a small "The 1950s" heading
+//   before each run, oldest first. With a mouse from 64rem up (and motion
+//   allowed) the cover floats beside the cursor with a small "Read the story"
+//   label; touch, keyboard-only, reduced motion and no JavaScript show a small
+//   cover inline at the start of each row instead.
+// - GRID: the same items as an editorial spread of mixed sizes (a five-step
+//   pattern, gridSlot()), cover over caption, never a uniform card grid. The
+//   chapter headings step out of the grid's flow there.
+//
+// The toggle is two real buttons (aria-pressed); the choice is remembered per
+// visitor in localStorage (wrapped in try/catch, so blocked storage only
+// forgets). Without JavaScript the toggle stays hidden and the list shows.
+// Each cover carries transition:name `story-cover-<slug>`, which the story
+// page's cover shares, so the thumbnail grows into the opening spread
+// (src/scripts/magazine-preview.ts hands the name to the floating preview when
+// the list's thumbnails are hidden).
+import FocusImage from '@/components/portfolio/FocusImage.astro';
+import { formatMonthYear, reelChapters, storyFrames } from '@/lib/portfolio';
+import { contentsLead, gridSlot, plateNo } from '@/lib/magazine';
+import { urlFor } from '@/lib/sanity';
+import type { Story } from '@/lib/storyQueries';
+import '@/styles/magazine.css';
+
+interface Props {
+  stories: Story[];
+  /** True when every story is a built-in placeholder (no Sanity data). */
+  placeholder?: boolean;
+}
+
+const { stories, placeholder = false } = Astro.props;
+
+let running = 0;
+const chapters = reelChapters(stories).map((chapter) => ({
+  label: chapter.decade === null ? 'Undated' : `The ${chapter.decade}s`,
+  id: `chapter-${chapter.decade ?? 'undated'}`,
+  items: chapter.stories.map((story) => {
+    const index = running++;
+    const cover = story.cover ?? null;
+    return {
+      story,
+      index,
+      no: plateNo(index + 1),
+      slot: gridSlot(index),
+      lead: contentsLead(story),
+      count: storyFrames(story.cover, story.photos).length,
+      meta: [story.location, formatMonthYear(story.date)].filter(Boolean).join(', '),
+      preview: cover?.asset ? urlFor(cover).width(720).auto('format').quality(75).url() : '',
+      focus: `${Math.round((cover?.hotspot?.x ?? 0.5) * 100)}% ${Math.round((cover?.hotspot?.y ?? 0.5) * 100)}%`,
+    };
+  }),
+}));
+const items = chapters.flatMap((c) => c.items);
+---
+
+<section
+  class="mag-contents"
+  data-mag-contents
+  data-mag-preview-root
+  data-view="list"
+  aria-labelledby="stories-heading"
+>
+  <header class="mag-contents__head">
+    <p class="mag-kicker">Contents</p>
+    <h1 id="stories-heading" class="mag-contents__title font-display">
+      Stories<sup class="mag-count">({items.length})</sup>
+    </h1>
+    <p class="mag-contents__dek">
+      Every sitting starts from something: a decade, a dress, a book, a street in Cincinnati. These
+      are the ones that turned into whole stories.
+    </p>
+    {placeholder && (
+      <p class="portfolio-label mt-4">Placeholder stories, shown until the first one is added.</p>
+    )}
+    <div class="mag-toggle" role="group" aria-label="Show stories as" data-mag-toggle hidden>
+      <button type="button" class="mag-toggle__btn" data-view-btn="list" aria-pressed="true">
+        List
+      </button>
+      <span class="mag-toggle__sep" aria-hidden="true">
+        /
+      </span>
+      <button type="button" class="mag-toggle__btn" data-view-btn="grid" aria-pressed="false">
+        Grid
+      </button>
+    </div>
+  </header>
+
+  {/* Set the remembered view before first paint, so the grid never flashes as a list. */}
+  <script is:inline>
+    (function () {
+      var root = document.querySelector('[data-mag-contents]');
+      if (!root) return;
+      try {
+        var v = localStorage.getItem('tate-stories-view');
+        if (v === 'grid' || v === 'list') root.setAttribute('data-view', v);
+      } catch (e) {
+        /* Storage blocked: the list it is. */
+      }
+    })();
+  </script>
+
+  <div class="mag-contents__items">
+    {chapters.map((chapter) => (
+      <>
+        <h2 id={chapter.id} class="mag-chapter">
+          {chapter.label}
+        </h2>
+        {chapter.items.map((item) => (
+          <article class:list={['mag-item', `mag-item--s${item.slot}`]} data-mag-preview-item>
+            <a
+              class="mag-item__link"
+              href={`/stories/${item.story.slug}/`}
+              data-preview-index={item.index}
+              data-vt-name={`story-cover-${item.story.slug}`}
+              data-cursor-label="Read the story"
+            >
+              <span
+                class="mag-item__thumb"
+                transition:name={`story-cover-${item.story.slug}`}
+                transition:animate="initial"
+              >
+                <FocusImage
+                  photo={item.story.cover}
+                  width={900}
+                  crop={4 / 5}
+                  sizes="(min-width: 64rem) 40vw, (min-width: 48rem) 45vw, 50vw"
+                  loading={item.index < 3 ? 'eager' : 'lazy'}
+                  alt=""
+                />
+              </span>
+              <span class="mag-item__no" aria-hidden="true">
+                {item.no}
+              </span>
+              <h3 class="mag-item__line font-display">
+                <span class="mag-item__lead">{item.lead}:</span>{' '}
+                <span class="mag-item__title">{item.story.title}</span>
+                <span class="mag-item__count">
+                  <span class="sr-only">, </span>({item.count}
+                  <span class="sr-only"> photographs</span>)
+                </span>
+              </h3>
+              {item.meta && <span class="mag-item__meta">{item.meta}</span>}
+            </a>
+          </article>
+        ))}
+      </>
+    ))}
+  </div>
+
+  {/* The floating preview: one frame, every cover stacked inside it, shown beside the cursor. */}
+  <div class="mag-preview" data-mag-preview aria-hidden="true">
+    {items.map((item) => (
+      <span class="mag-preview__pic" data-preview-pic={item.index}>
+        {item.preview ? (
+          <img
+            src={item.preview}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            style={`object-position: ${item.focus}`}
+          />
+        ) : (
+          <span class="mag-preview__ph">Placeholder</span>
+        )}
+      </span>
+    ))}
+  </div>
+  <span class="mag-cursor" data-mag-cursor aria-hidden="true"></span>
+</section>
+
+<script>
+  import '@/scripts/magazine-preview';
+  import '@/scripts/stories-contents';
+</script>
