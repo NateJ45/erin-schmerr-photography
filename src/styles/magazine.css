@@ -968,8 +968,19 @@ a.mag-press__link:focus-visible {
   html.motion .mag-spread__kicker {
     animation: mag-fade 1s var(--mag-ease) 0.6s both;
   }
+  /* The contents title (the /stories/ and /press/ H1) rises without fading (2026-11-20): it is
+     the first screen's heading, so it paints at full strength from the first frame and never
+     waits on the animation (tests/first-viewport.spec.ts, PORTS.md card 213). */
   html.motion .mag-contents__title {
-    animation: mag-rise 1.4s var(--mag-ease) both;
+    animation: mag-lift 1.4s var(--mag-ease) both;
+  }
+}
+@keyframes mag-lift {
+  from {
+    transform: translateY(0.35em);
+  }
+  to {
+    transform: none;
   }
 }
 @keyframes mag-rise {

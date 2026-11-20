@@ -98,7 +98,10 @@ const items = chapters.flatMap((c) => c.items);
     </div>
   </header>
 
-  {/* Set the remembered view before first paint, so the grid never flashes as a list. */}
+  {/* Set the remembered view before first paint, so the grid never flashes as a list, and
+      show the toggle before first paint too: unhidden later by the module script, its row
+      pushed the whole list down after the page had drawn (CLS 0.15 at 390px,
+      tests/cls.spec.ts). Without JavaScript none of this runs and the toggle stays hidden. */}
   <script is:inline>
     (function () {
       var root = document.querySelector('[data-mag-contents]');
@@ -109,6 +112,13 @@ const items = chapters.flatMap((c) => c.items);
       } catch (e) {
         /* Storage blocked: the list it is. */
       }
+      var view = root.getAttribute('data-view') === 'grid' ? 'grid' : 'list';
+      var toggle = root.querySelector('[data-mag-toggle]');
+      if (!toggle) return;
+      toggle.querySelectorAll('[data-view-btn]').forEach(function (b) {
+        b.setAttribute('aria-pressed', String(b.getAttribute('data-view-btn') === view));
+      });
+      toggle.hidden = false;
     })();
   </script>
 
@@ -160,8 +170,9 @@ const items = chapters.flatMap((c) => c.items);
     ))}
   </div>
 
-  {/* The floating preview: one frame, every cover stacked inside it, shown beside the cursor. */}
-  <div class="mag-preview" data-mag-preview aria-hidden="true">
+  {/* The floating preview: one frame, every cover stacked inside it, shown beside the cursor.
+      Hover-only and hidden on purpose, so tests/first-viewport.spec.ts skips it. */}
+  <div class="mag-preview" data-mag-preview aria-hidden="true" data-first-viewport-exempt>
     {items.map((item) => (
       <span class="mag-preview__pic" data-preview-pic={item.index}>
         {item.preview ? (

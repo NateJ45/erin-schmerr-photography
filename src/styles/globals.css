@@ -1071,11 +1071,13 @@ html:has(.mobile-menu[open]) {
   color: var(--jw-ink);
 }
 /* A jewel on an element that sits inside the page gutter (a masthead): the colour is painted
-   out to both edges of the screen by a spread shadow, and clip-path trims it back to the
-   element's own height. Paint only, so the page cannot scroll sideways and nothing moves. */
+   out to both edges of the screen by a filled border image with a sideways outset (none up or
+   down, so it keeps the element's own height). An outset is ink overflow, paint only, so the
+   page cannot scroll sideways and nothing moves. It replaced a spread shadow trimmed by
+   clip-path (2026-11-20): same picture, but a clip-path on the masthead read as a clipped first
+   screen to tests/first-viewport.spec.ts and would hide anything that moved outside it. */
 .jewel-bleed {
-  box-shadow: 0 0 0 100vmax var(--jw);
-  clip-path: inset(0 -100vmax);
+  border-image: linear-gradient(var(--jw), var(--jw)) fill 0 / 0 / 0 100vmax;
 }
 
 /* Focus rings on dark surfaces (PORTS.md card 156). The page ring is a mid grey-blue, about 7:1

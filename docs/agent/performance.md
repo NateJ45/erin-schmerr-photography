@@ -41,7 +41,7 @@ Use `<SanityImage />`'s `width` prop to drive these. **Never request larger than
 - **Libre Baskerville** (display serif): self-hosted via `@fontsource/libre-baskerville`. Load only the weights you use -- each unused weight file is ~50KB wasted across latin + latin-ext woff/woff2.
 - **Inter** (body sans-serif): self-hosted via `@fontsource-variable/inter`. The variable file covers all weights in a single request.
 - **Script accent font** (opt-in): no script font is loaded by default. To enable the `font-script` utility, add a `@fontsource` import in `globals.css` and point `--font-script` at the family. See `animation.md` for the full opt-in steps.
-- No `<link rel="preload">` on font URLs. Vite hashes the filenames at build time, so a static preload tag would 404. The cost is one extra paint; the benefit is no broken preload (and Lighthouse stays at 100 Best Practices).
+- This site (Bodoni Moda roman and italic, Jost) preloads its three latin woff2 files in `BaseLayout.astro` (2026-11-20). A typed path would 404 because Vite hashes the filenames, so the URLs come from `?url` imports of the `@fontsource-variable/*/files/*.woff2` files, which resolve to the same hashed asset the `@font-face` rules use (one download, checked in `dist/client/_astro`). Why: the home's name is set at up to 20rem, and at that size even the metric-matched fallback breaks its lines differently, so a late swap shifted the first screen (CLS 0.1 at 1440px in `tests/cls.spec.ts`). `tests/page-weight.spec.ts` caps preloads at 3 fonts of 120 KB each; a fourth face or a new display font needs that budget and this list revisited.
 
 ### Page CSS purge (PORTS.md card 159)
 

@@ -3,7 +3,7 @@
 // Site-wide layout. Provides:
 //   - <html lang>, document head, OG/Twitter meta
 //   - Anti-FOUC theme bootstrap (runs before first paint)
-//   - Cormorant Garamond font preload (LCP element on hero)
+//   - Brand font preloads (Bodoni Moda roman + italic, Jost; the first screen's faces)
 //   - Cloudflare Web Analytics beacon (conditional)
 //   - Astro View Transitions <ClientRouter />
 //   - Skip-to-main link, Header, <main id="main">, Footer
@@ -42,6 +42,14 @@ import '@/styles/chrome-header.css';
 import FirstVisitLoader from '@/components/FirstVisitLoader.astro';
 // The printed page (PORTS.md card 155): motion at rest, black on white. Last on purpose.
 import '@/styles/print.css';
+// The three font files the first screen draws in, preloaded (2026-11-20). The home's name is
+// set at up to 20rem in Bodoni Moda (roman and italic), and at that size even a metric-matched
+// fallback breaks its lines differently, so a late swap moved the whole first screen (CLS 0.1
+// at 1440px, tests/cls.spec.ts). `?url` gives the same hashed file the @fontsource CSS points
+// at, so the preload and the @font-face share one download.
+import bodoniRomanUrl from '@fontsource-variable/bodoni-moda/files/bodoni-moda-latin-opsz-normal.woff2?url';
+import bodoniItalicUrl from '@fontsource-variable/bodoni-moda/files/bodoni-moda-latin-opsz-italic.woff2?url';
+import jostUrl from '@fontsource-variable/jost/files/jost-latin-wght-normal.woff2?url';
 
 interface Props {
   title: string;
@@ -225,10 +233,12 @@ const announcementStyle = ANNOUNCEMENT_STYLES[announcement?.style ?? 'info'] ?? 
     <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="16x16 32x32 48x48" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
-    {/* Note: Cormorant Garamond is loaded via @fontsource @import in globals.css.
-        Vite hashes the woff2 filename at build time so a static preload here
-        would 404. If hero h1 LCP needs faster fonts, switch to font-display: optional
-        or generate the preload tag from the built CSS manifest. */}
+    {/* The brand faces are loaded by @fontsource imports (brand.config.json). Vite hashes
+        the woff2 names, so the preloads take their URLs from `?url` imports in the
+        frontmatter rather than a typed path, which would 404. */}
+    <link rel="preload" href={bodoniRomanUrl} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={bodoniItalicUrl} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={jostUrl} as="font" type="font/woff2" crossorigin />
 
     {/* Open Graph */}
     <meta property="og:type" content={ogType} />
