@@ -1,0 +1,166 @@
+---
+// scaffold-file: sessions
+// Safe to edit by hand
+// Page-builder block `sessionOffers` (sessionSections.ts, phase 2, 2026-11-20):
+// the kinds of client as distinct offers, each a chapter of its own, like the
+// sections of a magazine: a huge italic numeral in Dusk, who it is for, the
+// name very large, a sentence, what it includes on hairline rules, the "from"
+// line, then a quiet link to ask about it. Its photo stands beside it at 4:5,
+// the sides alternating chapter by chapter; on a phone the photo leads.
+//
+// An offer can carry tiers (the creative offer: Test, Editorial, Fine-art
+// commission), compared on the same rows (looks, hours, retouched images,
+// turnaround, usage). Each tier is its own group with its rows, so a phone
+// reads one tier at a time with every label; from 64rem the tiers sit side by
+// side on one subgrid with the labels in a column at the left, and the most
+// chosen tier is drawn inside an ink rule with its label above it.
+//
+// Money: every "from" is typed in the Studio, never in code. An empty one is
+// not drawn (figure() in src/lib/sessions.ts).
+//
+// SELF_CONTAINED: plain page ground, no surface prop.
+import FocusImage from '@/components/portfolio/FocusImage.astro';
+import type { ProjectedSessionOffersSection } from '@/lib/pageBuilder.types';
+import type { PortfolioPhoto } from '@/lib/portfolio';
+import { figure, roman } from '@/lib/sessions';
+import '@/styles/page-sessions.css';
+
+type Props = Omit<ProjectedSessionOffersSection, '_type' | '_key'> & { headingId?: string };
+
+const {
+  eyebrow,
+  heading = 'Three ways in',
+  intro,
+  offers,
+  featuredLabel = 'Most chosen',
+  askLabel = 'Ask about this session',
+  headingId = 'session-offers',
+} = Astro.props;
+const list = (offers ?? []).filter((o) => o?.name);
+---
+
+{list.length > 0 && (
+  <section class="bg-background" aria-labelledby={headingId}>
+    <div class="mx-auto max-w-content px-m py-section-lg">
+      <header class="sx-head sx-offers__head">
+        {eyebrow && <p class="portfolio-label mb-4">{eyebrow}</p>}
+        <h2 id={headingId} class="sx-big-title font-display">
+          {heading}
+        </h2>
+        {intro && <p class="mt-6 max-w-xl text-lg text-muted-foreground">{intro}</p>}
+      </header>
+      <div class="sx-offers">
+        {list.map((offer, i) => {
+          const id = `${headingId}-o${i + 1}`;
+          const includes = (offer.includes ?? []).filter((x) => typeof x === 'string' && x.trim());
+          const tiers = (offer.tiers ?? []).filter((t) => t?.name);
+          const tierRows = (offer.tierRows ?? []).filter((r) => r?.label);
+          const from = figure(offer.from);
+          return (
+            <article
+              class:list={[
+                'sx-offer',
+                i % 2 === 1 && 'sx-offer--flip',
+                tiers.length > 0 && 'sx-offer--tiers',
+              ]}
+              aria-labelledby={id}
+            >
+              <div class="sx-offer__photo">
+                <FocusImage
+                  photo={offer.photo as PortfolioPhoto}
+                  width={900}
+                  sizes="(min-width: 64rem) 36vw, 100vw"
+                  crop={4 / 5}
+                  alt={offer.photo?.alt ?? ''}
+                />
+              </div>
+              <div class="sx-offer__text">
+                <p class="sx-offer__num font-display" aria-hidden="true">
+                  {roman(i + 1)}.
+                </p>
+                {offer.kicker && <p class="portfolio-label">{offer.kicker}</p>}
+                <h3 id={id} class="sx-offer__name font-display">
+                  {offer.name}
+                </h3>
+                {offer.line && <p class="sx-offer__line text-muted-foreground">{offer.line}</p>}
+                {includes.length > 0 && (
+                  <ul class="sx-offer__includes" role="list">
+                    {includes.map((x) => (
+                      <li>{x}</li>
+                    ))}
+                  </ul>
+                )}
+                {from && (
+                  <p class="sx-offer__from">
+                    <span class="portfolio-label">{offer.fromLabel || 'Sessions from'}</span>
+                    <span class="sx-offer__figure font-display">{from}</span>
+                  </p>
+                )}
+                {tiers.length > 0 && (
+                  <div
+                    class="sx-tiers"
+                    style={`--sx-tier-cols: ${tiers.length}; --sx-tracks: ${3 + tierRows.length}`}
+                  >
+                    <div class="sx-tiers__labels" aria-hidden="true">
+                      <span />
+                      <span />
+                      <span />
+                      {tierRows.map((r) => (
+                        <span class="sx-tiers__label portfolio-label">{r.label}</span>
+                      ))}
+                    </div>
+                    {tiers.map((t, ti) => {
+                      const tierFrom = figure(t.from);
+                      return (
+                        <div
+                          class:list={['sx-tier', t.featured && 'sx-tier--featured']}
+                          role="group"
+                          aria-labelledby={`${id}-t${ti + 1}`}
+                        >
+                          <p class="sx-tier__head">
+                            {t.featured && (
+                              <span class="sx-tier__flag portfolio-label">{featuredLabel}</span>
+                            )}
+                            <span id={`${id}-t${ti + 1}`} class="sx-tier__name font-display">
+                              {t.name}
+                            </span>
+                          </p>
+                          <p class="sx-tier__line text-muted-foreground">{t.line || ''}</p>
+                          <p class="sx-tier__from">
+                            {tierFrom && (
+                              <>
+                                <span class="sr-only">From </span>
+                                <span class="font-display">{tierFrom}</span>
+                              </>
+                            )}
+                          </p>
+                          <dl class="sx-tier__rows">
+                            {tierRows.map((r) => {
+                              const v = (r.values ?? [])[ti];
+                              return (
+                                <div class="sx-tier__row">
+                                  <dt class="sx-tier__dt portfolio-label">{r.label}</dt>
+                                  <dd>{v && v.trim() ? v : '·'}</dd>
+                                </div>
+                              );
+                            })}
+                          </dl>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+                <p class="sx-offer__ask">
+                  <a class="sx-textlink" href="/contact/">
+                    {askLabel}
+                    <span class="sr-only">: {offer.name}</span>
+                  </a>
+                </p>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+)}

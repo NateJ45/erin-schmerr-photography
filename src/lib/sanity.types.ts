@@ -79,6 +79,24 @@ export type SittingPhoto = {
   _type: 'image';
 };
 
+export type ExperienceStepPhoto = {
+  asset?: SanityImageAssetReference;
+  media?: unknown; // Unable to locate the referenced type "experienceStep.photo.media" in schema
+  hotspot?: SanityImageHotspot;
+  crop?: SanityImageCrop;
+  alt?: string;
+  _type: 'image';
+};
+
+export type SessionOfferPhoto = {
+  asset?: SanityImageAssetReference;
+  media?: unknown; // Unable to locate the referenced type "sessionOffer.photo.media" in schema
+  hotspot?: SanityImageHotspot;
+  crop?: SanityImageCrop;
+  alt?: string;
+  _type: 'image';
+};
+
 export type TeamMemberPhoto = {
   asset?: SanityImageAssetReference;
   media?: unknown; // Unable to locate the referenced type "teamMember.photo.media" in schema
@@ -299,6 +317,15 @@ export type PrivatePage = {
       } & SessionQuestions)
     | ({
         _key: string;
+      } & SessionOffers)
+    | ({
+        _key: string;
+      } & SessionTeam)
+    | ({
+        _key: string;
+      } & SessionsClose)
+    | ({
+        _key: string;
       } & SyncedSection)
   >;
 };
@@ -403,18 +430,6 @@ export type SanityImageHotspot = {
   y?: number;
   height?: number;
   width?: number;
-};
-
-export type Collaborator = {
-  _id: string;
-  _type: 'collaborator';
-  _createdAt: string;
-  _updatedAt: string;
-  _rev: string;
-  name?: string;
-  defaultRole?: string;
-  url?: string;
-  instagram?: string;
 };
 
 export type Publication = {
@@ -1793,6 +1808,15 @@ export type SectionPreset = {
       } & SessionQuestions)
     | ({
         _key: string;
+      } & SessionOffers)
+    | ({
+        _key: string;
+      } & SessionTeam)
+    | ({
+        _key: string;
+      } & SessionsClose)
+    | ({
+        _key: string;
       } & FounderSection)
     | ({
         _key: string;
@@ -1816,9 +1840,90 @@ export type SectionPreset = {
   note?: string;
 };
 
+export type SessionsClose = {
+  _type: 'sessionsClose';
+  eyebrow?: string;
+  word?: string;
+  photo?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: 'image';
+  };
+  heading?: string;
+  body?: string;
+  cta?: CtaBlock;
+  replyNote?: string;
+};
+
+export type SessionTeam = {
+  _type: 'sessionTeam';
+  eyebrow?: string;
+  heading?: string;
+  intro?: string;
+  photo?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: 'image';
+  };
+  members?: Array<{
+    role?: string;
+    collaborator?: CollaboratorReference;
+    line?: string;
+    _type: 'teamMember';
+    _key: string;
+  }>;
+};
+
+export type SessionOffers = {
+  _type: 'sessionOffers';
+  eyebrow?: string;
+  heading?: string;
+  intro?: string;
+  offers?: Array<{
+    kicker?: string;
+    name?: string;
+    line?: string;
+    photo?: SessionOfferPhoto;
+    includes?: Array<string>;
+    fromLabel?: string;
+    from?: string;
+    tiers?: Array<{
+      name?: string;
+      line?: string;
+      featured?: boolean;
+      from?: string;
+      _type: 'offerTier';
+      _key: string;
+    }>;
+    tierRows?: Array<{
+      label?: string;
+      values?: Array<string>;
+      _type: 'tierRow';
+      _key: string;
+    }>;
+    _type: 'sessionOffer';
+    _key: string;
+  }>;
+  featuredLabel?: string;
+  askLabel?: string;
+};
+
 export type SessionQuestions = {
   _type: 'sessionQuestions';
   eyebrow?: string;
+  worriesHeading?: string;
+  worries?: Array<{
+    worry?: string;
+    reply?: string;
+    _type: 'sessionWorry';
+    _key: string;
+  }>;
   heading?: string;
   items?: Array<{
     question?: string;
@@ -1861,6 +1966,12 @@ export type InvestmentNote = {
     _key: string;
   }>;
   signature?: string;
+  rangeLabel?: string;
+  range?: string;
+  feeLabel?: string;
+  fee?: string;
+  feeNote?: string;
+  financingNote?: string;
 };
 
 export type HeirloomsSpec = {
@@ -1890,12 +2001,34 @@ export type HeirloomsSpec = {
     _type: 'heirloomPiece';
     _key: string;
   }>;
+  sizesHeading?: string;
+  sizes?: Array<{
+    name?: string;
+    dims?: string;
+    feeling?: string;
+    width?: number;
+    height?: number;
+    _type: 'wallSize';
+    _key: string;
+  }>;
+  wallsHeading?: string;
+  walls?: Array<{
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    caption?: string;
+    _type: 'image';
+    _key: string;
+  }>;
 };
 
 export type SessionExperience = {
   _type: 'sessionExperience';
   eyebrow?: string;
   heading?: string;
+  intro?: string;
   photo?: {
     asset?: SanityImageAssetReference;
     media?: unknown;
@@ -1906,10 +2039,14 @@ export type SessionExperience = {
   };
   steps?: Array<{
     title?: string;
+    when?: string;
     body?: string;
+    photo?: ExperienceStepPhoto;
+    signature?: boolean;
     _type: 'experienceStep';
     _key: string;
   }>;
+  signatureLabel?: string;
 };
 
 export type SessionSittings = {
@@ -3064,6 +3201,15 @@ export type PrivacyPage = {
       } & SessionQuestions)
     | ({
         _key: string;
+      } & SessionOffers)
+    | ({
+        _key: string;
+      } & SessionTeam)
+    | ({
+        _key: string;
+      } & SessionsClose)
+    | ({
+        _key: string;
       } & SyncedSection)
     | ({
         _key: string;
@@ -3226,6 +3372,15 @@ export type Page = {
     | ({
         _key: string;
       } & SessionQuestions)
+    | ({
+        _key: string;
+      } & SessionOffers)
+    | ({
+        _key: string;
+      } & SessionTeam)
+    | ({
+        _key: string;
+      } & SessionsClose)
     | ({
         _key: string;
       } & SyncedSection)
@@ -3468,6 +3623,15 @@ export type ContactPage = {
       } & SessionQuestions)
     | ({
         _key: string;
+      } & SessionOffers)
+    | ({
+        _key: string;
+      } & SessionTeam)
+    | ({
+        _key: string;
+      } & SessionsClose)
+    | ({
+        _key: string;
       } & SyncedSection)
     | ({
         _key: string;
@@ -3618,6 +3782,15 @@ export type AboutPage = {
     | ({
         _key: string;
       } & SessionQuestions)
+    | ({
+        _key: string;
+      } & SessionOffers)
+    | ({
+        _key: string;
+      } & SessionTeam)
+    | ({
+        _key: string;
+      } & SessionsClose)
     | ({
         _key: string;
       } & SyncedSection)
@@ -3886,6 +4059,15 @@ export type HomePage = {
       } & SessionQuestions)
     | ({
         _key: string;
+      } & SessionOffers)
+    | ({
+        _key: string;
+      } & SessionTeam)
+    | ({
+        _key: string;
+      } & SessionsClose)
+    | ({
+        _key: string;
       } & SyncedSection)
     | ({
         _key: string;
@@ -4049,6 +4231,18 @@ export type Testimonial = {
   featured?: boolean;
   sourceType?: 'Google' | 'Facebook' | 'Houzz' | 'Direct';
   reviewUrl?: string;
+};
+
+export type Collaborator = {
+  _id: string;
+  _type: 'collaborator';
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  name?: string;
+  defaultRole?: string;
+  url?: string;
+  instagram?: string;
 };
 
 export type StudioStaff = {
@@ -4232,6 +4426,8 @@ export type AllSanitySchemaTypes =
   | IconCardImage
   | HubCardImage
   | SittingPhoto
+  | ExperienceStepPhoto
+  | SessionOfferPhoto
   | TeamMemberPhoto
   | PageReference
   | HomePageReference
@@ -4248,7 +4444,6 @@ export type AllSanitySchemaTypes =
   | Story
   | SanityImageCrop
   | SanityImageHotspot
-  | Collaborator
   | Publication
   | Photo
   | SanityFileAssetReference
@@ -4287,6 +4482,9 @@ export type AllSanitySchemaTypes =
   | SectionPresetReference
   | SyncedSection
   | SectionPreset
+  | SessionsClose
+  | SessionTeam
+  | SessionOffers
   | SessionQuestions
   | InvestmentNote
   | HeirloomsSpec
@@ -4341,6 +4539,7 @@ export type AllSanitySchemaTypes =
   | AboutPage
   | HomePage
   | Testimonial
+  | Collaborator
   | StudioStaff
   | StudioWeek
   | TrashedItem

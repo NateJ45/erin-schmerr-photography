@@ -4,31 +4,217 @@
    "Vogue meets a Paris boutique", a couture house's offer sheet, never a
    pricing table). Paper ground, ink type, hairline rules, square corners, no
    colour beyond the site's one Dusk accent. Text-and-picture bands use the
-   shared split (.split, card 91). Motion: only the experience block's lit
-   step, switched on by its script under html.motion and from 64rem up; every
-   other state here is the finished page. */
+   shared split (.split, card 91). Motion: the opening line's rise and the
+   experience block's pinned sequence, both under html.motion only (the
+   experience from 64rem up); every other state here is the finished page.
+
+   Phase 2 (2026-11-20) made it bolder: the opening line runs across a large
+   photo, the experience pins one photo per step with the reveal as a dark
+   screening room, the offers are magazine chapters with tiers, the sizes are
+   drawn to scale, and the close cuts its word out of the paper. */
 
 /* ---- shared ------------------------------------------------------------ */
 .sx-head {
   max-width: 48rem;
   margin-bottom: clamp(2.5rem, 5vw, 4rem);
 }
+/* The page's big section titles: Bodoni Moda at a near-display size. */
+.sx-big-title {
+  margin: 0;
+  font-size: clamp(2.75rem, 7vw, 6.5rem);
+  font-weight: 400;
+  line-height: 0.95;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+/* A quiet text link with an underline that draws in (rule 17: the one
+   button family is text links plus the single filled Dusk button). */
+.sx-textlink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--color-foreground);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-decoration: none;
+  background: linear-gradient(currentColor, currentColor) left calc(50% + 0.85em) / 100% 1px
+    no-repeat;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .sx-textlink {
+    transition: background-size 500ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .sx-textlink:hover {
+    background-size: 30% 1px;
+  }
+}
+.sx-textlink:focus-visible,
+.sx-button:focus-visible {
+  outline: 2px solid var(--color-ring, currentColor);
+  outline-offset: 4px;
+}
+/* The square button: outlined ink, or the page's one filled Dusk button. */
+.sx-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  padding-inline: 1.75rem;
+  border: 1px solid var(--color-foreground);
+  border-radius: 0;
+  color: var(--color-foreground);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-decoration: none;
+  text-align: center;
+}
+.sx-button--primary {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: var(--color-background);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .sx-button {
+    transition:
+      background-color 300ms ease,
+      color 300ms ease,
+      border-color 300ms ease;
+  }
+}
+.sx-button:hover {
+  background: var(--color-foreground);
+  border-color: var(--color-foreground);
+  color: var(--color-background);
+}
 
-/* ---- 1. opening line --------------------------------------------------- */
+/* ---- 1b. the opening line across a photo (phase 2) ---------------------- */
+/* The h1 is the ink copy; its paper twin lives inside .sx-open__photo (which
+   clips it) at the same place in the stage's container units, so the line
+   reads ink on paper and paper on the photo. */
+.sx-open {
+  padding-block: clamp(1.5rem, 4vw, 3rem) clamp(3rem, 7vw, 6rem);
+}
+.sx-open__eyebrow {
+  margin: 0 0 1rem;
+}
+.sx-open__stage {
+  position: relative;
+  container-type: inline-size;
+}
+.sx-open__photo {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-muted);
+}
+.sx-open__photo .focus-image {
+  width: 100%;
+  height: 100%;
+}
+/* The veil under the paper words: dark only where the line crosses. */
+.sx-open__photo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgb(18 16 14 / 0) 38%,
+    rgb(18 16 14 / 0.5) 62%,
+    rgb(18 16 14 / 0.62) 100%
+  );
+}
+.sx-open__line {
+  margin: 0;
+  font-weight: 400;
+  font-size: clamp(2.75rem, 13.5cqw, 11rem);
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  color: var(--color-foreground);
+  text-wrap: balance;
+  overflow-wrap: break-word;
+}
+.sx-open__line em {
+  font-style: italic;
+}
+.sx-open__line--over {
+  position: absolute;
+  z-index: 2;
+  color: var(--color-background);
+  pointer-events: none;
+}
+.sx-open__intro {
+  max-width: 34rem;
+  margin: clamp(1.5rem, 3vw, 2.5rem) 0 0;
+}
+/* Phone: the photo full width, the line overlapping its bottom edge. */
+@media (width < 48rem) {
+  .sx-open__photo {
+    height: min(64svh, 118cqw);
+  }
+  .sx-open__stage > .sx-open__line {
+    position: relative;
+    z-index: 0;
+    margin-top: -0.62em;
+  }
+  .sx-open__line--over {
+    top: calc(100% - 0.62em);
+    left: 0;
+    width: 100%;
+  }
+}
+/* Wider: the photo stands at the right (58%), the line low on the left
+   crossing its edge. */
+@media (width >= 48rem) {
+  .sx-open__stage {
+    height: clamp(34rem, calc(100svh - 9rem), 60rem);
+  }
+  .sx-open__photo {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 58cqw;
+  }
+  .sx-open__line {
+    position: absolute;
+    left: 0;
+    bottom: 7%;
+    width: 74cqw;
+    font-size: clamp(3.5rem, 10.5cqw, 10.5rem);
+  }
+  .sx-open__line--over {
+    left: -42cqw;
+  }
+  .sx-open__intro {
+    margin-left: auto;
+    max-width: 30rem;
+  }
+}
+/* Arrival: both copies rise together (the same keyframes and timing, so the
+   paper twin never drifts from the ink). Under html.motion only. */
+@keyframes sx-rise {
+  from {
+    opacity: 0;
+    transform: translateY(0.18em);
+  }
+}
+html.motion .sx-open__line {
+  animation: sx-rise 1100ms cubic-bezier(0.22, 1, 0.36, 1) 150ms both;
+}
+@media print {
+  .sx-open__line--over {
+    display: none;
+  }
+}
+
+/* ---- 1. opening line, without a photo --------------------------------- */
 .sx-opening {
   padding-block: clamp(3rem, 7vw, 6rem) clamp(3.5rem, 8vw, 7rem);
-}
-.sx-opening__top {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1.5rem;
-  min-height: 1rem;
-  margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
-}
-.sx-opening__photo {
-  width: clamp(7rem, 22vw, 15rem);
-  flex: none;
 }
 .sx-opening__line {
   max-width: 14em;
@@ -133,85 +319,219 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* ---- 3. the experience ------------------------------------------------- */
-.sx-exp .split {
+/* ---- 3. the experience (phase 2: one photo per step, pinned) ----------- */
+.sx-exp__title {
+  margin: 0;
+  font-size: clamp(2.75rem, 7vw, 6.5rem);
+  font-weight: 400;
+  line-height: 0.95;
+  letter-spacing: -0.015em;
+}
+.sx-exp__split {
   align-items: start;
 }
+/* As served (no motion, JS off, narrow): a numbered list, each step with its
+   own photo; the pinned frame is not shown. */
+.sx-exp:not([data-scrolly]) .sx-exp__split {
+  grid-template-columns: minmax(0, 1fr);
+}
+.sx-exp:not([data-scrolly]) .sx-exp__media {
+  display: none;
+}
 .sx-exp__steps {
-  margin: clamp(2rem, 4vw, 3rem) 0 0;
+  margin: 0;
   padding: 0;
-  border-left: 1px solid var(--color-border);
+  border-top: 1px solid var(--color-foreground);
 }
 .sx-step {
   position: relative;
   display: grid;
-  grid-template-columns: 3rem minmax(0, 1fr);
+  grid-template-columns: 3.25rem minmax(0, 1fr);
   column-gap: 1rem;
-  padding: 1.5rem 0 1.5rem 1.25rem;
-}
-.sx-step + .sx-step {
-  border-top: 1px solid var(--color-border);
+  row-gap: 1.25rem;
+  padding: 2rem 0;
+  border-bottom: 1px solid var(--color-border);
 }
 .sx-step__n {
-  grid-row: 1 / span 2;
-  padding-top: 0.6rem;
+  font-size: clamp(1.5rem, 2.4vw, 2rem);
+  font-style: italic;
+  line-height: 1;
+  color: var(--color-primary);
+}
+.sx-step__text {
+  min-width: 0;
+}
+.sx-step__when,
+.sx-step__sig {
+  margin: 0 0 0.6rem;
+}
+.sx-step__sig {
+  color: var(--color-primary);
 }
 .sx-step__title {
   margin: 0;
-  font-size: clamp(1.6rem, 2.6vw, 2.25rem);
+  font-size: clamp(1.75rem, 3vw, 2.75rem);
   font-weight: 400;
-  line-height: 1.1;
+  line-height: 1.05;
 }
 .sx-step__body {
-  grid-column: 2;
-  margin: 0.5rem 0 0;
+  margin: 0.75rem 0 0;
   max-width: 32rem;
 }
-.sx-step::before {
-  /* The tick on the rule down the steps; shown on the lit step only. */
-  content: '';
-  position: absolute;
-  left: -1px;
-  top: 1.6rem;
-  width: 2px;
-  height: 2.25rem;
-  background: var(--color-foreground);
-  opacity: 0;
+.sx-step__photo {
+  grid-column: 2;
+  max-width: 22rem;
 }
-/* Pinned, with motion, from 64rem (the script sets data-scrolly). */
-@media (min-width: 64rem) {
+@media (width >= 48rem) {
+  .sx-exp:not([data-scrolly]) .sx-step {
+    grid-template-columns: 4rem minmax(0, 1fr) minmax(0, 16rem);
+  }
+  .sx-exp:not([data-scrolly]) .sx-step__photo {
+    grid-column: 3;
+    grid-row: 1;
+  }
+}
+/* The signature moment: the title very large in the italic. */
+.sx-step--sig .sx-step__title {
+  font-size: clamp(2.5rem, 5.5vw, 4.75rem);
+  font-style: italic;
+  line-height: 0.95;
+}
+/* Its photo on a screen: a dark room, the picture inset on it like a
+   projection, a small caption under it. (Light-only holds: this is a
+   photograph's frame, like the cinema's.) */
+.sx-step__photo--screen,
+.sx-frame--screen {
+  background: #12100e;
+}
+.sx-step__photo--screen {
+  padding: 12% 10% 16%;
+}
+.sx-step__photo--screen .focus-image {
+  box-shadow: 0 0 0 1px rgb(243 238 231 / 0.18);
+}
+.sx-frame__cap {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 5%;
+  text-align: center;
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #eee7dd;
+}
+
+/* The pinned frame (motion, 64rem up; the script sets data-scrolly). */
+.sx-exp__media {
+  position: relative;
+}
+.sx-exp__frames {
+  display: grid;
+}
+.sx-frame {
+  grid-area: 1 / 1;
+  position: relative;
+  margin: 0;
+  opacity: 0;
+  visibility: hidden;
+}
+.sx-frame[data-on] {
+  opacity: 1;
+  visibility: visible;
+}
+.sx-frame__pic .focus-image {
+  width: 100%;
+}
+.sx-exp__count {
+  margin: 1rem 0 0;
+}
+.sx-exp__count span {
+  color: var(--color-foreground);
+}
+@media (width >= 64rem) {
   .sx-exp[data-scrolly] .sx-exp__media {
     position: sticky;
     top: 6rem;
   }
-  .sx-exp[data-scrolly] .sx-exp__photo {
-    max-height: calc(100vh - 8rem);
+  .sx-exp[data-scrolly] .sx-frame__pic .focus-image {
+    max-height: calc(100vh - 10rem);
+  }
+  .sx-exp[data-scrolly] .sx-step__photo {
+    display: none;
   }
   .sx-exp[data-scrolly] .sx-step {
-    min-height: 42vh;
+    min-height: 58vh;
     align-content: start;
-    border-top: 0;
+    border-bottom: 0;
+    padding-top: 2.5rem;
   }
-  /* Resting steps go to the muted ink and lose a little size; the lit step is
-     full ink. Colour, not opacity, so every state stays AA on paper (axe reads
-     opacity into contrast). */
-  .sx-exp[data-scrolly] .sx-step__title {
-    color: var(--color-muted-foreground);
-    transform-origin: left center;
-    transform: scale(0.94);
+  .sx-exp[data-scrolly] .sx-exp__steps {
+    border-top: 0;
+    border-left: 1px solid var(--color-border);
+    padding-left: 1.5rem;
+  }
+  /* The crossfade with a focus pull: the arriving photo racks from soft to
+     sharp while the leaving one fades. */
+  .sx-exp[data-scrolly] .sx-frame {
     transition:
-      color 600ms cubic-bezier(0.22, 1, 0.36, 1),
-      transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+      opacity 900ms cubic-bezier(0.22, 1, 0.36, 1),
+      visibility 0s linear 900ms;
+  }
+  .sx-exp[data-scrolly] .sx-frame[data-on] {
+    transition:
+      opacity 900ms cubic-bezier(0.22, 1, 0.36, 1),
+      visibility 0s;
+  }
+  .sx-exp[data-scrolly] .sx-frame .focus-image__img {
+    filter: blur(10px);
+    transform: scale(1.04);
+    transition:
+      filter 1100ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 1400ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .sx-exp[data-scrolly] .sx-frame[data-on] .focus-image__img {
+    filter: none;
+    transform: none;
+  }
+  /* The screening room: the frame goes dark and the photo comes up on a
+     screen inside it. */
+  .sx-frame--screen .sx-frame__pic {
+    padding: 14% 12% 20%;
+  }
+  .sx-exp[data-scrolly] .sx-frame--screen .sx-frame__pic {
+    transform: scale(0.94);
+    transition: transform 1400ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .sx-exp[data-scrolly] .sx-frame--screen[data-on] .sx-frame__pic {
+    transform: none;
+  }
+  /* The lit step is full ink; the others rest in muted ink (colour, not
+     opacity, so every state stays AA on paper). */
+  .sx-exp[data-scrolly] .sx-step__title,
+  .sx-exp[data-scrolly] .sx-step__n {
+    color: var(--color-muted-foreground);
+    transition: color 600ms cubic-bezier(0.22, 1, 0.36, 1);
   }
   .sx-exp[data-scrolly] .sx-step[data-lit] .sx-step__title,
   .sx-exp[data-scrolly] .sx-step:focus-within .sx-step__title {
     color: var(--color-foreground);
-    transform: none;
+  }
+  .sx-exp[data-scrolly] .sx-step[data-lit] .sx-step__n {
+    color: var(--color-primary);
   }
   .sx-exp[data-scrolly] .sx-step[data-lit] .sx-step__body {
     color: var(--color-foreground);
   }
   .sx-exp[data-scrolly] .sx-step::before {
+    content: '';
+    position: absolute;
+    left: calc(-1.5rem - 1px);
+    top: 2.5rem;
+    width: 2px;
+    height: 2.5rem;
+    background: var(--color-foreground);
+    opacity: 0;
     transition: opacity 600ms cubic-bezier(0.22, 1, 0.36, 1);
   }
   .sx-exp[data-scrolly] .sx-step[data-lit]::before {
@@ -383,4 +703,498 @@
 }
 .sx-q__answer p:last-child {
   margin-bottom: 0;
+}
+
+/* ---- 4b. heirlooms: sizes to scale, real walls (phase 2) -------------- */
+.sx-sizes {
+  margin-bottom: clamp(4rem, 8vw, 7rem);
+}
+.sx-sizes__title {
+  margin: 0 0 1.5rem;
+}
+/* One wall: every size hangs from the same eye line (centred in an equal
+   box), drawn at its real proportion against the largest. */
+.sx-sizes__wall {
+  --sx-hang: clamp(9rem, 22vw, 17rem);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 8.5rem), 1fr));
+  gap: 2.5rem clamp(1rem, 2.5vw, 2rem);
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--color-foreground);
+}
+.sx-size {
+  min-width: 0;
+  padding-top: 1.5rem;
+}
+.sx-size__hang {
+  display: grid;
+  place-items: center;
+  height: var(--sx-hang);
+  margin-bottom: 1rem;
+  background-image: linear-gradient(var(--color-border), var(--color-border));
+  background-size: 100% 1px;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.sx-size__frame {
+  display: block;
+  width: calc(var(--w) * var(--sx-hang));
+  height: calc(var(--h) * var(--sx-hang));
+  max-width: 100%;
+  min-width: 0.75rem;
+  min-height: 0.75rem;
+  border: 1px solid var(--color-foreground);
+  background: var(--color-background);
+  box-shadow:
+    inset 0 0 0 4px var(--color-background),
+    inset 0 0 0 5px var(--color-border);
+}
+.sx-size__name {
+  margin: 0;
+  font-size: clamp(1.5rem, 2.4vw, 2rem);
+  line-height: 1;
+}
+.sx-size__dims {
+  margin: 0.5rem 0 0;
+}
+.sx-size__feel {
+  margin: 0.5rem 0 0;
+  font-size: 0.95rem;
+  max-width: 16rem;
+}
+.sx-walls {
+  margin-top: clamp(4rem, 8vw, 7rem);
+}
+.sx-walls__title {
+  margin: 0 0 clamp(1.5rem, 3vw, 2.5rem);
+  font-size: clamp(2.25rem, 5vw, 4rem);
+  font-weight: 400;
+  line-height: 1;
+}
+.sx-walls__grid {
+  display: grid;
+  gap: clamp(1rem, 2vw, 1.5rem);
+  margin: 0;
+  padding: 0;
+}
+.sx-wall figure {
+  margin: 0;
+}
+.sx-wall__cap {
+  margin-top: 0.6rem;
+}
+@media (width >= 48rem) {
+  .sx-walls__grid {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    align-items: end;
+  }
+  .sx-wall {
+    grid-column: span 4;
+  }
+  .sx-wall:first-child {
+    grid-column: span 8;
+  }
+  .sx-walls__grid[data-count='1'] .sx-wall:first-child {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ---- 5b. the ledger under the note (phase 2) --------------------------- */
+.sx-ledger {
+  margin: clamp(3rem, 6vw, 5rem) 0 0;
+  border-top: 1px solid var(--color-foreground);
+  border-bottom: 1px solid var(--color-foreground);
+}
+.sx-ledger__row {
+  display: grid;
+  gap: 0.75rem 2rem;
+  padding-block: 1.5rem;
+}
+.sx-ledger__row + .sx-ledger__row {
+  border-top: 1px solid var(--color-border);
+}
+@media (width >= 48rem) {
+  .sx-ledger__row {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    align-items: baseline;
+  }
+}
+.sx-ledger__row dd {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 1.5rem;
+}
+.sx-ledger__figure {
+  font-size: clamp(2.5rem, 7vw, 6rem);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+}
+.sx-ledger__fee {
+  font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.sx-ledger__note {
+  max-width: 34rem;
+}
+.sx-ledger__row--small dd {
+  font-size: 0.95rem;
+}
+@media (width >= 48rem) {
+  .sx-ledger__row--small dd {
+    grid-column: 2;
+  }
+}
+
+/* ---- 6b. the worries (phase 2) ----------------------------------------- */
+.sx-worries__title {
+  margin: 0 0 clamp(2rem, 4vw, 3rem);
+  font-size: clamp(2.75rem, 7vw, 6.5rem);
+  font-weight: 400;
+  line-height: 0.95;
+  letter-spacing: -0.015em;
+  max-width: 12em;
+  text-wrap: balance;
+}
+.sx-worries__list {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--color-foreground);
+}
+.sx-worry {
+  padding-block: 2rem;
+  border-bottom: 1px solid var(--color-border);
+}
+.sx-worry__quote {
+  margin: 0;
+}
+.sx-worry__quote p {
+  margin: 0;
+  font-size: clamp(2rem, 3.6vw, 3.25rem);
+  font-style: italic;
+  line-height: 1.02;
+  text-wrap: balance;
+}
+.sx-worry__reply {
+  margin: 1.25rem 0 0;
+  max-width: 28rem;
+}
+@media (width >= 64rem) {
+  .sx-worries__list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: clamp(1.5rem, 3vw, 3rem);
+  }
+  .sx-worries__list[data-count='2'],
+  .sx-worries__list[data-count='4'] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .sx-worry {
+    padding-top: 2.5rem;
+    border-bottom: 0;
+  }
+}
+
+/* ---- 7. the offers (phase 2) ------------------------------------------- */
+.sx-offers {
+  display: grid;
+  gap: clamp(5rem, 10vw, 9rem);
+}
+.sx-offer {
+  display: grid;
+  gap: 2rem;
+  align-items: start;
+}
+.sx-offer__photo {
+  max-width: 34rem;
+}
+@media (width >= 64rem) {
+  .sx-offer {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: clamp(2.5rem, 5vw, 5rem);
+  }
+  .sx-offer--flip .sx-offer__photo {
+    order: 2;
+  }
+  .sx-offer__photo {
+    position: sticky;
+    top: 6rem;
+  }
+  /* Flipped, the text track comes first, so the tracks mirror too. */
+  .sx-offer--flip {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  }
+  /* A chapter with tiers gives the table more room. */
+  .sx-offer--tiers {
+    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+  }
+  .sx-offer--tiers.sx-offer--flip {
+    grid-template-columns: minmax(0, 8fr) minmax(0, 4fr);
+  }
+}
+.sx-offer__num {
+  margin: 0 0 0.25rem;
+  font-size: clamp(4.5rem, 11vw, 9.5rem);
+  font-style: italic;
+  line-height: 0.85;
+  color: var(--color-primary);
+}
+.sx-offer__name {
+  margin: 0.5rem 0 0;
+  font-size: clamp(2.5rem, 6vw, 5.5rem);
+  font-weight: 400;
+  line-height: 0.95;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+.sx-offer__line {
+  margin: 1.25rem 0 0;
+  max-width: 34rem;
+  font-size: 1.1rem;
+}
+.sx-offer__includes {
+  margin: 2rem 0 0;
+  padding: 0;
+  border-top: 1px solid var(--color-foreground);
+  max-width: 34rem;
+}
+.sx-offer__includes li {
+  padding-block: 0.8rem;
+  border-bottom: 1px solid var(--color-border);
+}
+.sx-offer__from {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  max-width: 34rem;
+  margin: 1.5rem 0 0;
+  padding-block: 1rem;
+  border-top: 1px solid var(--color-foreground);
+  border-bottom: 1px solid var(--color-foreground);
+}
+.sx-offer__figure {
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.sx-offer__ask {
+  margin: 1.75rem 0 0;
+}
+
+/* The tiers: one group each (a phone reads one tier at a time with its own
+   labels); from 64rem side by side on one subgrid, labels at the left. */
+.sx-tiers {
+  display: grid;
+  gap: 1.5rem;
+  margin-top: 2.25rem;
+}
+.sx-tiers__labels {
+  display: none;
+}
+.sx-tier {
+  padding: 1.5rem 1.25rem;
+  border-top: 1px solid var(--color-foreground);
+}
+.sx-tier--featured {
+  border: 1px solid var(--color-foreground);
+}
+.sx-tier__head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin: 0;
+}
+.sx-tier__flag {
+  color: var(--color-primary);
+}
+.sx-tier__name {
+  font-size: clamp(1.4rem, 1.9vw, 1.9rem);
+  line-height: 1.02;
+  text-wrap: balance;
+  overflow-wrap: break-word;
+}
+.sx-tier__line {
+  margin: 0.6rem 0 0;
+  font-size: 0.95rem;
+}
+.sx-tier__from {
+  margin: 0.75rem 0 0;
+  font-size: 1.5rem;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.sx-tier__from:empty {
+  display: none;
+}
+.sx-tier__rows {
+  margin: 1rem 0 0;
+}
+.sx-tier__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  padding-block: 0.7rem;
+  border-top: 1px solid var(--color-border);
+}
+.sx-tier__row dd {
+  margin: 0;
+  text-align: right;
+}
+@media (width >= 40rem) and (width < 64rem) {
+  .sx-tiers {
+    grid-template-columns: repeat(var(--sx-tier-cols, 3), minmax(0, 1fr));
+    gap: 1rem;
+  }
+}
+@media (width >= 64rem) {
+  @supports (grid-template-rows: subgrid) {
+    .sx-tiers {
+      grid-template-columns: minmax(0, 0.9fr) repeat(var(--sx-tier-cols, 3), minmax(0, 1fr));
+      column-gap: 0;
+      row-gap: 0;
+    }
+    .sx-tiers__labels,
+    .sx-tier {
+      display: grid;
+      grid-row: 1 / span var(--sx-tracks, 4);
+      grid-template-rows: subgrid;
+    }
+    .sx-tier {
+      padding: 1.5rem 1rem 1rem;
+    }
+    .sx-tier__rows {
+      display: contents;
+    }
+    .sx-tier__row {
+      display: block;
+      padding-block: 0.75rem;
+    }
+    .sx-tier__row dd {
+      text-align: left;
+    }
+    /* The labels column says what each row is; inside a tier the label is
+       kept for screen readers only. */
+    .sx-tier__dt {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+    .sx-tiers__label {
+      padding-block: 0.75rem;
+      border-top: 1px solid var(--color-border);
+      padding-right: 1rem;
+    }
+    .sx-tier__from:empty {
+      display: block;
+    }
+  }
+}
+
+/* ---- 8. the team (phase 2) --------------------------------------------- */
+@media (width >= 64rem) {
+  .sx-team {
+    align-items: start;
+  }
+  .sx-team__head {
+    position: sticky;
+    top: 6rem;
+  }
+}
+.sx-team__photo {
+  margin-top: 2rem;
+  max-width: 30rem;
+}
+.sx-team__list {
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--color-foreground);
+}
+.sx-credit {
+  border-bottom: 1px solid var(--color-border);
+}
+.sx-credit__body {
+  display: grid;
+  gap: 0.4rem;
+  padding: 1.5rem 0.75rem;
+  margin-inline: -0.75rem;
+  color: var(--color-foreground);
+  text-decoration: none;
+}
+a.sx-credit__body:hover,
+a.sx-credit__body:focus-visible {
+  background: var(--color-foreground);
+  color: var(--color-background);
+  outline: none;
+}
+a.sx-credit__body:hover .sx-credit__role,
+a.sx-credit__body:focus-visible .sx-credit__role {
+  color: var(--color-background);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .sx-credit__body {
+    transition:
+      background-color 300ms ease,
+      color 300ms ease;
+  }
+}
+.sx-credit__name {
+  font-size: clamp(2rem, 4.5vw, 3.75rem);
+  line-height: 1;
+  overflow-wrap: anywhere;
+}
+.sx-credit__line {
+  max-width: 32rem;
+}
+
+/* ---- 9. the close (phase 2) -------------------------------------------- */
+.sx-close {
+  container-type: inline-size;
+}
+/* One word across the column, the photo showing through its letters. Sized
+   from its length so it never runs wider than the column. */
+.sx-close__word {
+  margin: 0 0 clamp(2rem, 4vw, 3rem);
+  font-size: min(30cqw, calc(150cqw / var(--len, 5)));
+  font-weight: 400;
+  font-style: italic;
+  line-height: 0.82;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+}
+.sx-knock {
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  background-image: var(--knock-fill, linear-gradient(160deg, #7a4a40, #1f1b18));
+  background-size: cover;
+  background-position: center 30%;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+.sx-close__title {
+  margin: 0;
+  font-size: clamp(2.25rem, 5vw, 4.25rem);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+.sx-close__reply {
+  margin-top: 1rem;
+}
+@media print {
+  .sx-knock {
+    background: none;
+    color: #1f1b18;
+    -webkit-text-fill-color: #1f1b18;
+  }
 }

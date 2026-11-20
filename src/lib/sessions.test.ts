@@ -2,7 +2,44 @@
 // The Sessions page helpers (src/lib/sessions.ts).
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { rowIncludes, roman, showInvestment, sittingRows, splitTurn } from './sessions.ts';
+import {
+  figure,
+  rowIncludes,
+  roman,
+  scaleSizes,
+  showInvestment,
+  signatureIndex,
+  sittingRows,
+  splitTurn,
+} from './sessions.ts';
+
+describe('phase 2 helpers', () => {
+  it('treats an empty or blank figure as empty, so its row hides', () => {
+    assert.equal(figure(''), '');
+    assert.equal(figure('   '), '');
+    assert.equal(figure(undefined), '');
+    assert.equal(figure(' Typed '), 'Typed');
+  });
+  it('draws the wall sizes to one scale, the largest side as 1', () => {
+    const [mini, statement, nameOnly] = scaleSizes([
+      { name: 'Mini', width: 8, height: 10 },
+      { name: 'Statement', width: 40, height: 60 },
+      { name: 'Custom' },
+      { name: '' },
+    ]);
+    assert.equal(statement.h, 1);
+    assert.equal(statement.w, 40 / 60);
+    assert.equal(mini.w, 8 / 60);
+    assert.equal(mini.drawn, true);
+    assert.equal(nameOnly.drawn, false);
+    assert.equal(scaleSizes(null).length, 0);
+  });
+  it('finds the signature step, or -1', () => {
+    assert.equal(signatureIndex([{}, { signature: true }, { signature: true }]), 1);
+    assert.equal(signatureIndex([{ signature: false }]), -1);
+    assert.equal(signatureIndex(undefined), -1);
+  });
+});
 
 describe('splitTurn', () => {
   it('splits the line around the italic words', () => {

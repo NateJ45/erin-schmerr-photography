@@ -839,6 +839,57 @@ const SECTIONS: Record<string, unknown>[] = [
     ],
     cta: { _type: 'ctaBlock', label: 'Book a session', href: '/contact/' },
   },
+  {
+    _type: 'sessionOffers',
+    _key: 'session-offers',
+    heading: 'Three ways in',
+    offers: [
+      {
+        _key: 'o1',
+        kicker: 'For families',
+        name: 'Portrait and family',
+        line: 'A sentence about it.',
+        photo: image(),
+        includes: ['The consultation call', 'Your reveal, in person'],
+      },
+      {
+        _key: 'o2',
+        kicker: 'For models and brands',
+        name: 'Creative',
+        line: 'A sentence about it.',
+        photo: image(),
+        tiers: [
+          { _key: 't1', name: 'Test', line: 'A short line.' },
+          { _key: 't2', name: 'Editorial', line: 'A short line.', featured: true },
+          { _key: 't3', name: 'Commission', line: 'A short line.' },
+        ],
+        tierRows: [
+          { _key: 'r1', label: 'Looks', values: ['1', '3', 'As needed'] },
+          { _key: 'r2', label: 'Turnaround', values: ['2 weeks', '2 weeks', '4 weeks'] },
+        ],
+      },
+    ],
+  },
+  {
+    _type: 'sessionTeam',
+    _key: 'session-team',
+    heading: 'The team',
+    intro: 'A sentence about the people beside you.',
+    members: [
+      { _key: 'm1', role: 'Hair', person: { name: 'Their name' } },
+      { _key: 'm2', role: 'Makeup', person: { name: 'Their name' } },
+      { _key: 'm3', role: 'Styling', person: { name: 'Their name' } },
+    ],
+  },
+  {
+    _type: 'sessionsClose',
+    _key: 'sessions-close',
+    word: 'Begin',
+    photo: image(),
+    heading: 'Reserve a complimentary consultation',
+    body: 'A sentence inviting them in.',
+    cta: { _type: 'ctaBlock', label: 'Reserve a consultation', href: '/contact/' },
+  },
   // scaffold:end
   // ── Hours and location (card 196) ──────────────────────────────────────────
   // These two fill themselves from Business info; on the wall they carry the

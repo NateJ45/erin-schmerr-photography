@@ -60,6 +60,9 @@ import SessionExperience from '@/components/sessions/SessionExperience.astro'; /
 import HeirloomsSpec from '@/components/sessions/HeirloomsSpec.astro'; // scaffold: sessions
 import InvestmentNote from '@/components/sessions/InvestmentNote.astro'; // scaffold: sessions
 import SessionQuestions from '@/components/sessions/SessionQuestions.astro'; // scaffold: sessions
+import SessionOffers from '@/components/sessions/SessionOffers.astro'; // scaffold: sessions
+import SessionTeam from '@/components/sessions/SessionTeam.astro'; // scaffold: sessions
+import SessionsClose from '@/components/sessions/SessionsClose.astro'; // scaffold: sessions
 import FormSection from '@/components/sections/FormSection.astro';
 import BuilderBlock from '@/components/builder-blocks/BuilderBlock.astro';
 import { isBuilderBlock } from '@/lib/builderBlocks.types';
@@ -162,6 +165,8 @@ const ctaVariant = primaryBudget(
   rows,
   ({ block }) =>
     signedCloseAsk(block) || // scaffold: stories
+    // The Sessions page's close is its one booking ask, like the signed close.
+    block._type === 'sessionsClose' || // scaffold: sessions
     (block._type === 'ctaBandSection'
       ? // A button left empty draws nothing (CtaLink), so it cannot hold the accent either.
         !(block.cta && !block.cta.label && !block.cta.linkType && !block.cta.href) &&
@@ -545,41 +550,25 @@ const editKeyOf = (block: unknown) => {
         />
       ) : // scaffold-branch: sessions
       s._type === 'sessionExperience' ? (
-        <SessionExperience
-          eyebrow={s.eyebrow}
-          heading={s.heading}
-          photo={s.photo}
-          steps={s.steps}
-          headingId={headingId}
-        />
+        <SessionExperience {...s} headingId={headingId} />
       ) : // scaffold-branch: sessions
       s._type === 'heirloomsSpec' ? (
-        <HeirloomsSpec
-          eyebrow={s.eyebrow}
-          heading={s.heading}
-          intro={s.intro}
-          pieces={s.pieces}
-          headingId={headingId}
-        />
+        <HeirloomsSpec {...s} headingId={headingId} />
       ) : // scaffold-branch: sessions
       s._type === 'investmentNote' ? (
-        <InvestmentNote
-          eyebrow={s.eyebrow}
-          heading={s.heading}
-          body={s.body}
-          signature={s.signature}
-          headingId={headingId}
-        />
+        <InvestmentNote {...s} headingId={headingId} />
       ) : // scaffold-branch: sessions
       s._type === 'sessionQuestions' ? (
-        <SessionQuestions
-          eyebrow={s.eyebrow}
-          heading={s.heading}
-          items={s.items}
-          cta={s.cta}
-          headingId={headingId}
-          primaryVariant={ctaVariant(rowIndex)}
-        />
+        <SessionQuestions {...s} headingId={headingId} primaryVariant={ctaVariant(rowIndex)} />
+      ) : // scaffold-branch: sessions
+      s._type === 'sessionOffers' ? (
+        <SessionOffers {...s} headingId={headingId} />
+      ) : // scaffold-branch: sessions
+      s._type === 'sessionTeam' ? (
+        <SessionTeam {...s} headingId={headingId} />
+      ) : // scaffold-branch: sessions
+      s._type === 'sessionsClose' ? (
+        <SessionsClose {...s} headingId={headingId} primaryVariant={ctaVariant(rowIndex)} />
       ) : s._type === 'dynamicListSection' ? (
         <DynamicList
           eyebrow={s.eyebrow}

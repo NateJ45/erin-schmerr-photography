@@ -57,6 +57,48 @@ export function showInvestment(
   return (sittings ?? []).some((s) => clean(s?.investmentFrom) !== '');
 }
 
+/**
+ * A money or other figure typed in the Studio, cleaned, or '' when it is empty
+ * (the row it belongs to is then not drawn). Never a figure from code.
+ */
+export function figure(v: string | null | undefined): string {
+  return clean(v);
+}
+
+export interface WallSize {
+  name?: string | null;
+  width?: number | null;
+  height?: number | null;
+}
+
+/**
+ * The wall-art sizes drawn to one scale: each size's width and height as a
+ * share of the largest side of any size (0 to 1), so the Statement piece fills
+ * the drawing's height and a Mini sits small beside it. Sizes without both
+ * numbers come back with `drawn: false` and are listed by name only.
+ */
+export function scaleSizes<T extends WallSize>(
+  sizes: T[] | null | undefined,
+): (T & { drawn: boolean; w: number; h: number })[] {
+  const named = (sizes ?? []).filter((s) => clean(s?.name));
+  const ok = (s: WallSize) =>
+    typeof s.width === 'number' && typeof s.height === 'number' && s.width > 0 && s.height > 0;
+  const max = Math.max(0, ...named.filter(ok).map((s) => Math.max(s.width!, s.height!)));
+  return named.map((s) =>
+    ok(s) && max > 0
+      ? { ...s, drawn: true, w: s.width! / max, h: s.height! / max }
+      : { ...s, drawn: false, w: 0, h: 0 },
+  );
+}
+
+/**
+ * The index of the experience step to treat as the signature moment: the
+ * first ticked one, or -1 when none is ticked.
+ */
+export function signatureIndex(steps: { signature?: boolean | null }[] | null | undefined): number {
+  return (steps ?? []).findIndex((s) => s?.signature === true);
+}
+
 /** Roman numerals for the sitting numbers ("No. I", "No. II"), up to ten. */
 export function roman(n: number): string {
   return ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'][n - 1] ?? String(n);
