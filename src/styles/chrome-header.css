@@ -468,9 +468,10 @@
     transform: none;
   }
 }
+/* Transform only: text never passes through a faint, low-contrast state (axe reads the
+   menu as it opens; tests/wayfinding.spec.ts). */
 @keyframes bq-rise {
   from {
-    opacity: 0;
     transform: translateY(0.75rem);
   }
   to {
