@@ -98,6 +98,9 @@ const NON_STEGA_FIELDS = new Set([
   // studioPlaybook.ts).
   'align',
   'businessModel',
+  // story.coverCutout.cutoutOf (written by scripts/make-cutouts.mjs): CoverHero
+  // compares it to the cover's asset id to drop a stale cut-out.
+  'cutoutOf',
   'businessType',
   'category',
   'columns',

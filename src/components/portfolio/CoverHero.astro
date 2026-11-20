@@ -37,11 +37,31 @@
 // Without JavaScript, under reduced motion, in automated browsers and on paper
 // everything shows at rest. Motion: src/scripts/cover-hero.ts (GSAP,
 // ScrollTrigger, SplitText).
+//
+// COVER frames (2026-11-20, "like a magazine cover"): every other story frame
+// is a cover. Bottom to top: the photo; the MASTHEAD (the title huge in the
+// display face, an aria-hidden duplicate) placed so the subject's head
+// overlaps it; the CUT-OUT (the person alone, scripts/make-cutouts.mjs) in the
+// photo's exact box, so the masthead reads as BEHIND them; an outlined echo of
+// the masthead over everything; then the COVER LINES on paper chips (issue
+// number, the real h2 title, "Starring", the magazine and year, the place).
+// Without a cut-out the masthead simply sits over the photo. The opening frame
+// becomes a cover too when its story has a cut-out: her name behind the head.
+// Placement is CSS arithmetic on the photo's ratio and crop point
+// (src/lib/cinema-cover.ts, src/styles/cinema-cover.css), so nothing moves
+// after first paint.
 import FocusImage from '@/components/portfolio/FocusImage.astro';
+import CoverCutout from '@/components/portfolio/CoverCutout.astro';
 import { getFeaturedStories, type Story } from '@/lib/storyQueries';
 import { cinemaRuns, photoRatio } from '@/lib/portfolio';
+import { coverVars, mastheadLines, starring, usableCutout } from '@/lib/cinema-cover';
 import { urlFor } from '@/lib/sanity';
 import '@/styles/portfolio.css';
+import '@/styles/cinema-cover.css';
+
+// Local cut-outs, `astro dev` only (src/lib/local-cutouts.ts); null in every build.
+declare const __LOCAL_CUTOUTS__: Parameters<typeof usableCutout>[1];
+const localCutouts = typeof __LOCAL_CUTOUTS__ !== 'undefined' ? __LOCAL_CUTOUTS__ : null;
 
 // The CTA and portrait props are still passed by SectionRenderer; the Cinema
 // draws neither (the booking ask is the signed close below it).
@@ -59,8 +79,20 @@ interface Props {
 
 const { headline, subhead, limit = 8, headingId = 'cover-hero-heading' } = Astro.props;
 
-const stories = (await getFeaturedStories(Math.min(Math.max(limit, 1), 8))).filter((s) => s.cover);
+const featured = (await getFeaturedStories(Math.min(Math.max(limit, 1), 8))).filter((s) => s.cover);
+// The opening is a cover when its story has a cut-out. When the first featured
+// story has none (a group scene the model cannot lift one person from) and a
+// later one does, that one opens instead; the rest keep their order.
+const cutOf = (s: Story) => usableCutout(s, localCutouts);
+const opener = cutOf(featured[0] ?? ({} as Story)) ? 0 : featured.findIndex((s) => cutOf(s));
+const stories =
+  opener > 0
+    ? [featured[opener], ...featured.slice(0, opener), ...featured.slice(opener + 1)]
+    : featured;
 const [first, ...rest] = stories;
+const openCut = first ? cutOf(first) : null;
+// The opening's masthead is the h1 itself (two lines, sized by its own rules).
+const openMast = { lines: ['', ''] as string[], chars: 1 };
 const total = stories.length;
 const pad = (n: number) => String(n).padStart(2, '0');
 const count = (n: number) => `${pad(n)} / ${pad(total)}`;
@@ -80,14 +112,23 @@ const fillStyle = (s: Story | undefined) => {
   return url ? `--knock-fill: url("${url}")` : undefined;
 };
 
-// The layouts by position among the story frames: a, b (photo left), c, b (photo right).
-type Layout = 'bleed' | 'overlap' | 'knock';
+// The layouts by position among the story frames: every other one a cover,
+// between them overlap (photo left), knockout, overlap (photo right). The full
+// bleed frame stays in the stylesheet but is no longer in the rotation.
+type Layout = 'bleed' | 'overlap' | 'knock' | 'cover';
 const CYCLE: { layout: Layout; side?: 'left' | 'right' }[] = [
-  { layout: 'bleed' },
+  { layout: 'cover' },
   { layout: 'overlap', side: 'left' },
+  { layout: 'cover' },
   { layout: 'knock' },
+  { layout: 'cover' },
   { layout: 'overlap', side: 'right' },
 ];
+
+// The cover lines' small facts.
+const yearOfStory = (s: Story) => (s.publication?.date ?? s.date ?? '').slice(0, 4) || null;
+const magazineLine = (s: Story) =>
+  [s.publication?.magazine, yearOfStory(s)].filter(Boolean).join(', ');
 
 const headRuns = cinemaRuns(headline);
 // Her name is set very large (two lines); a longer headline steps down a size
@@ -103,6 +144,10 @@ const knockPos =
     ? `${(hotspot.x * 100).toFixed(1)}% ${(hotspot.y * 100).toFixed(1)}%`
     : '50% 50%';
 const knockStyle = [fillStyle(first), `--knock-pos: ${knockPos}`].filter(Boolean).join('; ');
+// The opening as a cover: its head measurements and photo maths (see coverVars).
+const openPortrait = !!first && photoRatio(first.cover) < 0.95;
+const openStyle = first && openCut ? coverVars(first, openCut, openMast) : undefined;
+const openStarring = first ? starring(first) : [];
 ---
 
 <section class="cinema" aria-labelledby={headingId} data-cover-hero data-cinema>
@@ -140,7 +185,15 @@ const knockStyle = [fillStyle(first), `--knock-pos: ${knockPos}`].filter(Boolean
   </script>
 
   {/* ---- The opening frame ---------------------------------------------- */}
-  <div class="cover-hero cinema-open" data-hero-open>
+  <div
+    class:list={[
+      'cover-hero cinema-open',
+      openCut && 'cinema-open--cover',
+      openCut && openPortrait && 'is-portrait',
+    ]}
+    data-hero-open
+    style={openStyle}
+  >
     <div class="cover-hero__media" data-hero-media data-first-viewport-exempt aria-hidden="true">
       <div class="cover-hero__image" data-hero-image>
         {first && (
@@ -170,12 +223,65 @@ const knockStyle = [fillStyle(first), `--knock-pos: ${knockPos}`].filter(Boolean
       <h1 id={headingId} class:list={['cinema-open__name font-display', nameSize]}>
         {headRuns.map((r) => (r.italic ? <em>{r.text}</em> : r.text))}
       </h1>
-      {subhead && (
+      {subhead && !openCut && (
         <p class="cinema__line cinema-open__sub">
           <span data-reveal-lines>{subhead}</span>
         </p>
       )}
     </div>
+
+    {/* As a cover: the person over her name (fades in once the photo is full
+        bleed), then the cover lines. The small line moves into the cover lines,
+        so nothing real sits under the cut-out but the h1's big letters. */}
+    {first && openCut && (
+      <>
+        <div
+          class:list={[
+            'cover__cut-layer',
+            'cinema__photo',
+            openPortrait && 'cinema__photo--portrait',
+          ]}
+          aria-hidden="true"
+          data-hero-cut
+        >
+          <CoverCutout
+            cutout={openCut}
+            hotspot={(first.cover as { hotspot?: { x?: number; y?: number } }).hotspot}
+            width={2400}
+            sizes="100vw"
+            loading="eager"
+            class="cinema__frame-img"
+          />
+        </div>
+        <div class="cover__lines cover__lines--open">
+          <div class="cover__col cover__col--left">
+            <p class="cover__chip cover__issue font-display" data-hero-fade>
+              No. <em>01</em>
+            </p>
+            {subhead && (
+              <p class="cover__chip cover__kicker" data-hero-fade>
+                <span data-reveal-lines>{subhead}</span>
+              </p>
+            )}
+          </div>
+          <div class="cover__col cover__col--right">
+            {openStarring.length > 0 && (
+              <p class="cover__chip cover__starring" data-hero-fade>
+                <span class="cover__label">Starring</span>
+                <span class="cover__names font-display">{openStarring.join(' & ')}</span>
+              </p>
+            )}
+            <p class="cover__chip cover__credit" data-hero-fade>
+              <span class="cover__label">On the cover</span>
+              <a class="font-display" href={`/stories/${first.slug}/`} data-frame-link>
+                {first.title}
+              </a>
+              {lineOf(first) && <span class="cover__small">{lineOf(first)}</span>}
+            </p>
+          </div>
+        </div>
+      </>
+    )}
 
     {/* The knockout duplicate for the opening (decorative, aria-hidden): the
         same words in the same place over the real h1, cut out of the paper so
@@ -194,18 +300,22 @@ const knockStyle = [fillStyle(first), `--knock-pos: ${knockPos}`].filter(Boolean
         <p class:list={['cinema-open__name font-display', nameSize]} data-contrast-decorative>
           {headRuns.map((r) => (r.italic ? <em data-contrast-decorative>{r.text}</em> : r.text))}
         </p>
-        {subhead && <p class="cinema__line cinema-open__sub cinema-open__ghost">{subhead}</p>}
+        {subhead && !openCut && (
+          <p class="cinema__line cinema-open__sub cinema-open__ghost">{subhead}</p>
+        )}
       </div>
     </div>
 
     {first && (
       <>
-        <p class="cinema-open__credit cinema__line" data-hero-fade>
-          <a href={`/stories/${first.slug}/`} data-frame-link>
-            {first.title}
-            {lineOf(first) && <span class="cinema-open__credit-line">, {lineOf(first)}</span>}
-          </a>
-        </p>
+        {!openCut && (
+          <p class="cinema-open__credit cinema__line" data-hero-fade>
+            <a href={`/stories/${first.slug}/`} data-frame-link>
+              {first.title}
+              {lineOf(first) && <span class="cinema-open__credit-line">, {lineOf(first)}</span>}
+            </a>
+          </p>
+        )}
         <span class="cinema__count" aria-hidden="true" data-contrast-decorative data-hero-fade>
           {count(1)}
         </span>
@@ -223,6 +333,143 @@ const knockStyle = [fillStyle(first), `--knock-pos: ${knockPos}`].filter(Boolean
         const href = `/stories/${story.slug}/`;
         const portrait = photoRatio(story.cover) < 0.95;
         const titleId = `cinema-title-${k + 2}`;
+        if (layout === 'cover') {
+          const cut = cutOf(story);
+          const mast = mastheadLines(story.title);
+          const names = starring(story);
+          const mag = magazineLine(story);
+          const hotspot = (story.cover as { hotspot?: { x?: number; y?: number } }).hotspot;
+          return (
+            <li
+              class:list={[
+                'cine',
+                'cine--cover',
+                cut && 'has-cutout',
+                portrait && 'is-portrait',
+                mast.lines.length > 1 && 'is-two-line',
+              ]}
+              data-cinema-frame
+              data-layout="cover"
+              style={coverVars(story, cut, mast)}
+            >
+              {/* 1. The photo (and the vignette that sits on it, under the masthead). */}
+              <div class="cover__depth" data-cover-depth aria-hidden="true">
+                <div
+                  class:list={[
+                    'cine__photo',
+                    'cinema__photo',
+                    portrait && 'cinema__photo--portrait',
+                  ]}
+                >
+                  <FocusImage
+                    photo={story.cover}
+                    width={2400}
+                    sizes="100vw"
+                    loading="lazy"
+                    alt=""
+                    class="cinema__frame-img"
+                    pull={false}
+                  />
+                </div>
+                <div class="cover__vignette" />
+              </div>
+
+              {/* 2. The masthead: decorative, the real title is the h2 below. */}
+              <p
+                class="cover__mast font-display"
+                aria-hidden="true"
+                data-contrast-decorative
+                data-cover-mast
+              >
+                {mast.lines.map((l) => (
+                  <span class="cover__mast-line" data-contrast-decorative>
+                    {l}
+                  </span>
+                ))}
+              </p>
+
+              {/* 3. The person, over the masthead, registered with the photo. */}
+              {cut && (
+                <div class="cover__depth cover__depth--cut" data-cover-depth aria-hidden="true">
+                  <div
+                    class:list={[
+                      'cover__cut-layer',
+                      'cinema__photo',
+                      portrait && 'cinema__photo--portrait',
+                    ]}
+                  >
+                    <CoverCutout
+                      cutout={cut}
+                      hotspot={hotspot}
+                      width={2400}
+                      sizes="100vw"
+                      class="cinema__frame-img"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* 4. An outlined echo of the masthead over everything, so the
+                  letters carry on across her as a line. */}
+              {cut && (
+                <p
+                  class="cover__mast cover__mast--echo font-display"
+                  aria-hidden="true"
+                  data-contrast-decorative
+                  data-cover-echo
+                >
+                  {mast.lines.map((l) => (
+                    <span class="cover__mast-line" data-contrast-decorative>
+                      {l}
+                    </span>
+                  ))}
+                </p>
+              )}
+
+              {/* 5. The cover lines, on paper chips. */}
+              <div class="cover__lines" data-cover-lines>
+                <div class="cover__col cover__col--left">
+                  <p class="cover__chip cover__issue font-display" data-cover-line>
+                    No. <em>{pad(k + 2)}</em>
+                  </p>
+                  <h2 id={titleId} class="cover__chip cover__title font-display" data-cover-line>
+                    <a href={href} data-frame-link>
+                      {runs.map((r) => (r.italic ? <em>{r.text}</em> : r.text))}
+                    </a>
+                  </h2>
+                  {story.dek && (
+                    <p class="cover__chip cover__dek" data-cover-line>
+                      {story.dek}
+                    </p>
+                  )}
+                </div>
+                <div class="cover__col cover__col--right">
+                  {names.length > 0 && (
+                    <p class="cover__chip cover__starring" data-cover-line>
+                      <span class="cover__label">Starring</span>
+                      <span class="cover__names font-display">{names.join(' & ')}</span>
+                    </p>
+                  )}
+                  {mag && (
+                    <p class="cover__chip cover__mag" data-cover-line>
+                      <span class="cover__label">As seen in</span>
+                      <span class="cover__names font-display">{mag}</span>
+                    </p>
+                  )}
+                  {story.location && (
+                    <p class="cover__chip cover__place" data-cover-line>
+                      {story.location}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <span class="cinema__count" aria-hidden="true" data-contrast-decorative>
+                {count(k + 2)}
+              </span>
+            </li>
+          );
+        }
         return (
           <li
             class:list={['cine', `cine--${layout}`, side && `cine--${side}`]}

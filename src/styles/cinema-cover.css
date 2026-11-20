@@ -1,0 +1,345 @@
+/* scaffold-file: stories */
+/* Safe to edit by hand.
+   COVER frames of the home Cinema (CoverHero.astro; DESIGN.md "Cover frame";
+   motion in src/scripts/cover-hero.ts). Layers, bottom to top:
+     0 the photo (.cover__depth) with a soft vignette on it,
+     1 the MASTHEAD, the title enormous in the display face (aria-hidden copy),
+     2 the CUT-OUT of the person, in the photo's exact box (so it registers),
+     3 an outlined ECHO of the masthead, carrying the letters across her,
+     4 the COVER LINES on paper chips (the real h2 is one of them),
+     5 the counter.
+   Without a cut-out, layers 2 and 3 are absent and the masthead sits over the
+   photo.
+
+   WHERE THE MASTHEAD GOES, with no JavaScript. CoverHero writes the photo's
+   ratio (--ar), its crop point (--px, --py) and, from the cut-out, where the
+   head is in the image (--head-top, --head-bottom, fractions). The same
+   arithmetic as object-fit then gives the head's place on screen at any size:
+     the image's drawn height  --img-h  (cover: the larger fit; a portrait on a
+                                         wide screen is shown whole: the smaller)
+     its top edge              --img-y  = (frame - image) * crop point
+     the head's top            --head-y = --img-y + --img-h * --head-top
+   and the masthead's baseline sits 60% of the way down the head, so the head
+   overlaps the lower part of the letters, kept clear of the header at the top
+   and of the cover lines below. Fonts come from the tokens only
+   (--font-display, --font-body), so a font change flows straight in. */
+
+.cine--cover,
+.cinema-open--cover {
+  --img-y: calc((var(--frame-h) - var(--img-h)) * var(--py, 0.5));
+  --head-y: calc(var(--img-y) + var(--img-h) * var(--head-top, 0.3));
+  --head-h: calc(var(--img-h) * (var(--head-bottom, 0.42) - var(--head-top, 0.3)));
+  --mast-h: calc(var(--mast-fs) * 0.84 * var(--mast-lines, 1));
+  --mast-anchor: calc(var(--head-y) + var(--head-h) * 0.6);
+  --mast-bottom: clamp(
+    calc(var(--frame-h) * 0.3),
+    calc(var(--frame-h) - var(--mast-anchor)),
+    calc(var(--frame-h) - var(--mast-top-clear) - var(--mast-h))
+  );
+}
+
+/* ---- The story cover frame ------------------------------------------------ */
+.cine--cover {
+  --frame-h: 100svh;
+  --img-h: max(var(--frame-h), calc(100vw / var(--ar, 0.8)));
+  /* The frame lands at the top of the screen under the sticky header. */
+  --mast-top-clear: 6rem;
+  /* As big as the width allows: about 0.72em a capital, never over 26vw, and
+     two lines never over 62% of the frame. */
+  --mast-fs: min(
+    26vw,
+    calc(96vw / (var(--mast-chars, 8) * 0.72)),
+    calc(31svh / var(--mast-lines, 1) * 2 / 1.68)
+  );
+  color: #f3eee7;
+  background: #12100e;
+}
+@media (min-width: 768px) {
+  .cine--cover.is-portrait {
+    --img-h: min(var(--frame-h), calc(100vw / var(--ar, 0.8)));
+  }
+  /* A portrait cover on a wide screen shows whole over its blurred self, like
+     the full-bleed frame; the cut-out uses the same fit, so they register. */
+  .cine--cover .cinema__photo--portrait .focus-image__img {
+    object-fit: contain;
+  }
+  .cine--cover .cinema__photo--portrait .focus-image::before {
+    filter: blur(28px) brightness(0.55);
+  }
+}
+
+.cover__depth {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.cover__depth--cut {
+  z-index: 2;
+  pointer-events: none;
+}
+/* A soft vignette ON the photo (under the masthead and the person), so the
+   masthead reads and the person, drawn again above it un-dimmed, steps forward. */
+.cover__vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 80% at 50% 40%, rgb(18 16 14 / 0) 40%, rgb(18 16 14 / 0.45) 100%),
+    linear-gradient(to top, rgb(18 16 14 / 0.45), rgb(18 16 14 / 0) 40%);
+}
+
+/* The cut-out layer: the photo's box and fit, with no ground of its own. */
+.cover__cut-layer {
+  position: absolute;
+  inset: 0;
+  background: transparent;
+}
+.cover-cut {
+  background: transparent;
+}
+.cover-cut::before {
+  display: none;
+}
+
+/* The masthead. One or two lines, each kept whole, centred. */
+.cover__mast {
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  right: 0;
+  bottom: var(--mast-bottom);
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--mast-fs);
+  font-weight: 400;
+  line-height: 0.84;
+  letter-spacing: -0.02em;
+  text-align: center;
+  color: #f3eee7;
+  text-shadow: 0 0.02em 0.12em rgb(18 16 14 / 0.28);
+  pointer-events: none;
+}
+.cover__mast-line {
+  display: block;
+  white-space: nowrap;
+}
+/* The echo: the same letters as a fine paper outline, over the person. */
+.cover__mast--echo {
+  z-index: 3;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  -webkit-text-stroke: max(1px, 0.006em) rgb(243 238 231 / 0.7);
+  text-shadow: none;
+}
+
+/* ---- The cover lines -------------------------------------------------------- */
+.cover__lines {
+  position: absolute;
+  z-index: 4;
+  left: clamp(1.25rem, 3vw, 2.75rem);
+  right: clamp(3rem, 4.5vw, 4rem);
+  bottom: clamp(1.5rem, 5svh, 3rem);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 2rem;
+  pointer-events: none;
+}
+.cover__col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+  max-width: min(24rem, 42vw);
+}
+.cover__col--right {
+  align-items: flex-end;
+  text-align: right;
+}
+/* A small paper chip under each line: the text is ink on paper, so it holds AA
+   over any photograph (tests/contrast.spec.ts). */
+.cover__chip {
+  margin: 0;
+  width: fit-content;
+  padding: 0.35rem 0.65rem 0.4rem;
+  color: var(--color-foreground);
+  background: rgb(243 238 231 / 0.95);
+  box-shadow: 0 0.5rem 1.5rem -0.75rem rgb(18 16 14 / 0.55);
+  pointer-events: auto;
+}
+.cinema .cover__chip em {
+  color: inherit;
+}
+.cover__issue {
+  font-size: clamp(1.75rem, 2.6vw, 2.75rem);
+  line-height: 0.95;
+  letter-spacing: -0.01em;
+}
+.cover__issue em {
+  font-style: italic;
+}
+.cover__title {
+  font-size: clamp(1.5rem, 2.4vw, 2.5rem);
+  font-weight: 400;
+  line-height: 1;
+}
+.cover__dek {
+  max-width: 20rem;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+.cover__label {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+.cover__names {
+  display: block;
+  font-size: clamp(1.125rem, 1.5vw, 1.5rem);
+  font-style: italic;
+  line-height: 1.1;
+}
+.cover__place,
+.cover__small,
+.cover__kicker {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+.cover__small {
+  display: block;
+  margin-top: 0.2rem;
+  font-weight: 500;
+}
+.cover__credit a {
+  display: block;
+  font-size: clamp(1.25rem, 1.8vw, 1.75rem);
+  line-height: 1.05;
+}
+.cover__title a:hover,
+.cover__credit a:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.16em;
+}
+.cine--cover .cinema__count {
+  z-index: 5;
+  color: #f3eee7;
+}
+
+/* ---- The opening frame as a cover (her name behind the subject) ---------- */
+.cinema-open--cover {
+  --frame-h: max(34rem, calc(100svh - var(--site-header-h, 3.5rem)));
+  --img-h: max(var(--frame-h), calc(100vw / var(--ar, 0.8)));
+  /* The frame starts under the header, so only a little room above. */
+  --mast-top-clear: 1.5rem;
+  --mast-fs: clamp(4.5rem, 21vw, 20rem);
+  --mast-lines: 2;
+}
+@media (min-width: 768px) {
+  .cinema-open--cover.is-portrait {
+    --img-h: min(var(--frame-h), calc(100vw / var(--ar, 0.8)));
+  }
+}
+/* The name (and its knockout twin, in the same box) anchored by its foot. */
+.cinema-open--cover .cinema-open__words {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: var(--mast-bottom);
+  padding: 0 1rem;
+}
+.cinema-open--cover .cinema-open__name {
+  font-size: var(--mast-fs);
+  line-height: 0.84;
+}
+/* A lighter veil than the plain opening: the name is huge, the cover lines
+   carry their own paper. */
+.cinema-open--cover .cover-hero__overlay {
+  background:
+    linear-gradient(to top, rgb(18 16 14 / 0.5) 0%, rgb(18 16 14 / 0) 35%), rgb(18 16 14 / 0.3);
+}
+/* The person over the name, dimmed by about the veil's amount so she sits in
+   the same light as the photo under her. */
+.cinema-open--cover .cover__cut-layer {
+  z-index: 4;
+  pointer-events: none;
+  filter: brightness(0.78);
+}
+.cinema-open--cover .cover__lines {
+  z-index: 5;
+}
+html.showcase-intro .cinema-open [data-hero-cut] {
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* ---- Motion hooks ------------------------------------------------------------ */
+/* The masthead letters rise out of a mask behind the person (SplitText chars
+   in line masks); nothing here hides anything without JavaScript. */
+.cover__mast .line-mask {
+  overflow: clip;
+  overflow-clip-margin: 0.04em;
+}
+
+/* ---- Phones ------------------------------------------------------------------ */
+@media (max-width: 767px) {
+  .cine--cover {
+    --mast-top-clear: 5rem;
+    --mast-fs: min(24vw, calc(94vw / (var(--mast-chars, 8) * 0.72)));
+  }
+  /* The cover lines stack at the foot, left-aligned. */
+  .cover__lines {
+    left: 1rem;
+    right: 2.5rem;
+    bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4rem;
+  }
+  .cover__col,
+  .cover__col--right {
+    max-width: 100%;
+    align-items: flex-start;
+    text-align: left;
+  }
+  .cover__dek {
+    display: none;
+  }
+  .cover__issue {
+    font-size: 1.5rem;
+  }
+  .cinema-open--cover {
+    --mast-fs: clamp(4rem, 22vw, 8rem);
+  }
+}
+
+/* ---- Paper -------------------------------------------------------------------- */
+@media print {
+  .cover__mast,
+  .cover__mast-line,
+  .cover__mast .line {
+    opacity: 1 !important;
+    transform: none !important;
+    color: #1f1b18 !important;
+    -webkit-text-fill-color: #1f1b18 !important;
+    text-shadow: none !important;
+  }
+  .cover__mast--echo,
+  .cover__depth--cut,
+  .cinema-open--cover .cover__cut-layer {
+    display: none !important;
+  }
+  .cover__chip,
+  .cover__depth {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+}
