@@ -136,10 +136,7 @@ function setup(root: HTMLElement): Cleanup {
 
       // The words: the headline and the first story's panels, from below
       // their masks, starting on the label.
-      const first = [
-        root.querySelector<HTMLElement>('.cover-hero__headline'),
-        ...stacks.map((s) => s[0]),
-      ].filter((el): el is HTMLElement => !!el);
+      const first = [...stacks.map((s) => s[0])].filter((el): el is HTMLElement => !!el);
       const lines = first.flatMap((el) =>
         el.matches('[data-reveal-lines]') ? (linesOf.get(el) ?? []) : panelLines(el),
       );

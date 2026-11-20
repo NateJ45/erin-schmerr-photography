@@ -625,7 +625,8 @@ html.motion [data-focus].is-focused .focus-image__img {
    at the foot where the credits and thumbnails sit. */
 .cover-hero__overlay {
   background:
-    linear-gradient(to top, rgb(18 16 14 / 0.5) 0%, rgb(18 16 14 / 0) 38%), rgb(18 16 14 / 0.4);
+    linear-gradient(to bottom, rgb(18 16 14 / 0.45) 0%, rgb(18 16 14 / 0) 22%),
+    linear-gradient(to top, rgb(18 16 14 / 0.55) 0%, rgb(18 16 14 / 0) 38%), rgb(18 16 14 / 0.45);
 }
 
 /* The stage: three rows on the page's own left edge (rule 17). */
@@ -736,16 +737,24 @@ html.motion [data-focus].is-focused .focus-image__img {
   margin: 0;
   padding: 0;
 }
+/* The thumbnails not on screen are dimmed by a dark veil, not by opacity: the
+   picture itself stays fully shown (card 213) and its hidden title prints. */
 .cover-hero__thumb {
   display: block;
   position: relative;
   width: clamp(4.5rem, 6.5vw, 5.5rem);
-  opacity: 0.5;
-  transition: opacity 400ms ease;
 }
-.cover-hero__thumb:hover,
-.cover-hero__thumb.is-active {
-  opacity: 1;
+.cover-hero__thumb::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgb(18 16 14 / 0.55);
+  transition: opacity 400ms ease;
+  pointer-events: none;
+}
+.cover-hero__thumb:hover::after,
+.cover-hero__thumb.is-active::after {
+  opacity: 0;
 }
 .cover-hero__thumb .cover-hero__thumb-img {
   aspect-ratio: 16 / 10;
@@ -776,6 +785,27 @@ html.showcase-intro .cover-hero__media {
   clip-path: polygon(50% 20%, 50% 20%, 50% 80%, 50% 80%);
 }
 
+/* Paper (print.css, card 155): a page printed mid-opening prints at rest. The
+   !important beats GSAP's inline opacity and clip on the header and words. */
+@media print {
+  .site-header,
+  .cover-hero [data-reveal-lines],
+  .cover-hero [data-hero-fade],
+  .cover-hero .line {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  /* Visibility only where it belongs: the other stories' panels stay hidden. */
+  .site-header,
+  .cover-hero__headline,
+  .cover-hero [data-panel].is-active [data-reveal-lines],
+  .cover-hero [data-hero-fade] {
+    visibility: visible !important;
+  }
+  .cover-hero__media {
+    clip-path: none !important;
+  }
+}
 .cover-hero a:focus-visible {
   outline: 2px solid #f3eee7;
   outline-offset: 3px;

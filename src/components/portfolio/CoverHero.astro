@@ -116,7 +116,7 @@ const creditColumns = (story: (typeof stories)[number]) => {
     })();
   </script>
 
-  <div class="cover-hero__media" data-hero-media aria-hidden="true">
+  <div class="cover-hero__media" data-hero-media data-first-viewport-exempt aria-hidden="true">
     <div class="cover-hero__image" data-hero-image>
       {stories.map((story, i) => (
         <div
@@ -146,7 +146,7 @@ const creditColumns = (story: (typeof stories)[number]) => {
 
   <div class="cover-hero__stage mx-auto max-w-content px-l">
     <div class="cover-hero__top">
-      <h1 id={headingId} class="cover-hero__headline font-display" data-reveal-lines>
+      <h1 id={headingId} class="cover-hero__headline font-display">
         {hasPortrait ? (
           <>
             {headBefore}{' '}
