@@ -69,7 +69,11 @@ for (const viewport of widths) {
               const cs = getComputedStyle(el);
               let problem: string | null = null;
               if (parseFloat(cs.opacity) !== 1) problem = `opacity ${cs.opacity}`;
-              else if (cs.clipPath !== 'none') problem = `clip-path ${cs.clipPath}`;
+              // A clip that IS the element's resting shape (the funnel cover's ink headline,
+              // clipped to the paper side of the photo for good) opts out of this one check
+              // with data-first-viewport-clip; its opacity is still checked like any other.
+              else if (cs.clipPath !== 'none' && !el.hasAttribute('data-first-viewport-clip'))
+                problem = `clip-path ${cs.clipPath}`;
               seen.set(el, problem);
               return problem;
             };

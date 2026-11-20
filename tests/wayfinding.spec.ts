@@ -71,6 +71,9 @@ test.describe('wayfinding', () => {
   // list, whatever the footer style, so the starter's "two by two" check is replaced by this.
   test('footer: one stacked page list, and the giant name fits a phone', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 });
+    // At rest: with motion on, the footer's page list rises in a stagger as it scrolls in
+    // (Footer.astro), so boxes read at load are mid-transform and can look side by side.
+    await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto(ROUTE, { waitUntil: 'load' });
     const items = page.locator('#site-footer nav[aria-label="Footer"] li');
     const a = await items.nth(0).boundingBox();
