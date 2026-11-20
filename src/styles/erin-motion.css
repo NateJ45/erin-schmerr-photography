@@ -12,7 +12,7 @@
    3. Retired 2026-11-18: the story sequence's scroll drift (the story page is
       a film now, src/scripts/story-film.ts).
    4. The darkroom chrome: hover prints in the header, the contact sheet's
-      frames developing, the end credits rolling up. */
+      frames developing. (The footer's wordmark build-in is in chrome-footer.css.) */
 
 /* ---- 1. First-visit loader ------------------------------------------------ */
 .first-visit-loader {
@@ -129,26 +129,5 @@ html.first-visit .first-visit-loader {
   }
   to {
     filter: none;
-  }
-}
-
-/* Footer: where the end credits come into view they roll up a little, on the
-   scroll itself (translate only: nothing starts hidden, nothing reflows).
-   Browsers without scroll-driven animation and reduced motion keep them still. */
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .dk-credits > * {
-      animation: dk-roll linear both;
-      animation-timeline: view();
-      animation-range: entry 0% entry 100%;
-    }
-  }
-}
-@keyframes dk-roll {
-  from {
-    translate: 0 2.5rem;
-  }
-  to {
-    translate: 0 0;
   }
 }

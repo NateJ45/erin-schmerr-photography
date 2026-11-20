@@ -7,8 +7,8 @@ import AxeBuilder from '@axe-core/playwright';
 // Drives /styleguide/wayfinding/ (src/pages/styleguide/wayfinding.astro), the chrome with fixed
 // Site settings that switch all four pieces on. Pins: the phone menu's labelled groups (a dialog
 // still, each list named by its heading, the page you are on marked, the menu's own button not
-// repeated); the where-next rows (three, an unpublished Studio page never drawn); the compact
-// footer (groups two by two on a phone); the action bar (phones only, after the heading, gone
+// repeated); the where-next rows (three, an unpublished Studio page never drawn); this site's
+// footer (one stacked page list, a wordmark that fits a phone); the action bar (phones only, after the heading, gone
 // while the footer shows, above the safe area, passes axe, fits 320px); and a page with nothing
 // set (every real route of the starter) carrying none of it.
 // =============================================================================
@@ -67,15 +67,21 @@ test.describe('wayfinding', () => {
     await expect(nav.getByText('Not published')).toHaveCount(0);
   });
 
-  test('compact footer: the groups sit two by two on a phone', async ({ page }) => {
+  // This site's footer (2026-11-20, Footer.astro) draws the footer columns as ONE stacked
+  // list, whatever the footer style, so the starter's "two by two" check is replaced by this.
+  test('footer: one stacked page list, and the giant wordmark fits a phone', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 });
     await page.goto(ROUTE, { waitUntil: 'load' });
-    const cells = page.locator('#site-footer .site-footer__links > nav');
-    const a = await cells.nth(0).boundingBox();
-    const b = await cells.nth(1).boundingBox();
-    expect(Math.abs(a!.y - b!.y)).toBeLessThan(2);
-    expect(b!.x).toBeGreaterThan(a!.x + a!.width - 1);
-    await expect(page.locator('#site-footer .site-footer__brand')).toBeVisible();
+    const items = page.locator('#site-footer nav[aria-label="Footer"] li');
+    const a = await items.nth(0).boundingBox();
+    const b = await items.nth(1).boundingBox();
+    expect(b!.y).toBeGreaterThan(a!.y + a!.height - 1);
+    expect(Math.abs(a!.x - b!.x)).toBeLessThan(2);
+    const mark = page.locator('#site-footer [data-bq-mark]');
+    await expect(mark).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
+      375,
+    );
   });
 
   test('action bar: shows past the heading on a phone, gives way to the footer', async ({
@@ -138,8 +144,7 @@ test.describe('wayfinding', () => {
     await expect(page.locator('.where-next')).toHaveCount(0);
     await expect(page.locator('div[data-action-bar]')).toHaveCount(0);
     await expect(page.locator('.mobile-menu--groups')).toHaveCount(0);
-    // This site defaults to the compact footer (Footer.astro), so an unset
-    // footer style draws compact here rather than the starter's columns.
-    await expect(page.locator('.site-footer--compact')).toHaveCount(1);
+    // This site draws its own footer (Footer.astro) whatever the footer style.
+    await expect(page.locator('footer.bq-footer')).toHaveCount(1);
   });
 });

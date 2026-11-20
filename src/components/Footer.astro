@@ -1,42 +1,46 @@
 ---
 // Foundation, edit with care
-// Site footer: "end credits" (DESIGN.md, Components; 2026-11-18).
+// Site footer: "the boutique close" (DESIGN.md, Components; 2026-11-20). Replaced the
+// "end credits" footer of 2026-11-18.
 //
-// Set on paper and centred like the credits at the end of a film:
-//   1. Where next rows and the newsletter, when Site settings switch them on (card 191).
-//   2. The credits: "Photographs by Erin Schmerr", then "Starring" (the people credited on
-//      her stories), "On location at" (the stories' places and credited venues) and "As
-//      published in" (the press magazines), each a short list linking where the data has a
-//      page (src/components/darkroom/chrome-data.ts). Then the site's pages, from Site
-//      settings > Footer columns (or the top menu when there are none), two by two on a
-//      phone. This list is also where the "Menu" button lands with JavaScript off.
-//   3. "Booking sessions in Cincinnati and West Chester · 11:02 AM": the service areas and
-//      her local time on site.timeZone. The build writes the zone's short name (EST); the
-//      small script below swaps in the time, in a fixed-width box so nothing moves.
-//   4. Email, phone and social links when Site settings has them, then the small print
-//      (copyright, privacy or the legal links, Studio, the optional credit).
-//   5. A huge "Tate" (the first word of the site name), cropped by the footer's bottom edge.
+// Warm paper, quiet, in four bands (styles: src/styles/chrome-footer.css):
+//   1. Where next rows, when Site settings switch them on (card 191).
+//   2. The invitation: a centred line in Instrument Serif with one italic word, a short
+//      sentence and an outlined square "Book a session" button (the header button's label
+//      and link). Left out on the page the button points to. The two lines are a DRAFT for
+//      Erin to approve or rewrite (docs/PENDING.md).
+//   3. Under a hairline: the site's pages as one stacked list at the left (Site settings >
+//      Footer columns, else the top menu; the no-JS "Menu" link lands here), the newsletter
+//      as a single underlined email field when Site settings switch it on (the site's own
+//      NewsletterSignup, restyled), the places she works (Site settings service areas, each
+//      with the business facts' address where it is in that town, else "Town, ST" from the
+//      facts' state; never typed here), then Instagram and the other social links, email
+//      and phone at the right.
+//   4. "Tate" (the first word of the site name) set huge across the full width. It builds in
+//      letter by letter the first time it scrolls into view: each glyph starts eroded by a
+//      thick paper-coloured stroke that thins to nothing, so the letter grows out from its
+//      spine (a CSS stand-in for the distance-field reveal on the reference). JavaScript arms
+//      it only when IntersectionObserver exists, motion is allowed and the word is below the
+//      fold; with JS off, under reduced motion, in print, or already on screen it is at rest.
+//   5. The small print: copyright, privacy or the legal links, Studio, the optional credit.
 //   6. The phone action bar (card 191), when this page has one.
-// Where the credits come into view they roll up a little on a CSS scroll-driven timeline
-// (erin-motion.css); reduced motion, touch-free fallbacks and browsers without support
-// show them still.
 
 import { site } from '@/data/site';
 import { resolveSocialLinks, socialLabel, type SocialLink } from '@/lib/social-links';
-import { socialIcon } from '@/lib/social-icons';
-import { Phone } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 import CopyEmailButton from '@/components/CopyEmailButton.astro';
 import NewsletterSignup from '@/components/NewsletterSignup';
 import { getNavPages, getAllPageSlugs } from '@/lib/queries';
 import { resolveSiteSettings, type RawChromeSettings } from '@/lib/siteSettings';
 import { mergePageSwitches } from '@/lib/page-switches';
 import { publicPath } from '@/lib/page-path';
+import { placeLine } from '@/lib/place-line';
 import { pickActionBar, whereNextRows } from '@/lib/wayfinding';
 import WhereNext from '@/components/WhereNext.astro';
 import ActionBar from '@/components/ActionBar.astro';
 import { resolveBusinessFacts, todayBarLine, type RawBusinessFacts } from '@/lib/business-facts';
 import ToConfirm from '@/components/business/ToConfirm.astro';
-import { getDarkroomData, type ChromeCredit } from './darkroom/chrome-data';
+import '@/styles/chrome-footer.css';
 
 interface NewsletterConfig {
   enabled?: boolean;
@@ -55,6 +59,7 @@ interface Props {
         title?: string;
         email?: string;
         phone?: string;
+        state?: string | null;
         socialInstagram?: string;
         socialFacebook?: string;
         socialLinks?:
@@ -72,59 +77,64 @@ const { siteSettings } = Astro.props as Props;
 const chrome = resolveSiteSettings(siteSettings);
 
 const brandName = siteSettings?.title ?? site.name;
-// The photographer the credits roll for. Her name, not the business name.
-const PHOTOGRAPHER = 'Erin Schmerr';
-// The giant word at the foot: the first word of the site name ("Tate").
-const bigWord = brandName.trim().split(/\s+/)[0] ?? brandName;
+// The giant word: the first word of the brand's name ("Tate"), from brand.config.json
+// through site.ts, the same source as the header wordmark.
+const bigWord = site.name.trim().split(/\s+/)[0] ?? site.name;
 
 const facts = resolveBusinessFacts(siteSettings as RawBusinessFacts | null | undefined);
 const email = siteSettings?.email ?? '';
 const phone = siteSettings?.phone ?? '';
 const socialLinks: SocialLink[] = chrome.showFooterSocials ? resolveSocialLinks(siteSettings) : [];
 
-const { starring, locations, publishedIn } = await getDarkroomData();
-const creditLines: { id: string; role: string; names: ChromeCredit[] }[] = [
-  { id: 'credits-starring', role: 'Starring', names: starring },
-  { id: 'credits-location', role: 'On location at', names: locations },
-  { id: 'credits-published', role: 'As published in', names: publishedIn },
-].filter((line) => line.names.length > 0);
+// The invitation's button: the header button's label and link (Header.astro's default).
+const book = {
+  label: siteSettings?.headerCta?.label?.trim() ? chrome.headerCta.label : 'Book a session',
+  href: chrome.headerCta.href,
+};
+const here = publicPath(Astro.url.pathname);
+const showInvite = publicPath(book.href) !== here;
 
-// The site's pages: the editor's footer columns (with switched-on pages, card 187), else the
-// top menu and the inquiry, so the no-JS "Menu" link always lands on every page.
+// The site's pages as ONE list: the editor's footer columns (with switched-on pages,
+// card 187), else the top menu and the inquiry. Same href twice is drawn once.
 const columns =
   chrome.footerColumns.length > 0
     ? mergePageSwitches([], chrome.footerColumns, await getNavPages()).footer
     : [
         {
           title: 'Pages',
-          links: chrome.headerNav.flatMap((item) =>
-            item.kind === 'flat' ? [{ label: item.label, href: item.href }] : item.items,
-          ),
-        },
-        {
-          title: 'Get in touch',
           links: [
-            { label: chrome.headerCta.show ? 'Book a session' : 'Contact', href: '/contact/' },
+            ...chrome.headerNav.flatMap((item) =>
+              item.kind === 'flat' ? [{ label: item.label, href: item.href }] : item.items,
+            ),
+            { label: book.label, href: book.href },
           ],
         },
       ];
+const seen = new Set<string>();
+const pages = columns
+  .flatMap((col) => col.links)
+  .filter((l) => (seen.has(l.href) ? false : (seen.add(l.href), true)));
 
-// "Cincinnati and West Chester"
+// The places she works (Detroit's two-place column): each service area, with the business
+// facts' street address under the town it is in, else "Cincinnati, OH" from the facts' state.
 const areas = (siteSettings?.serviceAreas ?? []).map((a) => a.trim()).filter(Boolean);
-const areaLine =
-  areas.length > 1 ? `${areas.slice(0, -1).join(', ')} and ${areas.at(-1)}` : (areas[0] ?? '');
-// The zone's short name ("EST") until the script writes the time.
-const zoneShort =
-  new Intl.DateTimeFormat('en-US', { timeZone: site.timeZone, timeZoneName: 'short' })
-    .formatToParts(new Date())
-    .find((p) => p.type === 'timeZoneName')?.value ?? '';
+const placeNames = areas.length > 0 ? areas : facts.address ? [facts.address.city] : [];
+const places = placeNames.map((name) => {
+  const addr =
+    facts.address && facts.address.city.toLowerCase() === name.toLowerCase() ? facts.address : null;
+  return {
+    name,
+    lines: addr ? addr.lines : [placeLine({ city: name, state: siteSettings?.state })],
+    mapsUrl: addr?.mapsUrl ?? null,
+    confirmed: addr ? addr.confirmed : true,
+  };
+});
 
 const currentYear = new Date().getFullYear();
 const LEGAL_LINKS = chrome.legalNav;
 const siteCredit = siteSettings?.footerCredit;
 const siteCreditUrl = siteSettings?.footerCreditUrl;
 
-const here = publicPath(Astro.url.pathname);
 const whereNext = siteSettings?.whereNext?.length
   ? whereNextRows(siteSettings.whereNext, here, await getAllPageSlugs())
   : [];
@@ -135,75 +145,95 @@ const actionBar =
     : pickedBar;
 ---
 
-<footer id="site-footer" class="site-footer--compact dk-footer bg-background text-foreground">
+<footer id="site-footer" class="bq-footer bg-background text-foreground">
   {whereNext.length > 0 && <WhereNext rows={whereNext} />}
 
-  {siteSettings?.newsletter?.enabled && (
-    <div class="mx-auto max-w-content px-m pt-l">
-      <div class="mx-auto max-w-md">
-        <NewsletterSignup client:visible newsletter={siteSettings.newsletter} source="footer" />
-      </div>
-    </div>
+  {showInvite && (
+    <section class="bq-invite" aria-labelledby="bq-invite-title">
+      {/* DRAFT copy for Erin (docs/PENDING.md): she approves or rewrites both lines. */}
+      <h2 id="bq-invite-title" class="bq-invite__title">
+        A portrait made to be <em>kept</em>
+      </h2>
+      <p class="bq-invite__line">Tell me who it is for, and we will plan it together.</p>
+      <a href={book.href} class="dk-button dk-button--line bq-invite__button">
+        {book.label}
+      </a>
+    </section>
   )}
 
-  <div class="dk-credits">
-    <p class="dk-credits__lead">
-      <span class="dk-credits__role">Photographs by</span>
-      <span class="dk-credits__star">{PHOTOGRAPHER}</span>
-    </p>
-
-    {creditLines.map((line) => (
-      <div class="dk-credit">
-        <p id={line.id} class="dk-credits__role">
-          {line.role}
-        </p>
-        <ul class="dk-credit__names" aria-labelledby={line.id}>
-          {line.names.map((c) => (
+  <div class="bq-index" data-bq-rise>
+    <div class="bq-index__lead">
+      <nav aria-label="Footer">
+        <ul class="bq-pages">
+          {pages.map((link, i) => (
             <li>
-              {c.href ? (
-                <a
-                  href={c.href}
-                  {...(c.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                >
-                  {c.name}
-                </a>
-              ) : (
-                <span>{c.name}</span>
-              )}
+              <a
+                href={link.href}
+                aria-current={publicPath(link.href) === here ? 'page' : undefined}
+              >
+                <span class="bq-rise" style={`--i:${i}`}>
+                  <span>{link.label}</span>
+                </span>
+              </a>
             </li>
           ))}
         </ul>
-      </div>
-    ))}
+      </nav>
 
-    <div class="site-footer__links dk-footer__pages">
-      {columns.map((col, ci) => (
-        <nav aria-labelledby={`footer-col-${ci}`}>
-          <p id={`footer-col-${ci}`} class="dk-credits__role">
-            {col.title}
-          </p>
-          <ul class="dk-credit__names dk-credit__names--stack">
-            {col.links.map((link) => (
-              <li>
-                <a href={link.href}>{link.label}</a>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      ))}
+      {siteSettings?.newsletter?.enabled && (
+        <div class="bq-newsletter">
+          <NewsletterSignup
+            client:visible
+            newsletter={siteSettings.newsletter}
+            source="footer"
+            idPrefix="footer-newsletter"
+          />
+        </div>
+      )}
     </div>
-  </div>
 
-  <div class="dk-footer__booking">
-    <p class="dk-footer__line">
-      {areaLine ? `Booking sessions in ${areaLine}` : 'Booking sessions'}
-      <span aria-hidden="true"> · </span>
-      <time class="dk-clock" data-dk-clock data-tz={site.timeZone}>
-        {zoneShort}
-      </time>
-    </p>
-    {(email || phone || socialLinks.length > 0) && (
-      <ul class="dk-footer__reach">
+    {places.length > 0 && (
+      <ul class="bq-places" aria-label="Where she works">
+        {places.map((p) => (
+          <li class="bq-place">
+            <p class="bq-place__name">
+              <span class="bq-place__arrow" aria-hidden="true">
+                →
+              </span>
+              {p.name}
+            </p>
+            <p class="bq-place__lines">
+              {p.lines.map((line, i) => (
+                <>
+                  {i > 0 && <br />}
+                  {line}
+                </>
+              ))}
+              <ToConfirm confirmed={p.confirmed} />
+            </p>
+            {p.mapsUrl && (
+              <a class="bq-quiet" href={p.mapsUrl} target="_blank" rel="noopener noreferrer">
+                Map
+                <ArrowUpRight size={12} aria-hidden="true" />
+              </a>
+            )}
+          </li>
+        ))}
+      </ul>
+    )}
+
+    {(socialLinks.length > 0 || email || phone) && (
+      <ul class="bq-reach">
+        {socialLinks.map((link, i) => (
+          <li>
+            <a class="bq-quiet" href={link.url} target="_blank" rel="noopener noreferrer">
+              <span class="bq-rise" style={`--i:${i}`}>
+                <span>{socialLabel(link)}</span>
+              </span>
+              <ArrowUpRight size={12} aria-hidden="true" />
+            </a>
+          </li>
+        ))}
         {email && (
           <li>
             <CopyEmailButton email={email} variant="link" />
@@ -212,29 +242,30 @@ const actionBar =
         )}
         {phone && (
           <li>
-            <a href={facts.phone?.href ?? `tel:${phone}`}>
-              <Phone size={14} aria-hidden="true" />
+            <a class="bq-quiet" href={facts.phone?.href ?? `tel:${phone}`}>
               {phone}
             </a>
             <ToConfirm confirmed={facts.phone?.confirmed} />
           </li>
         )}
-        {socialLinks.map((link) => {
-          const Icon = socialIcon(link.platform);
-          return (
-            <li>
-              <a href={link.url} target="_blank" rel="noopener noreferrer">
-                <Icon size={16} stroke={1.5} aria-hidden="true" />
-                {socialLabel(link)}
-              </a>
-            </li>
-          );
-        })}
       </ul>
     )}
   </div>
 
-  <div class="dk-footer__small">
+  {/* The giant name, a link home named in full. Letters build in on first view (script). */}
+  <div class="bq-mark-wrap">
+    <a href="/" class="bq-mark" data-bq-mark aria-label={`${site.name} home`}>
+      <span class="bq-mark__word" aria-hidden="true">
+        {[...bigWord].map((ch, i) => (
+          <span class="bq-mark__l" style={`--i:${i}`}>
+            {ch}
+          </span>
+        ))}
+      </span>
+    </a>
+  </div>
+
+  <div class="bq-small">
     <p>
       © {currentYear} {brandName}
     </p>
@@ -256,34 +287,34 @@ const actionBar =
       ))}
   </div>
 
-  {/* The giant name, cropped by the footer's bottom edge. A link home, named in full. */}
-  <a href="/" class="site-footer__brand dk-footer__bleed" aria-label={`${brandName} home`}>
-    <span aria-hidden="true">{bigWord}</span>
-  </a>
-
   {actionBar && <ActionBar bar={actionBar} />}
 </footer>
 
 <script>
-  // Her local time in the booking line, on site.timeZone. Fixed-width box (erin.css), so the
-  // swap from "EST" to "11:02 AM" moves nothing. Re-runs after View Transitions swaps.
-  function tick() {
-    for (const el of document.querySelectorAll<HTMLTimeElement>('time[data-dk-clock]')) {
-      const timeZone = el.dataset.tz;
-      if (!timeZone) continue;
-      try {
-        el.textContent = new Intl.DateTimeFormat('en-US', {
-          hour: 'numeric',
-          minute: '2-digit',
-          timeZone,
-        }).format(new Date());
-      } catch {
-        // An unknown zone keeps the build's text.
-      }
+  // The footer's two entrances (chrome-footer.css), after the Vero reference: the wordmark's
+  // letter build-in ([data-bq-mark]) and the page and social labels rising into their
+  // clipped boxes ([data-bq-rise]). Each is armed only where it can play: motion allowed,
+  // IntersectionObserver present, and the element still below the fold (one already on
+  // screen stays at rest). Plays once, then the observer goes. Re-runs after a View
+  // Transitions swap, which draws a fresh footer.
+  function armMarks() {
+    if (!('IntersectionObserver' in window)) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    for (const el of document.querySelectorAll<HTMLElement>('[data-bq-mark], [data-bq-rise]')) {
+      if (el.dataset.build) continue;
+      if (el.getBoundingClientRect().top < window.innerHeight) continue;
+      el.dataset.build = 'armed';
+      const io = new IntersectionObserver(
+        (entries) => {
+          if (!entries.some((e) => e.isIntersecting)) return;
+          el.dataset.build = 'on';
+          io.disconnect();
+        },
+        { threshold: el.hasAttribute('data-bq-mark') ? 0.35 : 0.15 },
+      );
+      io.observe(el);
     }
   }
-  const w = window as typeof window & { __dkClock?: number };
-  tick();
-  if (!w.__dkClock) w.__dkClock = window.setInterval(tick, 30_000);
-  document.addEventListener('astro:page-load', tick);
+  armMarks();
+  document.addEventListener('astro:page-load', armMarks);
 </script>

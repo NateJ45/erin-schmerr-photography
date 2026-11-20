@@ -6,7 +6,8 @@
 //   - covers: the featured story covers, for the phone menu's contact sheet and
 //     the header's hover prints. A page whose picture is already used (a press
 //     tear sheet for /press/, a story cover for /stories/) gets that picture.
-//   - credits: the footer's end credits. "Starring" is every person credited on
+//   - credits: the old end-credits footer's lists (the footer stopped drawing them
+//     on 2026-11-20; kept for reuse). "Starring" is every person credited on
 //     a story, "On location at" the stories' places and the venues credited on
 //     them, "As published in" the press magazines.
 //

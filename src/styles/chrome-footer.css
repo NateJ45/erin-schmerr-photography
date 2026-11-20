@@ -1,0 +1,420 @@
+/* The boutique footer (Footer.astro; DESIGN.md, Components; 2026-11-20).
+   Warm paper, hairlines, square corners, the brand faces. Layout and the wordmark's
+   build-in live here; the button is the header's own family (.dk-button--line, erin.css).
+   Imported by Footer.astro, so it loads wherever the footer does. */
+
+.bq-footer {
+  /* The giant word may never widen the page (it is sized to the column, this is a guard). */
+  overflow-x: clip;
+  border-top: 1px solid var(--border);
+}
+.bq-footer a:focus-visible,
+.bq-footer button:focus-visible,
+.bq-footer input:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+}
+
+/* ---- The invitation ---------------------------------------------------------------- */
+.bq-invite {
+  display: grid;
+  justify-items: center;
+  gap: 1.1rem;
+  padding: clamp(4.5rem, 11vw, 8.5rem) var(--spacing-m) clamp(4rem, 9vw, 7rem);
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+}
+/* A page that already closes on its own booking invitation (the home's signed close, or
+   any band marked data-final-cta, as WhereNext reads it) does not get a second one. */
+body:has(main :is(.signed-close, [data-final-cta])) .bq-invite {
+  display: none;
+}
+.bq-invite__title {
+  max-width: 14ch;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2.25rem, 5.2vw, 4rem);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: var(--foreground);
+  text-wrap: balance;
+}
+.bq-invite__title em {
+  font-style: italic;
+  color: var(--primary);
+}
+.bq-invite__line {
+  max-width: 34ch;
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--foreground);
+  text-wrap: pretty;
+}
+.bq-invite__button {
+  margin-top: 1rem;
+  padding-inline: 1.6rem;
+  background: transparent;
+  transition:
+    background-color 300ms var(--ease-focus),
+    color 300ms var(--ease-focus);
+}
+.bq-invite__button:hover {
+  background: var(--primary);
+  color: var(--background);
+}
+
+/* ---- Pages, places, reach -------------------------------------------------------------- */
+.bq-index {
+  display: grid;
+  gap: 2.5rem;
+  max-width: var(--container-content);
+  margin-inline: auto;
+  padding: clamp(2.5rem, 5vw, 3.5rem) var(--spacing-m) 0;
+}
+@media (min-width: 900px) {
+  .bq-index {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 4fr) minmax(0, 3fr);
+    align-items: start;
+  }
+}
+.bq-index__lead {
+  display: grid;
+  gap: 2rem;
+}
+.bq-pages,
+.bq-places,
+.bq-reach {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.bq-pages a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  font-size: 1rem;
+  line-height: 1.2;
+  color: var(--foreground);
+  text-decoration: none;
+  background: linear-gradient(currentColor, currentColor) left bottom 0.35rem / 0 1px no-repeat;
+  transition:
+    background-size 400ms var(--ease-focus),
+    color 300ms var(--ease-focus);
+}
+.bq-pages a:hover,
+.bq-pages a[aria-current='page'] {
+  color: var(--primary);
+  background-size: 100% 1px;
+}
+@media (pointer: coarse) {
+  .bq-pages a {
+    min-height: 44px;
+  }
+}
+
+/* Two places side by side on a phone, stacked in their column on a wide screen. */
+.bq-places {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 1.75rem 1.5rem;
+}
+@media (min-width: 900px) {
+  .bq-places {
+    grid-template-columns: 1fr;
+    gap: 2.25rem;
+  }
+}
+.bq-place p {
+  margin: 0;
+}
+.bq-place__name {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  line-height: 1.1;
+  color: var(--foreground);
+}
+.bq-place__arrow {
+  font-family: var(--font-sans, inherit);
+  font-size: 0.875rem;
+  color: var(--primary);
+}
+.bq-place__lines {
+  margin-top: 0.35rem !important;
+  padding-left: 1.35rem;
+  font-size: 0.75rem;
+  line-height: 1.6;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+.bq-place .bq-quiet {
+  margin-left: 1.35rem;
+}
+
+.bq-reach {
+  display: grid;
+  justify-items: start;
+}
+@media (min-width: 900px) {
+  .bq-reach {
+    justify-items: end;
+    text-align: right;
+  }
+}
+.bq-quiet,
+.bq-reach button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-height: 2rem;
+  font-size: 0.875rem;
+  color: var(--muted-foreground);
+  text-decoration: none;
+  transition: color 300ms var(--ease-focus);
+}
+.bq-quiet:hover,
+.bq-reach button:hover {
+  color: var(--primary);
+}
+@media (pointer: coarse) {
+  .bq-quiet,
+  .bq-reach button {
+    min-height: 44px;
+  }
+}
+
+/* The newsletter, quiet: the site's own NewsletterSignup with its card, stripe and filled
+   button taken away, left as one email field on a single underline with an arrow-less
+   text button beside it. Its states (error, thanks) keep their words. */
+.bq-newsletter {
+  max-width: 22rem;
+}
+.bq-newsletter > div {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+}
+.bq-newsletter > div > div[aria-hidden='true']:first-child {
+  display: none;
+}
+.bq-newsletter h3 {
+  margin: 0;
+  font-family: inherit;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.bq-newsletter h3 + p {
+  margin-top: 0.4rem;
+  font-size: 0.8125rem;
+}
+.bq-newsletter form {
+  position: relative;
+  margin-top: 0.75rem;
+}
+.bq-newsletter label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.bq-newsletter input[type='email'],
+.bq-newsletter input[name='name'] {
+  padding: 0.5rem 6.5rem 0.5rem 0;
+  border: 0;
+  border-bottom: 1px solid var(--foreground);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  font-size: 0.875rem;
+}
+.bq-newsletter input[name='name'] {
+  padding-right: 0;
+}
+.bq-newsletter input::placeholder {
+  color: var(--muted-foreground);
+}
+.bq-newsletter button[type='submit'] {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: auto;
+  padding: 0;
+  border-radius: 0;
+  background: none;
+  color: var(--foreground);
+  letter-spacing: 0.16em;
+}
+.bq-newsletter button[type='submit']:hover {
+  background: none;
+  color: var(--primary);
+}
+.bq-newsletter form > p,
+.bq-newsletter [role='alert'] {
+  margin-bottom: 0;
+}
+.bq-newsletter > div > p:last-child {
+  font-size: 0.75rem;
+}
+.bq-newsletter [role='status'] {
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+/* ---- The wordmark ----------------------------------------------------------------------- */
+/* Sized to fill the content column exactly: Instrument Serif sets "Tate" 1.324em wide at
+   this tracking (measured 2026-11-20), so the font size is the column over that. The
+   container query unit keeps it to the column at every width, so it never scrolls. */
+.bq-mark-wrap {
+  max-width: var(--container-content);
+  margin-inline: auto;
+  padding: clamp(2.5rem, 6vw, 4.5rem) var(--spacing-m) 0.75rem;
+  /* The letters are inline (so "Ta" keeps its kerning), and an inline box at this size is
+     far taller than the 0.78 line: clip it here, or the page grows a band below the footer.
+     The padding leaves room for the ink above the caps and the focus ring below. */
+  overflow: clip;
+}
+.bq-mark {
+  display: block;
+  container-type: inline-size;
+  color: var(--foreground);
+  text-decoration: none;
+  transition: color 400ms var(--ease-focus);
+}
+.bq-mark:hover {
+  color: var(--primary);
+}
+.bq-mark:focus-visible {
+  outline-offset: 6px;
+}
+.bq-mark__word {
+  display: block;
+  font-family: var(--font-display);
+  font-size: calc(100cqi / var(--bq-mark-em, 1.33));
+  font-weight: 400;
+  line-height: 0.78;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  /* The tops of the caps sit at the box's top edge and the baseline at its foot. */
+  padding-top: 0.06em;
+}
+.bq-mark__l {
+  position: relative;
+  /* Earlier letters paint over later ones: the T's arm over the a while it builds. */
+  z-index: calc(10 - var(--i, 0));
+}
+
+/* The build-in. A thick stroke in the paper colour is painted over each glyph's edge,
+   eating it back to its spine; thinning the stroke to nothing grows the letter outward,
+   like ink spreading. One letter after another, 0.15s apart (the reference's stagger). */
+@property --bq-ink {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+.bq-mark[data-build='armed'] .bq-mark__l {
+  --bq-ink: 0.11em;
+  opacity: 0;
+  -webkit-text-stroke: var(--bq-ink) var(--background);
+}
+.bq-mark[data-build='on'] .bq-mark__l {
+  -webkit-text-stroke: var(--bq-ink) var(--background);
+  /* The reference's timing: 0.7s a letter, 0.15s apart, ease-out cubic. */
+  animation: bq-ink 0.7s cubic-bezier(0.33, 1, 0.68, 1) calc(var(--i, 0) * 0.15s) both;
+}
+@keyframes bq-ink {
+  from {
+    --bq-ink: 0.11em;
+    opacity: 0;
+  }
+  18% {
+    opacity: 1;
+  }
+  to {
+    --bq-ink: 0px;
+    opacity: 1;
+  }
+}
+
+/* The labels rise into their clipped boxes (the reference's link entrance): each inner
+   span starts one line down and slides up, 0.1s apart, ease-in-out quart. At rest unless
+   the script armed the index (JS on, motion allowed, below the fold). */
+.bq-rise {
+  display: inline-block;
+  overflow: clip;
+  vertical-align: bottom;
+}
+.bq-rise > span {
+  display: inline-block;
+}
+.bq-index[data-build='armed'] .bq-rise > span {
+  translate: 0 105%;
+}
+.bq-index[data-build='on'] .bq-rise > span {
+  translate: 0 0;
+  transition: translate 0.8s cubic-bezier(0.76, 0, 0.24, 1) calc(var(--i, 0) * 0.1s);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bq-mark .bq-mark__l {
+    animation: none !important;
+    opacity: 1 !important;
+    -webkit-text-stroke: 0 !important;
+  }
+  .bq-rise > span {
+    translate: none !important;
+    transition: none !important;
+  }
+}
+@media print {
+  .bq-mark .bq-mark__l {
+    animation: none !important;
+    opacity: 1 !important;
+    -webkit-text-stroke: 0 !important;
+  }
+  .bq-rise > span {
+    translate: none !important;
+  }
+}
+
+/* ---- The small print --------------------------------------------------------------------- */
+.bq-small {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 1.5rem;
+  max-width: var(--container-content);
+  margin-inline: auto;
+  padding: 0.5rem var(--spacing-m) 1.5rem;
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+}
+.bq-small > * {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin: 0;
+}
+.bq-small > p {
+  margin-right: auto;
+}
+.bq-small a {
+  color: var(--muted-foreground);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in oklab, currentColor 40%, transparent);
+  text-underline-offset: 3px;
+  transition: color 300ms var(--ease-focus);
+}
+.bq-small a:hover {
+  color: var(--primary);
+}

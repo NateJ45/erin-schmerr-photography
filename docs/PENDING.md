@@ -16,6 +16,8 @@ sequence).
 
 ## Waiting on a human
 
+- **Her words for the footer's invitation (2026-11-20).** "A portrait made to be _kept_" and "Tell me who it is for, and we will plan it together." in `Footer.astro` are a draft; she approves or rewrites them (the italic word is the `<em>`).
+
 - **Old FAQ, journal and process documents in the dataset (2026-11-18).** The three capabilities were removed from the code; their documents (faqPage, faqItem, faqCategory, journalPage, journalEntry, journalCategory, processPage, processStep) are still in `production`, unread by anything. Retire them with a backup-then-delete script under rule 16 if Nathan wants them gone; never through the Studio's "Remove field".
 
 - **The selling home page: data write and her words (2026-11-18).** The code ships the blocks; the home page only changes when `scripts/set-home-sections.mjs` writes the new `pageBuilder` to production (write protocol, `.claude/rules/data-scripts.md`), which goes together with the merge. All of its copy is a draft for Erin (from her captions, interviews, the Sessions and About pages); she approves or rewrites it. Stories' "Where the idea came from" (`startedFrom`) is empty everywhere until she or Nathan fills it, so "How this was made" shows the place and the cast only.
