@@ -72,6 +72,8 @@ within 0.1%.
 Rerun it after any display-font change. A variable `@fontsource` package ships woff2 only, which
 opentype.js cannot read: pass `-- --file <a .ttf or .woff of the face>`.
 
+**This site (2026-11-20):** both brand faces (Bodoni Moda, Jost) are variable woff2 with no .woff to pass, so it runs `npm run font-fallback:variable` (`scripts/font-fallback-variable.mjs`, site-own) instead, which instances each woff2 through `scripts/lib/woff2-instance.mjs` and writes both faces into `font-fallbacks.css` with the same maths.
+
 ## The board grammar (layout `hero: board`)
 
 FBC Auburn's inner-page grammar as an opt-in layout value (card 188; rule 18: the default emits nothing).

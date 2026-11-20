@@ -103,17 +103,17 @@
   },
   "fonts": {
     "display": {
-      "familyValue": "\"Instrument Serif\", \"Instrument Serif Fallback\", \"Instrument Serif Fallback Times\", Georgia, \"Times New Roman\", serif",
-      "ogFontStack": "Instrument Serif, Georgia, Cambria, Times New Roman, serif",
+      "familyValue": "\"Bodoni Moda Variable\", \"Bodoni Moda Variable Fallback\", \"Bodoni Moda Variable Fallback Times\", Georgia, \"Times New Roman\", serif",
+      "ogFontStack": "Bodoni Moda Variable, Didot, Georgia, Times New Roman, serif",
       "imports": [
-        "@fontsource/instrument-serif/400.css",
-        "@fontsource/instrument-serif/400-italic.css"
+        "@fontsource-variable/bodoni-moda/opsz.css",
+        "@fontsource-variable/bodoni-moda/opsz-italic.css"
       ]
     },
     "body": {
-      "familyValue": "\"Instrument Sans Variable\", \"Instrument Sans Variable Fallback\", system-ui, -apple-system, sans-serif",
-      "ogFontStack": "Instrument Sans, system-ui, sans-serif",
-      "imports": ["@fontsource-variable/instrument-sans"]
+      "familyValue": "\"Jost Variable\", \"Jost Variable Fallback\", system-ui, -apple-system, sans-serif",
+      "ogFontStack": "Jost Variable, Futura, system-ui, sans-serif",
+      "imports": ["@fontsource-variable/jost"]
     },
     "script": null
   },
@@ -132,8 +132,8 @@
   },
   "studio": {
     "fonts": {
-      "display": "\"Instrument Serif\", Georgia, \"Times New Roman\", serif",
-      "body": "\"Instrument Sans Variable\", system-ui, -apple-system, sans-serif"
+      "display": "\"Bodoni Moda Variable\", Didot, Georgia, \"Times New Roman\", serif",
+      "body": "\"Jost Variable\", system-ui, -apple-system, sans-serif"
     },
     "icons": {
       "groups": {

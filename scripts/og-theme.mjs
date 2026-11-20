@@ -10,5 +10,5 @@ export const OG_THEME = {
   primaryDark: '#633A31', // --color-primary-dark
   accent: '#1F1B18', // --color-accent
   taupe: '#B9A999', // --color-secondary
-  fontDisplay: 'Instrument Serif, Georgia, Cambria, Times New Roman, serif',
+  fontDisplay: 'Bodoni Moda Variable, Didot, Georgia, Times New Roman, serif',
 };

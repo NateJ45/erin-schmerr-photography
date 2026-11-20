@@ -280,7 +280,7 @@ body:has(main :is(.signed-close, [data-final-cta])) .bqf-invite {
 }
 
 /* ---- The wordmark ----------------------------------------------------------------------- */
-/* Sized to fill the content column exactly: Instrument Serif sets "Tate" 1.324em wide at
+/* Sized to fill the content column exactly: Bodoni Moda sets "Tate" 1.86em wide at
    this tracking (measured 2026-11-20), so the font size is the column over that. The
    container query unit keeps it to the column at every width, so it never scrolls. */
 .bqf-mark-wrap {
@@ -308,7 +308,7 @@ body:has(main :is(.signed-close, [data-final-cta])) .bqf-invite {
 .bqf-mark__word {
   display: block;
   font-family: var(--font-display);
-  font-size: calc(100cqi / var(--bqf-mark-em, 1.33));
+  font-size: calc(100cqi / var(--bqf-mark-em, 1.87));
   font-weight: 400;
   line-height: 0.78;
   letter-spacing: -0.02em;
