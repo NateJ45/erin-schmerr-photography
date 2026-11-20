@@ -1,25 +1,24 @@
 ---
 // Foundation, edit with care
-// Site header: "the darkroom" film-leader strip (DESIGN.md, Components; 2026-11-18).
+// Site header: "the boutique bar" (DESIGN.md, Components; 2026-11-20). Replaces the
+// darkroom film-leader strip of 2026-11-18.
 //
-//   ┌──────────────────────────────────────────────── paper row
-//   │ [Tate wordmark]   01 STORIES 02 ARCHIVE …  (search)  [● Book a session]
-//   ├──────────────────────────────────────────────── the leader
-//   │ ▯ ▯ ▯ ▯ ▯ ▯  TATE 400  ▸ 1  1A  2  2A …  ▯ ▯ ▯ ▯  (sprockets, edge print)
-//   └────────────────────────────────────────────────
-// The nav is set like the printed edge of a negative: tiny tracked uppercase with
-// frame numbers. The page you are on is ringed in grease pencil (GreasePencil.astro).
-// "Book a session" is the one Dusk-filled button, with a red safelight dot.
-// Hovering an item with a mouse (fine pointer, motion allowed) shows a small print
-// beside it that pulls from blur to sharp: a picture the site already shows for that
-// page (src/components/darkroom/chrome-data.ts). Touch, keyboard and reduced motion
-// get no print; the image is lazy and display:none until hovered, so it costs nothing.
+//   ┌──────────────────────────────────────────────────────────────────────────┐
+//   │ Tate Fine Art Photography   Cincinnati          Stories Archive …  ⌕  [Get in touch] │
+//   │                             West Chester, Ohio                                       │
+//   └──────────────────────────────────────────────────────────────────────────┘
+// A thin bar on warm paper (after M. Fisher): the wordmark, a small two-line serif place
+// block beside it (Business info's service areas and state, src/lib/place-block.ts), the
+// nav in small Instrument Sans, and "Get in touch" as an outlined square button (the
+// label typed in Site settings wins). Hovering or focusing one nav link dims the others
+// (after Quadplex 80); the page you are on carries a hairline under its name.
 //
 // Rule 4: every link is server-rendered here, dropdown groups are native <details>.
-// Scrolling down slims the header to the leader strip (BaseLayout sets
-// data-state="hidden", erin.css translates the bar up by all but the strip);
-// scrolling up brings it back. Transforms only, so nothing under it moves.
-// Below lg the row is the wordmark, search and the "Menu" button (MobileNav.astro).
+// Scrolling down hides the bar (BaseLayout sets data-state="hidden"); scrolling up brings
+// it back, compacted a little (data-scrolled, below). Transforms only, so nothing under
+// it moves. The root keeps the class `site-header`: the home hero's opening hides and
+// fades the bar by that class. Below lg the row is the wordmark, search and the "Menu"
+// button (MobileNav.astro). Styles: src/styles/chrome-header.css.
 //
 // siteSettings is optional. Defaults render cleanly before Sanity is wired up.
 
@@ -34,11 +33,11 @@ import { mergePageSwitches } from '@/lib/page-switches';
 import { getNavPages } from '@/lib/queries';
 import { resolveSiteSettings, type RawChromeSettings } from '@/lib/siteSettings';
 import { phoneMenuGroups } from '@/lib/wayfinding';
+import { placeBlockLines } from '@/lib/place-block';
 import { urlFor } from '@/lib/sanity';
 import SearchButton from './search/SearchButton.astro';
 import SiteSearch from './search/SiteSearch.astro';
-import GreasePencil from './darkroom/GreasePencil.astro';
-import { frameNumber, getDarkroomData, printFor } from './darkroom/chrome-data';
+import { getDarkroomData } from './darkroom/chrome-data';
 
 // SVG logos go through Astro's image pipeline for cache-busted URLs.
 const logoLightImg = await getImage({ src: logoLightAsset });
@@ -57,6 +56,9 @@ interface Props {
         socialInstagram?: string;
         socialFacebook?: string;
         availabilityStatus?: string;
+        serviceAreas?: (string | null)[] | null;
+        city?: string | null;
+        state?: string | null;
       })
     | null;
 }
@@ -67,13 +69,13 @@ const brandName = siteSettings?.siteName ?? siteSettings?.title ?? site.name;
 
 // The chrome resolves through one shared helper so header, menu and footer agree.
 const chrome = resolveSiteSettings(siteSettings);
-// The inquiry button. This site's own default reads "Book a session"; a label typed
-// in Site settings still wins.
+// The inquiry button. This site's own default reads "Get in touch"; a label typed in
+// Site settings still wins.
 const headerCta = {
   ...chrome.headerCta,
-  label: siteSettings?.headerCta?.label?.trim() ? chrome.headerCta.label : 'Book a session',
+  label: siteSettings?.headerCta?.label?.trim() ? chrome.headerCta.label : 'Get in touch',
 };
-// Card 191: Site settings > Phone menu groups. Empty keeps the menu's usual frames.
+// Card 191: Site settings > Phone menu groups. Empty keeps the menu's one list.
 const phoneGroups = phoneMenuGroups(
   siteSettings?.phoneMenuGroups,
   headerCta.show ? headerCta.href : undefined,
@@ -88,6 +90,13 @@ const logoSrcset = logo
       .join(', ')
   : undefined;
 
+// The small place block beside the wordmark: derived from Business info (rule 15).
+const placeLines = placeBlockLines({
+  serviceAreas: siteSettings?.serviceAreas,
+  city: siteSettings?.city,
+  state: siteSettings?.state,
+});
+
 const mobileNavSettings = siteSettings
   ? {
       tagline: siteSettings.tagline,
@@ -101,8 +110,8 @@ const mobileNavSettings = siteSettings
 // The menu from Sanity (Site settings > Navigation), plus pages switched into it (card 187).
 const NAV_ITEMS = mergePageSwitches(chrome.headerNav, [], await getNavPages()).nav;
 
-// The prints (hover previews and the phone menu's frames).
-const darkroom = await getDarkroomData();
+// The phone menu's photo frame: her featured story covers (read once per build).
+const chromeData = await getDarkroomData();
 
 const pathname = publicPath(Astro.url.pathname);
 function isActive(href: string) {
@@ -114,125 +123,105 @@ function isGroupActive(items: { href: string }[]) {
 }
 ---
 
-<header class="site-header dk-header bg-background" data-dk-header>
-  <div class="site-header__row dk-header__row relative mx-auto flex max-w-content items-center">
-    <a
-      href="/"
-      class="site-header__logo inline-flex items-center transition-opacity hover:opacity-80"
-      aria-label={`${brandName} home`}
-    >
-      {/* One theme-aware logo: no src until the inline script below picks the
-          variant, so only one file is fetched. 280x60 reserves the box (no CLS). */}
-      {logo ? (
-        <img
-          src={logoSrc}
-          srcset={logoSrcset}
-          sizes="280px"
-          alt={logo.alt || brandName}
-          class="h-12 w-auto"
-          loading="eager"
-          decoding="async"
-        />
-      ) : (
-        <img
-          alt={brandName}
-          width={280}
-          height={60}
-          class="h-12 w-auto"
-          loading="eager"
-          decoding="async"
-          data-theme-logo
-          data-logo-light-src={logoLightImg.src}
-          data-logo-light-srcset={logoLightSrcset}
-          data-logo-dark-src={logoDarkImg.src}
-          data-logo-dark-srcset={logoDarkSrcset}
-        />
-      )}
-      {/* No-JS fallback (card 108): the light variant. */}
-      {!logo && (
-        <noscript>
+<header class="site-header bq-header bg-background">
+  <div class="site-header__row bq-header__row relative mx-auto flex max-w-content items-center">
+    <div class="bq-header__brand">
+      <a
+        href="/"
+        class="site-header__logo bq-header__logo inline-flex items-center"
+        aria-label={`${brandName} home`}
+      >
+        {/* One theme-aware logo: no src until the inline script below picks the
+            variant, so only one file is fetched. 280x60 reserves the box (no CLS). */}
+        {logo ? (
           <img
-            src={logoLightImg.src}
+            src={logoSrc}
+            srcset={logoSrcset}
+            sizes="280px"
+            alt={logo.alt || brandName}
+            class="h-12 w-auto"
+            loading="eager"
+            decoding="async"
+          />
+        ) : (
+          <img
             alt={brandName}
             width={280}
             height={60}
             class="h-12 w-auto"
+            loading="eager"
             decoding="async"
+            data-theme-logo
+            data-logo-light-src={logoLightImg.src}
+            data-logo-light-srcset={logoLightSrcset}
+            data-logo-dark-src={logoDarkImg.src}
+            data-logo-dark-srcset={logoDarkSrcset}
           />
-        </noscript>
-      )}
-    </a>
-    <script is:inline>
-      (function () {
-        const img = document.querySelector('header img[data-theme-logo]');
-        if (!img) return;
-        const dark = document.documentElement.classList.contains('dark');
-        img.src = dark ? img.dataset.logoDarkSrc : img.dataset.logoLightSrc;
-        img.srcset = dark ? img.dataset.logoDarkSrcset : img.dataset.logoLightSrcset;
-      })();
-    </script>
+        )}
+        {/* No-JS fallback (card 108): the light variant. */}
+        {!logo && (
+          <noscript>
+            <img
+              src={logoLightImg.src}
+              alt={brandName}
+              width={280}
+              height={60}
+              class="h-12 w-auto"
+              decoding="async"
+            />
+          </noscript>
+        )}
+      </a>
+      <script is:inline>
+        (function () {
+          const img = document.querySelector('header img[data-theme-logo]');
+          if (!img) return;
+          const dark = document.documentElement.classList.contains('dark');
+          img.src = dark ? img.dataset.logoDarkSrc : img.dataset.logoLightSrc;
+          img.srcset = dark ? img.dataset.logoDarkSrcset : img.dataset.logoLightSrcset;
+        })();
+      </script>
 
-    {/* Desktop (lg+): the edge-printed nav, search and the inquiry button. */}
-    <div class="site-header__nav dk-header__nav hidden items-center lg:flex">
-      <nav class="site-nav dk-nav" aria-label="Primary">
-        {NAV_ITEMS.map((item, i) =>
+      {/* The place block (lg+): where she works, in two small serif lines. */}
+      {placeLines.length > 0 && (
+        <p class="bq-place">
+          {placeLines.map((line) => (
+            <span>{line}</span>
+          ))}
+        </p>
+      )}
+    </div>
+
+    {/* Desktop (lg+): the nav, search and the inquiry button. */}
+    <div class="site-header__nav bq-header__nav hidden items-center lg:flex">
+      <nav class="site-nav bq-nav" aria-label="Primary">
+        {NAV_ITEMS.map((item) =>
           item.kind === 'flat' ? (
             <a
               href={item.href}
-              class="dk-nav__item"
+              class="bq-nav__link"
               aria-current={isActive(item.href) ? 'page' : undefined}
             >
-              <span class="dk-nav__num" aria-hidden="true">
-                {frameNumber(i)}
-              </span>
-              <span class="dk-nav__label" data-label={item.label}>
-                {item.label}
-                {isActive(item.href) && <GreasePencil />}
-              </span>
-
-              {(() => {
-                const p = printFor(darkroom, item.href, i);
-                return (
-                  <span class={`dk-print dk-tone--${p.tone}`} aria-hidden="true">
-                    {p.src && (
-                      <img
-                        src={p.src}
-                        srcset={p.srcset}
-                        alt=""
-                        width="160"
-                        height="200"
-                        loading="lazy"
-                        decoding="async"
-                      />
-                    )}
-                  </span>
-                );
-              })()}
+              {item.label}
             </a>
           ) : (
-            <details class="site-nav__group dk-nav__group relative">
+            <details class="site-nav__group bq-nav__group relative">
               <summary
-                class="dk-nav__item"
+                class="bq-nav__link"
                 aria-current={isGroupActive(item.items) ? 'page' : undefined}
               >
-                <span class="dk-nav__num" aria-hidden="true">
-                  {frameNumber(i)}
-                </span>
-                <span class="dk-nav__label" data-label={item.label}>
-                  {item.label}
-                  {isGroupActive(item.items) && <GreasePencil />}
-                </span>
+                {item.label}
                 <ChevronDown
                   size={12}
                   className="site-nav__chevron transition-transform duration-150"
                   aria-hidden="true"
                 />
               </summary>
-              <div class="site-nav__menu dk-nav__menu absolute top-full left-0 z-50 mt-3 min-w-[200px]">
+              <div class="site-nav__menu bq-nav__menu absolute top-full left-0 z-50 min-w-[200px]">
                 {item.items.map((sub) => (
                   <a
                     href={sub.href}
-                    class="dk-nav__sub"
+                    class="bq-nav__sub"
                     aria-current={isActive(sub.href) ? 'page' : undefined}
                   >
                     {sub.label}
@@ -244,11 +233,11 @@ function isGroupActive(items: { href: string }[]) {
         )}
       </nav>
       {/* Visitor search (card 126). Renders nothing when search is off. */}
-      <SearchButton class="dk-icon-button" size={18} />
+      <SearchButton class="bq-icon-button" size={17} />
       {headerSecondary && (
         <a
           href={headerSecondary.href}
-          class="dk-button dk-button--line"
+          class="bq-nav__link bq-nav__link--secondary"
           aria-current={isActive(headerSecondary.href) ? 'page' : undefined}
         >
           {headerSecondary.label}
@@ -257,18 +246,17 @@ function isGroupActive(items: { href: string }[]) {
       {headerCta.show && (
         <a
           href={headerCta.href}
-          class="dk-button dk-button--safelight"
+          class="bq-button"
           aria-current={isActive(headerCta.href) ? 'page' : undefined}
         >
-          <span class="dk-safelight" aria-hidden="true"></span>
           {headerCta.label}
         </a>
       )}
     </div>
 
     {/* Below lg: search and the "Menu" button, at the right of the row. */}
-    <div class="dk-header__phone lg:hidden">
-      <SearchButton class="dk-icon-button" />
+    <div class="bq-header__phone lg:hidden">
+      <SearchButton class="bq-icon-button" size={18} />
       <MobileNav
         search={site.search.enabled}
         links={NAV_ITEMS}
@@ -278,24 +266,10 @@ function isGroupActive(items: { href: string }[]) {
         secondary={headerSecondary}
         groups={phoneGroups}
         current={pathname}
-        frames={darkroom.covers}
-        pagePrints={darkroom.pagePrints}
+        frames={chromeData.covers}
+        pagePrints={chromeData.pagePrints}
       />
     </div>
-  </div>
-
-  {/* The film leader: sprocket holes and edge printing. Decorative. When the page
-      scrolls down, this strip is all of the header that stays on screen. */}
-  <div class="dk-leader" aria-hidden="true">
-    <span class="dk-leader__print">
-      <span>Tate 400</span>
-      {NAV_ITEMS.map((_, i) => (
-        <span>
-          {'▸'} {i + 1} &nbsp; {i + 1}A
-        </span>
-      ))}
-      <span>Safety film</span>
-    </span>
   </div>
   {site.search.enabled && <SiteSearch />}
 </header>
