@@ -911,6 +911,18 @@ const SITE_INSERT_GROUPS: InsertGroup[] = [
       'craftNotes', // scaffold: stories
       'crewSection', // scaffold: stories
       'signedClose', // scaffold: stories
+      'pressContents', // scaffold: press
+    ],
+  },
+  {
+    // The About page's own blocks (aboutSections.ts); offered on the About page only.
+    name: 'about',
+    title: 'About page',
+    of: [
+      'aboutOpening', // scaffold: about
+      'aboutStory', // scaffold: about
+      'aboutApproach', // scaffold: about
+      'processFigures', // scaffold: about
     ],
   },
 ];

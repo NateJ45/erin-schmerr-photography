@@ -101,7 +101,11 @@ const SECTION_ARMS = `
     },
     _type == "coverHero" => { ..., portrait${IMAGE_PROJECTION}, primaryCta${CTA_PROJECTION}, secondaryCta${CTA_PROJECTION} }, // scaffold: stories
     _type == "crewSection" => { ..., link${CTA_PROJECTION} }, // scaffold: stories
-    _type == "signedClose" => { ..., cta${CTA_PROJECTION} }, // scaffold: stories
+    _type == "signedClose" => { ..., cta${CTA_PROJECTION}, signatureImage${IMAGE_PROJECTION} }, // scaffold: stories
+    _type == "aboutOpening" => { ..., image${IMAGE_PROJECTION} }, // scaffold: about
+    _type == "aboutStory" => { ..., portrait${IMAGE_PROJECTION} }, // scaffold: about
+    _type == "aboutApproach" => { ..., image${IMAGE_PROJECTION} }, // scaffold: about
+    _type == "processFigures" => { ..., figures[]${IMAGE_PROJECTION} }, // scaffold: about
     _type == "heroSection" => {
       ...,
       backgroundImage${IMAGE_PROJECTION},

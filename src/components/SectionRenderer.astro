@@ -48,6 +48,12 @@ import ProofStrip from '@/components/portfolio/ProofStrip.astro'; // scaffold: p
 import CraftNotes from '@/components/portfolio/CraftNotes.astro'; // scaffold: stories
 import CrewList from '@/components/portfolio/CrewList.astro'; // scaffold: stories
 import SignedClose from '@/components/portfolio/SignedClose.astro'; // scaffold: stories
+import PressContents from '@/components/portfolio/PressContents.astro'; // scaffold: press
+// The About page's own blocks (aboutSections.ts).
+import AboutOpening from '@/components/about/AboutOpening.astro'; // scaffold: about
+import AboutStory from '@/components/about/AboutStory.astro'; // scaffold: about
+import AboutApproach from '@/components/about/AboutApproach.astro'; // scaffold: about
+import ProcessFigures from '@/components/about/ProcessFigures.astro'; // scaffold: about
 import FormSection from '@/components/sections/FormSection.astro';
 import BuilderBlock from '@/components/builder-blocks/BuilderBlock.astro';
 import { isBuilderBlock } from '@/lib/builderBlocks.types';
@@ -466,8 +472,49 @@ const editKeyOf = (block: unknown) => {
           body={s.body}
           cta={s.cta}
           signature={s.signature}
+          signatureImage={s.signatureImage}
           headingId={headingId}
           primaryVariant={ctaVariant(rowIndex)}
+        />
+      ) : // scaffold-branch: press
+      s._type === 'pressContents' ? (
+        <PressContents heading={s.heading} headingId={headingId} />
+      ) : // scaffold-branch: about
+      s._type === 'aboutOpening' ? (
+        <AboutOpening
+          eyebrow={s.eyebrow}
+          headline={s.headline}
+          subhead={s.subhead}
+          image={s.image}
+          headingId={headingId}
+        />
+      ) : // scaffold-branch: about
+      s._type === 'aboutStory' ? (
+        <AboutStory
+          eyebrow={s.eyebrow}
+          heading={s.heading}
+          body={s.body}
+          portrait={s.portrait}
+          headingId={headingId}
+        />
+      ) : // scaffold-branch: about
+      s._type === 'aboutApproach' ? (
+        <AboutApproach
+          eyebrow={s.eyebrow}
+          statement={s.statement}
+          body={s.body}
+          voice={s.voice}
+          voiceCredit={s.voiceCredit}
+          image={s.image}
+          headingId={headingId}
+        />
+      ) : // scaffold-branch: about
+      s._type === 'processFigures' ? (
+        <ProcessFigures
+          label={s.label}
+          heading={s.heading}
+          figures={s.figures}
+          headingId={headingId}
         />
       ) : s._type === 'dynamicListSection' ? (
         <DynamicList

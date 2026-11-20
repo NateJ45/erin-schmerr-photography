@@ -1,0 +1,79 @@
+---
+// scaffold-file: about
+// Safe to edit by hand
+// Page-builder block `aboutApproach` (aboutSections.ts): her approach. A short
+// statement set very large in the display serif across the column, a
+// paragraph or two beside it in the shared split, then one of her soft-light
+// photographs at the column's full width with a line in her voice laid over
+// it on a paper chip (the site's way of putting words on a photo, so the
+// words never sit on a busy picture). The photo drifts slowly against the
+// scroll like the opening's (src/scripts/about-motion.ts, html.motion only).
+//
+// SELF_CONTAINED: plain page ground.
+import FocusImage from '@/components/portfolio/FocusImage.astro';
+import PortableText from '@/components/PortableText';
+import { placeholderPhoto, type PortfolioPhoto } from '@/lib/portfolio';
+import type { PortableTextBlock } from '@portabletext/types';
+import type { SanityImageObject } from '@/lib/pageBuilder.types';
+import '@/styles/page-about.css';
+
+interface Props {
+  eyebrow?: string;
+  statement?: string;
+  body?: PortableTextBlock[] | null;
+  voice?: string;
+  voiceCredit?: string;
+  image?: SanityImageObject | null;
+  headingId?: string;
+}
+
+const {
+  eyebrow,
+  statement = '',
+  body,
+  voice,
+  voiceCredit,
+  image,
+  headingId = 'about-approach',
+} = Astro.props;
+const hasBody = Array.isArray(body) && body.length > 0;
+const photo: PortfolioPhoto = image?.asset
+  ? (image as PortfolioPhoto)
+  : placeholderPhoto(4, 'Placeholder: one of your soft-light photographs goes here');
+---
+
+<section class="about-approach bg-background" aria-labelledby={headingId}>
+  <div class="mx-auto max-w-content px-m py-section-lg">
+    {eyebrow && <p class="portfolio-label mb-6">{eyebrow}</p>}
+    <h2 id={headingId} class="about-approach__statement font-display">
+      {statement}
+    </h2>
+    {hasBody && (
+      <div class="split mt-12">
+        <div class="about-approach__body" data-about-lighten>
+          <PortableText value={body} />
+        </div>
+      </div>
+    )}
+    <figure class="about-approach__figure mt-section-md">
+      <div class="about-parallax" data-about-parallax>
+        <FocusImage
+          photo={photo}
+          width={1800}
+          crop={3 / 2}
+          sizes="(min-width: 82.5rem) 80rem, 100vw"
+        />
+      </div>
+      {voice && (
+        <figcaption class="about-approach__voice">
+          <p class="about-approach__line font-display">&ldquo;{voice}&rdquo;</p>
+          {voiceCredit && <p class="portfolio-label mt-3">{voiceCredit}</p>}
+        </figcaption>
+      )}
+    </figure>
+  </div>
+</section>
+
+<script>
+  import '@/scripts/about-motion';
+</script>

@@ -492,6 +492,47 @@ export interface ProjectedSignedCloseSection {
   body?: string;
   cta?: ProjectedCtaBlock | null;
   signature?: string;
+  /** A scan of her signature, shown in place of the typed name. */
+  signatureImage?: SanityImageObject | null;
+}
+// scaffold:end
+// scaffold: about
+/** aboutOpening: the About page's headline beside a slow photo (AboutOpening.astro). */
+export interface ProjectedAboutOpeningSection {
+  _type: 'aboutOpening';
+  _key: string;
+  eyebrow?: string;
+  headline?: string;
+  subhead?: string;
+  image?: SanityImageObject | null;
+}
+/** aboutStory: a tall portrait beside her story (AboutStory.astro). */
+export interface ProjectedAboutStorySection {
+  _type: 'aboutStory';
+  _key: string;
+  eyebrow?: string;
+  heading?: string;
+  body?: PortableTextBlock[] | null;
+  portrait?: SanityImageObject | null;
+}
+/** aboutApproach: a statement, then a line in her voice over a photo (AboutApproach.astro). */
+export interface ProjectedAboutApproachSection {
+  _type: 'aboutApproach';
+  _key: string;
+  eyebrow?: string;
+  statement?: string;
+  body?: PortableTextBlock[] | null;
+  voice?: string;
+  voiceCredit?: string;
+  image?: SanityImageObject | null;
+}
+/** processFigures: behind the scenes, Fig 01. to Fig 05. (ProcessFigures.astro). */
+export interface ProjectedProcessFiguresSection {
+  _type: 'processFigures';
+  _key: string;
+  label?: string;
+  heading?: string;
+  figures?: (SanityImageObject & { _key?: string; caption?: string })[] | null;
 }
 // scaffold:end
 // scaffold: press
@@ -515,6 +556,12 @@ export interface ProjectedProofStripSection {
   heading?: string;
   showPress?: boolean;
   quotes?: { _key: string; text?: string; credit?: string }[] | null;
+}
+/** pressContents: the magazines as one contents line, read from Publications (PressContents.astro). */
+export interface ProjectedPressContentsSection {
+  _type: 'pressContents';
+  _key: string;
+  heading?: string;
 }
 // scaffold:end
 
@@ -559,5 +606,10 @@ export type PageBuilderBlock =
   | ProjectedPublishedMarqueeSection // scaffold: press
   | ProjectedTearSheetStackSection // scaffold: press
   | ProjectedProofStripSection // scaffold: press
+  | ProjectedPressContentsSection // scaffold: press
+  | ProjectedAboutOpeningSection // scaffold: about
+  | ProjectedAboutStorySection // scaffold: about
+  | ProjectedAboutApproachSection // scaffold: about
+  | ProjectedProcessFiguresSection // scaffold: about
   // The builder kit (builderBlocks.types.ts, PORTS.md card 173)
   | BuilderPageBlock;

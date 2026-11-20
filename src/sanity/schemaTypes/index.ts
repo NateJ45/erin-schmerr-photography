@@ -25,6 +25,7 @@ import { story } from './story'; // scaffold: stories
 import { storyIndex, coverHero, craftNotes, crewSection, signedClose } from './storyIndexSection'; // scaffold: stories
 import { publication } from './publication'; // scaffold: press
 import { pressSectionSchemas } from './pressSections'; // scaffold: press
+import { aboutSectionSchemas } from './aboutSections'; // scaffold: about
 import { privacyPage } from './privacyPage';
 import { redirect } from './redirect';
 import { sectionPreset } from './sectionPreset';
@@ -59,6 +60,8 @@ export const schemaTypes = [
   crewSection, // scaffold: stories
   signedClose, // scaffold: stories
   ...pressSectionSchemas, // scaffold: press
+  // The About page's own blocks (aboutSections.ts).
+  ...aboutSectionSchemas, // scaffold: about
   // One photograph (photo.ts): used by stories AND press, so in neither capability.
   photo,
 

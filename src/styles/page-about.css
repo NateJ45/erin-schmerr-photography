@@ -1,0 +1,191 @@
+/* scaffold-file: about
+   Safe to edit by hand
+   The About page's own blocks (src/components/about/, DESIGN.md "About page"):
+   the opening, the portrait and story, the approach and behind the scenes.
+   Light only, square corners, hairlines and space instead of boxes.
+
+   Every hidden or offset starting state is under html.motion (BaseLayout adds
+   it only when JavaScript runs and reduced motion is off), and the motion
+   itself is src/scripts/about-motion.ts (GSAP SplitText and ScrollTrigger).
+   Without the class the page renders finished: the headline as text, every
+   paragraph in full ink, every photo still. */
+
+/* ---- 1. Opening -------------------------------------------------------- */
+.about-open__title {
+  max-width: 15em;
+  font-size: clamp(2.75rem, 8.4vw, 8rem);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+.about-open__title em {
+  font-style: italic;
+}
+/* SplitText's line masks (about-motion.ts): each rendered line clips its own
+   words, so the line rises out of nothing rather than fading. A little
+   padding keeps italic overhangs and descenders inside the mask. */
+.about-open__title .about-line-mask {
+  padding-bottom: 0.22em;
+  margin-bottom: -0.22em;
+}
+/* Under the headline, on the shared split with the picture first (rule 17;
+   the story band below puts its portrait on the right, so the two alternate):
+   her photograph (portrait, like most of her work) in the picture track, the
+   line in the text track, at its foot like a caption. */
+.about-open__side {
+  display: flex;
+  align-items: flex-end;
+}
+.about-open__sub {
+  max-width: 28em;
+}
+
+/* The slow photo. The frame clips; the picture inside is a little larger
+   than the frame (only when it will move), so its drift never shows an edge. */
+.about-parallax {
+  overflow: hidden;
+}
+html.motion .about-parallax > .focus-image {
+  scale: 1.12;
+  will-change: transform;
+}
+
+/* ---- 2. Portrait and story ---------------------------------------------- */
+.about-story__title {
+  font-size: var(--text-h1);
+  line-height: 1;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+.about-story__body,
+.about-approach__body {
+  max-width: 34em;
+  font-size: var(--text-lg);
+  line-height: 1.65;
+  color: var(--color-foreground);
+}
+.about-story__body p + p,
+.about-approach__body p + p {
+  margin-top: 1.25em;
+}
+@media (min-width: 64rem) {
+  .about-story {
+    align-items: start;
+  }
+  /* The portrait holds in view while the story passes. */
+  .about-story__portrait {
+    position: sticky;
+    top: calc(var(--header-height, 5rem) + 2rem);
+  }
+}
+
+/* ---- 3. Approach -------------------------------------------------------- */
+.about-approach__statement {
+  max-width: 16em;
+  font-size: clamp(2.5rem, 7vw, 6.5rem);
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+/* Held to 60rem: her photographs arrive Instagram-sized (1080px wide) until
+   her originals come, and a wider frame would blow them up soft. */
+.about-approach__figure {
+  position: relative;
+  max-width: 60rem;
+}
+/* Her line on a paper chip over the photo's lower left corner; under the
+   photo on a phone, where a chip would cover too much of the picture. */
+.about-approach__voice {
+  margin-top: 1.25rem;
+  max-width: 34rem;
+}
+.about-approach__line {
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-style: italic;
+  line-height: 1.15;
+  color: var(--color-foreground);
+}
+@media (min-width: 48rem) {
+  .about-approach__voice {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    margin: 0;
+    padding: 1.5rem 1.75rem 1.25rem;
+    background: var(--color-background);
+  }
+}
+
+/* ---- 4. Behind the scenes ----------------------------------------------- */
+.about-process__rule {
+  border-top: 1px solid var(--color-foreground);
+  padding-top: 0.75rem;
+}
+.about-process__label {
+  font-size: var(--text-sm);
+  color: var(--color-foreground);
+}
+.about-process__title {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0 1em;
+  margin-top: 0.25rem;
+  font-size: clamp(3rem, 9vw, 8rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.about-process__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 3rem 1rem;
+  margin-top: var(--spacing-section-md);
+}
+.about-process__fig--1,
+.about-process__fig--2,
+.about-process__fig--3 {
+  grid-column: 1 / -1;
+}
+.about-process__num {
+  margin-bottom: 0.5rem;
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-foreground);
+}
+.about-process__caption {
+  margin-top: 0.5rem;
+  font-size: var(--text-sm);
+  color: var(--color-muted-foreground);
+}
+/* The uneven gallery from 1024 up, on 24 narrow columns: the first and third
+   plates take the left ten, the second and the two small ones the right ten,
+   with an empty gutter of four between. The tall second plate spans two rows,
+   so the left and right never line up, and the small pair waits at the top of
+   the third plate's row. */
+@media (min-width: 64rem) {
+  .about-process__grid {
+    grid-template-columns: repeat(24, minmax(0, 1fr));
+    gap: 6rem 1.25rem;
+    align-items: start;
+  }
+  .about-process__fig--1 {
+    grid-column: 1 / span 10;
+    grid-row: 1;
+  }
+  .about-process__fig--2 {
+    grid-column: 15 / span 10;
+    grid-row: 1 / span 2;
+  }
+  .about-process__fig--3 {
+    grid-column: 1 / span 10;
+    grid-row: 3;
+  }
+  .about-process__fig--4 {
+    grid-column: 15 / span 5;
+    grid-row: 3;
+  }
+  .about-process__fig--5 {
+    grid-column: 20 / span 5;
+    grid-row: 3;
+  }
+}
