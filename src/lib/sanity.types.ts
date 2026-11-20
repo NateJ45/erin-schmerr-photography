@@ -2963,6 +2963,30 @@ export type ContactPage = {
       _key: string;
     } & FormQuestion
   >;
+  bookingSittings?: Array<{
+    title?: string;
+    line?: string;
+    image?: {
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      alt?: string;
+      _type: 'image';
+    };
+    _type: 'bookingSitting';
+    _key: string;
+  }>;
+  bookingPortrait?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: 'image';
+  };
+  bookingThanksNote?: string;
+  bookingSignature?: string;
   whatToExpectEyebrow?: string;
   whatToExpectHeadline?: string;
   whatToExpectContent?: Array<{
