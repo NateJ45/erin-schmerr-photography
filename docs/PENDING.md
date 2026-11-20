@@ -145,6 +145,16 @@ domain and their mail.
 
 (PENDING 33, the E-Design switch, closed 2026-10-30 by card 208. PENDING 34, parity failing on the Event details calendar stamp, closed 2026-10-30 by card 211.)
 
+### 36. render-og picks the latin-ext file of a variable font package (opened 2026-11-20)
+
+`findFontFile()` in `scripts/lib/render-og.mjs` (PORTABLE) scores `f.includes('-latin-')`,
+which also matches `-latin-ext-`. For `@fontsource-variable/bodoni-moda` the two tie and the
+alphabetical sort takes `latin-ext-opsz-normal`, which has no a-z, so every share card came out
+in Georgia. This site works around it in its own `scripts/lib/og-card.mjs` (`withBrandFont()`,
+also used by `generate-og-default.mjs`), which swaps in the Latin file and pins the cards to
+optical size 24. The real fix is a starter card (score `/-latin-(?!ext)/`), shipped starter
+first because this repo's CI sync-checks the live starter; then drop the workaround.
+
 ### 35. From the nixoncreativestudio overhaul: a Pause motion switch and no-PII GA4 events (opened 2026-10-31)
 
 Cards 212 and 213 took that overhaul's two generic specs. Two more pieces generalise but need foundation edits, so they wait for a planned session rather than going in as unwired files. (a) The site-wide Pause motion switch (WCAG 2.2.2): a persisted `html[data-motion-paused]` state set before first paint by the head bootstrap, `[data-motion-toggle]` buttons with `aria-pressed`, one CSS rule that stops every `[data-motion="loop"]` while paused, off screen or in a hidden tab, and `tests/motion-pause.spec.ts`. The starter has looping motion (the hero slideshow and video, the flow layer) but no switch; the work is a `BaseLayout.astro` bootstrap line, a `globals.css` rule and a footer button. Origin: nixoncreativestudio `src/scripts/motion.ts`, `src/components/MotionToggle.astro`. (b) `track.ts`: a `track()` that is a no-op without `window.gtag`, drops any param that is not a short label, and a click layer driven by `data-cta` attributes (plus `mailto:` links), with `tests/track.spec.ts` stubbing gtag. It needs a privacy-page line per event and wiring into the contact routes, which are PORTABLE. Origin: nixoncreativestudio `src/lib/track.ts`.
