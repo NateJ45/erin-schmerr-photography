@@ -1,0 +1,497 @@
+---
+// Safe to edit by hand
+// The booking request (2026-11-20, DESIGN.md "Booking request"). A couture appointment
+// request rather than a contact form: ONE real <form> in four <fieldset> chapters,
+//   I. Choose your sitting   photo cards (radio inputs), from the Contact page's Sittings
+//   II. When                 a season, a month in mind, how flexible
+//   III. Tell me your story  one textarea
+//   IV. How to reach you     name, email, optional phone
+// beside her portrait, held in view from lg up on the shared `.split` (rule 17).
+//
+// THREE WAYS IT RUNS, all of them complete:
+//   - JavaScript and motion allowed: src/scripts/booking-form.ts shows one chapter at a time
+//     (Continue, Back, a thin progress line, focus on each chapter's heading, checks per
+//     chapter) and sends JSON to /api/contact/ through src/lib/contact-transport.ts, the
+//     contact form's own backend, with its honeypot and timing check and `generate_lead`.
+//   - Reduced motion: the same script, every chapter stacked, checks on Send.
+//   - No JavaScript: every chapter stacked, the browser's own required checks, and a plain
+//     POST to /api/booking/, which hands the answers to the same contact route and answers
+//     with a redirect to #booking-sent (or #booking-failed); `:target` shows the right panel.
+//
+// Nothing typed is put in a URL. Nothing here invents a fact: the sittings, the availability
+// line, the thank-you note and the signature come from the Contact page document, and what
+// shows until she writes them is labelled (docs/PENDING.md).
+import SanityImage from '@/components/SanityImage.astro';
+import { realText } from '@/lib/page-meta';
+import type { ContactFormSettings, SanityImageObject } from '@/lib/pageBuilder.types';
+import type { PortfolioPhoto } from '@/lib/portfolio';
+import '@/styles/page-booking.css';
+
+interface Props {
+  settings?: ContactFormSettings | null;
+  /** Story covers, used as the pictures while the sittings and portrait are still empty. */
+  covers?: PortfolioPhoto[];
+  email?: string | null;
+  /** h1 on the classic Contact page; h2 when the block sits under a hero block. */
+  headingLevel?: 'h1' | 'h2';
+  eyebrow?: string | null;
+  heading?: string | null;
+  subhead?: string | null;
+  /** Show the portrait column (the block's "sidebar" switch). */
+  portrait?: boolean;
+}
+
+const {
+  settings,
+  covers = [],
+  email,
+  headingLevel = 'h2',
+  eyebrow,
+  heading,
+  subhead,
+  portrait = true,
+} = Astro.props;
+
+const H = headingLevel;
+const Hc = headingLevel === 'h1' ? 'h2' : 'h3';
+
+const ROMAN = ['I', 'II', 'III', 'IV'];
+const pad = (n: number) => String(n).padStart(2, '0');
+
+// ---- Chapter I: the sittings ----------------------------------------------------------
+interface Sitting {
+  title: string;
+  line: string;
+  image: SanityImageObject | PortfolioPhoto | null;
+  placeholder: boolean;
+}
+const typed: Sitting[] = (settings?.bookingSittings ?? [])
+  .filter((s) => realText(s?.title))
+  .map((s) => ({
+    title: realText(s.title) ?? '',
+    line: realText(s.line) ?? '',
+    image: s.image?.asset ? s.image : null,
+    placeholder: false,
+  }));
+// Until she names her sittings, say so on the page (rule: never invent a fact). The pictures
+// are her own story covers, so the cards still look like her work.
+const placeholders: Sitting[] = ['one', 'two', 'three'].map((word, i) => ({
+  title: `Sitting ${word}`,
+  line: 'Placeholder: the name of this sitting and one line about it, set in the Studio.',
+  image: covers[i] ?? null,
+  placeholder: true,
+}));
+const sittings: Sitting[] = [
+  ...(typed.length ? typed : placeholders),
+  {
+    title: 'Not sure yet',
+    line: 'Tell me the idea and we can choose together.',
+    image: covers[typed.length ? typed.length : 3] ?? covers[0] ?? null,
+    placeholder: false,
+  },
+];
+
+// ---- Chapter II: seasons --------------------------------------------------------------
+const SEASONS = ['Spring', 'Summer', 'Autumn', 'Winter', 'Open to any season'];
+
+// ---- Words above and after the form --------------------------------------------------
+const availability = realText(settings?.availabilityNote);
+const intro = realText(settings?.formIntroNote);
+const thanksNote =
+  realText(settings?.bookingThanksNote) ??
+  'Placeholder: a short thank-you in her own words, set in the Studio (Contact page, Thank-you note).';
+const thanksIsPlaceholder = !realText(settings?.bookingThanksNote);
+const signature = realText(settings?.bookingSignature) ?? 'Erin';
+
+// "What happens next": her own steps when she has written them, else the three agreed ones.
+const ownSteps = (settings?.postInquiryRoadmap ?? [])
+  .filter((s) => realText(s?.title))
+  .slice(0, 3)
+  .map((s) => ({ title: realText(s.title) ?? '', body: realText(s.body) ?? '' }));
+const steps = ownSteps.length
+  ? ownSteps
+  : [
+      { title: 'Review your enquiry', body: 'I read what you have sent and write back to you.' },
+      { title: 'A conversation', body: 'We talk through the idea, the look and the place.' },
+      {
+        title: 'Your proposal',
+        body: 'You receive a proposal for your sitting: the plan, the dates and the investment.',
+      },
+    ];
+
+// ---- The portrait ---------------------------------------------------------------------
+const ownPortrait = settings?.bookingPortrait?.asset ? settings.bookingPortrait : null;
+const portraitImage: SanityImageObject | PortfolioPhoto | null = ownPortrait ?? covers[0] ?? null;
+const portraitAlt = ownPortrait
+  ? (ownPortrait.alt ?? 'Erin Schmerr')
+  : ((covers[0]?.alt as string | undefined) ?? '');
+
+const headingId = 'booking-heading';
+const img = (p: SanityImageObject | PortfolioPhoto | null) =>
+  p && (p as { asset?: unknown }).asset ? (p as SanityImageObject) : null;
+const lqip = (p: SanityImageObject | PortfolioPhoto | null) =>
+  (p as { asset?: { metadata?: { lqip?: string } } } | null)?.asset?.metadata?.lqip;
+---
+
+<section class="bk" data-booking aria-labelledby={headingId}>
+  <div class:list={['bk__layout mx-auto max-w-content px-m py-section-lg', portrait && 'split']}>
+    <div class="bk__main">
+      <header class="bk__head">
+        {eyebrow && <p class="portfolio-label">{eyebrow}</p>}
+        <H id={headingId} class="bk__title font-display">
+          {heading || 'Request a sitting.'}
+        </H>
+        {subhead && <p class="bk__sub">{subhead}</p>}
+        {availability && (
+          <p class="bk__availability" data-bk-availability>
+            <span class="bk__availability-rule" aria-hidden="true" />
+            {availability}
+          </p>
+        )}
+        {intro && <p class="bk__intro">{intro}</p>}
+      </header>
+
+      <div class="bk__stage">
+        {/* No-JS answer from /api/booking/ when it could not send (`:target`). */}
+        <div id="booking-failed" class="bk__failed" tabindex="-1">
+          <p>
+            That did not send. Please check that your name, email and story are filled in, and try
+            again.
+            {email && (
+              <>
+                {' '}
+                Or write to <a href={`mailto:${email}`}>{email}</a>.
+              </>
+            )}
+          </p>
+        </div>
+
+        <form class="bk__form" method="post" action="/api/booking/" aria-busy="false" data-bk-form>
+          {/* Shown by the script in the one-chapter-at-a-time mode. */}
+          <div class="bk__progress" data-bk-progress hidden>
+            <p class="portfolio-label" aria-live="polite" data-bk-progress-label>
+              Chapter I of IV
+            </p>
+            <span class="bk__progress-track" aria-hidden="true">
+              <span class="bk__progress-fill" data-bk-progress-fill />
+            </span>
+          </div>
+
+          <p class="bk__alert" role="alert" data-bk-alert hidden />
+
+          {/* Spam checks the contact route already reads: a honeypot and a render time. */}
+          <div class="bk__hp" aria-hidden="true">
+            <label for="bk-company">Company</label>
+            <input id="bk-company" name="company" type="text" tabindex="-1" autocomplete="off" />
+          </div>
+          <input type="hidden" name="renderedAt" value="" data-bk-rendered />
+
+          {/* ---- I. Choose your sitting ---- */}
+          <fieldset class="bk__chapter" data-bk-chapter="0" aria-describedby="bk-sitting-error">
+            <legend class="bk__legend">
+              <Hc class="bk__chapter-title" tabindex="-1" data-bk-chapter-heading>
+                <span class="bk__numeral">
+                  <span class="sr-only">Chapter </span>
+                  {ROMAN[0]}
+                  <span class="sr-only">, </span>
+                </span>
+                <span class="bk__chapter-name font-display">Choose your sitting</span>
+              </Hc>
+            </legend>
+            <div class="bk__sittings" style={`--bk-cols: ${Math.min(sittings.length, 4)}`}>
+              {sittings.map((s, i) => (
+                <label class="bk-card">
+                  <input
+                    class="bk-card__input"
+                    type="radio"
+                    name="sitting"
+                    value={s.title}
+                    required
+                    data-bk-topic={s.title.toLowerCase()}
+                  />
+                  <span
+                    class:list={['bk-card__frame', !img(s.image) && 'bk-card__frame--empty']}
+                    style={lqip(s.image) ? `--bk-lqip: url("${lqip(s.image)}")` : undefined}
+                  >
+                    {img(s.image) ? (
+                      <SanityImage
+                        source={img(s.image)}
+                        width={480}
+                        height={600}
+                        sizes="(min-width: 64rem) 14rem, (min-width: 40rem) 30vw, 45vw"
+                        alt=""
+                        class="bk-card__img"
+                      />
+                    ) : (
+                      <span class="bk-card__ph" aria-hidden="true">
+                        Placeholder
+                      </span>
+                    )}
+                  </span>
+                  <span class="bk-card__meta">
+                    <span class="bk-card__num" aria-hidden="true">
+                      {pad(i + 1)}
+                    </span>
+                    <span class="bk-card__title font-display">{s.title}</span>
+                    {s.line && (
+                      <span class:list={['bk-card__line', s.placeholder && 'bk-card__line--ph']}>
+                        {s.line}
+                      </span>
+                    )}
+                  </span>
+                  <span class="bk-card__mark" aria-hidden="true">
+                    Chosen
+                  </span>
+                </label>
+              ))}
+            </div>
+            <p class="bk__error" id="bk-sitting-error" data-bk-error-for="sitting" hidden />
+            <div class="bk__nav" data-bk-nav hidden>
+              <button type="button" class="bk__continue" data-bk-next>
+                Continue
+              </button>
+            </div>
+          </fieldset>
+
+          {/* ---- II. When ---- */}
+          <fieldset class="bk__chapter" data-bk-chapter="1">
+            <legend class="bk__legend">
+              <Hc class="bk__chapter-title" tabindex="-1" data-bk-chapter-heading>
+                <span class="bk__numeral">
+                  <span class="sr-only">Chapter </span>
+                  {ROMAN[1]}
+                  <span class="sr-only">, </span>
+                </span>
+                <span class="bk__chapter-name font-display">When</span>
+              </Hc>
+            </legend>
+            <fieldset class="bk__group" aria-describedby="bk-season-error">
+              <legend class="bk__label">The season you have in mind</legend>
+              <div class="bk__chips">
+                {SEASONS.map((season) => (
+                  <label class="bk-chip">
+                    <input
+                      class="bk-chip__input"
+                      type="radio"
+                      name="season"
+                      value={season}
+                      required
+                    />
+                    <span class="bk-chip__face">{season}</span>
+                  </label>
+                ))}
+              </div>
+              <p class="bk__error" id="bk-season-error" data-bk-error-for="season" hidden />
+            </fieldset>
+            <div class="bk__field">
+              <label class="bk__label" for="bk-month">
+                A month or date in mind <span class="bk__optional">(optional)</span>
+              </label>
+              <input id="bk-month" name="month" type="text" class="bk__input" maxlength="120" />
+            </div>
+            <div class="bk__field">
+              <label class="bk__label" for="bk-flex">
+                How flexible you are <span class="bk__optional">(optional)</span>
+              </label>
+              <input
+                id="bk-flex"
+                name="flexibility"
+                type="text"
+                class="bk__input"
+                maxlength="200"
+                aria-describedby="bk-flex-hint"
+              />
+              <p class="bk__hint" id="bk-flex-hint">
+                For example: weekends only, or any time in the spring.
+              </p>
+            </div>
+            <div class="bk__nav" data-bk-nav hidden>
+              <button type="button" class="bk__back" data-bk-back>
+                Back
+              </button>
+              <button type="button" class="bk__continue" data-bk-next>
+                Continue
+              </button>
+            </div>
+          </fieldset>
+
+          {/* ---- III. Tell me your story ---- */}
+          <fieldset class="bk__chapter" data-bk-chapter="2">
+            <legend class="bk__legend">
+              <Hc class="bk__chapter-title" tabindex="-1" data-bk-chapter-heading>
+                <span class="bk__numeral">
+                  <span class="sr-only">Chapter </span>
+                  {ROMAN[2]}
+                  <span class="sr-only">, </span>
+                </span>
+                <span class="bk__chapter-name font-display">Tell me your story</span>
+              </Hc>
+            </legend>
+            <div class="bk__field">
+              <label class="bk__label" for="bk-story">
+                Your story
+              </label>
+              <p class="bk__hint" id="bk-story-hint">
+                Who the portrait is for, the era, the film or the feeling you keep coming back to,
+                and anything you would love to wear. A few lines is plenty.
+              </p>
+              <textarea
+                id="bk-story"
+                name="story"
+                class="bk__input bk__textarea"
+                rows="7"
+                maxlength="4000"
+                required
+                aria-describedby="bk-story-hint bk-story-error"
+                data-bk-story
+              />
+              <p class="bk__error" id="bk-story-error" data-bk-error-for="story" hidden />
+            </div>
+            <div class="bk__nav" data-bk-nav hidden>
+              <button type="button" class="bk__back" data-bk-back>
+                Back
+              </button>
+              <button type="button" class="bk__continue" data-bk-next>
+                Continue
+              </button>
+            </div>
+          </fieldset>
+
+          {/* ---- IV. How to reach you ---- */}
+          <fieldset class="bk__chapter" data-bk-chapter="3">
+            <legend class="bk__legend">
+              <Hc class="bk__chapter-title" tabindex="-1" data-bk-chapter-heading>
+                <span class="bk__numeral">
+                  <span class="sr-only">Chapter </span>
+                  {ROMAN[3]}
+                  <span class="sr-only">, </span>
+                </span>
+                <span class="bk__chapter-name font-display">How to reach you</span>
+              </Hc>
+            </legend>
+            <div class="bk__field">
+              <label class="bk__label" for="bk-name">
+                Your name
+              </label>
+              <input
+                id="bk-name"
+                name="name"
+                type="text"
+                class="bk__input"
+                autocomplete="name"
+                maxlength="120"
+                required
+                aria-describedby="bk-name-error"
+              />
+              <p class="bk__error" id="bk-name-error" data-bk-error-for="name" hidden />
+            </div>
+            <div class="bk__field">
+              <label class="bk__label" for="bk-email">
+                Email
+              </label>
+              <input
+                id="bk-email"
+                name="email"
+                type="email"
+                class="bk__input"
+                autocomplete="email"
+                maxlength="254"
+                required
+                aria-describedby="bk-email-error"
+              />
+              <p class="bk__error" id="bk-email-error" data-bk-error-for="email" hidden />
+            </div>
+            <div class="bk__field">
+              <label class="bk__label" for="bk-phone">
+                Phone <span class="bk__optional">(optional)</span>
+              </label>
+              <input
+                id="bk-phone"
+                name="phone"
+                type="tel"
+                class="bk__input"
+                autocomplete="tel"
+                maxlength="40"
+              />
+            </div>
+            <div class="bk__nav bk__nav--send">
+              <button type="button" class="bk__back" data-bk-back data-bk-nav hidden>
+                Back
+              </button>
+              <button type="submit" class="bk__send" data-bk-send>
+                Send my request
+              </button>
+            </div>
+          </fieldset>
+        </form>
+
+        {email && (
+          <p class="bk__direct">
+            Prefer to write? <a href={`mailto:${email}`}>{email}</a>
+          </p>
+        )}
+      </div>
+    </div>
+
+    {portrait && portraitImage && (
+      <aside class="bk__aside" aria-label="Portrait">
+        <figure class="bk__portrait">
+          <span
+            class:list={['bk__portrait-frame', !img(portraitImage) && 'bk-card__frame--empty']}
+            style={lqip(portraitImage) ? `--bk-lqip: url("${lqip(portraitImage)}")` : undefined}
+          >
+            {img(portraitImage) ? (
+              <SanityImage
+                source={img(portraitImage)}
+                width={720}
+                height={960}
+                sizes="(min-width: 64rem) 30rem, 100vw"
+                alt={portraitAlt}
+                class="bk__portrait-img"
+              />
+            ) : (
+              <span class="bk-card__ph">Placeholder</span>
+            )}
+          </span>
+          {ownPortrait && <figcaption class="portfolio-label">Erin Schmerr</figcaption>}
+        </figure>
+      </aside>
+    )}
+  </div>
+
+  {/* ---- After sending: shown by the script, or by `:target` after the no-JS redirect ---- */}
+  <div id="booking-sent" class="bk-sent mx-auto max-w-content px-m py-section-lg" tabindex="-1">
+    <div class="bk-sent__letter">
+      <p class="portfolio-label">Your request is with me</p>
+      <H class="bk-sent__title font-display" data-bk-sent-heading>
+        Thank you.
+      </H>
+      <p class:list={['bk-sent__note', thanksIsPlaceholder && 'bk-sent__note--ph']}>{thanksNote}</p>
+      <p class="bk-sent__sign">
+        <span class="portfolio-label">Signed,</span>
+        <span class="bk-sent__name font-display">{signature}</span>
+      </p>
+    </div>
+
+    <div class="bk-next">
+      <Hc class="bk-next__heading portfolio-label">What happens next</Hc>
+      <ol class="bk-next__list">
+        {steps.map((step, i) => (
+          <li class="bk-next__step" style={`--i: ${i}`}>
+            <span class="bk-next__num font-display" aria-hidden="true">
+              {pad(i + 1)}
+            </span>
+            <span class="bk-next__text">
+              <span class="bk-next__title font-display">{step.title}</span>
+              {step.body && <span class="bk-next__body">{step.body}</span>}
+            </span>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </div>
+</section>
+
+<script>
+  import '@/scripts/booking-form';
+</script>

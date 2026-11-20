@@ -96,7 +96,8 @@ The Portable Text renderer (`JournalPortableText.tsx`) detects image orientation
 
 **Contact page pieces:**
 
-- `ContactForm.tsx` -- Name / Email / Phone / Message, plus any project-specific fields; posts as a plain form with scripting off, lists every error in a focused summary, keeps the draft in sessionStorage, reads `?topic=` and `&about=`. See form section in `docs/agent/sanity.md`.
+- `booking/BookingForm.astro` -- this site's Contact form block since 2026-11-20: the four-chapter booking request (DESIGN.md "Booking request"), driven by `src/scripts/booking-form.ts`, posting to `/api/contact/` (JS) or `/api/booking/` (no JS).
+- `ContactForm.tsx` -- the starter's form, no longer rendered on this site (kept for the family). Name / Email / Phone / Message, plus any project-specific fields; posts as a plain form with scripting off, lists every error in a focused summary, keeps the draft in sessionStorage, reads `?topic=` and `&about=`. See form section in `docs/agent/sanity.md`.
 - `CopyEmailButton.astro` -- mailto link + a copy button. An Astro component with one delegated click handler (card 187): the icon turns into a tick and a visually hidden live region says "Email address copied", so there is no React island and no toast region.
 - `CalendlyInline.tsx` -- click-to-load Calendly iframe placeholder. Heavy widget stays off the budget until the visitor opts in.
 

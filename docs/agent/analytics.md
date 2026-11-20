@@ -44,7 +44,7 @@ was not found, search words (withheld when they look like an email address or a 
 
 Any other event name in the map (`calendar_add`, `app_click`, `social_click`) is the site's own.
 
-**This site's map (2026-11-18):** `book_click` for any link to `/contact/` (the "Book a session" buttons and footer link), `social_click` with `platform` for her own Instagram and Facebook pages only (a collaborator's Instagram stays an `outbound_click`), `press_click` with `destination` for the press hosts in `src/config/events.ts` or any page with her name in its address. Add a host there when a new feature has a link. Pinned in `tests/site-events.spec.ts` with the contact form's `generate_lead`. `location` is the page
+**This site's map (2026-11-18):** `book_click` for any link to `/contact/` (the "Book a session" buttons and footer link), `social_click` with `platform` for her own Instagram and Facebook pages only (a collaborator's Instagram stays an `outbound_click`), `press_click` with `destination` for the press hosts in `src/config/events.ts` or any page with her name in its address. Add a host there when a new feature has a link. Pinned in `tests/site-events.spec.ts` with the contact form's `generate_lead` (since 2026-11-20 the booking request on /contact/ sends it, `form_name: 'contact'`, `src/scripts/booking-form.ts`; the no-JS post sends none, as there is no script to send it). `location` is the page
 region: `header`, `footer`, `nav`, `aside` or `page`.
 
 GA4's Enhanced Measurement also counts outbound clicks and file downloads. A site with it on can put `outbound_click`
