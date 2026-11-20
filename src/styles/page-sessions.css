@@ -1,0 +1,386 @@
+/* scaffold-file: sessions */
+/* Safe to edit by hand.
+   The Sessions page's blocks (src/components/sessions/, picked 2026-11-20:
+   "Vogue meets a Paris boutique", a couture house's offer sheet, never a
+   pricing table). Paper ground, ink type, hairline rules, square corners, no
+   colour beyond the site's one Dusk accent. Text-and-picture bands use the
+   shared split (.split, card 91). Motion: only the experience block's lit
+   step, switched on by its script under html.motion and from 64rem up; every
+   other state here is the finished page. */
+
+/* ---- shared ------------------------------------------------------------ */
+.sx-head {
+  max-width: 48rem;
+  margin-bottom: clamp(2.5rem, 5vw, 4rem);
+}
+
+/* ---- 1. opening line --------------------------------------------------- */
+.sx-opening {
+  padding-block: clamp(3rem, 7vw, 6rem) clamp(3.5rem, 8vw, 7rem);
+}
+.sx-opening__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+  min-height: 1rem;
+  margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+}
+.sx-opening__photo {
+  width: clamp(7rem, 22vw, 15rem);
+  flex: none;
+}
+.sx-opening__line {
+  max-width: 14em;
+  margin: 0;
+  font-size: clamp(3rem, 9vw, 8.5rem);
+  font-weight: 400;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  overflow-wrap: break-word;
+}
+.sx-opening__line em {
+  font-style: italic;
+}
+.sx-opening__intro {
+  max-width: 34rem;
+  margin-top: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+/* ---- 2. the sittings --------------------------------------------------- */
+.sx-sittings {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 4rem clamp(1.5rem, 4vw, 3rem);
+}
+.sx-sitting {
+  display: grid;
+  grid-template-rows: auto;
+  align-content: start;
+  min-width: 0;
+}
+@media (min-width: 48rem) {
+  .sx-sittings {
+    grid-template-columns: repeat(var(--sx-cols, 2), minmax(0, 1fr));
+  }
+  /* Every column shares the same row tracks, so the rules line up across
+     columns whatever the length of a name or a line. */
+  @supports (grid-template-rows: subgrid) {
+    .sx-sittings {
+      row-gap: 0;
+    }
+    .sx-sitting {
+      grid-row: span var(--sx-tracks, 4);
+      grid-template-rows: subgrid;
+    }
+    .sx-sitting__rows {
+      display: contents;
+    }
+  }
+}
+.sx-sitting__photo {
+  margin-bottom: 1.5rem;
+}
+.sx-sitting__name {
+  margin: 0;
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  font-weight: 400;
+  line-height: 1.05;
+  border-top: 1px solid var(--color-foreground);
+  padding-top: 1rem;
+}
+.sx-sitting__no {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+.sx-sitting__line {
+  margin: 0.75rem 0 1.5rem;
+  max-width: 30rem;
+}
+.sx-sitting__rows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.sx-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0;
+  padding-block: 0.85rem;
+  border-top: 1px solid var(--color-border);
+}
+.sx-row--out {
+  /* Greyed, not removed. Muted ink (still AA on paper, so it stays readable)
+     struck through with a hairline; the sr-only note carries the meaning. */
+  color: var(--color-muted-foreground);
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--color-border);
+}
+.sx-row--price {
+  margin-top: 0.75rem;
+  padding-top: 1.25rem;
+  border-top-color: var(--color-foreground);
+  border-bottom: 1px solid var(--color-foreground);
+  padding-bottom: 1.25rem;
+}
+.sx-row__figure {
+  font-size: clamp(1.5rem, 2.6vw, 2rem);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- 3. the experience ------------------------------------------------- */
+.sx-exp .split {
+  align-items: start;
+}
+.sx-exp__steps {
+  margin: clamp(2rem, 4vw, 3rem) 0 0;
+  padding: 0;
+  border-left: 1px solid var(--color-border);
+}
+.sx-step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 3rem minmax(0, 1fr);
+  column-gap: 1rem;
+  padding: 1.5rem 0 1.5rem 1.25rem;
+}
+.sx-step + .sx-step {
+  border-top: 1px solid var(--color-border);
+}
+.sx-step__n {
+  grid-row: 1 / span 2;
+  padding-top: 0.6rem;
+}
+.sx-step__title {
+  margin: 0;
+  font-size: clamp(1.6rem, 2.6vw, 2.25rem);
+  font-weight: 400;
+  line-height: 1.1;
+}
+.sx-step__body {
+  grid-column: 2;
+  margin: 0.5rem 0 0;
+  max-width: 32rem;
+}
+.sx-step::before {
+  /* The tick on the rule down the steps; shown on the lit step only. */
+  content: '';
+  position: absolute;
+  left: -1px;
+  top: 1.6rem;
+  width: 2px;
+  height: 2.25rem;
+  background: var(--color-foreground);
+  opacity: 0;
+}
+/* Pinned, with motion, from 64rem (the script sets data-scrolly). */
+@media (min-width: 64rem) {
+  .sx-exp[data-scrolly] .sx-exp__media {
+    position: sticky;
+    top: 6rem;
+  }
+  .sx-exp[data-scrolly] .sx-exp__photo {
+    max-height: calc(100vh - 8rem);
+  }
+  .sx-exp[data-scrolly] .sx-step {
+    min-height: 42vh;
+    align-content: start;
+    border-top: 0;
+  }
+  /* Resting steps go to the muted ink and lose a little size; the lit step is
+     full ink. Colour, not opacity, so every state stays AA on paper (axe reads
+     opacity into contrast). */
+  .sx-exp[data-scrolly] .sx-step__title {
+    color: var(--color-muted-foreground);
+    transform-origin: left center;
+    transform: scale(0.94);
+    transition:
+      color 600ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .sx-exp[data-scrolly] .sx-step[data-lit] .sx-step__title,
+  .sx-exp[data-scrolly] .sx-step:focus-within .sx-step__title {
+    color: var(--color-foreground);
+    transform: none;
+  }
+  .sx-exp[data-scrolly] .sx-step[data-lit] .sx-step__body {
+    color: var(--color-foreground);
+  }
+  .sx-exp[data-scrolly] .sx-step::before {
+    transition: opacity 600ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .sx-exp[data-scrolly] .sx-step[data-lit]::before {
+    opacity: 1;
+  }
+}
+
+/* ---- 4. heirlooms ------------------------------------------------------ */
+.sx-heirlooms {
+  display: grid;
+  gap: clamp(4rem, 8vw, 7rem);
+}
+.sx-piece {
+  align-items: start;
+}
+@media (min-width: 64rem) {
+  .sx-piece__sheet {
+    position: sticky;
+    top: 6rem;
+  }
+}
+.sx-piece__kind {
+  margin: 0 0 0.5rem;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  color: var(--color-muted-foreground);
+}
+.sx-piece__name {
+  margin: 0;
+  font-size: clamp(2.25rem, 5vw, 4rem);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+.sx-spec {
+  margin: 2rem 0 0;
+  border-bottom: 1px solid var(--color-foreground);
+}
+.sx-spec__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block: 0.85rem;
+  border-top: 1px solid var(--color-foreground);
+}
+.sx-spec__row dt {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+}
+.sx-spec__row dd {
+  margin: 0;
+  font-size: 1.25rem;
+  text-align: right;
+}
+.sx-piece__photos {
+  display: grid;
+  gap: 0.75rem;
+}
+
+/* ---- 5. a note on investment ------------------------------------------- */
+@media (min-width: 64rem) {
+  .sx-note {
+    align-items: start;
+  }
+}
+.sx-note__title {
+  max-width: 10em;
+  margin: 0;
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: 400;
+  line-height: 0.98;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+.sx-note__body {
+  font-size: 1.15rem;
+  line-height: 1.6;
+}
+.sx-note__body p:first-child {
+  margin-top: 0;
+}
+.sx-note__sign {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-top: 2rem;
+}
+.sx-note__name {
+  font-size: 2rem;
+  font-style: italic;
+  line-height: 1;
+}
+
+/* ---- 6. questions ------------------------------------------------------ */
+@media (min-width: 64rem) {
+  .sx-faq {
+    align-items: start;
+  }
+  .sx-faq__head {
+    position: sticky;
+    top: 7rem;
+  }
+}
+.sx-faq__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-bottom: 1px solid var(--color-border);
+}
+.sx-q {
+  border-top: 1px solid var(--color-border);
+}
+.sx-q__summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  min-height: 44px;
+  padding-block: 1.1rem;
+  cursor: pointer;
+  list-style: none;
+}
+.sx-q__summary::-webkit-details-marker {
+  display: none;
+}
+.sx-q__summary:focus-visible {
+  outline: 2px solid var(--color-ring, currentColor);
+  outline-offset: 4px;
+}
+.sx-q__question {
+  font-size: clamp(1.35rem, 2.2vw, 1.75rem);
+  line-height: 1.2;
+}
+/* A thin drawn plus; the vertical stroke folds away when open. */
+.sx-q__mark {
+  position: relative;
+  flex: none;
+  width: 0.9rem;
+  height: 0.9rem;
+}
+.sx-q__mark::before,
+.sx-q__mark::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+}
+.sx-q__mark::after {
+  transform: rotate(90deg);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .sx-q__mark::after {
+    transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+.sx-q[open] .sx-q__mark::after {
+  transform: rotate(0deg);
+}
+.sx-q__answer {
+  max-width: 38rem;
+  padding-bottom: 1.5rem;
+}
+.sx-q__answer p:first-child {
+  margin-top: 0;
+}
+.sx-q__answer p:last-child {
+  margin-bottom: 0;
+}

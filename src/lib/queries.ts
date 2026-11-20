@@ -106,6 +106,14 @@ const SECTION_ARMS = `
     _type == "aboutStory" => { ..., portrait${IMAGE_PROJECTION} }, // scaffold: about
     _type == "aboutApproach" => { ..., image${IMAGE_PROJECTION} }, // scaffold: about
     _type == "processFigures" => { ..., figures[]${IMAGE_PROJECTION} }, // scaffold: about
+    // The Sessions page's blocks (sessionSections.ts).
+    // scaffold: sessions
+    _type == "sessionsOpening" => { ..., photo${IMAGE_PROJECTION} },
+    _type == "sessionSittings" => { ..., sittings[]{ ..., photo${IMAGE_PROJECTION} } },
+    _type == "sessionExperience" => { ..., photo${IMAGE_PROJECTION} },
+    _type == "heirloomsSpec" => { ..., pieces[]{ ..., photos[]${IMAGE_PROJECTION} } },
+    _type == "sessionQuestions" => { ..., cta${CTA_PROJECTION} },
+    // scaffold:end
     _type == "heroSection" => {
       ...,
       backgroundImage${IMAGE_PROJECTION},

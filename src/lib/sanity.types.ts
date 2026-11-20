@@ -70,9 +70,18 @@ export type HubCardImage = {
   _type: 'image';
 };
 
+export type SittingPhoto = {
+  asset?: SanityImageAssetReference;
+  media?: unknown; // Unable to locate the referenced type "sitting.photo.media" in schema
+  hotspot?: SanityImageHotspot;
+  crop?: SanityImageCrop;
+  alt?: string;
+  _type: 'image';
+};
+
 export type TeamMemberPhoto = {
   asset?: SanityImageAssetReference;
-  media?: unknown; // Unable to locate the referenced type "photo.media" in schema
+  media?: unknown; // Unable to locate the referenced type "teamMember.photo.media" in schema
   hotspot?: SanityImageHotspot;
   crop?: SanityImageCrop;
   alt?: string;
@@ -270,6 +279,24 @@ export type PrivatePage = {
     | ({
         _key: string;
       } & MapSection)
+    | ({
+        _key: string;
+      } & SessionsOpening)
+    | ({
+        _key: string;
+      } & SessionSittings)
+    | ({
+        _key: string;
+      } & SessionExperience)
+    | ({
+        _key: string;
+      } & HeirloomsSpec)
+    | ({
+        _key: string;
+      } & InvestmentNote)
+    | ({
+        _key: string;
+      } & SessionQuestions)
     | ({
         _key: string;
       } & SyncedSection)
@@ -1748,6 +1775,24 @@ export type SectionPreset = {
       } & MapSection)
     | ({
         _key: string;
+      } & SessionsOpening)
+    | ({
+        _key: string;
+      } & SessionSittings)
+    | ({
+        _key: string;
+      } & SessionExperience)
+    | ({
+        _key: string;
+      } & HeirloomsSpec)
+    | ({
+        _key: string;
+      } & InvestmentNote)
+    | ({
+        _key: string;
+      } & SessionQuestions)
+    | ({
+        _key: string;
       } & FounderSection)
     | ({
         _key: string;
@@ -1769,6 +1814,142 @@ export type SectionPreset = {
       } & DynamicListSection)
   >;
   note?: string;
+};
+
+export type SessionQuestions = {
+  _type: 'sessionQuestions';
+  eyebrow?: string;
+  heading?: string;
+  items?: Array<{
+    question?: string;
+    answer?: Array<{
+      children?: Array<{
+        marks?: Array<string>;
+        text?: string;
+        _type: 'span';
+        _key: string;
+      }>;
+      style?: 'normal';
+      listItem?: never;
+      markDefs?: null;
+      level?: number;
+      _type: 'block';
+      _key: string;
+    }>;
+    _type: 'sessionQuestion';
+    _key: string;
+  }>;
+  cta?: CtaBlock;
+};
+
+export type InvestmentNote = {
+  _type: 'investmentNote';
+  eyebrow?: string;
+  heading?: string;
+  body?: Array<{
+    children?: Array<{
+      marks?: Array<string>;
+      text?: string;
+      _type: 'span';
+      _key: string;
+    }>;
+    style?: 'normal';
+    listItem?: never;
+    markDefs?: null;
+    level?: number;
+    _type: 'block';
+    _key: string;
+  }>;
+  signature?: string;
+};
+
+export type HeirloomsSpec = {
+  _type: 'heirloomsSpec';
+  eyebrow?: string;
+  heading?: string;
+  intro?: string;
+  pieces?: Array<{
+    kind?: string;
+    name?: string;
+    body?: string;
+    specs?: Array<{
+      label?: string;
+      value?: string;
+      _type: 'heirloomSpec';
+      _key: string;
+    }>;
+    photos?: Array<{
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      alt?: string;
+      _type: 'image';
+      _key: string;
+    }>;
+    _type: 'heirloomPiece';
+    _key: string;
+  }>;
+};
+
+export type SessionExperience = {
+  _type: 'sessionExperience';
+  eyebrow?: string;
+  heading?: string;
+  photo?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: 'image';
+  };
+  steps?: Array<{
+    title?: string;
+    body?: string;
+    _type: 'experienceStep';
+    _key: string;
+  }>;
+};
+
+export type SessionSittings = {
+  _type: 'sessionSittings';
+  eyebrow?: string;
+  heading?: string;
+  intro?: string;
+  sittings?: Array<{
+    name?: string;
+    line?: string;
+    photo?: SittingPhoto;
+    investmentFrom?: string;
+    _type: 'sitting';
+    _key: string;
+  }>;
+  rows?: Array<{
+    label?: string;
+    inFirst?: boolean;
+    inSecond?: boolean;
+    inThird?: boolean;
+    _type: 'sittingRow';
+    _key: string;
+  }>;
+  investmentLabel?: string;
+};
+
+export type SessionsOpening = {
+  _type: 'sessionsOpening';
+  eyebrow?: string;
+  line?: string;
+  turn?: string;
+  intro?: string;
+  photo?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: 'image';
+  };
 };
 
 export type MapSection = {
@@ -2865,6 +3046,24 @@ export type PrivacyPage = {
       } & MapSection)
     | ({
         _key: string;
+      } & SessionsOpening)
+    | ({
+        _key: string;
+      } & SessionSittings)
+    | ({
+        _key: string;
+      } & SessionExperience)
+    | ({
+        _key: string;
+      } & HeirloomsSpec)
+    | ({
+        _key: string;
+      } & InvestmentNote)
+    | ({
+        _key: string;
+      } & SessionQuestions)
+    | ({
+        _key: string;
       } & SyncedSection)
     | ({
         _key: string;
@@ -3009,6 +3208,24 @@ export type Page = {
     | ({
         _key: string;
       } & MapSection)
+    | ({
+        _key: string;
+      } & SessionsOpening)
+    | ({
+        _key: string;
+      } & SessionSittings)
+    | ({
+        _key: string;
+      } & SessionExperience)
+    | ({
+        _key: string;
+      } & HeirloomsSpec)
+    | ({
+        _key: string;
+      } & InvestmentNote)
+    | ({
+        _key: string;
+      } & SessionQuestions)
     | ({
         _key: string;
       } & SyncedSection)
@@ -3209,6 +3426,24 @@ export type ContactPage = {
       } & MapSection)
     | ({
         _key: string;
+      } & SessionsOpening)
+    | ({
+        _key: string;
+      } & SessionSittings)
+    | ({
+        _key: string;
+      } & SessionExperience)
+    | ({
+        _key: string;
+      } & HeirloomsSpec)
+    | ({
+        _key: string;
+      } & InvestmentNote)
+    | ({
+        _key: string;
+      } & SessionQuestions)
+    | ({
+        _key: string;
       } & SyncedSection)
     | ({
         _key: string;
@@ -3341,6 +3576,24 @@ export type AboutPage = {
     | ({
         _key: string;
       } & MapSection)
+    | ({
+        _key: string;
+      } & SessionsOpening)
+    | ({
+        _key: string;
+      } & SessionSittings)
+    | ({
+        _key: string;
+      } & SessionExperience)
+    | ({
+        _key: string;
+      } & HeirloomsSpec)
+    | ({
+        _key: string;
+      } & InvestmentNote)
+    | ({
+        _key: string;
+      } & SessionQuestions)
     | ({
         _key: string;
       } & SyncedSection)
@@ -3589,6 +3842,24 @@ export type HomePage = {
     | ({
         _key: string;
       } & MapSection)
+    | ({
+        _key: string;
+      } & SessionsOpening)
+    | ({
+        _key: string;
+      } & SessionSittings)
+    | ({
+        _key: string;
+      } & SessionExperience)
+    | ({
+        _key: string;
+      } & HeirloomsSpec)
+    | ({
+        _key: string;
+      } & InvestmentNote)
+    | ({
+        _key: string;
+      } & SessionQuestions)
     | ({
         _key: string;
       } & SyncedSection)
@@ -3936,6 +4207,7 @@ export type AllSanitySchemaTypes =
   | PhotoCardImage
   | IconCardImage
   | HubCardImage
+  | SittingPhoto
   | TeamMemberPhoto
   | PageReference
   | HomePageReference
@@ -3991,6 +4263,12 @@ export type AllSanitySchemaTypes =
   | SectionPresetReference
   | SyncedSection
   | SectionPreset
+  | SessionQuestions
+  | InvestmentNote
+  | HeirloomsSpec
+  | SessionExperience
+  | SessionSittings
+  | SessionsOpening
   | MapSection
   | HoursSection
   | HubSection
