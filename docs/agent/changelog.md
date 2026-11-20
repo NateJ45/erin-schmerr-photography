@@ -1,5 +1,7 @@
 # Change history
 
+_2026-11-20: the home showcase (site only)._ The `coverHero` block is now a full-screen story showcase (Martin Briceno's layout from Details) with the Vault Reveal Hero's opening, driven by GSAP 3.15 and SplitText, the site's first GSAP dependency. The old autoplaying crossfade and its Pause button are gone: stories change when a visitor points at, taps or swipes. The eyebrow and subhead fields stay in the schema but are not drawn. Detail: `docs/agent/animation.md`, "Home showcase".
+
 _2026-11-07: video byte ranges (PORTS card 222)._ `src/worker.ts` wraps Astro's handler and `src/lib/video-ranges.ts` answers `*.mp4` and `*.webm` range requests with a 206, because the asset store sends the whole file with a 200 and Safari on an iPhone expects a partial answer. Every other request behaves as before. Detail: `docs/agent/deployment.md`.
 
 _2026-11-05: the Report tool in the Studio (PORTS card 218)._ A site's numbers by Month, Quarter or Year against the same period a year before, the Astro twin of the WordPress board report. `src/lib/studio-board.ts` is the arithmetic, `src/pages/api/studio/board.ts` the signed-in route onto `siteSeries`, `src/sanity/kit/board/` the screen and the chart kit (same bytes as the themes), `src/config/board.ts` the site's own parts and words. Off unless `PUBLIC_BOARD_REPORT=true`. See `docs/agent/studio-kit.md`.

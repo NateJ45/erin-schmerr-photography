@@ -161,6 +161,16 @@ The words' contrast over any photo is a separate promise: the shade tokens on `.
 
 ---
 
+## Home showcase (`CoverHero.astro`, GSAP, this site only)
+
+The home page opens with the `coverHero` block, rebuilt 2026-11-20 from two Details references: Martin Briceno's full-screen project showcase for the layout (story title at mid-left, its line at mid-right, credit columns at the bottom left, a strip of landscape thumbnails at the bottom right) and the Vault "Reveal Hero" (`hero-01`) for the opening. Script: `src/scripts/cover-hero.ts`; styles: the COVER HERO block in `src/styles/portfolio.css`.
+
+- **GSAP 3.15 with SplitText** (added for this, the site's only GSAP user). The opening keeps the Vault timings: the photo clips from a narrow window to a 30% window (1.4 s, scale to 0.86), then to full bleed (1.65 s, scale back to 1), the scrim fades in, and at 2.24 s the header, the words (line masks) and the thumbnails arrive together.
+- **When the opening plays.** Once per tab (`sessionStorage` key `tate-intro`), on a full page load only, with `html.motion`. An inline script in the component decides before first paint and adds `html.showcase-intro`, which hides the header and words and sets the narrow window in CSS; it removes the class after 4 s if the module never ran. Arriving through the site's own links shows the hero at rest.
+- **The swap.** Pointing at, focusing or tapping a thumbnail brings its story up: the cover crossfades in from soft to sharp, the old lines drop out of their masks, the new ones rise. On touch the first tap shows a story and the second opens it; a sideways swipe across the photo steps through. Arrow keys move between thumbnails. Under reduced motion the swap is instant; with JavaScript off the first story shows and every thumbnail is a link.
+- **Splitting.** Once, after `document.fonts.ready`, and again only when the width really changes and the opening is not running. Not `autoSplit`: a re-split swaps the line elements under a running tween.
+- **Stage height** is the screen minus the paper header (`--site-header-h`, measured by the inline script), so the thumbnails sit on the first screen.
+
 ## View-transition cross-fade
 
 `<main id="main">` carries `view-transition-name: main-content` and cross-fades on every navigation (`vt-fade-out` 150ms -> `vt-fade-in` 200ms). The header and footer are named (`site-header` / `site-footer`) and pinned with `animation: none` so they stay put through the swap instead of flashing. Astro respects `prefers-reduced-motion` automatically -- reduced-motion users get an instant cut. Pure CSS, no JS. Under `layout.motion: flow` the flow layer replaces it with a lift and rise; under `none` pages cut (see "The flow layer").
