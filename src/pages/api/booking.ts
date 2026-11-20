@@ -1,5 +1,5 @@
 // Safe to edit by hand
-// The booking request WITHOUT JavaScript (src/components/booking/BookingForm.astro).
+// The consultation request WITHOUT JavaScript (src/components/booking/BookingForm.astro).
 //
 // A plain HTML form cannot send JSON, and /api/contact/ (PORTABLE, the family's contact
 // backend) reads JSON only. Rather than fork that route, this one turns the posted form
@@ -13,7 +13,7 @@
 
 import type { APIContext, APIRoute } from 'astro';
 import { POST as contactPost } from './contact';
-import { composeBooking } from '@/lib/booking-message';
+import { BOOKING_FIELD_NAMES, composeBooking, type BookingAnswers } from '@/lib/booking-message';
 
 export const prerender = false;
 
@@ -35,15 +35,15 @@ export const POST: APIRoute = async (context: APIContext) => {
     return typeof v === 'string' ? v : '';
   };
 
-  const { subject, message } = composeBooking({
-    sitting: text('sitting'),
-    season: text('season'),
-    month: text('month'),
-    flexibility: text('flexibility'),
-    story: text('story'),
-    name: text('name'),
-    phone: text('phone'),
-  });
+  // Every question the form can ask; composeBooking keeps only the chosen kind's own
+  // (without JavaScript every branch is on the page, so the others may hold stray answers).
+  // A "tick any that apply" group posts one value per box, hence getAll.
+  const answers: BookingAnswers = {};
+  for (const name of BOOKING_FIELD_NAMES) {
+    const all = data.getAll(name).filter((v): v is string => typeof v === 'string');
+    answers[name] = all.length > 1 ? all : (all[0] ?? '');
+  }
+  const { subject, message } = composeBooking(answers);
 
   // The contact route reads exactly these keys (src/lib/contact-submission.ts). No render
   // time travels without JavaScript, so its timing check is skipped, as it is designed to be.

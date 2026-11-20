@@ -1,35 +1,44 @@
 ---
 // Safe to edit by hand
-// The booking request (2026-11-20, DESIGN.md "Booking request"). A couture appointment
-// request rather than a contact form: ONE real <form> in four <fieldset> chapters,
-//   I. Choose your sitting   photo cards (radio inputs), from the Contact page's Sittings
-//   II. When                 a season, a month in mind, how flexible
-//   III. Tell me your story  one textarea
-//   IV. How to reach you     name, email, optional phone
-// beside her portrait, held in view from lg up on the shared `.split` (rule 17).
+// "Reserve a complimentary consultation" (2026-11-20, phase 2, DESIGN.md "Booking funnel").
+// Consult-first, the way the heirloom studios work: the page sells the conversation, not a
+// session. In order:
+//   1. The cover (OverlapCover.astro): her photo large, the headline running across its
+//      edge, the line under it and the three promises (complimentary, no obligation, the
+//      reply time, which stays tagged "Placeholder" until she confirms it).
+//   2. How it unfolds: four steps (her own from the Studio's "Post-inquiry roadmap" when she
+//      writes them, else the drafts in src/data/funnel.ts), huge italic numerals behind.
+//   3. The request: ONE real <form> in four <fieldset> chapters, beside the promises and a
+//      short FAQ (under the form on a phone):
+//        I.   Who it is for      four photo cards: family, portrait, model or creative, other
+//        II.  A little more      the questions for THAT kind (src/lib/booking-message.ts),
+//                                then one shared "rough timing or dates"
+//        III. In your words      one optional textarea (required for "Something else")
+//        IV.  How to reach you   name, email, optional phone
+//   4. After sending: "Thank you, <first name>.", her note, "Signed," and the sitting guide.
 //
-// THREE WAYS IT RUNS, all of them complete:
-//   - JavaScript and motion allowed: src/scripts/booking-form.ts shows one chapter at a time
-//     (Continue, Back, a thin progress line, focus on each chapter's heading, checks per
-//     chapter) and sends JSON to /api/contact/ through src/lib/contact-transport.ts, the
-//     contact form's own backend, with its honeypot and timing check and `generate_lead`.
-//   - Reduced motion: the same script, every chapter stacked, checks on Send.
-//   - No JavaScript: every chapter stacked, the browser's own required checks, and a plain
-//     POST to /api/booking/, which hands the answers to the same contact route and answers
-//     with a redirect to #booking-sent (or #booking-failed); `:target` shows the right panel.
-//
-// Nothing typed is put in a URL. Nothing here invents a fact: the sittings, the availability
-// line, the thank-you note and the signature come from the Contact page document, and what
-// shows until she writes them is labelled (docs/PENDING.md).
+// THE BRANCH, THREE WAYS:
+//   - JavaScript (src/scripts/booking-form.ts): only the chosen kind's questions are shown
+//     and the others are `disabled`, so they neither tab nor post. Motion allowed: one chapter
+//     at a time with a progress line; reduced motion: stacked, checks on Send.
+//   - No JavaScript, a browser with :has(): the CSS shows only the chosen kind's questions.
+//   - No JavaScript, no :has(): every kind's questions are listed under their own small
+//     heading. Either way /api/booking/ writes only the chosen kind's answers.
+// The answers go in the email body through the contact route (/api/contact/, PORTS.md card
+// 45: honeypot, timing check, store first then notify) and never into Sanity.
 import SanityImage from '@/components/SanityImage.astro';
+import OverlapCover from '@/components/funnel/OverlapCover.astro';
+import GuideInvite from '@/components/funnel/GuideInvite.astro';
 import { realText } from '@/lib/page-meta';
 import type { ContactFormSettings, SanityImageObject } from '@/lib/pageBuilder.types';
 import type { PortfolioPhoto } from '@/lib/portfolio';
+import { BOOKING_CHOICES, BOOKING_KINDS, KIND_ORDER } from '@/lib/booking-message';
+import { KIND_LINES, PROMISES, QUESTIONS, STEPS } from '@/data/funnel';
 import '@/styles/page-booking.css';
 
 interface Props {
   settings?: ContactFormSettings | null;
-  /** Story covers, used as the pictures while the sittings and portrait are still empty. */
+  /** Story covers, used as the pictures until she chooses her own. */
   covers?: PortfolioPhoto[];
   email?: string | null;
   /** h1 on the classic Contact page; h2 when the block sits under a hero block. */
@@ -37,7 +46,7 @@ interface Props {
   eyebrow?: string | null;
   heading?: string | null;
   subhead?: string | null;
-  /** Show the portrait column (the block's "sidebar" switch). */
+  /** Show the cover photo (the block's "sidebar" switch). */
   portrait?: boolean;
 }
 
@@ -54,47 +63,38 @@ const {
 
 const H = headingLevel;
 const Hc = headingLevel === 'h1' ? 'h2' : 'h3';
+const Hq = headingLevel === 'h1' ? 'h3' : 'h4';
 
 const ROMAN = ['I', 'II', 'III', 'IV'];
 const pad = (n: number) => String(n).padStart(2, '0');
+const img = (p: SanityImageObject | PortfolioPhoto | null | undefined) =>
+  p && (p as { asset?: unknown }).asset ? (p as SanityImageObject) : null;
+const lqip = (p: SanityImageObject | PortfolioPhoto | null | undefined) =>
+  (p as { asset?: { metadata?: { lqip?: string } } } | null | undefined)?.asset?.metadata?.lqip;
 
-// ---- Chapter I: the sittings ----------------------------------------------------------
-interface Sitting {
-  title: string;
-  line: string;
-  image: SanityImageObject | PortfolioPhoto | null;
-  placeholder: boolean;
-}
-const typed: Sitting[] = (settings?.bookingSittings ?? [])
-  .filter((s) => realText(s?.title))
-  .map((s) => ({
-    title: realText(s.title) ?? '',
-    line: realText(s.line) ?? '',
-    image: s.image?.asset ? s.image : null,
-    placeholder: false,
-  }));
-// Until she names her sittings, say so on the page (rule: never invent a fact). The pictures
-// are her own story covers, so the cards still look like her work.
-const placeholders: Sitting[] = ['one', 'two', 'three'].map((word, i) => ({
-  title: `Sitting ${word}`,
-  line: 'Placeholder: the name of this sitting and one line about it, set in the Studio.',
-  image: covers[i] ?? null,
-  placeholder: true,
+// ---- The cover --------------------------------------------------------------------
+const ownPortrait = settings?.bookingPortrait?.asset ? settings.bookingPortrait : null;
+const coverImage = ownPortrait ?? img(covers[0]);
+const coverAlt = ownPortrait
+  ? (ownPortrait.alt ?? 'Erin Schmerr')
+  : ((covers[0]?.alt as string | undefined) ?? '');
+
+// ---- Chapter I: who it is for. Her story covers stand in for the pictures. -------------
+const kinds = KIND_ORDER.map((k, i) => ({
+  value: k,
+  title: BOOKING_KINDS[k],
+  line: KIND_LINES[k],
+  image: covers[(i + 1) % Math.max(covers.length, 1)] ?? null,
 }));
-const sittings: Sitting[] = [
-  ...(typed.length ? typed : placeholders),
-  {
-    title: 'Not sure yet',
-    line: 'Tell me the idea and we can choose together.',
-    image: covers[typed.length ? typed.length : 3] ?? covers[0] ?? null,
-    placeholder: false,
-  },
-];
 
-// ---- Chapter II: seasons --------------------------------------------------------------
-const SEASONS = ['Spring', 'Summer', 'Autumn', 'Winter', 'Open to any season'];
+// ---- The steps: hers when written, else the consult-first drafts. ---------------------
+const ownSteps = (settings?.postInquiryRoadmap ?? [])
+  .filter((s) => realText(s?.title))
+  .slice(0, 4)
+  .map((s) => ({ title: realText(s.title) ?? '', body: realText(s.body) ?? '' }));
+const steps = ownSteps.length ? ownSteps : STEPS;
 
-// ---- Words above and after the form --------------------------------------------------
+// ---- Words around the form ---------------------------------------------------------
 const availability = realText(settings?.availabilityNote);
 const intro = realText(settings?.formIntroNote);
 const thanksNote =
@@ -102,46 +102,67 @@ const thanksNote =
   'Placeholder: a short thank-you in her own words, set in the Studio (Contact page, Thank-you note).';
 const thanksIsPlaceholder = !realText(settings?.bookingThanksNote);
 const signature = realText(settings?.bookingSignature) ?? 'Erin';
-
-// "What happens next": her own steps when she has written them, else the three agreed ones.
-const ownSteps = (settings?.postInquiryRoadmap ?? [])
-  .filter((s) => realText(s?.title))
-  .slice(0, 3)
-  .map((s) => ({ title: realText(s.title) ?? '', body: realText(s.body) ?? '' }));
-const steps = ownSteps.length
-  ? ownSteps
-  : [
-      { title: 'Review your enquiry', body: 'I read what you have sent and write back to you.' },
-      { title: 'A conversation', body: 'We talk through the idea, the look and the place.' },
-      {
-        title: 'Your proposal',
-        body: 'You receive a proposal for your sitting: the plan, the dates and the investment.',
-      },
-    ];
-
-// ---- The portrait ---------------------------------------------------------------------
-const ownPortrait = settings?.bookingPortrait?.asset ? settings.bookingPortrait : null;
-const portraitImage: SanityImageObject | PortfolioPhoto | null = ownPortrait ?? covers[0] ?? null;
-const portraitAlt = ownPortrait
-  ? (ownPortrait.alt ?? 'Erin Schmerr')
-  : ((covers[0]?.alt as string | undefined) ?? '');
-
 const headingId = 'booking-heading';
-const img = (p: SanityImageObject | PortfolioPhoto | null) =>
-  p && (p as { asset?: unknown }).asset ? (p as SanityImageObject) : null;
-const lqip = (p: SanityImageObject | PortfolioPhoto | null) =>
-  (p as { asset?: { metadata?: { lqip?: string } } } | null)?.asset?.metadata?.lqip;
 ---
 
 <section class="bk" data-booking aria-labelledby={headingId}>
-  <div class:list={['bk__layout mx-auto max-w-content px-m py-section-lg', portrait && 'split']}>
+  <OverlapCover
+    image={portrait ? coverImage : null}
+    alt={coverAlt}
+    eyebrow={eyebrow}
+    title={heading || 'Reserve a complimentary _consultation_'}
+    sub={subhead}
+    level={H}
+    id={headingId}
+  >
+    <ul class="bk-promises" aria-label="The consultation">
+      {PROMISES.map((p) => (
+        <li class="bk-promises__item">
+          <span class="bk-promises__rule" aria-hidden="true" />
+          <span>{p.text}</span>
+          {!p.confirmed && <span class="ph-tag">Placeholder</span>}
+        </li>
+      ))}
+    </ul>
+    <a class="fc-jump" href="#booking-request">
+      Begin your request
+    </a>
+  </OverlapCover>
+
+  {/* ---- How it unfolds ---- */}
+  <section class="bk-path mx-auto max-w-content px-m" aria-labelledby="bk-path-heading">
+    <div class="bk-path__head">
+      <p class="portfolio-label">The path</p>
+      <Hc class="bk-path__title font-display" id="bk-path-heading">
+        How it <em>unfolds</em>
+      </Hc>
+    </div>
+    <ol class="bk-path__list">
+      {steps.map((step, i) => (
+        <li class="bk-path__step" style={`--i: ${i}`}>
+          <span class="bk-path__num font-display" aria-hidden="true" data-funnel-rise>
+            {ROMAN[i] ?? pad(i + 1)}
+          </span>
+          <span class="bk-path__text">
+            <span class="bk-path__name font-display">{step.title}</span>
+            {step.body && <span class="bk-path__body">{step.body}</span>}
+          </span>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  {/* ---- The request ---- */}
+  <div class="bk__layout split mx-auto max-w-content px-m" id="booking-request">
     <div class="bk__main">
       <header class="bk__head">
-        {eyebrow && <p class="portfolio-label">{eyebrow}</p>}
-        <H id={headingId} class="bk__title font-display">
-          {heading || 'Request a sitting.'}
-        </H>
-        {subhead && <p class="bk__sub">{subhead}</p>}
+        <p class="portfolio-label">Your request</p>
+        <Hc class="bk__title font-display">
+          Tell me who it is <em>for</em>.
+        </Hc>
+        <p class="bk__sub">
+          Four short chapters, a few minutes at most. Nothing is booked until we have talked.
+        </p>
         {availability && (
           <p class="bk__availability" data-bk-availability>
             <span class="bk__availability-rule" aria-hidden="true" />
@@ -155,8 +176,8 @@ const lqip = (p: SanityImageObject | PortfolioPhoto | null) =>
         {/* No-JS answer from /api/booking/ when it could not send (`:target`). */}
         <div id="booking-failed" class="bk__failed" tabindex="-1">
           <p>
-            That did not send. Please check that your name, email and story are filled in, and try
-            again.
+            That did not send. Please check that you chose who it is for and gave your name and
+            email, then try again.
             {email && (
               <>
                 {' '}
@@ -167,17 +188,16 @@ const lqip = (p: SanityImageObject | PortfolioPhoto | null) =>
         </div>
 
         <form class="bk__form" method="post" action="/api/booking/" aria-busy="false" data-bk-form>
-          {/* Shown by the script in the one-chapter-at-a-time mode. */}
           <div class="bk__progress" data-bk-progress hidden>
             <p class="portfolio-label" aria-live="polite" data-bk-progress-label>
               Chapter I of IV
             </p>
             <span class="bk__progress-track" aria-hidden="true">
-              <span class="bk__progress-fill" data-bk-progress-fill />
+              <span class="bk__progress-fill" data-bk-progress-fill></span>
             </span>
           </div>
 
-          <p class="bk__alert" role="alert" data-bk-alert hidden />
+          <p class="bk__alert" role="alert" data-bk-alert hidden></p>
 
           {/* Spam checks the contact route already reads: a honeypot and a render time. */}
           <div class="bk__hp" aria-hidden="true">
@@ -186,8 +206,8 @@ const lqip = (p: SanityImageObject | PortfolioPhoto | null) =>
           </div>
           <input type="hidden" name="renderedAt" value="" data-bk-rendered />
 
-          {/* ---- I. Choose your sitting ---- */}
-          <fieldset class="bk__chapter" data-bk-chapter="0" aria-describedby="bk-sitting-error">
+          {/* ---- I. Who it is for ---- */}
+          <fieldset class="bk__chapter" data-bk-chapter="0" aria-describedby="bk-kind-error">
             <legend class="bk__legend">
               <Hc class="bk__chapter-title" tabindex="-1" data-bk-chapter-heading>
                 <span class="bk__numeral">
@@ -195,30 +215,30 @@ const lqip = (p: SanityImageObject | PortfolioPhoto | null) =>
                   {ROMAN[0]}
                   <span class="sr-only">, </span>
                 </span>
-                <span class="bk__chapter-name font-display">Choose your sitting</span>
+                <span class="bk__chapter-name font-display">Who it is for</span>
               </Hc>
             </legend>
-            <div class="bk__sittings" style={`--bk-cols: ${Math.min(sittings.length, 4)}`}>
-              {sittings.map((s, i) => (
+            <div class="bk__kinds">
+              {kinds.map((k, i) => (
                 <label class="bk-card">
                   <input
                     class="bk-card__input"
                     type="radio"
-                    name="sitting"
-                    value={s.title}
+                    name="kind"
+                    value={k.value}
                     required
-                    data-bk-topic={s.title.toLowerCase()}
+                    data-bk-topic={`${k.value} ${k.title.toLowerCase()}`}
                   />
                   <span
-                    class:list={['bk-card__frame', !img(s.image) && 'bk-card__frame--empty']}
-                    style={lqip(s.image) ? `--bk-lqip: url("${lqip(s.image)}")` : undefined}
+                    class:list={['bk-card__frame', !img(k.image) && 'bk-card__frame--empty']}
+                    style={lqip(k.image) ? `--bk-lqip: url("${lqip(k.image)}")` : undefined}
                   >
-                    {img(s.image) ? (
+                    {img(k.image) ? (
                       <SanityImage
-                        source={img(s.image)}
+                        source={img(k.image)}
                         width={480}
                         height={600}
-                        sizes="(min-width: 64rem) 14rem, (min-width: 40rem) 30vw, 45vw"
+                        sizes="(min-width: 64rem) 13rem, (min-width: 40rem) 22vw, 45vw"
                         alt=""
                         class="bk-card__img"
                       />
@@ -227,17 +247,13 @@ const lqip = (p: SanityImageObject | PortfolioPhoto | null) =>
                         Placeholder
                       </span>
                     )}
-                  </span>
-                  <span class="bk-card__meta">
-                    <span class="bk-card__num" aria-hidden="true">
+                    <span class="bk-card__num font-display" aria-hidden="true">
                       {pad(i + 1)}
                     </span>
-                    <span class="bk-card__title font-display">{s.title}</span>
-                    {s.line && (
-                      <span class:list={['bk-card__line', s.placeholder && 'bk-card__line--ph']}>
-                        {s.line}
-                      </span>
-                    )}
+                  </span>
+                  <span class="bk-card__meta">
+                    <span class="bk-card__title font-display">{k.title}</span>
+                    <span class="bk-card__line">{k.line}</span>
                   </span>
                   <span class="bk-card__mark" aria-hidden="true">
                     Chosen
@@ -245,7 +261,7 @@ const lqip = (p: SanityImageObject | PortfolioPhoto | null) =>
                 </label>
               ))}
             </div>
-            <p class="bk__error" id="bk-sitting-error" data-bk-error-for="sitting" hidden />
+            <p class="bk__error" id="bk-kind-error" data-bk-error-for="kind" hidden></p>
             <div class="bk__nav" data-bk-nav hidden>
               <button type="button" class="bk__continue" data-bk-next>
                 Continue
@@ -253,7 +269,7 @@ const lqip = (p: SanityImageObject | PortfolioPhoto | null) =>
             </div>
           </fieldset>
 
-          {/* ---- II. When ---- */}
+          {/* ---- II. A little more: the chosen kind's questions ---- */}
           <fieldset class="bk__chapter" data-bk-chapter="1">
             <legend class="bk__legend">
               <Hc class="bk__chapter-title" tabindex="-1" data-bk-chapter-heading>
@@ -262,49 +278,203 @@ const lqip = (p: SanityImageObject | PortfolioPhoto | null) =>
                   {ROMAN[1]}
                   <span class="sr-only">, </span>
                 </span>
-                <span class="bk__chapter-name font-display">When</span>
+                <span class="bk__chapter-name font-display">A little more</span>
               </Hc>
             </legend>
-            <fieldset class="bk__group" aria-describedby="bk-season-error">
-              <legend class="bk__label">The season you have in mind</legend>
-              <div class="bk__chips">
-                {SEASONS.map((season) => (
-                  <label class="bk-chip">
-                    <input
-                      class="bk-chip__input"
-                      type="radio"
-                      name="season"
-                      value={season}
-                      required
-                    />
-                    <span class="bk-chip__face">{season}</span>
-                  </label>
-                ))}
+            <p class="bk__hint bk__hint--lead">
+              Everything here is optional. Answer what you know; we will cover the rest when we
+              talk.
+            </p>
+
+            {/* Family and children */}
+            <fieldset class="bk__branch" data-bk-branch="family">
+              <legend class="bk__branch-name">
+                <Hq class="bk__branch-title">For your family</Hq>
+              </legend>
+              <div class="bk__field">
+                <label class="bk__label" for="bk-ages">
+                  Children’s ages
+                </label>
+                <input
+                  id="bk-ages"
+                  name="childrenAges"
+                  type="text"
+                  class="bk__input"
+                  maxlength="120"
+                  aria-describedby="bk-ages-hint"
+                />
+                <p class="bk__hint" id="bk-ages-hint">
+                  For example: a newborn, 4 and 7.
+                </p>
               </div>
-              <p class="bk__error" id="bk-season-error" data-bk-error-for="season" hidden />
+              <fieldset class="bk__group">
+                <legend class="bk__label">Who is included</legend>
+                <div class="bk__chips">
+                  {BOOKING_CHOICES.included.map((c) => (
+                    <label class="bk-chip">
+                      <input class="bk-chip__input" type="checkbox" name="included" value={c} />
+                      <span class="bk-chip__face">{c}</span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+              <fieldset class="bk__group">
+                <legend class="bk__label">Studio or location</legend>
+                <div class="bk__chips">
+                  {BOOKING_CHOICES.setting.map((c) => (
+                    <label class="bk-chip">
+                      <input class="bk-chip__input" type="radio" name="setting" value={c} />
+                      <span class="bk-chip__face">{c}</span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+              <div class="bk__field">
+                <label class="bk__label" for="bk-hang">
+                  Where the portraits will hang
+                </label>
+                <input
+                  id="bk-hang"
+                  name="hang"
+                  type="text"
+                  class="bk__input"
+                  maxlength="200"
+                  aria-describedby="bk-hang-hint"
+                />
+                <p class="bk__hint" id="bk-hang-hint">
+                  The wall above the sofa, the stairs, a grandparent’s hallway.
+                </p>
+              </div>
             </fieldset>
-            <div class="bk__field">
-              <label class="bk__label" for="bk-month">
-                A month or date in mind <span class="bk__optional">(optional)</span>
-              </label>
-              <input id="bk-month" name="month" type="text" class="bk__input" maxlength="120" />
+
+            {/* Portrait (just me) */}
+            <fieldset class="bk__branch" data-bk-branch="portrait">
+              <legend class="bk__branch-name">
+                <Hq class="bk__branch-title">For a portrait of you</Hq>
+              </legend>
+              <div class="bk__field">
+                <label class="bk__label" for="bk-occasion">
+                  The occasion
+                </label>
+                <input
+                  id="bk-occasion"
+                  name="occasion"
+                  type="text"
+                  class="bk__input"
+                  maxlength="200"
+                  aria-describedby="bk-occasion-hint"
+                />
+                <p class="bk__hint" id="bk-occasion-hint">
+                  A milestone birthday, a new chapter, a gift, or simply because.
+                </p>
+              </div>
+              <fieldset class="bk__group">
+                <legend class="bk__label">What you picture on your wall</legend>
+                <div class="bk__chips">
+                  {BOOKING_CHOICES.wall.map((c) => (
+                    <label class="bk-chip">
+                      <input class="bk-chip__input" type="radio" name="wall" value={c} />
+                      <span class="bk-chip__face">{c}</span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+              <div class="bk__field">
+                <label class="bk__label" for="bk-wallnote">
+                  Tell me a little about it <span class="bk__optional">(optional)</span>
+                </label>
+                <input
+                  id="bk-wallnote"
+                  name="wallNote"
+                  type="text"
+                  class="bk__input"
+                  maxlength="300"
+                  aria-describedby="bk-wallnote-hint"
+                />
+                <p class="bk__hint" id="bk-wallnote-hint">
+                  Black and white over a fireplace, something small and soft for a bedroom.
+                </p>
+              </div>
+            </fieldset>
+
+            {/* Model or creative */}
+            <fieldset class="bk__branch" data-bk-branch="creative">
+              <legend class="bk__branch-name">
+                <Hq class="bk__branch-title">For a model or creative</Hq>
+              </legend>
+              <fieldset class="bk__group">
+                <legend class="bk__label">Agency status</legend>
+                <div class="bk__chips">
+                  {BOOKING_CHOICES.agency.map((c) => (
+                    <label class="bk-chip">
+                      <input class="bk-chip__input" type="radio" name="agency" value={c} />
+                      <span class="bk-chip__face">{c}</span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+              <fieldset class="bk__group">
+                <legend class="bk__label">The goal (tick any that apply)</legend>
+                <div class="bk__chips">
+                  {BOOKING_CHOICES.goal.map((c) => (
+                    <label class="bk-chip">
+                      <input class="bk-chip__input" type="checkbox" name="goal" value={c} />
+                      <span class="bk-chip__face">{c}</span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+              <div class="bk__field">
+                <label class="bk__label" for="bk-moodboard">
+                  Mood board link <span class="bk__optional">(optional)</span>
+                </label>
+                <input
+                  id="bk-moodboard"
+                  name="moodboard"
+                  type="url"
+                  inputmode="url"
+                  class="bk__input"
+                  maxlength="300"
+                  placeholder="https://"
+                  aria-describedby="bk-moodboard-hint bk-moodboard-error"
+                />
+                <p class="bk__hint" id="bk-moodboard-hint">
+                  Pinterest, a shared folder, a page of tear sheets.
+                </p>
+                <p
+                  class="bk__error"
+                  id="bk-moodboard-error"
+                  data-bk-error-for="moodboard"
+                  hidden
+                ></p>
+              </div>
+            </fieldset>
+
+            {/* Something else */}
+            <div class="bk__branch bk__branch--note" data-bk-branch="other">
+              <p class="bk__hint">
+                Tell me about it in the next chapter. Anything goes: a gift, an heirloom, an idea
+                you have carried around for years.
+              </p>
             </div>
-            <div class="bk__field">
-              <label class="bk__label" for="bk-flex">
-                How flexible you are <span class="bk__optional">(optional)</span>
+
+            <div class="bk__field bk__field--shared">
+              <label class="bk__label" for="bk-timing">
+                Rough timing or dates
               </label>
               <input
-                id="bk-flex"
-                name="flexibility"
+                id="bk-timing"
+                name="timing"
                 type="text"
                 class="bk__input"
                 maxlength="200"
-                aria-describedby="bk-flex-hint"
+                aria-describedby="bk-timing-hint"
               />
-              <p class="bk__hint" id="bk-flex-hint">
-                For example: weekends only, or any time in the spring.
+              <p class="bk__hint" id="bk-timing-hint">
+                A season, a month, or a date to be ready by. Weekends only is useful to know too.
               </p>
             </div>
+
             <div class="bk__nav" data-bk-nav hidden>
               <button type="button" class="bk__back" data-bk-back>
                 Back
@@ -315,7 +485,7 @@ const lqip = (p: SanityImageObject | PortfolioPhoto | null) =>
             </div>
           </fieldset>
 
-          {/* ---- III. Tell me your story ---- */}
+          {/* ---- III. In your words ---- */}
           <fieldset class="bk__chapter" data-bk-chapter="2">
             <legend class="bk__legend">
               <Hc class="bk__chapter-title" tabindex="-1" data-bk-chapter-heading>
@@ -324,28 +494,30 @@ const lqip = (p: SanityImageObject | PortfolioPhoto | null) =>
                   {ROMAN[2]}
                   <span class="sr-only">, </span>
                 </span>
-                <span class="bk__chapter-name font-display">Tell me your story</span>
+                <span class="bk__chapter-name font-display">In your words</span>
               </Hc>
             </legend>
             <div class="bk__field">
               <label class="bk__label" for="bk-story">
-                Your story
+                Anything I should know{' '}
+                <span class="bk__optional" data-bk-story-optional>
+                  (optional)
+                </span>
               </label>
               <p class="bk__hint" id="bk-story-hint">
-                Who the portrait is for, the era, the film or the feeling you keep coming back to,
-                and anything you would love to wear. A few lines is plenty.
+                The feeling you are after, a film or a painting you love, a worry you would like me
+                to know about. A few lines is plenty.
               </p>
               <textarea
                 id="bk-story"
                 name="story"
                 class="bk__input bk__textarea"
-                rows="7"
+                rows="6"
                 maxlength="4000"
-                required
                 aria-describedby="bk-story-hint bk-story-error"
                 data-bk-story
-              />
-              <p class="bk__error" id="bk-story-error" data-bk-error-for="story" hidden />
+              ></textarea>
+              <p class="bk__error" id="bk-story-error" data-bk-error-for="story" hidden></p>
             </div>
             <div class="bk__nav" data-bk-nav hidden>
               <button type="button" class="bk__back" data-bk-back>
@@ -383,7 +555,7 @@ const lqip = (p: SanityImageObject | PortfolioPhoto | null) =>
                 required
                 aria-describedby="bk-name-error"
               />
-              <p class="bk__error" id="bk-name-error" data-bk-error-for="name" hidden />
+              <p class="bk__error" id="bk-name-error" data-bk-error-for="name" hidden></p>
             </div>
             <div class="bk__field">
               <label class="bk__label" for="bk-email">
@@ -399,11 +571,11 @@ const lqip = (p: SanityImageObject | PortfolioPhoto | null) =>
                 required
                 aria-describedby="bk-email-error"
               />
-              <p class="bk__error" id="bk-email-error" data-bk-error-for="email" hidden />
+              <p class="bk__error" id="bk-email-error" data-bk-error-for="email" hidden></p>
             </div>
             <div class="bk__field">
               <label class="bk__label" for="bk-phone">
-                Phone <span class="bk__optional">(optional)</span>
+                Phone <span class="bk__optional">(optional, if you would rather talk)</span>
               </label>
               <input
                 id="bk-phone"
@@ -419,7 +591,7 @@ const lqip = (p: SanityImageObject | PortfolioPhoto | null) =>
                 Back
               </button>
               <button type="submit" class="bk__send" data-bk-send>
-                Send my request
+                Reserve my consultation
               </button>
             </div>
           </fieldset>
@@ -433,61 +605,73 @@ const lqip = (p: SanityImageObject | PortfolioPhoto | null) =>
       </div>
     </div>
 
-    {portrait && portraitImage && (
-      <aside class="bk__aside" aria-label="Portrait">
-        <figure class="bk__portrait">
-          <span
-            class:list={['bk__portrait-frame', !img(portraitImage) && 'bk-card__frame--empty']}
-            style={lqip(portraitImage) ? `--bk-lqip: url("${lqip(portraitImage)}")` : undefined}
-          >
-            {img(portraitImage) ? (
-              <SanityImage
-                source={img(portraitImage)}
-                width={720}
-                height={960}
-                sizes="(min-width: 64rem) 30rem, 100vw"
-                alt={portraitAlt}
-                class="bk__portrait-img"
-              />
-            ) : (
-              <span class="bk-card__ph">Placeholder</span>
-            )}
-          </span>
-          {ownPortrait && <figcaption class="portfolio-label">Erin Schmerr</figcaption>}
-        </figure>
-      </aside>
-    )}
+    {/* ---- Beside the form: the promises again and the questions ---- */}
+    <aside class="bk-aside" aria-labelledby="bk-faq-heading">
+      <div class="bk-aside__inner">
+        <div class="bk-aside__card">
+          <p class="bk-aside__lead font-display">
+            A conversation first, <em>always</em>.
+          </p>
+          <ul class="bk-aside__promises">
+            {PROMISES.map((p) => (
+              <li>
+                {p.text}
+                {!p.confirmed && <span class="ph-tag">Placeholder</span>}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <Hc class="bk-aside__title portfolio-label" id="bk-faq-heading">
+          Before you ask
+        </Hc>
+        <div class="bk-faq">
+          {QUESTIONS.map((item) => (
+            <details class="bk-faq__item">
+              <summary class="bk-faq__q">
+                <span>{item.q}</span>
+                <span class="bk-faq__icon" aria-hidden="true" />
+              </summary>
+              <div class="bk-faq__a">
+                <p class:list={[item.placeholder && 'bk-faq__ph']}>{item.a}</p>
+                {item.link && (
+                  <a class="bk-faq__link" href={item.link.href}>
+                    {item.link.label}
+                  </a>
+                )}
+              </div>
+            </details>
+          ))}
+        </div>
+      </div>
+    </aside>
   </div>
 
   {/* ---- After sending: shown by the script, or by `:target` after the no-JS redirect ---- */}
-  <div id="booking-sent" class="bk-sent mx-auto max-w-content px-m py-section-lg" tabindex="-1">
+  <div id="booking-sent" class="bk-sent mx-auto max-w-content px-m" tabindex="-1">
     <div class="bk-sent__letter">
       <p class="portfolio-label">Your request is with me</p>
       <H class="bk-sent__title font-display" data-bk-sent-heading>
         Thank you.
       </H>
       <p class:list={['bk-sent__note', thanksIsPlaceholder && 'bk-sent__note--ph']}>{thanksNote}</p>
+      <p class="bk-sent__promise">
+        {PROMISES[2].text}, to arrange our conversation.
+        {!PROMISES[2].confirmed && <span class="ph-tag">Placeholder</span>}
+      </p>
       <p class="bk-sent__sign">
         <span class="portfolio-label">Signed,</span>
         <span class="bk-sent__name font-display">{signature}</span>
       </p>
     </div>
-
-    <div class="bk-next">
-      <Hc class="bk-next__heading portfolio-label">What happens next</Hc>
-      <ol class="bk-next__list">
-        {steps.map((step, i) => (
-          <li class="bk-next__step" style={`--i: ${i}`}>
-            <span class="bk-next__num font-display" aria-hidden="true">
-              {pad(i + 1)}
-            </span>
-            <span class="bk-next__text">
-              <span class="bk-next__title font-display">{step.title}</span>
-              {step.body && <span class="bk-next__body">{step.body}</span>}
-            </span>
-          </li>
-        ))}
-      </ol>
+    <div class="bk-sent__guide">
+      <p class="portfolio-label">While you wait</p>
+      <GuideInvite
+        id="bk-guide"
+        location="contact_thanks"
+        image={img(covers[2]) ?? img(covers[0])}
+        eyebrow="Read before we talk"
+        level={Hc}
+      />
     </div>
   </div>
 </section>

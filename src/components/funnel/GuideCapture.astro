@@ -1,0 +1,95 @@
+---
+// Safe to edit by hand
+// "Send me the sitting guide": the email capture behind the lead magnet (2026-11-20, phase 2).
+// Used by /guide/ and by GuideInvite.astro. One plain <form> that works three ways:
+//   - JavaScript: src/scripts/guide-capture.ts posts JSON to /api/guide/ and turns the form
+//     into its answer in place: "It is yours", the link to read the guide now, and "a copy is
+//     on its way" ONLY when the route says an email really went out. Then `generate_lead`
+//     (form_name "sitting_guide").
+//   - No JavaScript: a plain POST to /api/guide/, which answers with a redirect to
+//     /guide/#guide-sent, #guide-ready or #guide-failed; /guide/ shows the matching panel with
+//     `:target` (GuidePage's own markup). Nothing typed travels in the address.
+//   - Spam: the same honeypot and render-time check the contact form uses.
+// Nothing anyone types is stored in Sanity; the request reaches Erin through the contact route.
+import { GUIDE } from '@/data/sitting-guide';
+import '@/styles/page-guide.css';
+
+interface Props {
+  /** Unique per page: ids for the label, the field and the answer. */
+  id: string;
+  /** For analytics: where the capture sits ("guide_page", "contact_page", ...). */
+  location: string;
+  /** "full" asks for a first name too; "compact" is the email alone on one line. */
+  variant?: 'full' | 'compact';
+  /** The button's words. */
+  label?: string;
+}
+
+const { id, location, variant = 'full', label = 'Send me the guide' } = Astro.props;
+---
+
+<div class:list={['gc', `gc--${variant}`]} data-guide-capture data-location={location}>
+  <form class="gc__form" method="post" action="/api/guide/" data-gc-form>
+    <div class="gc__hp" aria-hidden="true">
+      <label for={`${id}-company`}>Company</label>
+      <input id={`${id}-company`} name="company" type="text" tabindex="-1" autocomplete="off" />
+    </div>
+    <input type="hidden" name="renderedAt" value="" data-gc-rendered />
+
+    {variant === 'full' && (
+      <div class="gc__field">
+        <label class="gc__label" for={`${id}-name`}>
+          First name <span class="gc__optional">(optional)</span>
+        </label>
+        <input
+          id={`${id}-name`}
+          name="name"
+          type="text"
+          class="gc__input"
+          autocomplete="given-name"
+          maxlength="60"
+        />
+      </div>
+    )}
+    <div class="gc__field gc__field--email">
+      <label class="gc__label" for={`${id}-email`}>
+        Your email
+      </label>
+      <div class="gc__row">
+        <input
+          id={`${id}-email`}
+          name="email"
+          type="email"
+          class="gc__input"
+          autocomplete="email"
+          maxlength="254"
+          required
+          aria-describedby={`${id}-note ${id}-error`}
+        />
+        <button type="submit" class="gc__send" data-gc-send>
+          {label}
+        </button>
+      </div>
+      <p class="gc__error" id={`${id}-error`} data-gc-error hidden></p>
+    </div>
+    <p class="gc__note" id={`${id}-note`}>
+      One email with the link. You join no list, and I never share your address.
+    </p>
+  </form>
+
+  <div class="gc__done" data-gc-done tabindex="-1" hidden>
+    <p class="gc__done-title font-display">
+      It is <em>yours</em>.
+    </p>
+    <p class="gc__done-line" data-gc-emailed hidden>
+      A copy is on its way to your inbox.
+    </p>
+    <a class="gc__read" href={GUIDE.readPath}>
+      Read the sitting guide now
+    </a>
+  </div>
+</div>
+
+<script>
+  import '@/scripts/guide-capture';
+</script>

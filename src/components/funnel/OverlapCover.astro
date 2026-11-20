@@ -1,0 +1,94 @@
+---
+// Safe to edit by hand
+// The funnel's opening band (2026-11-20, phase 2; DESIGN.md "Booking funnel"): one of her
+// photographs large on the right, and a huge Bodoni Moda headline that runs from the paper
+// across the photo's edge. Used by /contact/ (the consultation) and /guide/ (the sitting guide).
+//
+// HOW THE OVERLAP STAYS READABLE (the home cinema's rule, DESIGN.md "Home cinema"): two copies
+// of the headline stacked in one grid cell. The real heading is ink and sits on paper; an
+// aria-hidden paper copy on top is clipped (`clip-path: inset()`) to the part of the box the
+// photo occupies, over a dark veil on the photo. Never a blend mode, and the copy is marked
+// `data-contrast-decorative`. From 64rem the photo takes the right 56% and the clip is
+// horizontal; below that the photo sits on top and the headline rises over its lower edge,
+// so the clip is vertical. Both clips come from the same two custom properties in
+// src/styles/funnel-cover.css, so photo and clip can never disagree.
+//
+// Words between underscores in the headline are set in the display italic (the site's "turn"
+// word). Motion (src/scripts/funnel-motion.ts): the photo settles from a slow 1.08 zoom and
+// both copies rise line by line together; everything is still and complete without
+// JavaScript or under reduced motion.
+import SanityImage from '@/components/SanityImage.astro';
+import type { SanityImageObject } from '@/lib/pageBuilder.types';
+import '@/styles/portfolio.css';
+import '@/styles/funnel-cover.css';
+
+interface Props {
+  image?: SanityImageObject | null;
+  alt?: string;
+  eyebrow?: string | null;
+  /** The headline; `_word_` is set in italic. */
+  title: string;
+  sub?: string | null;
+  /** h1 on a page's opening (the default), h2 when it sits lower. */
+  level?: 'h1' | 'h2';
+  id?: string;
+  /** A credit under the photo (the story it comes from). */
+  credit?: string | null;
+}
+
+const { image, alt = '', eyebrow, title, sub, level = 'h1', id, credit } = Astro.props;
+const H = level;
+
+/** "Reserve a _consultation_" -> [['Reserve a ', false], ['consultation', true]] */
+const parts = title.split(/_(.+?)_/).map((t, i) => [t, i % 2 === 1] as const);
+const lqip = (image as { asset?: { metadata?: { lqip?: string } } } | null | undefined)?.asset
+  ?.metadata?.lqip;
+const hasImage = Boolean((image as { asset?: unknown } | null | undefined)?.asset);
+---
+
+<header class="fc" data-funnel-cover>
+  <div class="fc__stage mx-auto max-w-content px-m">
+    <figure class="fc__photo" style={lqip ? `--fc-lqip: url("${lqip}")` : undefined}>
+      {hasImage ? (
+        <SanityImage
+          source={image}
+          width={1400}
+          height={1750}
+          sizes="(min-width: 64rem) 56vw, 100vw"
+          alt={alt}
+          loading="eager"
+          fetchpriority="high"
+          quality={70}
+          class="fc__img"
+        />
+      ) : (
+        <span class="fc__ph">Placeholder photograph</span>
+      )}
+      <span class="fc__veil" aria-hidden="true"></span>
+      {credit && <figcaption class="fc__credit">{credit}</figcaption>}
+    </figure>
+
+    <div class="fc__type">
+      {eyebrow && <p class="fc__eyebrow portfolio-label">{eyebrow}</p>}
+      <div class="fc__titles">
+        <H class="fc__title fc__title--ink font-display" id={id} data-funnel-split>
+          {parts.map(([t, em]) => (em ? <em>{t}</em> : t))}
+        </H>
+        <p
+          class="fc__title fc__title--paper font-display"
+          aria-hidden="true"
+          data-contrast-decorative
+          data-funnel-split
+        >
+          {parts.map(([t, em]) => (em ? <em>{t}</em> : t))}
+        </p>
+      </div>
+      {sub && <p class="fc__sub">{sub}</p>}
+      <slot />
+    </div>
+  </div>
+</header>
+
+<script>
+  import '@/scripts/funnel-motion';
+</script>

@@ -1,18 +1,20 @@
 /* Safe to edit by hand
    =============================================================================
-   page-booking.css - the booking request (src/components/booking/BookingForm.astro)
+   page-booking.css - "Reserve a complimentary consultation" (BookingForm.astro)
    =============================================================================
    Imported by the component, so the per-page purge keeps it only on /contact/ (and the
-   styleguide fixture). DESIGN.md "Booking request": paper, ink rules, square corners, the
-   one filled Dusk button, nothing blurred over anything. Colours are the brand tokens.
+   styleguide fixture). DESIGN.md "Booking funnel": paper, ink rules, square corners, the
+   one filled Dusk button, nothing blurred over anything. Colours are the brand tokens. The
+   opening band is OverlapCover's own (funnel-cover.css).
 
    THREE STATES, all readable without JavaScript:
      - default (no JS, or reduced motion): the four chapters stacked;
      - `.bk--stepped` (set by src/scripts/booking-form.ts): one chapter at a time, the
        others carry `hidden`;
      - sent: `.bk.is-sent` (script) or `#booking-sent:target` (the no-JS redirect) hides
-       the form and shows the thank-you and the "What happens next" strip.
-   Motion is CSS only (no library) and only under `prefers-reduced-motion: no-preference`.
+       the form and shows the thank-you and the sitting guide.
+   THE BRANCH without JavaScript: `:has()` shows only the chosen kind's questions; with no
+   `:has()` every kind's questions stay listed under their own heading.
    ============================================================================= */
 
 .bk {
@@ -24,14 +26,154 @@
   background: var(--color-background);
 }
 
-/* ---- Masthead ---------------------------------------------------------------- */
+/* A fact only Erin can confirm (src/data/funnel.ts `confirmed: false`). */
+.ph-tag {
+  display: inline-block;
+  margin-left: 0.5em;
+  padding: 0.1rem 0.4rem;
+  border: 1px dashed currentColor;
+  font-family: var(--font-sans);
+  font-style: normal;
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  vertical-align: middle;
+  color: var(--bk-muted);
+}
+
+/* ---- The promises under the cover headline -------------------------------------- */
+.bk-promises {
+  display: grid;
+  gap: 0.6rem;
+  margin: 2rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.bk-promises__item {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  font-size: var(--text-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bk-ink);
+}
+.bk-promises__rule {
+  flex: none;
+  width: 2rem;
+  height: 1px;
+  background: var(--bk-ink);
+}
+/* ---- How it unfolds: four steps, huge italic numerals behind ---------------------- */
+.bk-path {
+  padding-top: var(--spacing-section-lg);
+  padding-bottom: var(--spacing-section-md);
+}
+.bk-path__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem 2rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--bk-ink);
+}
+.bk-path__title {
+  font-weight: 400;
+  font-size: clamp(2.25rem, 5.5vw, 4.5rem);
+  line-height: 1;
+  color: var(--bk-ink);
+}
+.bk-path__title em,
+.bk__title em {
+  font-style: italic;
+  color: var(--color-link);
+}
+.bk-path__list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.bk-path__step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 5.5rem minmax(0, 1fr);
+  align-items: start;
+  gap: 1rem;
+  padding: 1.75rem 0;
+  border-bottom: 1px solid var(--bk-rule);
+}
+.bk-path__num {
+  font-style: italic;
+  font-size: clamp(4.5rem, 16vw, 6rem);
+  line-height: 0.8;
+  color: var(--color-link);
+}
+.bk-path__text {
+  display: grid;
+  gap: 0.5rem;
+  padding-top: 0.4rem;
+}
+.bk-path__name {
+  font-size: clamp(1.6rem, 3vw, 2.1rem);
+  line-height: 1.05;
+  color: var(--bk-ink);
+}
+.bk-path__body {
+  max-width: 24rem;
+  font-size: var(--text-base);
+  line-height: 1.55;
+  color: var(--bk-muted);
+}
+/* 48rem up: four columns, each a little lower than the last, the numeral huge behind the
+   name like a folio, the name overlapping its foot. */
+@media (min-width: 48rem) {
+  .bk-path__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 2rem;
+  }
+  .bk-path__step {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    border-bottom: 0;
+    padding: 2rem 0 1rem;
+  }
+  .bk-path__num {
+    font-size: clamp(8rem, 15vw, 13rem);
+    line-height: 0.85;
+  }
+  .bk-path__text {
+    position: relative;
+    margin-top: -2.4rem;
+    padding: 1.1rem 0 0;
+    border-top: 1px solid var(--bk-ink);
+    background: var(--color-background);
+  }
+}
+@media (min-width: 64rem) {
+  .bk-path__list {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .bk-path__step {
+    margin-top: calc(var(--i, 0) * 2.5rem);
+  }
+}
+
+/* ---- The request: masthead, form beside the aside ----------------------------------- */
+.bk__layout {
+  padding-top: var(--spacing-section-md);
+  padding-bottom: var(--spacing-section-lg);
+  scroll-margin-top: 5rem;
+}
 .bk__head {
   max-width: 40rem;
 }
 .bk__title {
   margin-top: 0.75rem;
-  font-size: clamp(2.75rem, 7vw, 5.5rem);
-  line-height: 0.95;
+  font-weight: 400;
+  font-size: clamp(2.5rem, 6vw, 4.75rem);
+  line-height: 0.98;
   letter-spacing: -0.01em;
   color: var(--bk-ink);
   text-wrap: balance;
@@ -63,7 +205,7 @@
   color: var(--bk-muted);
 }
 
-/* ---- The form and its chapters ---------------------------------------------- */
+/* ---- The form and its chapters ------------------------------------------------------ */
 .bk__stage {
   margin-top: clamp(2.5rem, 6vw, 4rem);
 }
@@ -84,7 +226,6 @@
 .bk__chapter[hidden] {
   display: none;
 }
-/* One chapter at a time: the progress line above is the rule, so the chapter drops its own. */
 .bk--stepped .bk__chapter {
   border-top: 0;
   padding-top: 0.5rem;
@@ -110,7 +251,6 @@
   font-style: italic;
   font-size: clamp(2rem, 4vw, 2.75rem);
   line-height: 1;
-  /* Dusk, through the link token so the shared dark suites still measure AA. */
   color: var(--color-link);
 }
 .bk__chapter-name {
@@ -119,7 +259,7 @@
   color: var(--bk-ink);
 }
 
-/* ---- Progress line (stepped only) ------------------------------------------- */
+/* ---- Progress line (stepped only) --------------------------------------------------- */
 .bk__progress {
   display: grid;
   gap: 0.6rem;
@@ -142,16 +282,15 @@
   transition: transform 600ms var(--bk-ease);
 }
 
-/* ---- Chapter I: sitting cards (Biograph's tall photo cards, corners squared) -- */
-.bk__sittings {
+/* ---- Chapter I: who it is for, four tall photo cards -------------------------------- */
+.bk__kinds {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1.75rem 1rem;
+  gap: 1.75rem 0.85rem;
 }
-/* One row from 40rem: as many columns as there are sittings (set inline, at most 4). */
 @media (min-width: 40rem) {
-  .bk__sittings {
-    grid-template-columns: repeat(var(--bk-cols, 4), minmax(0, 1fr));
+  .bk__kinds {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 1rem;
   }
 }
@@ -168,7 +307,7 @@
      ring all land on the card (the whole card is also its label). */
   position: absolute;
   inset: 0;
-  z-index: 1;
+  z-index: 2;
   width: 100%;
   height: 100%;
   margin: 0;
@@ -188,15 +327,33 @@
   outline-offset: 5px;
   transition: outline-color 300ms var(--bk-ease);
 }
-.bk-card__img,
-.bk__portrait-img {
+.bk-card__img {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  filter: grayscale(0.35);
+  transition:
+    transform 900ms var(--bk-ease),
+    filter 900ms var(--bk-ease);
 }
-.bk-card__img {
-  transition: transform 900ms var(--bk-ease);
+/* The number set large in paper over the photo's foot, on its own dark foot. */
+.bk-card__frame::after {
+  content: '';
+  position: absolute;
+  inset: 55% 0 0;
+  background: linear-gradient(0deg, rgb(18 14 12 / 0.55), rgb(18 14 12 / 0));
+  pointer-events: none;
+}
+.bk-card__num {
+  position: absolute;
+  left: 0.6rem;
+  bottom: 0.2rem;
+  z-index: 1;
+  font-style: italic;
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  line-height: 1;
+  color: var(--color-background);
 }
 .bk-card__frame--empty {
   display: grid;
@@ -210,30 +367,23 @@
 }
 .bk-card__meta {
   display: grid;
-  gap: 0.25rem;
-}
-.bk-card__num {
-  font-size: var(--text-xs);
-  letter-spacing: 0.14em;
-  font-variant-numeric: tabular-nums;
-  color: var(--bk-muted);
+  gap: 0.3rem;
 }
 .bk-card__title {
-  font-size: 1.35rem;
+  font-size: clamp(1.2rem, 2vw, 1.45rem);
   line-height: 1.1;
   color: var(--bk-ink);
 }
 .bk-card__line {
   font-size: var(--text-sm);
+  line-height: 1.45;
   color: var(--bk-muted);
-}
-.bk-card__line--ph {
-  font-style: italic;
 }
 .bk-card__mark {
   position: absolute;
   top: 0.6rem;
   left: 0.6rem;
+  z-index: 1;
   padding: 0.3rem 0.55rem;
   font-size: var(--text-xs);
   letter-spacing: 0.14em;
@@ -244,10 +394,14 @@
   transition: opacity 300ms var(--bk-ease);
 }
 .bk-card:hover .bk-card__img {
-  transform: scale(1.03);
+  transform: scale(1.04);
+  filter: grayscale(0);
 }
 .bk-card:has(.bk-card__input:checked) .bk-card__frame {
   outline-color: var(--bk-ink);
+}
+.bk-card:has(.bk-card__input:checked) .bk-card__img {
+  filter: grayscale(0);
 }
 .bk-card:has(.bk-card__input:checked) .bk-card__mark {
   opacity: 1;
@@ -260,7 +414,72 @@
   outline-color: var(--color-destructive);
 }
 
-/* ---- Chapter II: season chips ------------------------------------------------ */
+/* ---- Chapter II: the branches -------------------------------------------------------- */
+.bk__hint--lead {
+  margin-bottom: 1.75rem;
+}
+.bk__branch {
+  min-width: 0;
+  margin: 0 0 1.75rem;
+  padding: 0;
+  border: 0;
+}
+.bk__branch[hidden] {
+  display: none;
+}
+.bk__branch-name {
+  float: left;
+  width: 100%;
+  padding: 0;
+  margin-bottom: 1.25rem;
+}
+.bk__branch-name + * {
+  clear: both;
+}
+.bk__branch-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 400;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--text-xl, 1.35rem);
+  color: var(--bk-ink);
+}
+.bk__branch-title::before {
+  content: '';
+  width: 1.75rem;
+  height: 1px;
+  background: var(--bk-ink);
+}
+.bk__branch--note .bk__hint {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--text-lg);
+  color: var(--bk-ink);
+}
+/* No JavaScript, a browser with :has(): only the chosen kind's questions show. With the
+   script running it sets `hidden` and `disabled` itself, which wins either way. */
+.bk__form:has([name='kind'][value='family']:checked)
+  [data-bk-branch]:not([data-bk-branch='family']),
+.bk__form:has([name='kind'][value='portrait']:checked)
+  [data-bk-branch]:not([data-bk-branch='portrait']),
+.bk__form:has([name='kind'][value='creative']:checked)
+  [data-bk-branch]:not([data-bk-branch='creative']),
+.bk__form:has([name='kind'][value='other']:checked) [data-bk-branch]:not([data-bk-branch='other']) {
+  display: none;
+}
+/* With the script on, the branch is one kind's only, so its small heading is not needed. */
+.bk--stepped .bk__branch-name,
+.bk[data-bk-kind]:not([data-bk-kind='']) .bk__branch-name {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+/* ---- Chips (radio and tick-any) ----------------------------------------------------- */
 .bk__group {
   border: 0;
   padding: 0;
@@ -309,11 +528,8 @@
   outline: 2px solid var(--color-ring);
   outline-offset: 3px;
 }
-.bk-chip__input[aria-invalid='true'] + .bk-chip__face {
-  border-color: var(--color-destructive);
-}
 
-/* ---- Text fields: a single ink rule, no box ---------------------------------- */
+/* ---- Text fields: a single ink rule, no box ----------------------------------------- */
 .bk__field {
   display: grid;
   gap: 0.5rem;
@@ -331,6 +547,9 @@
   letter-spacing: 0.08em;
   text-transform: none;
 }
+.bk__optional[hidden] {
+  display: none;
+}
 .bk__hint {
   font-size: var(--text-sm);
   color: var(--bk-muted);
@@ -346,6 +565,9 @@
   background: transparent;
   font-size: var(--text-lg);
   color: var(--bk-ink);
+}
+.bk__input::placeholder {
+  color: var(--bk-muted);
 }
 .bk__textarea {
   padding: 0.75rem;
@@ -388,7 +610,7 @@
   overflow: hidden;
 }
 
-/* ---- Continue, Back, Send ---------------------------------------------------- */
+/* ---- Continue, Back, Send ----------------------------------------------------------- */
 .bk__nav {
   display: flex;
   flex-wrap: wrap;
@@ -438,8 +660,8 @@
 }
 .bk__send {
   margin-left: auto;
-  min-height: 2.75rem;
-  padding: 0 2rem;
+  min-height: 3.25rem;
+  padding: 0 2.25rem;
   border: 0;
   border-radius: 0;
   background: var(--color-primary-dark);
@@ -475,7 +697,7 @@
   text-underline-offset: 3px;
 }
 
-/* ---- No-JS failure panel (`:target`) ----------------------------------------- */
+/* ---- No-JS failure panel (`:target`) ------------------------------------------------ */
 .bk__failed {
   display: none;
   margin-bottom: 2rem;
@@ -488,39 +710,118 @@
   display: block;
 }
 
-/* ---- The portrait, held in view from lg up ----------------------------------- */
-.bk__aside {
-  display: none;
+/* ---- Beside the form: the promises and the questions --------------------------------- */
+.bk-aside {
+  min-width: 0;
 }
 @media (min-width: 64rem) {
-  .bk__aside {
-    display: block;
-  }
-  .bk__portrait {
+  .bk-aside__inner {
     position: sticky;
-    top: 7rem;
+    top: 6.5rem;
+    padding-top: 0.5rem;
   }
 }
-.bk__portrait {
-  margin: 0;
+.bk-aside__card {
+  padding: 1.75rem 1.5rem;
+  background: var(--bk-ink);
+  color: var(--color-background);
 }
-.bk__portrait-frame {
-  display: block;
-  aspect-ratio: 3 / 4;
-  max-height: calc(100vh - 10rem);
-  overflow: hidden;
-  background-color: var(--bk-soft);
-  background-image: var(--bk-lqip, none);
-  background-size: cover;
-  background-position: center;
+.bk-aside__lead {
+  font-size: clamp(1.6rem, 2.6vw, 2.1rem);
+  line-height: 1.08;
 }
-.bk__portrait figcaption {
-  margin-top: 0.75rem;
+.bk-aside__lead em {
+  font-style: italic;
+}
+.bk-aside__promises {
+  display: grid;
+  gap: 0.55rem;
+  margin: 1.25rem 0 0;
+  padding: 1rem 0 0;
+  border-top: 1px solid rgb(243 238 231 / 0.35);
+  list-style: none;
+  font-size: var(--text-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.bk-aside__promises .ph-tag {
+  color: var(--color-background);
+}
+.bk-aside__title {
+  margin-top: 2.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--bk-ink);
+  font-weight: 400;
+}
+.bk-faq__item {
+  border-bottom: 1px solid var(--bk-rule);
+}
+.bk-faq__q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 3.25rem;
+  padding: 0.85rem 0;
+  cursor: pointer;
+  list-style: none;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  line-height: 1.25;
+  color: var(--bk-ink);
+}
+.bk-faq__q::-webkit-details-marker {
+  display: none;
+}
+.bk-faq__q:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+}
+.bk-faq__icon {
+  position: relative;
+  flex: none;
+  width: 0.85rem;
+  height: 0.85rem;
+}
+.bk-faq__icon::before,
+.bk-faq__icon::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  transition: transform 300ms var(--bk-ease);
+}
+.bk-faq__icon::after {
+  transform: rotate(90deg);
+}
+.bk-faq__item[open] .bk-faq__icon::after {
+  transform: rotate(0deg);
+}
+.bk-faq__a {
+  padding: 0 0 1.1rem;
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  color: var(--bk-muted);
+}
+.bk-faq__ph {
+  font-style: italic;
+}
+.bk-faq__link {
+  display: inline-block;
+  margin-top: 0.5rem;
+  color: var(--color-link);
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
-/* ---- After sending ----------------------------------------------------------- */
+/* ---- After sending ------------------------------------------------------------------ */
 .bk-sent {
   display: none;
+  padding-top: var(--spacing-section-md);
+  padding-bottom: var(--spacing-section-lg);
 }
 .bk.is-sent .bk-sent,
 .bk-sent:target {
@@ -538,6 +839,7 @@
 }
 .bk-sent__title {
   margin-top: 0.75rem;
+  font-weight: 400;
   font-size: clamp(3rem, 9vw, 7rem);
   line-height: 0.95;
   letter-spacing: -0.01em;
@@ -552,6 +854,10 @@
 .bk-sent__note--ph {
   font-style: italic;
 }
+.bk-sent__promise {
+  margin-top: 1rem;
+  color: var(--bk-ink);
+}
 .bk-sent__sign {
   display: flex;
   align-items: baseline;
@@ -563,64 +869,14 @@
   font-size: clamp(2rem, 4vw, 3rem);
   color: var(--bk-ink);
 }
-
-/* "What happens next": Forge Automotive's staggered numbered panels, rebuilt on paper.
-   Their dark glass becomes the soft paper band with an ink rule on top; no blur. */
-.bk-next {
-  margin-top: clamp(4rem, 9vw, 7rem);
+.bk-sent__guide {
+  margin-top: clamp(3.5rem, 8vw, 6rem);
 }
-.bk-next__heading {
-  font-weight: 400;
-}
-.bk-next__list {
-  display: grid;
-  gap: 1rem;
-  margin: 1.25rem 0 0;
-  padding: 0;
-  list-style: none;
-}
-.bk-next__step {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 2.5rem;
-  min-height: 15rem;
-  padding: 1.5rem 1.5rem 1.75rem;
-  border-top: 1px solid var(--bk-ink);
-  background: var(--bk-soft);
-}
-.bk-next__num {
-  font-style: italic;
-  font-size: clamp(4rem, 9vw, 6.5rem);
-  line-height: 0.9;
-  color: var(--bk-ink);
-}
-.bk-next__text {
-  display: grid;
-  gap: 0.6rem;
-}
-.bk-next__title {
-  font-size: 1.6rem;
-  line-height: 1.1;
-  color: var(--bk-ink);
-}
-.bk-next__body {
-  font-size: var(--text-sm);
-  color: var(--bk-muted);
-  max-width: 22rem;
-}
-@media (min-width: 48rem) {
-  .bk-next__list {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    align-items: start;
-  }
-  .bk-next__step {
-    min-height: 22rem;
-    margin-top: calc(var(--i, 0) * 2rem);
-  }
+.bk-sent__guide > .portfolio-label {
+  margin-bottom: 1rem;
 }
 
-/* ---- Motion: only where it is welcome ----------------------------------------- */
+/* ---- Motion: only where it is welcome ----------------------------------------------- */
 @media (prefers-reduced-motion: no-preference) {
   .bk__chapter.is-entering {
     animation: bk-enter 600ms var(--bk-ease) both;
@@ -628,9 +884,8 @@
   .bk.is-sent .bk-sent__letter {
     animation: bk-enter 900ms var(--bk-ease) both;
   }
-  .bk.is-sent .bk-next__step {
-    animation: bk-rise 900ms var(--bk-ease) both;
-    animation-delay: calc(300ms + var(--i, 0) * 140ms);
+  .bk.is-sent .bk-sent__guide {
+    animation: bk-rise 900ms var(--bk-ease) 300ms both;
   }
 }
 @keyframes bk-enter {

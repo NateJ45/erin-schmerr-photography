@@ -1,0 +1,122 @@
+---
+// Safe to edit by hand
+// /guide/read/ - the sitting guide itself (2026-11-20, phase 2). The page the guide's email
+// and the capture's answer link to. Kept out of search (noindex, and out of the sitemap in
+// astro.config.mjs) so the preview at /guide/ is what people find, but not locked: anyone
+// with the link can read it, print it or pass it on, which is the point of a guide.
+//
+// A long read set like a magazine feature: the masthead and a chapter strip, then each
+// chapter with its huge Dusk italic numeral, its title, its lede and one of her photographs
+// (alternating sides from 48rem), then its notes as ruled rows (heading left, words right).
+// Placeholder notes (facts only she can confirm) print in muted italic and say so. It ends
+// on the page's one filled button: "Reserve a complimentary consultation". Print styles drop
+// the chrome and start each chapter on a new page.
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import OverlapCover from '@/components/funnel/OverlapCover.astro';
+import SanityImage from '@/components/SanityImage.astro';
+import { getSiteSettings } from '@/lib/queries';
+import { site } from '@/data/site';
+import { GUIDE, splitTurn } from '@/data/sitting-guide';
+import type { PortfolioPhoto } from '@/lib/portfolio';
+import type { SanityImageObject } from '@/lib/pageBuilder.types';
+import { getFeaturedStories } from '@/lib/storyQueries'; // scaffold: stories
+import '@/styles/page-guide.css';
+
+const siteSettings = await getSiteSettings();
+let covers: PortfolioPhoto[] = [];
+// scaffold: stories
+covers = (await getFeaturedStories(6)).map((s) => s.cover).filter((c): c is PortfolioPhoto => !!c);
+// scaffold:end
+const pic = (i: number) =>
+  covers.length && covers[i % covers.length]?.asset
+    ? (covers[i % covers.length] as SanityImageObject)
+    : null;
+---
+
+<BaseLayout
+  title="The sitting guide: what to wear, how to prepare, what to expect"
+  description={GUIDE.dek}
+  {siteSettings}
+  noindex
+>
+  <article class="gd">
+    <OverlapCover
+      image={pic(0)}
+      alt={(covers[0]?.alt ?? '') as string}
+      eyebrow={site.name}
+      title="The sitting _guide_"
+      sub={GUIDE.dek}
+    >
+      <nav aria-label="Chapters">
+        <ol class="gd-read__toc">
+          {GUIDE.chapters.map((c) => (
+            <li>
+              <a href={`#${c.id}`}>
+                <span>{c.numeral}</span>
+                {c.title}
+              </a>
+            </li>
+          ))}
+        </ol>
+      </nav>
+    </OverlapCover>
+
+    <div class="mx-auto max-w-content px-m">
+      {GUIDE.chapters.map((c, i) => {
+        const [a, turn, b] = splitTurn(c.title, c.turn);
+        const p = pic(i + 1);
+        return (
+          <section class="gd-ch" id={c.id} aria-labelledby={`${c.id}-title`}>
+            <div class="gd-ch__head">
+              <div>
+                <span class="gd-ch__num" aria-hidden="true" data-funnel-rise>
+                  {c.numeral}
+                </span>
+                <h2 class="gd-ch__title font-display" id={`${c.id}-title`}>
+                  <span class="sr-only">Chapter {c.numeral}: </span>
+                  {a}
+                  {turn && <em>{turn}</em>}
+                  {b}
+                </h2>
+                <p class="gd-ch__lede">{c.lede}</p>
+              </div>
+              {p && (
+                <div class="gd-ch__photo">
+                  <SanityImage
+                    source={p}
+                    width={520}
+                    height={650}
+                    sizes="(min-width: 48rem) 16rem, 100vw"
+                    alt=""
+                  />
+                </div>
+              )}
+            </div>
+            <ul class="gd-ch__notes">
+              {c.notes.map((n) => (
+                <li class:list={['gd-note', n.placeholder && 'gd-note--ph']}>
+                  <h3 class="gd-note__heading">{n.heading}</h3>
+                  <p class="gd-note__body">{n.body}</p>
+                </li>
+              ))}
+            </ul>
+          </section>
+        );
+      })}
+
+      <section class="gd-close" aria-labelledby="gd-close-title">
+        <p class="portfolio-label">When you are ready</p>
+        <h2 class="gd-close__title font-display" id="gd-close-title">
+          Let us plan your portrait <em>together</em>.
+        </h2>
+        <p class="gd-close__line">
+          A complimentary consultation, with no obligation. Tell me who it is for and we will take
+          it from there.
+        </p>
+        <a class="gd-close__button" href="/contact/">
+          Reserve a complimentary consultation
+        </a>
+      </section>
+    </div>
+  </article>
+</BaseLayout>
