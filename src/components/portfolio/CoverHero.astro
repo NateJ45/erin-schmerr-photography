@@ -192,7 +192,7 @@ const knockStyle = [fillStyle(first), `--knock-pos: ${knockPos}`].filter(Boolean
     >
       <div class="cinema-open__words">
         <p class:list={['cinema-open__name font-display', nameSize]} data-contrast-decorative>
-          {headRuns.map((r) => (r.italic ? <em>{r.text}</em> : r.text))}
+          {headRuns.map((r) => (r.italic ? <em data-contrast-decorative>{r.text}</em> : r.text))}
         </p>
         {subhead && <p class="cinema__line cinema-open__sub cinema-open__ghost">{subhead}</p>}
       </div>
@@ -252,7 +252,7 @@ const knockStyle = [fillStyle(first), `--knock-pos: ${knockPos}`].filter(Boolean
                 data-frame-slide
                 style={fillStyle(story)}
               >
-                {runs.map((r) => (r.italic ? <em>{r.text}</em> : r.text))}
+                {runs.map((r) => (r.italic ? <em data-contrast-decorative>{r.text}</em> : r.text))}
               </p>
             )}
 
@@ -280,9 +280,14 @@ const knockStyle = [fillStyle(first), `--knock-pos: ${knockPos}`].filter(Boolean
                     class:list={['cine__type', copy === 'over' && 'cine__type--over']}
                     aria-hidden="true"
                   >
+                    {/* The contrast spec reads data-contrast-decorative on each
+                        element that holds the text, so the span and the italic
+                        word carry it too. */}
                     <p class="cine__title font-display" data-contrast-decorative data-frame-slide>
-                      <span data-frame-lines>
-                        {runs.map((r) => (r.italic ? <em>{r.text}</em> : r.text))}
+                      <span data-frame-lines data-contrast-decorative>
+                        {runs.map((r) =>
+                          r.italic ? <em data-contrast-decorative>{r.text}</em> : r.text,
+                        )}
                       </span>
                     </p>
                   </div>

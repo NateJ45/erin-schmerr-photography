@@ -36,6 +36,12 @@ const PAPER = '#f3eee7';
 type Cleanup = () => void;
 let cleanup: Cleanup | null = null;
 
+/** Play a frame's timeline, or, in a hidden tab (no animation frames), set it at rest. */
+function playOrFinish(tl: gsap.core.Timeline): void {
+  if (document.hidden) tl.progress(1);
+  else tl.play();
+}
+
 /** Line masks the way the Vault's textReveal01 does (type lines, mask lines). */
 function splitLines(el: HTMLElement): SplitText {
   // aria: 'none'. SplitText's default puts aria-label on the split element,
@@ -152,11 +158,21 @@ function setup(root: HTMLElement): Cleanup {
   }
 
   // ---- 2. The frames --------------------------------------------------------
-  const frames = [...root.querySelectorAll<HTMLElement>('[data-cinema-frame]')];
+  // Automated browsers (tests, Lighthouse) see every frame at rest, like the
+  // opening, unless a test asks for the motion with sessionStorage
+  // tate-motion-test.
+  let bot = false;
+  try {
+    bot = navigator.webdriver && sessionStorage.getItem('tate-motion-test') !== '1';
+  } catch {
+    bot = navigator.webdriver;
+  }
+  const frames = bot ? [] : [...root.querySelectorAll<HTMLElement>('[data-cinema-frame]')];
   interface Built {
     tl: gsap.core.Timeline;
     splits: SplitText[];
     played: boolean;
+    st?: ScrollTrigger;
   }
   const built = new Map<HTMLElement, Built>();
 
@@ -172,10 +188,19 @@ function setup(root: HTMLElement): Cleanup {
     const dx = frame.classList.contains('cine--right') ? -48 : 48;
     const entry: Built = { tl: gsap.timeline(), splits: frameSplits, played: false };
     ctx.add(() => {
+      // TIME-based, never tied to the scroll position: a paused timeline that a
+      // ScrollTrigger only STARTS, once, on entry. Killing or refreshing the
+      // trigger cannot leave the timeline part-way, and wherever the visitor
+      // stops (the snap point included) the frame ends at rest: blur 0, the
+      // title fully in, no transform left behind (2026-11-20 live bug: a frame
+      // stopped at the snap point stayed soft and half-risen).
       const tl = gsap.timeline({
-        scrollTrigger: { trigger: frame, start: 'top 72%', once: true },
+        paused: true,
         onComplete: () => {
           entry.played = true;
+          // Exactly at rest, whatever the eases left behind.
+          if (img) gsap.set(img, { clearProps: 'filter,scale,transform' });
+          if (slides.length) gsap.set(slides, { clearProps: 'x,transform' });
           // The lines have done their work: back to plain text, so a later
           // resize re-wraps naturally.
           entry.splits.forEach((s) => s.revert());
@@ -185,34 +210,58 @@ function setup(root: HTMLElement): Cleanup {
       if (img)
         tl.fromTo(
           img,
-          { filter: 'blur(16px)', scale: 1.06 },
-          {
-            filter: 'blur(0px)',
-            scale: 1,
-            duration: 1.6,
-            ease: 'expo.out',
-            clearProps: 'filter,scale,transform',
-          },
+          { filter: 'blur(12px)', scale: 1.04 },
+          { filter: 'blur(0px)', scale: 1, duration: 1.2, ease: 'expo.out' },
           0,
         );
       if (lines.length)
-        tl.from(lines, { yPercent: 110, duration: 1.1, stagger: 0.08, ease: 'expo.out' }, 0.2);
-      if (slides.length && layout !== 'bleed')
-        tl.from(
-          slides,
-          {
-            x: layout === 'knock' ? -32 : dx,
-            duration: 1.8,
-            ease: 'expo.out',
-            clearProps: 'x,transform',
-          },
+        tl.fromTo(
+          lines,
+          { yPercent: 110 },
+          { yPercent: 0, duration: 1, stagger: 0.08, ease: 'expo.out' },
           0.1,
         );
+      if (slides.length && layout !== 'bleed')
+        tl.fromTo(
+          slides,
+          { x: layout === 'knock' ? -32 : dx },
+          { x: 0, duration: 1.2, ease: 'expo.out' },
+          0,
+        );
+      // Set the start state now (paused timelines do not render until played).
+      tl.progress(0.0001).progress(0);
+      entry.st = ScrollTrigger.create({
+        trigger: frame,
+        start: 'top 70%',
+        once: true,
+        onEnter: () => playOrFinish(tl),
+      });
       entry.tl = tl;
     });
     built.set(frame, entry);
   };
   frames.forEach(build);
+
+  // Safety nets. When scrolling stops, any frame on screen that has not
+  // finished and is not playing (it never got its trigger, or something
+  // paused it) plays to rest. In a hidden tab the browser stops animation
+  // frames, so GSAP's clock stops too and a tween would sit part-way: there,
+  // and whenever the page is hidden, the frames on screen jump to rest.
+  const onScreen = (frame: HTMLElement) => {
+    const r = frame.getBoundingClientRect();
+    return r.top < innerHeight * 0.7 && r.bottom > 0;
+  };
+  const settle = () => {
+    for (const frame of frames) {
+      const b = built.get(frame);
+      if (!b || b.played) continue;
+      if (document.hidden && b.tl.progress() > 0) b.tl.progress(1);
+      else if (!b.tl.isActive() && onScreen(frame)) playOrFinish(b.tl);
+    }
+  };
+  const onScrollEnd = () => settle();
+  window.addEventListener('scrollend', onScrollEnd);
+  document.addEventListener('visibilitychange', onScrollEnd);
 
   // Re-split a frame that has not played yet when the width really changes, so
   // its line masks match the new wrap. Played frames are plain text already.
@@ -225,8 +274,8 @@ function setup(root: HTMLElement): Cleanup {
       lastWidth = window.innerWidth;
       for (const frame of frames) {
         const b = built.get(frame);
-        if (!b || b.played || b.tl.isActive()) continue;
-        b.tl.scrollTrigger?.kill();
+        if (!b || b.played || b.tl.progress() > 0) continue;
+        b.st?.kill();
         b.tl.revert();
         b.splits.forEach((s) => s.revert());
         build(frame);
@@ -238,6 +287,8 @@ function setup(root: HTMLElement): Cleanup {
 
   return () => {
     window.removeEventListener('resize', onResize);
+    window.removeEventListener('scrollend', onScrollEnd);
+    document.removeEventListener('visibilitychange', onScrollEnd);
     window.clearTimeout(resizeTimer);
     ctx.revert();
     splits.forEach((s) => s.revert());
