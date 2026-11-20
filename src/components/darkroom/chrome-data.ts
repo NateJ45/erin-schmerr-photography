@@ -49,6 +49,9 @@ export interface DarkroomData {
   starring: ChromeCredit[];
   locations: ChromeCredit[];
   publishedIn: ChromeCredit[];
+  /** Every story's cover by slug, then the featured ones in order (for nameLetterPrints). */
+  coversBySlug: Map<string, PortfolioPhoto>;
+  featuredCovers: PortfolioPhoto[];
 }
 
 // Local shapes, so this file still type-checks once a capability is removed.
@@ -161,7 +164,94 @@ async function load(): Promise<DarkroomData> {
     return { name, href: url ?? null, external: !!url };
   });
 
-  return { covers, pagePrints, starring, locations, publishedIn };
+  const coversBySlug = new Map<string, PortfolioPhoto>();
+  for (const s of stories) if (s.cover?.asset) coversBySlug.set(s.slug, s.cover);
+  const featuredCovers = shown.flatMap((s) => (s.cover?.asset ? [s.cover] : []));
+
+  return {
+    covers,
+    pagePrints,
+    starring,
+    locations,
+    publishedIn,
+    coversBySlug,
+    featuredCovers,
+  };
+}
+
+// ---- The footer name's letters ------------------------------------------------------------
+// Each letter of the footer's giant "Tate" holds ONE photograph, cropped to the rich, dark,
+// detailed part of it (a face, a costume, neon, lanterns), never to sky or a pale wall: a
+// letter filled with a pale patch reads as a washed-out blob on the wine field, and one filled
+// with the same wine (a magenta wall) disappears. Picked by eye on 2026-11-20 from the
+// Instagram stand-ins (`ig-*`); re-pick when her originals replace them.
+//
+// `rect` is the crop in fractions of the source photo: left, top and width. The height comes
+// from the letter's own shape (Footer.astro's NAME_TILES), so the crop's top-left and width are
+// the only things picked here. A slug that is not in the dataset (CI's placeholder snapshot,
+// a fork) falls back to the featured covers in order, centred.
+interface LetterPick {
+  slug: string;
+  rect: { left: number; top: number; width: number };
+}
+const NAME_LETTER_PICKS: LetterPick[] = [
+  // T: the glowing lanterns across the bar, the stack of jack-o'-lanterns down the stem.
+  { slug: 'pink-halloween', rect: { left: 0.17, top: 0.03, width: 0.6 } },
+  // a: Ken's face, eyes to chin.
+  { slug: 'just-ken', rect: { left: 0.19, top: 0.16, width: 0.62 } },
+  // t: the patterned outfit against the painted maze, head to boots.
+  { slug: 'graffiti-alley', rect: { left: 0.34, top: 0.14, width: 0.5 } },
+  // e: blue neon, the marquee bulbs and her profile in red light.
+  { slug: 'american-sign-museum', rect: { left: 0.25, top: 0.04, width: 0.7 } },
+];
+
+/** One letter's tile: its width as a fraction of the name, and its width / height. */
+export interface NameTile {
+  width: number;
+  aspect: number;
+}
+
+/**
+ * One cropped print per letter of the footer name, sized to that letter's tile. `drift` is
+ * how much taller than the tile the picture is drawn (the scrubbed drift moves it up through
+ * the letter), so the crop is that much taller too. Empty when there are no real photos.
+ */
+export async function nameLetterPrints(
+  tiles: NameTile[],
+  drift: number,
+  nameWidth = 1240,
+): Promise<ChromePrint[]> {
+  const { coversBySlug, featuredCovers } = await getDarkroomData();
+  if (featuredCovers.length === 0 && coversBySlug.size === 0) return [];
+  const fallback = featuredCovers.length > 0 ? featuredCovers : [...coversBySlug.values()];
+  return tiles.map((tile, i) => {
+    const pick = NAME_LETTER_PICKS[i];
+    const named = pick ? coversBySlug.get(pick.slug) : undefined;
+    const photo = named ?? fallback[i % fallback.length];
+    const aspect = tile.aspect / drift;
+    const w = Math.round(nameWidth * tile.width);
+    const h = Math.round(w / aspect);
+    const dims = photo?.asset?.metadata?.dimensions;
+    const at = (scale: number) => {
+      let img = urlFor(photo as never);
+      if (named && pick && dims?.width && dims?.height) {
+        // The picked crop in source pixels, its height from the tile's shape, kept inside.
+        const left = Math.round(pick.rect.left * dims.width);
+        const width = Math.round(Math.min(pick.rect.width, 1 - pick.rect.left) * dims.width);
+        const height = Math.min(Math.round(width / aspect), dims.height);
+        const top = Math.min(Math.round(pick.rect.top * dims.height), dims.height - height);
+        img = img.rect(left, Math.max(0, top), width, height);
+      }
+      return img
+        .width(w * scale)
+        .height(h * scale)
+        .fit('crop')
+        .quality(70)
+        .auto('format')
+        .url();
+    };
+    return { src: at(1), srcset: `${at(1)} 1x, ${at(2)} 2x`, tone: TONES[i % TONES.length] };
+  });
 }
 
 let cached: Promise<DarkroomData> | undefined;
