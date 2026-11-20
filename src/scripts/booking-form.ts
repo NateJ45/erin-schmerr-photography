@@ -1,6 +1,10 @@
 // Safe to edit by hand
-// The booking request's behaviour (src/components/booking/BookingForm.astro, DESIGN.md
-// "Booking request"). Vanilla TypeScript, no dependency.
+// The consultation request's behaviour (src/components/booking/BookingForm.astro, DESIGN.md
+// "Booking funnel"). Vanilla TypeScript, no dependency.
+//
+// - The branch: choosing who it is for (chapter I) shows that kind's questions in chapter II
+//   and hides and disables the others (a disabled control neither tabs nor posts), so only the
+//   chosen kind's answers are sent. "Something else" makes the story in chapter III required.
 //
 // - Motion allowed: one chapter at a time. Continue checks the chapter it is on, Back never
 //   checks, the thin progress line and "Chapter II of IV" follow along, and focus moves to
@@ -17,20 +21,16 @@
 
 import { sendContactSubmission } from '@/lib/contact-transport';
 import { track } from '@/lib/track';
-import { composeBooking, type BookingAnswers } from '@/lib/booking-message';
+import {
+  BOOKING_FIELD_NAMES,
+  composeBooking,
+  isKind,
+  type BookingAnswers,
+} from '@/lib/booking-message';
 
 const ROMAN = ['I', 'II', 'III', 'IV'];
-const DRAFT_KEY = 'booking-draft';
-const DRAFT_FIELDS = [
-  'sitting',
-  'season',
-  'month',
-  'flexibility',
-  'story',
-  'name',
-  'phone',
-  'email',
-];
+const DRAFT_KEY = 'consultation-draft';
+const DRAFT_FIELDS = BOOKING_FIELD_NAMES;
 const WEB3FORMS_KEY = import.meta.env.PUBLIC_WEB3FORMS_KEY as string | undefined;
 
 function store(): Storage | null {
@@ -68,15 +68,39 @@ function init(): void {
 
   // ---- Values -------------------------------------------------------------------------
   const field = (name: string) => form.elements.namedItem(name);
+  const inputsOf = (name: string): HTMLInputElement[] => [
+    ...form.querySelectorAll<HTMLInputElement>(`[name="${name}"]`),
+  ];
+  /** Ticked boxes of a "tick any that apply" group. */
+  const ticked = (name: string): string[] =>
+    inputsOf(name)
+      .filter((i) => i.type === 'checkbox' && i.checked && !i.disabled)
+      .map((i) => i.value);
   const value = (name: string): string => {
+    const boxes = inputsOf(name);
+    if (boxes[0]?.type === 'checkbox') return ticked(name).join(', ');
     const el = field(name);
     if (!el) return '';
     if (el instanceof RadioNodeList) return el.value.trim();
     return (el as HTMLInputElement).value.trim();
   };
-  const inputsOf = (name: string): HTMLInputElement[] => [
-    ...form.querySelectorAll<HTMLInputElement>(`[name="${name}"]`),
-  ];
+
+  // ---- The branch ---------------------------------------------------------------------
+  const branches = [...form.querySelectorAll<HTMLElement>('[data-bk-branch]')];
+  const storyOptional = form.querySelector<HTMLElement>('[data-bk-story-optional]');
+  function applyBranch(): void {
+    const kind = value('kind');
+    branches.forEach((b) => {
+      const mine = !kind || b.dataset.bkBranch === kind;
+      b.hidden = !mine;
+      if (b instanceof HTMLFieldSetElement) b.disabled = !mine;
+    });
+    if (storyOptional) storyOptional.hidden = kind === 'other';
+    root!.dataset.bkKind = kind || '';
+  }
+  form.addEventListener('change', (e) => {
+    if ((e.target as HTMLInputElement).name === 'kind') applyBranch();
+  });
 
   // ---- Errors -------------------------------------------------------------------------
   function setError(name: string, message: string | null): void {
@@ -100,10 +124,14 @@ function init(): void {
   /** The problems in one chapter, as name to message, in the order they appear. */
   function problems(index: number): [string, string][] {
     const out: [string, string][] = [];
-    if (index === 0 && !value('sitting')) out.push(['sitting', 'Please choose a sitting.']);
-    if (index === 1 && !value('season'))
-      out.push(['season', 'Please choose a season, or "Open to any season".']);
-    if (index === 2 && !value('story')) out.push(['story', 'Please tell me a little about it.']);
+    if (index === 0 && !value('kind')) out.push(['kind', 'Please choose who it is for.']);
+    if (index === 1 && value('kind') === 'creative') {
+      const board = value('moodboard');
+      if (board && !/^https?:\/\/\S+\.\S+/i.test(board))
+        out.push(['moodboard', 'Please paste the whole link, starting with https://']);
+    }
+    if (index === 2 && value('kind') === 'other' && !value('story'))
+      out.push(['story', 'Please tell me a little about what you have in mind.']);
     if (index === 3) {
       if (!value('name')) out.push(['name', 'Please tell me your name.']);
       const email = value('email');
@@ -114,7 +142,7 @@ function init(): void {
     return out;
   }
 
-  const CHAPTER_FIELDS = [['sitting'], ['season'], ['story'], ['name', 'email']];
+  const CHAPTER_FIELDS = [['kind'], ['moodboard'], ['story'], ['name', 'email']];
 
   /** Write a chapter's errors; true when it is clean. Focus goes to the first problem. */
   function check(index: number, focus = true): boolean {
@@ -185,6 +213,11 @@ function init(): void {
       const v = value(name);
       if (v) draft[name] = v;
     }
+    // Ticked boxes are kept as a list, so a reload ticks them again.
+    for (const name of ['included', 'goal']) {
+      const t = ticked(name);
+      if (t.length) draft[name] = JSON.stringify(t);
+    }
     try {
       if (Object.keys(draft).length) store()?.setItem(DRAFT_KEY, JSON.stringify(draft));
       else store()?.removeItem(DRAFT_KEY);
@@ -194,8 +227,15 @@ function init(): void {
   }
 
   function put(name: string, v: string): void {
+    let list: string[] = [];
+    try {
+      list = v.startsWith('[') ? (JSON.parse(v) as string[]) : [];
+    } catch {
+      /* not a list */
+    }
     for (const input of inputsOf(name)) {
       if (input.type === 'radio') input.checked = input.value === v;
+      else if (input.type === 'checkbox') input.checked = list.includes(input.value);
       else if (!input.value) input.value = v;
     }
     const area = form!.querySelector<HTMLTextAreaElement>(`textarea[name="${name}"]`);
@@ -214,17 +254,21 @@ function init(): void {
 
   const params = new URLSearchParams(window.location.search);
   const topic = params.get('topic')?.trim().toLowerCase();
-  if (topic && !value('sitting')) {
+  if (topic && !value('kind')) {
     const match = form.querySelector<HTMLInputElement>(`[data-bk-topic*="${CSS.escape(topic)}"]`);
     if (match) match.checked = true;
   }
   const about = params.get('about')?.trim().slice(0, 120);
   const story = form.querySelector<HTMLTextAreaElement>('[data-bk-story]');
   if (about && story && !story.value) story.value = `About ${about}: `;
+  applyBranch();
 
   // ---- Sending ------------------------------------------------------------------------
-  const compose = () =>
-    composeBooking(Object.fromEntries(DRAFT_FIELDS.map((n) => [n, value(n)])) as BookingAnswers);
+  const compose = () => {
+    const answers: BookingAnswers = {};
+    for (const n of DRAFT_FIELDS) answers[n] = value(n);
+    return composeBooking(answers);
+  };
 
   function say(message: string | null): void {
     if (!alertBox) return;
@@ -298,7 +342,12 @@ function init(): void {
           : undefined,
       );
       if (result.ok) {
-        track('generate_lead', { form_name: 'contact', form_location: 'contact_page' });
+        const kind = value('kind');
+        track('generate_lead', {
+          form_name: 'contact',
+          form_location: 'contact_page',
+          lead_type: isKind(kind) ? kind : 'unknown',
+        });
         try {
           store()?.removeItem(DRAFT_KEY);
         } catch {
@@ -320,7 +369,7 @@ function init(): void {
       form.setAttribute('aria-busy', 'false');
       if (sendButton) {
         sendButton.disabled = false;
-        sendButton.textContent = 'Send my request';
+        sendButton.textContent = 'Reserve my consultation';
       }
     }
   });

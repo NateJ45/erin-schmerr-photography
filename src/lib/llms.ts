@@ -125,7 +125,8 @@ function keyPages(d: LlmsData): string[] {
     `- [Press](${d.base}/press/): where her work has been published, with the tear sheets`,
     `- [Sessions](${d.base}/sessions/): how a portrait session works`,
     `- [About](${d.base}/about/): who she is and how she started`,
-    `- [Book a session](${d.base}/contact/): the contact form`,
+    `- [Reserve a consultation](${d.base}/contact/): a complimentary, no-obligation consultation request`,
+    `- [The sitting guide](${d.base}/guide/): a free guide to what to wear, how to prepare and what to expect`,
     '',
   ];
 }

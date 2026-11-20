@@ -242,6 +242,9 @@ const hiddenPagePaths = new Set(
     .filter((/** @type {unknown} */ slug) => typeof slug === 'string' && slug)
     .map((/** @type {string} */ slug) => `/${slug}`),
 );
+// The sitting guide itself (src/pages/guide/read.astro, noindex): the preview at /guide/ is
+// the page search should find (2026-11-20, phase 2 booking funnel).
+hiddenPagePaths.add('/guide/read');
 
 // The commit this build came from, for /build-info.json (Studio kit, PORTS.md
 // card 106). Read HERE, in Node, because the route prerenders inside workerd,

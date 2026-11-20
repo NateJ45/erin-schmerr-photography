@@ -1,0 +1,185 @@
+---
+// Safe to edit by hand
+// /guide/ - "The sitting guide", the booking funnel's lead magnet (2026-11-20, phase 2;
+// DESIGN.md "Booking funnel"). A bold editorial preview, not the guide itself:
+//   1. the cover (OverlapCover): her photo, "The sitting guide" across its edge, the dek and
+//      the four things it covers;
+//   2. Contents: the four chapters as ruled rows that invert on hover (no links: the guide
+//      is what the email is for);
+//   3. a pull line in her voice beside two of her photographs;
+//   4. a taste: the first chapter's opening notes;
+//   5. the ask, on ink: GuideCapture, and the no-JS answers from /api/guide/ (`:target`:
+//      #guide-sent, #guide-ready, #guide-failed).
+// The words are in src/data/sitting-guide.ts (drafts in her voice, placeholders labelled).
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import OverlapCover from '@/components/funnel/OverlapCover.astro';
+import GuideCapture from '@/components/funnel/GuideCapture.astro';
+import SanityImage from '@/components/SanityImage.astro';
+import { getSiteSettings } from '@/lib/queries';
+import { breadcrumbSchema } from '@/lib/schemas';
+import { site } from '@/data/site';
+import { GUIDE, splitTurn } from '@/data/sitting-guide';
+import type { PortfolioPhoto } from '@/lib/portfolio';
+import type { SanityImageObject } from '@/lib/pageBuilder.types';
+import { getFeaturedStories } from '@/lib/storyQueries'; // scaffold: stories
+import '@/styles/page-guide.css';
+
+const siteSettings = await getSiteSettings();
+let covers: PortfolioPhoto[] = [];
+// scaffold: stories
+covers = (await getFeaturedStories(6)).map((s) => s.cover).filter((c): c is PortfolioPhoto => !!c);
+// scaffold:end
+const pic = (i: number) => (covers[i]?.asset ? (covers[i] as SanityImageObject) : null);
+
+const title = 'The sitting guide';
+const description =
+  'A free guide from Erin Schmerr: what to wear, how to prepare and what to expect from a portrait sitting in Cincinnati or West Chester, Ohio.';
+const schemas = [
+  breadcrumbSchema([
+    { name: 'Home', url: site.url },
+    { name: 'The sitting guide', url: `${site.url}/guide/` },
+  ]),
+];
+const taste = GUIDE.chapters[0].notes.filter((n) => !n.placeholder).slice(0, 3);
+const email = siteSettings?.email as string | undefined;
+---
+
+<BaseLayout {title} {description} {schemas} {siteSettings}>
+  <div class="gd">
+    <OverlapCover
+      image={pic(1) ?? pic(0)}
+      alt={(covers[1]?.alt ?? covers[0]?.alt ?? '') as string}
+      eyebrow="A free guide"
+      title="The sitting _guide_"
+      sub={GUIDE.dek}
+    >
+      <ul class="gd-pill-list" aria-label="What it covers">
+        {GUIDE.chapters.map((c) => (
+          <li>{c.title}</li>
+        ))}
+      </ul>
+      <a class="fc-jump" href="#guide-ask">
+        Send it to me
+      </a>
+    </OverlapCover>
+
+    {/* ---- Contents ---- */}
+    <section class="gd-section mx-auto max-w-content px-m" aria-labelledby="gd-contents-title">
+      <div class="gd-contents__head">
+        <h2 class="gd-contents__title font-display" id="gd-contents-title">
+          In this <em>guide</em>
+        </h2>
+        <p class="portfolio-label">Four chapters</p>
+      </div>
+      <ol class="gd-contents__list">
+        {GUIDE.chapters.map((c) => {
+          const [a, turn, b] = splitTurn(c.title, c.turn);
+          return (
+            <li class="gd-row" data-funnel-rise>
+              <span class="gd-row__num" aria-hidden="true">
+                {c.numeral}
+              </span>
+              <span class="gd-row__title">
+                {a}
+                {turn && <em>{turn}</em>}
+                {b}
+              </span>
+              <span class="gd-row__lede">{c.lede}</span>
+              <span class="gd-row__count">{c.notes.length} notes</span>
+            </li>
+          );
+        })}
+      </ol>
+    </section>
+
+    {/* ---- The pull ---- */}
+    <section class="gd-section mx-auto max-w-content px-m" aria-label="From the guide">
+      <div class="gd-pull split">
+        <blockquote class="gd-pull__quote">
+          <p>{GUIDE.pull}</p>
+          <span class="gd-pull__by">Erin, in the guide</span>
+        </blockquote>
+        <div class="gd-pull__photos">
+          {[pic(2), pic(3)].map(
+            (p) =>
+              p && (
+                <div class="gd-pull__photo">
+                  <SanityImage
+                    source={p}
+                    width={560}
+                    height={700}
+                    sizes="(min-width: 64rem) 20vw, 45vw"
+                    alt=""
+                  />
+                </div>
+              ),
+          )}
+        </div>
+      </div>
+    </section>
+
+    {/* ---- A taste ---- */}
+    <section class="gd-section mx-auto max-w-content px-m" aria-labelledby="gd-taste-title">
+      <p class="portfolio-label">A taste of chapter I</p>
+      <h2 class="gd-contents__title font-display" id="gd-taste-title">
+        What to <em>wear</em>
+      </h2>
+      <ul class="gd-taste__notes">
+        {taste.map((n) => (
+          <li class="gd-taste__note">
+            <h3>{n.heading}</h3>
+            <p>{n.body}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    {/* ---- The ask ---- */}
+    <section class="gd-capture" id="guide-ask" aria-labelledby="gd-ask-title">
+      <div class="gd-capture__grid mx-auto max-w-content px-m">
+        <div>
+          <p class="portfolio-label gd-capture__eyebrow">Free, and yours to keep</p>
+          <h2 class="gd-capture__title font-display" id="gd-ask-title">
+            Send me the <em>guide</em>
+          </h2>
+          <p class="gd-capture__line">
+            Tell me where to send it and the link is yours at once. Read it the week before your
+            sitting, or share it with whoever is coming with you.
+          </p>
+        </div>
+        <div>
+          {/* No-JS answers from /api/guide/ (`:target`). Nothing typed is in the address. */}
+          <div id="guide-sent" class="gd-answer gd-answer--ok" tabindex="-1">
+            <p class="gc__done-title font-display">
+              It is <em>yours</em>.
+            </p>
+            <p>A copy is on its way to your inbox.</p>
+            <p>
+              <a href={GUIDE.readPath}>Read the sitting guide now</a>
+            </p>
+          </div>
+          <div id="guide-ready" class="gd-answer gd-answer--ok" tabindex="-1">
+            <p class="gc__done-title font-display">
+              It is <em>yours</em>.
+            </p>
+            <p>
+              <a href={GUIDE.readPath}>Read the sitting guide now</a>
+            </p>
+          </div>
+          <div id="guide-failed" class="gd-answer gd-answer--failed" tabindex="-1">
+            <p>
+              That did not work. Please check your email address and try again.
+              {email && (
+                <>
+                  {' '}
+                  Or write to <a href={`mailto:${email}`}>{email}</a>.
+                </>
+              )}
+            </p>
+          </div>
+          <GuideCapture id="guide-page" location="guide_page" />
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
