@@ -313,37 +313,22 @@ body:has(main :is(.signed-close, [data-final-cta])) .bq-invite {
   /* Earlier letters paint over later ones: the T's arm over the a while it builds. */
   z-index: calc(10 - var(--i, 0));
 }
+/* The SVG that holds the build-in's filters takes no room. */
+.bq-mark__defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
 
-/* The build-in. A thick stroke in the paper colour is painted over each glyph's edge,
-   eating it back to its spine; thinning the stroke to nothing grows the letter outward,
-   like ink spreading. One letter after another, 0.15s apart (the reference's stagger). */
-@property --bq-ink {
-  syntax: '<length>';
-  inherits: false;
-  initial-value: 0px;
-}
+/* The build-in (Footer.astro's script). Each glyph is eroded back to its spine by an SVG
+   feMorphology filter whose radius shrinks to nothing, so the letter grows outward like
+   ink spreading: the reference's distance-field threshold, done in paint only (an
+   animated text stroke moved each letter's visual box, which Chrome scores as layout
+   shift). 0.7s a letter, 0.15s apart, ease-out cubic, as on the reference. Armed letters
+   wait unseen; the script fades each in over the first part of its own build. */
 .bq-mark[data-build='armed'] .bq-mark__l {
-  --bq-ink: 0.11em;
   opacity: 0;
-  -webkit-text-stroke: var(--bq-ink) var(--background);
-}
-.bq-mark[data-build='on'] .bq-mark__l {
-  -webkit-text-stroke: var(--bq-ink) var(--background);
-  /* The reference's timing: 0.7s a letter, 0.15s apart, ease-out cubic. */
-  animation: bq-ink 0.7s cubic-bezier(0.33, 1, 0.68, 1) calc(var(--i, 0) * 0.15s) both;
-}
-@keyframes bq-ink {
-  from {
-    --bq-ink: 0.11em;
-    opacity: 0;
-  }
-  18% {
-    opacity: 1;
-  }
-  to {
-    --bq-ink: 0px;
-    opacity: 1;
-  }
 }
 
 /* The labels rise into their clipped boxes (the reference's link entrance): each inner
@@ -367,9 +352,8 @@ body:has(main :is(.signed-close, [data-final-cta])) .bq-invite {
 
 @media (prefers-reduced-motion: reduce) {
   .bq-mark .bq-mark__l {
-    animation: none !important;
     opacity: 1 !important;
-    -webkit-text-stroke: 0 !important;
+    filter: none !important;
   }
   .bq-rise > span {
     translate: none !important;
@@ -378,9 +362,8 @@ body:has(main :is(.signed-close, [data-final-cta])) .bq-invite {
 }
 @media print {
   .bq-mark .bq-mark__l {
-    animation: none !important;
     opacity: 1 !important;
-    -webkit-text-stroke: 0 !important;
+    filter: none !important;
   }
   .bq-rise > span {
     translate: none !important;
