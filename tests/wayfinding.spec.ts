@@ -77,7 +77,7 @@ test.describe('wayfinding', () => {
     const b = await items.nth(1).boundingBox();
     expect(b!.y).toBeGreaterThan(a!.y + a!.height - 1);
     expect(Math.abs(a!.x - b!.x)).toBeLessThan(2);
-    const mark = page.locator('#site-footer [data-bq-mark]');
+    const mark = page.locator('#site-footer [data-bqf-mark]');
     await expect(mark).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
       375,
@@ -145,6 +145,6 @@ test.describe('wayfinding', () => {
     await expect(page.locator('div[data-action-bar]')).toHaveCount(0);
     await expect(page.locator('.mobile-menu--groups')).toHaveCount(0);
     // This site draws its own footer (Footer.astro) whatever the footer style.
-    await expect(page.locator('footer.bq-footer')).toHaveCount(1);
+    await expect(page.locator('footer.bqf-footer')).toHaveCount(1);
   });
 });

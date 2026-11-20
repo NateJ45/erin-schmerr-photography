@@ -1,11 +1,12 @@
 // Safe to edit by hand
 // =============================================================================
-// The darkroom chrome's data (header, phone menu, footer; DESIGN.md "Components").
+// The chrome's data: the phone menu's photo frame and the story credits
+// (DESIGN.md "Components"). The folder keeps the darkroom name from 2026-11-18.
 // =============================================================================
 // Everything here is DERIVED from content the site already shows (rule 15):
-//   - covers: the featured story covers, for the phone menu's contact sheet and
-//     the header's hover prints. A page whose picture is already used (a press
-//     tear sheet for /press/, a story cover for /stories/) gets that picture.
+//   - covers: the featured story covers, for the phone menu's photo frame. A page
+//     whose picture is already used (a press tear sheet for /press/, a story cover
+//     for /stories/) gets that picture.
 //   - credits: the old end-credits footer's lists (the footer stopped drawing them
 //     on 2026-11-20; kept for reuse). "Starring" is every person credited on
 //     a story, "On location at" the stories' places and the venues credited on
@@ -169,14 +170,4 @@ let cached: Promise<DarkroomData> | undefined;
 export function getDarkroomData(): Promise<DarkroomData> {
   cached ??= load();
   return cached;
-}
-
-/** The print for a page: its own picture, else the nth cover. */
-export function printFor(data: DarkroomData, href: string, i: number): ChromePrint {
-  return data.pagePrints[href] ?? data.covers[i % data.covers.length];
-}
-
-/** "01", "02": the frame number printed beside each item. */
-export function frameNumber(i: number): string {
-  return String(i + 1).padStart(2, '0');
 }

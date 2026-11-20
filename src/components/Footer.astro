@@ -6,7 +6,7 @@
 // Warm paper, quiet, in four bands (styles: src/styles/chrome-footer.css):
 //   1. Where next rows, when Site settings switch them on (card 191).
 //   2. The invitation: a centred line in Instrument Serif with one italic word, a short
-//      sentence and an outlined square "Book a session" button (the header button's label
+//      sentence and an outlined square "Book a session" button (the header's `.bq-button`, with its label
 //      and link). Left out on the page the button points to. The two lines are a DRAFT for
 //      Erin to approve or rewrite (docs/PENDING.md).
 //   3. Under a hairline: the site's pages as one stacked list at the left (Site settings >
@@ -34,7 +34,7 @@ import { getNavPages, getAllPageSlugs } from '@/lib/queries';
 import { resolveSiteSettings, type RawChromeSettings } from '@/lib/siteSettings';
 import { mergePageSwitches } from '@/lib/page-switches';
 import { publicPath } from '@/lib/page-path';
-import { stateName } from '@/lib/state-name';
+import { stateName } from '@/lib/place-block';
 import { pickActionBar, whereNextRows } from '@/lib/wayfinding';
 import WhereNext from '@/components/WhereNext.astro';
 import ActionBar from '@/components/ActionBar.astro';
@@ -146,33 +146,33 @@ const actionBar =
     : pickedBar;
 ---
 
-<footer id="site-footer" class="bq-footer bg-background text-foreground">
+<footer id="site-footer" class="bqf-footer bg-background text-foreground">
   {whereNext.length > 0 && <WhereNext rows={whereNext} />}
 
   {showInvite && (
-    <section class="bq-invite" aria-labelledby="bq-invite-title">
+    <section class="bqf-invite" aria-labelledby="bqf-invite-title">
       {/* DRAFT copy for Erin (docs/PENDING.md): she approves or rewrites both lines. */}
-      <h2 id="bq-invite-title" class="bq-invite__title">
+      <h2 id="bqf-invite-title" class="bqf-invite__title">
         A portrait made to be <em>kept</em>
       </h2>
-      <p class="bq-invite__line">Tell me who it is for, and we will plan it together.</p>
-      <a href={book.href} class="dk-button dk-button--line bq-invite__button">
+      <p class="bqf-invite__line">Tell me who it is for, and we will plan it together.</p>
+      <a href={book.href} class="bq-button bqf-invite__button">
         {book.label}
       </a>
     </section>
   )}
 
-  <div class="bq-index" data-bq-rise>
-    <div class="bq-index__lead">
+  <div class="bqf-index" data-bqf-rise>
+    <div class="bqf-index__lead">
       <nav aria-label="Footer">
-        <ul class="bq-pages">
+        <ul class="bqf-pages">
           {pages.map((link, i) => (
             <li>
               <a
                 href={link.href}
                 aria-current={publicPath(link.href) === here ? 'page' : undefined}
               >
-                <span class="bq-rise" style={`--i:${i}`}>
+                <span class="bqf-rise" style={`--i:${i}`}>
                   <span>{link.label}</span>
                 </span>
               </a>
@@ -182,7 +182,7 @@ const actionBar =
       </nav>
 
       {siteSettings?.newsletter?.enabled && (
-        <div class="bq-newsletter">
+        <div class="bqf-newsletter">
           <NewsletterSignup
             client:visible
             newsletter={siteSettings.newsletter}
@@ -194,17 +194,17 @@ const actionBar =
     </div>
 
     {places.length > 0 && (
-      <ul class="bq-places" aria-label="Where she works">
+      <ul class="bqf-places" aria-label="Where she works">
         {places.map((p) => (
-          <li class="bq-place">
-            <p class="bq-place__name">
-              <span class="bq-place__arrow" aria-hidden="true">
+          <li class="bqf-place">
+            <p class="bqf-place__name">
+              <span class="bqf-place__arrow" aria-hidden="true">
                 →
               </span>
               {p.name}
             </p>
             {p.lines.length > 0 && (
-              <p class="bq-place__lines">
+              <p class="bqf-place__lines">
                 {p.lines.map((line, i) => (
                   <>
                     {i > 0 && <br />}
@@ -215,7 +215,7 @@ const actionBar =
               </p>
             )}
             {p.mapsUrl && (
-              <a class="bq-quiet" href={p.mapsUrl} target="_blank" rel="noopener noreferrer">
+              <a class="bqf-quiet" href={p.mapsUrl} target="_blank" rel="noopener noreferrer">
                 Map
                 <ArrowUpRight size={12} aria-hidden="true" />
               </a>
@@ -226,11 +226,11 @@ const actionBar =
     )}
 
     {(socialLinks.length > 0 || email || phone) && (
-      <ul class="bq-reach">
+      <ul class="bqf-reach">
         {socialLinks.map((link, i) => (
           <li>
-            <a class="bq-quiet" href={link.url} target="_blank" rel="noopener noreferrer">
-              <span class="bq-rise" style={`--i:${i}`}>
+            <a class="bqf-quiet" href={link.url} target="_blank" rel="noopener noreferrer">
+              <span class="bqf-rise" style={`--i:${i}`}>
                 <span>{socialLabel(link)}</span>
               </span>
               <ArrowUpRight size={12} aria-hidden="true" />
@@ -245,7 +245,7 @@ const actionBar =
         )}
         {phone && (
           <li>
-            <a class="bq-quiet" href={facts.phone?.href ?? `tel:${phone}`}>
+            <a class="bqf-quiet" href={facts.phone?.href ?? `tel:${phone}`}>
               {phone}
             </a>
             <ToConfirm confirmed={facts.phone?.confirmed} />
@@ -256,20 +256,20 @@ const actionBar =
   </div>
 
   {/* The giant name, a link home named in full. Letters build in on first view (script). */}
-  <div class="bq-mark-wrap">
-    <a href="/" class="bq-mark" data-bq-mark aria-label={`${site.name} home`}>
-      <span class="bq-mark__word" aria-hidden="true">
+  <div class="bqf-mark-wrap">
+    <a href="/" class="bqf-mark" data-bqf-mark aria-label={`${site.name} home`}>
+      <span class="bqf-mark__word" aria-hidden="true">
         {[...bigWord].map((ch, i) => (
-          <span class="bq-mark__l" style={`--i:${i}`}>
+          <span class="bqf-mark__l" style={`--i:${i}`}>
             {ch}
           </span>
         ))}
       </span>
       {/* One erode filter per letter, driven by the build-in script. */}
-      <svg class="bq-mark__defs" aria-hidden="true" focusable="false">
+      <svg class="bqf-mark__defs" aria-hidden="true" focusable="false">
         <defs>
           {[...bigWord].map((_, i) => (
-            <filter id={`bq-erode-${i}`} color-interpolation-filters="sRGB">
+            <filter id={`bqf-erode-${i}`} color-interpolation-filters="sRGB">
               <feMorphology operator="erode" radius="0" />
             </filter>
           ))}
@@ -278,7 +278,7 @@ const actionBar =
     </a>
   </div>
 
-  <div class="bq-small">
+  <div class="bqf-small">
     <p>
       © {currentYear} {brandName}
     </p>
@@ -305,8 +305,8 @@ const actionBar =
 
 <script>
   // The footer's two entrances (chrome-footer.css), after the Vero reference: the wordmark's
-  // letter build-in ([data-bq-mark]) and the page and social labels rising into their
-  // clipped boxes ([data-bq-rise]). Each is armed only where it can play: motion allowed,
+  // letter build-in ([data-bqf-mark]) and the page and social labels rising into their
+  // clipped boxes ([data-bqf-rise]). Each is armed only where it can play: motion allowed,
   // IntersectionObserver present, and the element still below the fold (one already on
   // screen stays at rest). Plays once, then the observer goes. Re-runs after a View
   // Transitions swap, which draws a fresh footer.
@@ -318,16 +318,16 @@ const actionBar =
   const STAGGER_MS = 150;
   const START_EM = 0.055;
   function buildIn(mark: HTMLElement) {
-    const letters = [...mark.querySelectorAll<HTMLElement>('.bq-mark__l')];
+    const letters = [...mark.querySelectorAll<HTMLElement>('.bqf-mark__l')];
     const radii = letters.map((_, i) =>
-      mark.querySelector<SVGFEMorphologyElement>(`#bq-erode-${i} feMorphology`),
+      mark.querySelector<SVGFEMorphologyElement>(`#bqf-erode-${i} feMorphology`),
     );
     const fontPx = parseFloat(getComputedStyle(letters[0] ?? mark).fontSize) || 0;
     const r0 = fontPx * START_EM;
     letters.forEach((l, i) => {
       l.style.opacity = '0';
       radii[i]?.setAttribute('radius', String(r0));
-      if (radii[i]) l.style.filter = `url(#bq-erode-${i})`;
+      if (radii[i]) l.style.filter = `url(#bqf-erode-${i})`;
     });
     mark.dataset.build = 'on';
     const t0 = performance.now();
@@ -350,7 +350,7 @@ const actionBar =
   function armMarks() {
     if (!('IntersectionObserver' in window)) return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    for (const el of document.querySelectorAll<HTMLElement>('[data-bq-mark], [data-bq-rise]')) {
+    for (const el of document.querySelectorAll<HTMLElement>('[data-bqf-mark], [data-bqf-rise]')) {
       if (el.dataset.build) continue;
       if (el.getBoundingClientRect().top < window.innerHeight) continue;
       el.dataset.build = 'armed';
@@ -358,10 +358,10 @@ const actionBar =
         (entries) => {
           if (!entries.some((e) => e.isIntersecting)) return;
           io.disconnect();
-          if (el.hasAttribute('data-bq-mark')) buildIn(el);
+          if (el.hasAttribute('data-bqf-mark')) buildIn(el);
           else el.dataset.build = 'on';
         },
-        { threshold: el.hasAttribute('data-bq-mark') ? 0.35 : 0.15 },
+        { threshold: el.hasAttribute('data-bqf-mark') ? 0.35 : 0.15 },
       );
       io.observe(el);
     }
