@@ -6,13 +6,13 @@
    1. First-visit loader (FirstVisitLoader.astro): the name pulls into focus on
       paper, then the curtain lifts. Only under html.first-visit, which the
       component's inline script sets once per device and only under html.motion.
-   2. Variable-weight nav hover: the darkroom nav label thickens on hover. The
-      bold width is reserved by an invisible copy of the label, so nothing in
-      the row moves. Hover-capable pointers only; touch keeps the plain link.
+   2. Retired 2026-11-20: the darkroom nav's variable-weight hover (the header
+      is the boutique bar now; its motion is in chrome-header.css).
    3. Retired 2026-11-18: the story sequence's scroll drift (the story page is
       a film now, src/scripts/story-film.ts).
-   4. The darkroom chrome: hover prints in the header, the contact sheet's
-      frames developing, the end credits rolling up. */
+   4. The darkroom footer: the end credits rolling up. (The header's hover
+      prints and the contact sheet's developing frames went with them on
+      2026-11-20.) */
 
 /* ---- 1. First-visit loader ------------------------------------------------ */
 .first-visit-loader {
@@ -60,78 +60,12 @@ html.first-visit .first-visit-loader {
   }
 }
 
-/* ---- 2. Variable-weight nav hover ------------------------------------------ */
-/* The darkroom nav's label (Header.astro). The hovered width is reserved by an
-   invisible, zero-height copy at the hover weight, so nothing in the row moves. */
-.dk-nav__label[data-label] {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-}
-.dk-nav__label[data-label]::before {
-  content: attr(data-label);
-  height: 0;
-  overflow: hidden;
-  visibility: hidden;
-  font-weight: 620;
-}
-@media (hover: hover) and (prefers-reduced-motion: no-preference) {
-  .dk-nav__label[data-label] {
-    transition:
-      font-weight 300ms var(--ease-focus),
-      color 300ms var(--ease-focus);
-  }
-  .dk-nav__item:hover .dk-nav__label[data-label],
-  .dk-nav__item:focus-visible .dk-nav__label[data-label] {
-    font-weight: 620;
-  }
-}
+/* ---- 2. (retired 2026-11-20) The darkroom nav's weight hover: the boutique bar dims
+   the other links instead (chrome-header.css). */
 
 /* ---- 3. (retired) Story parallax: the story page is a film now (portfolio.css). */
 
-/* ---- 4. The darkroom chrome (2026-11-18) ------------------------------------ */
-/* Header: a small print beside the hovered nav item pulls from blur to sharp. A
-   mouse only (fine pointer); keyboard focus, touch and reduced motion get none,
-   and the lazy image is never fetched for them (display:none until hover). */
-@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-  .dk-nav__item:hover .dk-print {
-    display: block;
-    animation: dk-print-develop 900ms var(--ease-focus) both;
-  }
-}
-@keyframes dk-print-develop {
-  from {
-    opacity: 0;
-    filter: blur(10px) saturate(0.4);
-    translate: -50% -6px;
-  }
-  45% {
-    opacity: 1;
-  }
-  to {
-    opacity: 1;
-    filter: none;
-    translate: -50% 0;
-  }
-}
-
-/* Phone menu: as the contact sheet opens, the frames develop one after another,
-   60ms apart. The page names on their paper chips are there from the start. */
-@media (prefers-reduced-motion: no-preference) {
-  .dk-sheet[open] .dk-frame__photo {
-    animation: dk-develop 900ms var(--ease-focus) both;
-    animation-delay: calc(var(--i, 0) * 60ms);
-  }
-}
-@keyframes dk-develop {
-  from {
-    filter: blur(14px) brightness(0.35) sepia(0.6);
-  }
-  to {
-    filter: none;
-  }
-}
-
+/* ---- 4. The darkroom footer (2026-11-18) ------------------------------------ */
 /* Footer: where the end credits come into view they roll up a little, on the
    scroll itself (translate only: nothing starts hidden, nothing reflows).
    Browsers without scroll-driven animation and reduced motion keep them still. */
