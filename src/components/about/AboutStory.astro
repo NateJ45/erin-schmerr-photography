@@ -1,0 +1,57 @@
+---
+// scaffold-file: about
+// Safe to edit by hand
+// Page-builder block `aboutStory` (aboutSections.ts): a tall portrait of her
+// beside her story, on the shared split (rule 17: text track first, the
+// portrait in the narrow picture track). After the House of Honey reference,
+// whose dark panel becomes ink on this site's paper: as each paragraph scrolls
+// in it comes up from a soft grey to full ink (src/scripts/about-motion.ts,
+// a scrubbed ScrollTrigger per paragraph). Under html.motion only; with
+// JavaScript off or reduced motion every paragraph is full ink from the start.
+// From 1024 up the portrait holds in view while the story passes.
+//
+// SELF_CONTAINED: plain page ground.
+import FocusImage from '@/components/portfolio/FocusImage.astro';
+import PortableText from '@/components/PortableText';
+import { placeholderPhoto, type PortfolioPhoto } from '@/lib/portfolio';
+import type { PortableTextBlock } from '@portabletext/types';
+import type { SanityImageObject } from '@/lib/pageBuilder.types';
+import '@/styles/page-about.css';
+
+interface Props {
+  eyebrow?: string;
+  heading?: string;
+  body?: PortableTextBlock[] | null;
+  portrait?: SanityImageObject | null;
+  headingId?: string;
+}
+
+const { eyebrow, heading = '', body, portrait, headingId = 'about-story' } = Astro.props;
+const hasBody = Array.isArray(body) && body.length > 0;
+const photo: PortfolioPhoto = portrait?.asset
+  ? (portrait as PortfolioPhoto)
+  : placeholderPhoto(0, 'Placeholder: a tall portrait of you goes here');
+---
+
+<section class="bg-background" aria-labelledby={headingId}>
+  <div class="about-story split mx-auto max-w-content px-m py-section-lg">
+    <div class="about-story__text">
+      {eyebrow && <p class="portfolio-label mb-4">{eyebrow}</p>}
+      <h2 id={headingId} class="about-story__title font-display">
+        {heading}
+      </h2>
+      {hasBody && (
+        <div class="about-story__body mt-8" data-about-lighten>
+          <PortableText value={body} />
+        </div>
+      )}
+    </div>
+    <div class="about-story__portrait">
+      <FocusImage photo={photo} width={900} crop={2 / 3} sizes="(min-width: 64rem) 34rem, 100vw" />
+    </div>
+  </div>
+</section>
+
+<script>
+  import '@/scripts/about-motion';
+</script>

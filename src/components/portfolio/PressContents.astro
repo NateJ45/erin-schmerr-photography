@@ -1,0 +1,95 @@
+---
+// scaffold-file: press
+// Safe to edit by hand
+// Page-builder block `pressContents` (pressSections.ts): "As seen in" on the
+// About page, after The First The Last reference. Every magazine once (her
+// newest feature in each; contentsEntries in src/lib/press-contents.ts), set
+// very large in the display italic and parted by slashes, like the contents
+// line of a magazine. Each name links to that year on the press page.
+//
+// Pointing at a name, or tabbing to it, dims the others and shows that issue's
+// tear sheet and date in the right-hand column (pure CSS, :has() and
+// :focus-visible, so it needs no script). That mode is for a fine pointer on a
+// wide screen only. On touch, on a narrow screen, or where :has() is not
+// supported, every name stays solid and a small caption list under the line
+// gives each magazine's issue and date instead. The cards are aria-hidden
+// copies of what the caption list says, so a screen reader hears it once.
+//
+// SELF_CONTAINED: plain page ground. Reads Publications itself (self-filling).
+import FocusImage from '@/components/portfolio/FocusImage.astro';
+import { getPublications } from '@/lib/pressQueries';
+import { contentsEntries } from '@/lib/press-contents';
+import { formatMonthYear } from '@/lib/portfolio';
+import '@/styles/press-contents.css';
+
+interface Props {
+  heading?: string;
+  headingId?: string;
+}
+
+const { heading = 'As seen in', headingId = 'press-contents' } = Astro.props;
+const publications = await getPublications();
+const entries = contentsEntries(publications);
+const placeholder = publications.every((p) => p.isPlaceholder);
+const detail = (e: (typeof entries)[number]) =>
+  [e.latest.issue, formatMonthYear(e.latest.date)].filter(Boolean).join(', ');
+---
+
+{entries.length > 0 && (
+  <section class="press-contents bg-background" aria-labelledby={headingId}>
+    <div class="mx-auto max-w-content px-m py-section-lg">
+      <div class="press-contents__head">
+        <h2 id={headingId} class="portfolio-label">
+          {heading}
+        </h2>
+        <p class="portfolio-label" aria-hidden="true">
+          {entries.length} {entries.length === 1 ? 'title' : 'titles'}
+        </p>
+      </div>
+      <div class="press-contents__body">
+        <ul class="press-contents__line list-none" data-press-contents>
+          {entries.map((e, i) => (
+            <li class="press-contents__item">
+              <a class="press-contents__name font-display" href={e.href}>
+                {e.magazine}
+              </a>
+              {i < entries.length - 1 && (
+                <span class="press-contents__slash" aria-hidden="true">
+                  {' / '}
+                </span>
+              )}
+              <span class="press-contents__card" aria-hidden="true">
+                <FocusImage
+                  photo={e.latest.tearSheet}
+                  width={360}
+                  crop={4 / 5}
+                  sizes="12rem"
+                  alt=""
+                  pull={false}
+                />
+                <span class="press-contents__date portfolio-label">
+                  {formatMonthYear(e.latest.date)}
+                </span>
+                {e.latest.issue && <span class="press-contents__issue">{e.latest.issue}</span>}
+              </span>
+            </li>
+          ))}
+        </ul>
+        <ol class="press-contents__captions list-none">
+          {entries.map((e) => (
+            <li>
+              <span class="press-contents__caption-name">{e.magazine}</span>
+              {detail(e) && <span class="text-muted-foreground">, {detail(e)}</span>}
+              {e.count > 1 && <span class="text-muted-foreground"> ({e.count} features)</span>}
+            </li>
+          ))}
+        </ol>
+      </div>
+      {placeholder && (
+        <p class="portfolio-label mt-6">
+          Placeholder publications, shown until the first one is added.
+        </p>
+      )}
+    </div>
+  </section>
+)}

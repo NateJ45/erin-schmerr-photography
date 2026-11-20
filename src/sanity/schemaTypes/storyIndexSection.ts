@@ -322,6 +322,13 @@ export const signedClose = defineType({
       description: 'Your first name, set in the italic of the heading font.',
       validation: (Rule) => Rule.max(40),
     }),
+    defineField({
+      name: 'signatureImage',
+      title: 'Your handwritten signature (optional)',
+      type: 'image',
+      description:
+        'A scan of your signature, dark ink on a clear (transparent) background. Shown in place of the typed name; the typed name is still read out to screen readers.',
+    }),
   ],
   preview: {
     select: { heading: 'heading', signature: 'signature' },

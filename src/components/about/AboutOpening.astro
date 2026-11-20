@@ -1,0 +1,66 @@
+---
+// scaffold-file: about
+// Safe to edit by hand
+// Page-builder block `aboutOpening` (aboutSections.ts): the About page's first
+// band (DESIGN.md "About page"). A small eyebrow, the headline very large in
+// the display serif (a word between underscores is set in italic), then the
+// shared split with the picture first: one of her photographs (portrait, 4:5)
+// in a clipped frame, and the line under the headline beside it.
+//
+// Motion (src/scripts/about-motion.ts, GSAP SplitText and ScrollTrigger, after
+// the Vero reference): the headline splits into its real rendered lines, each
+// in a clipped mask, and they rise one after another (1.4s each, 0.1s apart,
+// expo.out); the photo drifts slowly against the scroll inside its frame. Both
+// run only under html.motion, so with JavaScript off or reduced motion the
+// headline is plain text and the photo sits still.
+//
+// SELF_CONTAINED: plain page ground. The headline is the page's h1.
+import FocusImage from '@/components/portfolio/FocusImage.astro';
+import { emphasisRuns } from '@/lib/about-page';
+import { placeholderPhoto, type PortfolioPhoto } from '@/lib/portfolio';
+import type { SanityImageObject } from '@/lib/pageBuilder.types';
+import '@/styles/page-about.css';
+
+interface Props {
+  eyebrow?: string;
+  headline?: string;
+  subhead?: string;
+  image?: SanityImageObject | null;
+  headingId?: string;
+}
+
+const { eyebrow, headline = '', subhead, image, headingId = 'about-opening' } = Astro.props;
+const runs = emphasisRuns(headline);
+const photo: PortfolioPhoto = image?.asset
+  ? (image as PortfolioPhoto)
+  : placeholderPhoto(1, 'Placeholder: one of your photographs goes here');
+---
+
+<section class="about-open bg-background" aria-labelledby={headingId} data-about-open>
+  <div class="mx-auto max-w-content px-m pt-section-md">
+    {eyebrow && <p class="portfolio-label mb-6">{eyebrow}</p>}
+    <h1 id={headingId} class="about-open__title font-display" data-about-split>
+      {runs.map((r) => (r.italic ? <em>{r.text}</em> : r.text))}
+    </h1>
+  </div>
+  <div class="about-open__photo split split--media-first mx-auto max-w-content px-m pt-section-md">
+    <div class="about-parallax" data-about-parallax>
+      <FocusImage
+        photo={photo}
+        width={1100}
+        crop={4 / 5}
+        sizes="(min-width: 64rem) 34rem, 100vw"
+        loading="eager"
+        fetchpriority="high"
+        pull={false}
+      />
+    </div>
+    <div class="about-open__side">
+      {subhead && <p class="about-open__sub portfolio-label">{subhead}</p>}
+    </div>
+  </div>
+</section>
+
+<script>
+  import '@/scripts/about-motion';
+</script>
