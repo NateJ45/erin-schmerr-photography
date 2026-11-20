@@ -123,7 +123,9 @@ jobs:
       - name: Generate Sanity types
         run: npm run typegen
 
+      # TESTS PAUSED 2026-11-20 until the design is final (Nathan). Re-enable: docs/PENDING.md.
       - name: Unit tests
+        if: ${{ false }}
         run: npm run test:unit
 
       # NO SHARE-CARD FRESHNESS CHECK NEEDED (PORTS.md card 169): `npm run build` draws

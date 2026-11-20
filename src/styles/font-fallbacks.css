@@ -1,22 +1,33 @@
-/* Safe to edit by hand, but WRITTEN BY `npm run font-fallback` (scripts/font-fallback.mjs,
-   PORTS.md card 188). Metric-matched stand-ins for Instrument Serif while it loads: a local font
-   scaled to its average letter width and given its ascent and descent, so a title drawn in the
-   fallback breaks where the real one will and the page does not jump when the font arrives.
-   Named second in the display stack (brand.config.json fonts.display.familyValue).
-   Source: node_modules/@fontsource/instrument-serif/files/instrument-serif-latin-400-normal.woff (upm 1000, hhea 990 / -310, weighted width 341). */
+/* Safe to edit by hand, but WRITTEN BY `npm run font-fallback:variable`
+   (scripts/font-fallback-variable.mjs; the maths is PORTS.md card 188). Metric-matched stand-ins
+   for the two brand faces while they load: a local font scaled to the web font's average letter
+   width and given its ascent and descent, so a line drawn in the fallback breaks where the real
+   one will and the page does not jump when the font arrives. Named second in each stack
+   (brand.config.json fonts.display.familyValue and fonts.body.familyValue). The Times and Arial
+   faces also name their Linux metric twins (Liberation, Tinos, Arimo), so CI draws the same. */
+/* Bodoni Moda Variable: @fontsource-variable/bodoni-moda/files/bodoni-moda-latin-opsz-normal.woff2 at {"wght":400,"opsz":72} (upm 2000, hhea 2250 / -800, weighted width 915). */
 @font-face {
-  font-family: 'Instrument Serif Fallback';
+  font-family: 'Bodoni Moda Variable Fallback';
   src: local('Georgia');
-  size-adjust: 76.49%;
-  ascent-override: 129.43%;
-  descent-override: 40.53%;
+  size-adjust: 102.62%;
+  ascent-override: 109.62%;
+  descent-override: 38.98%;
   line-gap-override: 0%;
 }
 @font-face {
-  font-family: 'Instrument Serif Fallback Times';
+  font-family: 'Bodoni Moda Variable Fallback Times';
   src: local('Times New Roman'), local('Times'), local('Liberation Serif'), local('Tinos');
-  size-adjust: 83.94%;
-  ascent-override: 117.94%;
-  descent-override: 36.93%;
+  size-adjust: 112.62%;
+  ascent-override: 99.9%;
+  descent-override: 35.52%;
+  line-gap-override: 0%;
+}
+/* Jost Variable: @fontsource-variable/jost/files/jost-latin-wght-normal.woff2 at {"wght":400} (upm 1000, hhea 1070 / -375, weighted width 428). */
+@font-face {
+  font-family: 'Jost Variable Fallback';
+  src: local('Arial'), local('Liberation Sans'), local('Arimo');
+  size-adjust: 96.01%;
+  ascent-override: 111.45%;
+  descent-override: 39.06%;
   line-gap-override: 0%;
 }

@@ -3,27 +3,27 @@
    Tokens come from brand.config.json via apply-brand; this file only reshapes
    the starter's chrome so the photographs carry the page. */
 
-/* Metric-matched stand-in for the body face while it loads (as font-fallbacks.css
-   does for the display face, card 188). Instrument Sans ships only as woff2, which
-   the generator cannot read, so these numbers were measured with fontkitten from
-   instrument-sans-latin-wght-normal.woff2 (default instance, weight 400: upm 1000,
-   hhea 970 / -250, weighted width 458) and run through scripts/lib/font-fallback.mjs.
-   Arial on Windows and Mac, its metric twins on Linux, so the hero's sentences
-   break where the real face will and nothing moves when it arrives. */
-@font-face {
-  font-family: 'Instrument Sans Variable Fallback';
-  src: local('Arial'), local('Liberation Sans'), local('Arimo');
-  size-adjust: 102.74%;
-  ascent-override: 94.42%;
-  descent-override: 24.33%;
-  line-gap-override: 0%;
-}
+/* The metric-matched fallbacks for both brand faces (Bodoni Moda and Jost) live in
+   font-fallbacks.css, written by `npm run font-fallback:variable`. */
 
-/* The display face is a tall, narrow serif; it wants tight leading and a touch
-   of negative tracking at size. */
+/* The display face, Bodoni Moda (2026-11-20, the "Couture" pairing): a high-contrast
+   Didone with an optical-size axis. `font-optical-sizing: auto` lets the browser pick
+   the cut from the font size, so a 15px caption gets the sturdier small-size hairlines
+   and a 90px title the fine fashion ones. Didones want tighter tracking large and a
+   little air small, so the tracking runs from slightly open at caption sizes to
+   slightly closed at title sizes (the --display-track scale below). */
+:where(.font-display, h1, h2, h3, h4, h5, h6) {
+  font-optical-sizing: auto;
+}
 :where(h1, h2, .font-display) {
-  letter-spacing: -0.01em;
-  line-height: 0.98;
+  letter-spacing: var(--display-track-lg);
+  line-height: 1;
+}
+:root {
+  /* Title sizes (40px and up), and the small display uses (captions, the place
+     block, menu numerals). */
+  --display-track-lg: -0.015em;
+  --display-track-sm: 0.01em;
 }
 h1 em,
 h2 em {

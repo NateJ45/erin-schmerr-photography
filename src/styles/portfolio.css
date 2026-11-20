@@ -984,7 +984,9 @@ html.showcase-intro .cover-hero__media {
   top: 8svh;
   left: 6%;
   width: 46%;
-  font-size: clamp(5rem, 10.5vw, 13.75rem);
+  /* Bodoni Moda (2026-11-20) sets about a third wider than the old face: sized so an
+     eleven-letter word still fits the 46% column. */
+  font-size: clamp(4rem, 8vw, 10.5rem);
   line-height: 0.86;
   font-weight: 400;
 }
@@ -1052,7 +1054,7 @@ html.showcase-intro .cover-hero__media {
     left: 1rem;
     right: 1rem;
     width: auto;
-    font-size: clamp(3.5rem, 18vw, 6.5rem);
+    font-size: clamp(3rem, 15vw, 5.5rem);
   }
   .cine--knock .cine__type {
     left: 1rem;

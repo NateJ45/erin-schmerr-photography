@@ -38,15 +38,45 @@ function siteName() {
 }
 const NAME = siteName();
 
+/**
+ * The display face for the cards: Bodoni Moda's Latin file (2026-11-20). render-og's
+ * file picker (PORTABLE) scores "-latin-" as a substring, so for @fontsource-variable/
+ * bodoni-moda it ties the Latin file with the latin-ext one and takes latin-ext, which
+ * has no a-z, and every card came out in Georgia. Until that is fixed in the starter
+ * (docs/PENDING.md), this swaps the embedded face for the right file.
+ */
+const DISPLAY_FONT = resolve(
+  root,
+  'node_modules/@fontsource-variable/bodoni-moda/files/bodoni-moda-latin-opsz-normal.woff2',
+);
+export function withBrandFont(html) {
+  let uri;
+  try {
+    uri = `data:font/woff2;base64,${readFileSync(DISPLAY_FONT).toString('base64')}`;
+  } catch {
+    return html;
+  }
+  return html.replace(
+    /@font-face\{font-family:BrandDisplay;src:url\(data:font\/woff2;base64,[^)]*\)[^}]*\}/,
+    // A share card is mostly seen as a small thumbnail, so it takes a fixed, sturdier
+    // optical size (24) rather than the hairline 96 cut its 96px wordmark would get.
+    () =>
+      `@font-face{font-family:BrandDisplay;src:url(${uri}) format('woff2');font-display:block}` +
+      `body{font-variation-settings:'opsz' 24}`,
+  );
+}
+
 /** The card's HTML. Pure: the same request always gives the same HTML (and so the same hash). */
 export function cardHtml({ title, kicker, home = false, mark }) {
-  return ogCardHtml({
-    wordmark: NAME || title,
-    tagline: NAME ? title : '',
-    kicker: home ? undefined : kicker,
-    mark,
-    theme: OG_THEME,
-  });
+  return withBrandFont(
+    ogCardHtml({
+      wordmark: NAME || title,
+      tagline: NAME ? title : '',
+      kicker: home ? undefined : kicker,
+      mark,
+      theme: OG_THEME,
+    }),
+  );
 }
 
 /** Draw the HTML from cardHtml to an image buffer. */
