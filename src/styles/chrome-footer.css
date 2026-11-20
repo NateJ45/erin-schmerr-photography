@@ -90,15 +90,31 @@ body:has(main :is(.signed-close, [data-final-cta])) .bqf-invite {
   line-height: 1.2;
   color: var(--foreground);
   text-decoration: none;
-  background: linear-gradient(currentColor, currentColor) left bottom 0.35rem / 0 1px no-repeat;
-  transition:
-    background-size 400ms var(--ease-focus),
-    color 300ms var(--ease-focus);
+  position: relative;
+  transition: color 300ms var(--ease-focus);
+}
+/* The underline is its own hairline, drawn left to right with a transform. Not a
+   background gradient: the contrast suite (tests/contrast.spec.ts) cannot read the
+   ground behind text that sits on a gradient, and fails it as unmeasured. */
+.bqf-pages a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(50% - 0.85em);
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 400ms var(--ease-focus);
 }
 .bqf-pages a:hover,
 .bqf-pages a[aria-current='page'] {
   color: var(--primary);
-  background-size: 100% 1px;
+}
+.bqf-pages a:hover::after,
+.bqf-pages a[aria-current='page']::after {
+  transform: scaleX(1);
 }
 @media (pointer: coarse) {
   .bqf-pages a {
