@@ -252,13 +252,6 @@
   outline-offset: 3px;
 }
 
-/* Motion's line masks (SplitText): room for descenders and the italic's overhang. */
-.fc-line-mask {
-  padding-bottom: 0.08em;
-  margin-bottom: -0.08em;
-  padding-right: 0.08em;
-}
-
 @media print {
   .fc__title--paper,
   .fc__veil {

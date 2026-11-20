@@ -122,7 +122,12 @@ function shutter(next: HTMLElement, colour: string, slatCount: number, span = 1)
   next.append(layer);
   injected.push(layer);
 
-  gsap.set(slats, { scaleY: 1 });
+  // At rest until it is reached (2026-11-20): the slats start OPEN, and the closed state is
+  // only drawn once the band's top meets the bottom of the screen (immediateRender: false),
+  // where none of it is visible yet. A page loaded at the top therefore shows every band
+  // below the fold finished, never covered: what axe, Lighthouse and a reader arriving by
+  // an in-page link see.
+  gsap.set(slats, { scaleY: 0 });
   gsap
     .timeline({
       defaults: { ease: 'expo.in' },
@@ -142,7 +147,17 @@ function shutter(next: HTMLElement, colour: string, slatCount: number, span = 1)
         invalidateOnRefresh: true,
       },
     })
-    .to(slats, { scaleY: 0, duration: 0.03, stagger: { each: 0.0015, from: 'end' } }, 0);
+    .fromTo(
+      slats,
+      { scaleY: 1 },
+      {
+        scaleY: 0,
+        duration: 0.03,
+        stagger: { each: 0.0015, from: 'end' },
+        immediateRender: false,
+      },
+      0,
+    );
 }
 
 function setup(): void {
@@ -189,21 +204,34 @@ function setup(): void {
         // content comes up with the colour, so no line of text ever sits half-contrast on a
         // half-made colour. The end is clamped to the page's last scroll position, so a
         // band near the foot of a short page still finishes at rest in its full colour.
+        //
+        // AT REST UNTIL REACHED (2026-11-20): the half-made state is drawn only from the
+        // moment the band's top meets the bottom of the screen (start, with immediateRender
+        // off), where none of it shows yet. Before that the band sits finished, so a page
+        // loaded at the top never holds unreadable bands below the fold (axe and Lighthouse
+        // read the whole page; so does a reader who jumps down by a link). A band already on
+        // the first screen at load keeps its rest state and skips the bleed: starting it half
+        // way would show it half-made.
         const from = groundOf(prev);
         const inner = band.firstElementChild as HTMLElement | null;
         const bandTop = () => band.getBoundingClientRect().top + window.scrollY;
         const maxScroll = () => ScrollTrigger.maxScroll(window) - 1;
         const end = () => Math.min(bandTop() - window.innerHeight * 0.45, maxScroll());
-        const start = () => Math.min(bandTop() - window.innerHeight * 0.95, end() - 1);
-        const bleed = gsap.timeline({
-          defaults: { ease: 'none' },
-          scrollTrigger: { trigger: band, start, end, scrub: true, invalidateOnRefresh: true },
-        });
-        bleed.fromTo(band, { '--jw': from }, { '--jw': jewel }, 0);
-        if (inner) bleed.fromTo(inner, { opacity: 0.12 }, { opacity: 1 }, 0);
+        const start = () => Math.min(bandTop() - window.innerHeight, end() - 1);
+        const seenAtLoad = bandTop() < window.scrollY + window.innerHeight;
+        if (!seenAtLoad && end() > start()) {
+          const bleed = gsap.timeline({
+            defaults: { ease: 'none', immediateRender: false },
+            scrollTrigger: { trigger: band, start, end, scrub: true, invalidateOnRefresh: true },
+          });
+          bleed.fromTo(band, { '--jw': from }, { '--jw': jewel }, 0);
+          if (inner) bleed.fromTo(inner, { opacity: 0.12 }, { opacity: 1 }, 0);
+        }
 
-        // 2. Shutter: the next band opens out of this one's colour.
-        if (next && sheet(next)) {
+        // 2. Shutter: the next band opens out of this one's colour (skipped, at rest, when
+        // that band is already on the first screen at load).
+        const nextSeen = !!next && next.getBoundingClientRect().top < window.innerHeight;
+        if (next && sheet(next) && !nextSeen) {
           shutter(next, jewel, wide ? 12 : 7, held ? 0.5 : 1);
         }
       });

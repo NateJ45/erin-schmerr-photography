@@ -5,15 +5,6 @@ import { routes, FORM_ROUTES } from './routes';
 import { settle } from './helpers';
 import { site } from '../src/data/site';
 
-// At rest (2026-11-20): colour is judged on the page as it sits once motion has finished, which is
-// the reduced-motion state. With motion on, the jewel bands scrub their colour and fade their
-// content in as they rise (src/scripts/jewel-motion.ts) and the footer rises from under the page
-// (Footer.astro), so a page loaded at the top holds every band below the fold half-made and the
-// footer covered: axe reads that unfinished state as 1:1 text and covered targets. The resting
-// look is what reduced motion, JavaScript off and print show, and what every band reaches once
-// scrolled to. tests/reduced-motion.spec.ts covers the motion-on states themselves.
-test.use({ reducedMotion: 'reduce' });
-
 // =============================================================================
 // Accessibility (axe-core): dark mode, every route
 // =============================================================================
