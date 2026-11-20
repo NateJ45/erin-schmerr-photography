@@ -305,8 +305,8 @@ const actionBar =
 
 <script>
   // The footer's two entrances (chrome-footer.css), after the Vero reference: the wordmark's
-  // letter build-in ([data-bqf-mark]) and the page and social labels rising into their
-  // clipped boxes ([data-bqf-rise]). Each is armed only where it can play: motion allowed,
+  // letter build-in ([data-bqf-mark]) and the page and social labels wiping in from their
+  // baseline (clip-path) ([data-bqf-rise]). Each is armed only where it can play: motion allowed,
   // IntersectionObserver present, and the element still below the fold (one already on
   // screen stays at rest). Plays once, then the observer goes. Re-runs after a View
   // Transitions swap, which draws a fresh footer.

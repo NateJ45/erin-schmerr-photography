@@ -339,23 +339,23 @@ body:has(main :is(.signed-close, [data-final-cta])) .bqf-invite {
   opacity: 0;
 }
 
-/* The labels rise into their clipped boxes (the reference's link entrance): each inner
-   span starts one line down and slides up, 0.1s apart, ease-in-out quart. At rest unless
-   the script armed the index (JS on, motion allowed, below the fold). */
+/* The labels rise into view (the reference's link entrance): each label is wiped in
+   from its baseline up, 0.1s apart, ease-in-out quart. A clip-path, not a slide: the
+   text box never moves, so nothing shifts and the contrast suite measures the label
+   where it sits (a translated label put its box over the next link's text). At rest
+   unless the script armed the index (JS on, motion allowed, below the fold). */
 .bqf-rise {
   display: inline-block;
-  overflow: clip;
-  vertical-align: bottom;
 }
 .bqf-rise > span {
   display: inline-block;
 }
 .bqf-index[data-build='armed'] .bqf-rise > span {
-  translate: 0 105%;
+  clip-path: inset(100% 0 0 0);
 }
 .bqf-index[data-build='on'] .bqf-rise > span {
-  translate: 0 0;
-  transition: translate 0.8s cubic-bezier(0.76, 0, 0.24, 1) calc(var(--i, 0) * 0.1s);
+  clip-path: inset(0 0 0 0);
+  transition: clip-path 0.8s cubic-bezier(0.76, 0, 0.24, 1) calc(var(--i, 0) * 0.1s);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -364,7 +364,7 @@ body:has(main :is(.signed-close, [data-final-cta])) .bqf-invite {
     filter: none !important;
   }
   .bqf-rise > span {
-    translate: none !important;
+    clip-path: none !important;
     transition: none !important;
   }
 }
@@ -374,7 +374,7 @@ body:has(main :is(.signed-close, [data-final-cta])) .bqf-invite {
     filter: none !important;
   }
   .bqf-rise > span {
-    translate: none !important;
+    clip-path: none !important;
   }
 }
 
