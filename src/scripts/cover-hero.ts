@@ -54,7 +54,15 @@ function setup(root: HTMLElement): Cleanup {
   const linesOf = new Map<HTMLElement, Element[]>();
   const split = () => {
     for (const el of lineTargets) {
-      const s = SplitText.create(el, { type: 'lines', mask: 'lines', linesClass: 'line' });
+      // aria: 'none'. SplitText's default puts aria-label on the split element,
+      // which axe rejects on a span, dt or dd (aria-prohibited-attr). Lines keep
+      // every word whole, so the text reads the same without it.
+      const s = SplitText.create(el, {
+        type: 'lines',
+        mask: 'lines',
+        linesClass: 'line',
+        aria: 'none',
+      });
       splits.push(s);
       linesOf.set(el, s.lines);
     }
