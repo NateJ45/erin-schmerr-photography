@@ -1,79 +1,218 @@
-/* The boutique footer (Footer.astro; DESIGN.md, Components; 2026-11-20).
-   Warm paper, hairlines, square corners, the brand faces. Layout and the wordmark's
-   build-in live here; the button is the header's own (.bq-button, chrome-header.css).
-   Imported by Footer.astro, so it loads wherever the footer does. */
+/* The jewel close (Footer.astro; DESIGN.md, Components; 2026-11-20). A wine colour field
+   from the colour system's jewel tokens (each with a fallback, so the footer stands on its
+   own), paper type, amber for the name and the one italic turn. Motion is the script's in
+   Footer.astro (GSAP, on demand); everything here is the resting state, which is also what
+   JavaScript off, reduced motion and print show. Imported by Footer.astro. */
 
 .bqf-footer {
-  /* The giant word may never widen the page (it is sized to the column, this is a guard). */
+  /* The giant name may never widen the page (it is sized to the column; this is a guard). */
   overflow-x: clip;
-  border-top: 1px solid var(--border);
 }
-.bqf-footer a:focus-visible,
-.bqf-footer button:focus-visible,
-.bqf-footer input:focus-visible {
-  outline: 2px solid var(--primary);
+
+/* ---- The field --------------------------------------------------------------------------- */
+.bqf-stage {
+  /* The field re-points the shared tokens, so the site's own pieces inside it (the copy-email
+     button, the newsletter, the to-confirm marks) draw paper on wine with no restyle. */
+  --bqf-field: var(--jewel-wine, #5a1a2a);
+  --bqf-field-deep: var(--jewel-wine-deep, #3a0d1a);
+  --bqf-paper: #f3eee7;
+  --bqf-paper-quiet: #dccbc4;
+  --bqf-amber: var(--jewel-amber, #c8862a);
+  --bqf-amber-soft: var(--jewel-amber-soft, #ebbb76);
+  --bqf-magenta: var(--jewel-magenta, #b0175f);
+  --background: var(--bqf-field);
+  --foreground: var(--bqf-paper);
+  --muted-foreground: var(--bqf-paper-quiet);
+  --primary: var(--bqf-amber-soft);
+  --link: var(--bqf-paper);
+  --border: color-mix(in oklab, var(--bqf-paper) 22%, transparent);
+  --input: color-mix(in oklab, var(--bqf-paper) 40%, transparent);
+  --muted: color-mix(in oklab, var(--bqf-paper) 10%, transparent);
+  --accent: color-mix(in oklab, var(--bqf-paper) 12%, transparent);
+  --ring: var(--bqf-amber-soft);
+
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  background: linear-gradient(180deg, var(--bqf-field) 0%, var(--bqf-field-deep) 100%);
+  color: var(--bqf-paper);
+}
+.bqf-stage a:focus-visible,
+.bqf-stage button:focus-visible,
+.bqf-stage input:focus-visible {
+  outline: 2px solid var(--bqf-amber-soft);
   outline-offset: 3px;
 }
-
-/* ---- The invitation ---------------------------------------------------------------- */
-.bqf-invite {
-  display: grid;
-  justify-items: center;
-  gap: 1.1rem;
-  padding: clamp(4.5rem, 11vw, 8.5rem) var(--spacing-m) clamp(4rem, 9vw, 7rem);
-  text-align: center;
-  border-bottom: 1px solid var(--border);
+.bqf-stage__inner {
+  position: relative;
+  z-index: 1;
 }
-/* A page that already closes on its own booking invitation (the home's signed close, or
-   any band marked data-final-cta, as WhereNext reads it) does not get a second one. */
-body:has(main :is(.signed-close, [data-final-cta])) .bqf-invite {
+
+/* The Vault cursor trail's layer: behind the type, never takes a pointer. */
+.bqf-trail {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.bqf-trail [data-bqf-trail-images] {
   display: none;
 }
-.bqf-invite__title {
-  max-width: 14ch;
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: clamp(2.25rem, 5.2vw, 4rem);
-  font-weight: 400;
-  line-height: 1;
-  letter-spacing: -0.01em;
-  color: var(--foreground);
-  text-wrap: balance;
+.bqf-trail__item {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 248px;
+  overflow: hidden;
+  visibility: hidden;
+  contain: layout paint style;
+  will-change: transform;
+  backface-visibility: hidden;
 }
-.bqf-invite__title em {
-  font-style: italic;
-  color: var(--primary);
+.bqf-trail__media {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 8px;
+  will-change: transform;
 }
-.bqf-invite__line {
-  max-width: 34ch;
-  margin: 0;
-  font-size: 1rem;
-  line-height: 1.6;
-  color: var(--foreground);
-  text-wrap: pretty;
-}
-/* The header's own button (.bq-button, chrome-header.css): one family (rule 17). */
-.bqf-invite__button {
-  margin-top: 1rem;
+.bqf-trail__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
 }
 
-/* ---- Pages, places, reach -------------------------------------------------------------- */
-.bqf-index {
+/* ---- The close --------------------------------------------------------------------------- */
+.bqf-close {
   display: grid;
-  gap: 2.5rem;
+  gap: clamp(1.5rem, 3vw, 2.5rem);
   max-width: var(--container-content);
   margin-inline: auto;
-  padding: clamp(2.5rem, 5vw, 3.5rem) var(--spacing-m) 0;
+  padding: clamp(5rem, 12vw, 9.5rem) var(--spacing-m) clamp(3.5rem, 8vw, 6rem);
+  border-bottom: 1px solid var(--border);
+}
+/* A page that already closes on its own booking invitation does not get a second one. */
+body:has(main :is(.signed-close, [data-final-cta])) .bqf-close {
+  display: none;
+}
+.bqf-close__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2.75rem, 8.2vw, 7.25rem);
+  font-weight: 400;
+  line-height: 0.98;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+.bqf-close__link {
+  display: inline;
+  color: var(--bqf-paper);
+  text-decoration: none;
+}
+.bqf-close__words {
+  /* The underline is drawn left to right under every line (a background on an inline box
+     wraps with the text), in amber, on hover and focus. */
+  background-image: linear-gradient(var(--bqf-amber), var(--bqf-amber));
+  background-repeat: no-repeat;
+  background-position: 0 92%;
+  background-size: 0% 2px;
+  transition: background-size 700ms var(--ease-focus);
+}
+.bqf-close__link:hover .bqf-close__words,
+.bqf-close__link:focus-visible .bqf-close__words {
+  background-size: 100% 2px;
+}
+.bqf-close__title em {
+  font-style: italic;
+  color: var(--bqf-amber-soft);
+}
+.bqf-close__arrow {
+  display: inline-grid;
+  place-items: center;
+  width: 0.62em;
+  height: 0.62em;
+  margin-left: 0.18em;
+  vertical-align: 0.06em;
+  border-radius: 999px;
+  background: var(--bqf-paper);
+  color: var(--bqf-field);
+  transition:
+    transform 600ms var(--ease-focus),
+    background-color 300ms var(--ease-focus),
+    color 300ms var(--ease-focus);
+}
+.bqf-close__arrow svg {
+  width: 52%;
+  height: 52%;
+}
+.bqf-close__link:hover .bqf-close__arrow,
+.bqf-close__link:focus-visible .bqf-close__arrow {
+  transform: rotate(45deg);
+  background: var(--bqf-magenta);
+  color: var(--bqf-paper);
+}
+.bqf-close__aside {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem 2.5rem;
+}
+.bqf-close__line {
+  max-width: 36ch;
+  margin: 0;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  color: var(--bqf-paper-quiet);
+  text-wrap: pretty;
+}
+.bqf-close__guide {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--bqf-amber-soft);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in oklab, currentColor 45%, transparent);
+  text-underline-offset: 5px;
+  transition: color 300ms var(--ease-focus);
+}
+.bqf-close__guide:hover {
+  color: var(--bqf-paper);
+}
+
+/* ---- The index: pages, places, reach (TOBACCO's grid of quiet columns) -------------------- */
+.bqf-index {
+  display: grid;
+  gap: 2.5rem 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+  max-width: var(--container-content);
+  margin-inline: auto;
+  padding: clamp(3rem, 6vw, 4.5rem) var(--spacing-m) 0;
 }
 @media (min-width: 900px) {
   .bqf-index {
     grid-template-columns: minmax(0, 5fr) minmax(0, 4fr) minmax(0, 3fr);
-    align-items: start;
   }
 }
-.bqf-index__lead {
+.bqf-col {
   display: grid;
-  gap: 2rem;
+  align-content: start;
+  gap: 1rem;
+}
+.bqf-label {
+  margin: 0;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--bqf-amber-soft);
 }
 .bqf-pages,
 .bqf-places,
@@ -83,25 +222,23 @@ body:has(main :is(.signed-close, [data-final-cta])) .bqf-invite {
   list-style: none;
 }
 .bqf-pages a {
+  position: relative;
   display: inline-flex;
   align-items: center;
-  min-height: 2rem;
-  font-size: 1rem;
-  line-height: 1.2;
-  color: var(--foreground);
+  min-height: 2.25rem;
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  line-height: 1.15;
+  color: var(--bqf-paper);
   text-decoration: none;
-  position: relative;
   transition: color 300ms var(--ease-focus);
 }
-/* The underline is its own hairline, drawn left to right with a transform. Not a
-   background gradient: the contrast suite (tests/contrast.spec.ts) cannot read the
-   ground behind text that sits on a gradient, and fails it as unmeasured. */
 .bqf-pages a::after {
   content: '';
   position: absolute;
   left: 0;
   right: 0;
-  bottom: calc(50% - 0.85em);
+  bottom: calc(50% - 0.75em);
   height: 1px;
   background: currentColor;
   transform: scaleX(0);
@@ -110,7 +247,7 @@ body:has(main :is(.signed-close, [data-final-cta])) .bqf-invite {
 }
 .bqf-pages a:hover,
 .bqf-pages a[aria-current='page'] {
-  color: var(--primary);
+  color: var(--bqf-amber-soft);
 }
 .bqf-pages a:hover::after,
 .bqf-pages a[aria-current='page']::after {
@@ -122,77 +259,217 @@ body:has(main :is(.signed-close, [data-final-cta])) .bqf-invite {
   }
 }
 
-/* Two places side by side on a phone, stacked in their column on a wide screen. */
 .bqf-places {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
-  gap: 1.75rem 1.5rem;
-}
-@media (min-width: 900px) {
-  .bqf-places {
-    grid-template-columns: 1fr;
-    gap: 2.25rem;
-  }
+  gap: 1.5rem;
 }
 .bqf-place p {
   margin: 0;
 }
 .bqf-place__name {
-  display: flex;
-  align-items: baseline;
-  gap: 0.5rem;
   font-family: var(--font-display);
-  font-size: 1.5rem;
-  line-height: 1.1;
-  color: var(--foreground);
-}
-.bqf-place__arrow {
-  font-family: var(--font-sans, inherit);
-  font-size: 0.875rem;
-  color: var(--primary);
+  font-size: 1.75rem;
+  font-style: italic;
+  line-height: 1.05;
+  color: var(--bqf-paper);
 }
 .bqf-place__lines {
-  margin-top: 0.35rem !important;
-  padding-left: 1.35rem;
+  margin-top: 0.4rem !important;
   font-size: 0.75rem;
   line-height: 1.6;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--muted-foreground);
-}
-.bqf-place .bqf-quiet {
-  margin-left: 1.35rem;
+  color: var(--bqf-paper-quiet);
 }
 
 .bqf-reach {
   display: grid;
   justify-items: start;
+  gap: 0.25rem;
 }
-@media (min-width: 900px) {
-  .bqf-reach {
-    justify-items: end;
-    text-align: right;
-  }
+.bqf-social {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 2.5rem;
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  line-height: 1;
+  color: var(--bqf-paper);
+  text-decoration: none;
+  transition: color 300ms var(--ease-focus);
+}
+.bqf-social svg {
+  transition: transform 400ms var(--ease-focus);
+}
+.bqf-social:hover {
+  color: var(--bqf-amber-soft);
+}
+.bqf-social:hover svg {
+  transform: translate(3px, -3px);
 }
 .bqf-quiet,
-.bqf-reach button {
+.bqf-reach button,
+.bqf-reach a:not(.bqf-social) {
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
   min-height: 2rem;
   font-size: 0.875rem;
-  color: var(--muted-foreground);
+  color: var(--bqf-paper-quiet);
   text-decoration: none;
   transition: color 300ms var(--ease-focus);
 }
 .bqf-quiet:hover,
-.bqf-reach button:hover {
-  color: var(--primary);
+.bqf-reach button:hover,
+.bqf-reach a:not(.bqf-social):hover {
+  color: var(--bqf-amber-soft);
 }
 @media (pointer: coarse) {
   .bqf-quiet,
-  .bqf-reach button {
+  .bqf-reach button,
+  .bqf-social {
     min-height: 44px;
+  }
+}
+
+/* ---- The name: her photographs inside the letters ---------------------------------------- */
+/* The band clips the name's rise (TOBACCO's mask). The name box has the clip text's own
+   proportions, so the objectBoundingBox clipPath lands the letters exactly in it. */
+.bqf-name-band {
+  max-width: var(--container-content);
+  margin-inline: auto;
+  padding: clamp(3rem, 7vw, 5.5rem) var(--spacing-m) 0;
+  overflow: clip;
+}
+.bqf-name {
+  position: relative;
+  display: block;
+  aspect-ratio: var(--bqf-name-ratio, 1000 / 412);
+  text-decoration: none;
+  will-change: transform;
+}
+.bqf-name:focus-visible {
+  outline-offset: 6px;
+}
+.bqf-name__defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+.bqf-name__glyphs {
+  font-family: var(--font-display);
+  font-weight: 400;
+}
+.bqf-name__fill {
+  position: absolute;
+  inset: 0;
+  display: block;
+  overflow: hidden;
+  /* Solid amber letters with no photos, and while the photos load. */
+  background: var(--bqf-amber);
+  clip-path: url(#bqf-name-clip);
+  transition: background-color 400ms var(--ease-focus);
+}
+.bqf-name:not(.bqf-name--photos):hover .bqf-name__fill {
+  background: var(--bqf-amber-soft);
+}
+.bqf-name__strip {
+  display: flex;
+  width: max-content;
+  height: 100%;
+}
+.bqf-name__strip img {
+  display: block;
+  height: 100%;
+  width: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  transition: filter 500ms var(--ease-focus);
+}
+/* A warm jewel tint at rest, the true photographs on hover. */
+.bqf-name--photos .bqf-name__strip img {
+  filter: sepia(0.25) saturate(1.15);
+}
+.bqf-name--photos:hover .bqf-name__strip img {
+  filter: none;
+}
+
+/* ---- The small print --------------------------------------------------------------------- */
+.bqf-small {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 1.5rem;
+  max-width: var(--container-content);
+  margin-inline: auto;
+  padding: 1rem var(--spacing-m) 1.5rem;
+  font-size: 0.75rem;
+  color: var(--bqf-paper-quiet);
+}
+.bqf-small > * {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin: 0;
+}
+.bqf-small > p {
+  margin-right: auto;
+}
+.bqf-small a {
+  color: var(--bqf-paper-quiet);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in oklab, currentColor 40%, transparent);
+  text-underline-offset: 3px;
+  transition: color 300ms var(--ease-focus);
+}
+.bqf-small a:hover {
+  color: var(--bqf-amber-soft);
+}
+/* "Back to top": paper, small tracked capitals, last in the row. */
+.bqf-small > .bqf-small__top {
+  margin-left: auto;
+  gap: 0.4rem;
+  color: var(--bqf-paper);
+  font-size: 0.6875rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+/* ---- At rest ----------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .bqf-trail {
+    display: none;
+  }
+  .bqf-stage,
+  .bqf-stage__inner,
+  .bqf-name {
+    transform: none !important;
+    clip-path: none !important;
+  }
+}
+/* Print: ink on paper, the name as plain solid letters, no photographs. */
+@media print {
+  .bqf-stage {
+    --bqf-paper: #000;
+    --bqf-paper-quiet: #333;
+    --bqf-amber-soft: #000;
+    background: #fff !important;
+    color: #000;
+    clip-path: none !important;
+  }
+  .bqf-stage__inner,
+  .bqf-name {
+    transform: none !important;
+  }
+  .bqf-trail,
+  .bqf-name__strip,
+  .bqf-close__arrow {
+    display: none;
+  }
+  .bqf-name__fill {
+    background: #000;
   }
 }
 
@@ -277,145 +554,4 @@ body:has(main :is(.signed-close, [data-final-cta])) .bqf-invite {
   padding: 0;
   border: 0;
   background: none;
-}
-
-/* ---- The wordmark ----------------------------------------------------------------------- */
-/* Sized to fill the content column exactly: Bodoni Moda sets "Tate" 1.86em wide at
-   this tracking (measured 2026-11-20), so the font size is the column over that. The
-   container query unit keeps it to the column at every width, so it never scrolls. */
-.bqf-mark-wrap {
-  max-width: var(--container-content);
-  margin-inline: auto;
-  padding: clamp(2.5rem, 6vw, 4.5rem) var(--spacing-m) 0.75rem;
-  /* The letters are inline (so "Ta" keeps its kerning), and an inline box at this size is
-     far taller than the 0.78 line: clip it here, or the page grows a band below the footer.
-     The padding leaves room for the ink above the caps and the focus ring below. */
-  overflow: clip;
-}
-.bqf-mark {
-  display: block;
-  container-type: inline-size;
-  color: var(--foreground);
-  text-decoration: none;
-  transition: color 400ms var(--ease-focus);
-}
-.bqf-mark:hover {
-  color: var(--primary);
-}
-.bqf-mark:focus-visible {
-  outline-offset: 6px;
-}
-.bqf-mark__word {
-  display: block;
-  font-family: var(--font-display);
-  font-size: calc(100cqi / var(--bqf-mark-em, 1.87));
-  font-weight: 400;
-  line-height: 0.78;
-  letter-spacing: -0.02em;
-  white-space: nowrap;
-  /* The tops of the caps sit at the box's top edge and the baseline at its foot. */
-  padding-top: 0.06em;
-}
-.bqf-mark__l {
-  position: relative;
-  /* Earlier letters paint over later ones: the T's arm over the a while it builds. */
-  z-index: calc(10 - var(--i, 0));
-}
-/* The SVG that holds the build-in's filters takes no room. */
-.bqf-mark__defs {
-  position: absolute;
-  width: 0;
-  height: 0;
-  overflow: hidden;
-}
-
-/* The build-in (Footer.astro's script). Each glyph is eroded back to its spine by an SVG
-   feMorphology filter whose radius shrinks to nothing, so the letter grows outward like
-   ink spreading: the reference's distance-field threshold, done in paint only (an
-   animated text stroke moved each letter's visual box, which Chrome scores as layout
-   shift). 0.7s a letter, 0.15s apart, ease-out cubic, as on the reference. Armed letters
-   wait unseen; the script fades each in over the first part of its own build. */
-.bqf-mark[data-build='armed'] .bqf-mark__l {
-  opacity: 0;
-}
-
-/* The labels rise into view (the reference's link entrance): each label is wiped in
-   from its baseline up, 0.1s apart, ease-in-out quart. A clip-path, not a slide: the
-   text box never moves, so nothing shifts and the contrast suite measures the label
-   where it sits (a translated label put its box over the next link's text). At rest
-   unless the script armed the index (JS on, motion allowed, below the fold). */
-.bqf-rise {
-  display: inline-block;
-}
-.bqf-rise > span {
-  display: inline-block;
-}
-.bqf-index[data-build='armed'] .bqf-rise > span {
-  clip-path: inset(100% 0 0 0);
-}
-.bqf-index[data-build='on'] .bqf-rise > span {
-  clip-path: inset(0 0 0 0);
-  transition: clip-path 0.8s cubic-bezier(0.76, 0, 0.24, 1) calc(var(--i, 0) * 0.1s);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .bqf-mark .bqf-mark__l {
-    opacity: 1 !important;
-    filter: none !important;
-  }
-  .bqf-rise > span {
-    clip-path: none !important;
-    transition: none !important;
-  }
-}
-@media print {
-  .bqf-mark .bqf-mark__l {
-    opacity: 1 !important;
-    filter: none !important;
-  }
-  .bqf-rise > span {
-    clip-path: none !important;
-  }
-}
-
-/* ---- The small print --------------------------------------------------------------------- */
-.bqf-small {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0 1.5rem;
-  max-width: var(--container-content);
-  margin-inline: auto;
-  padding: 0.5rem var(--spacing-m) 1.5rem;
-  font-size: 0.75rem;
-  color: var(--muted-foreground);
-}
-.bqf-small > * {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  margin: 0;
-}
-.bqf-small > p {
-  margin-right: auto;
-}
-.bqf-small a {
-  color: var(--muted-foreground);
-  text-decoration: underline;
-  text-decoration-color: color-mix(in oklab, currentColor 40%, transparent);
-  text-underline-offset: 3px;
-  transition: color 300ms var(--ease-focus);
-}
-.bqf-small a:hover {
-  color: var(--primary);
-}
-/* "Back to top" (2026-11-20, replaced the floating round button): ink, small tracked capitals,
-   last in the row. */
-.bqf-small > .bqf-small__top {
-  margin-left: auto;
-  gap: 0.4rem;
-  color: var(--foreground);
-  font-size: 0.6875rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
 }
