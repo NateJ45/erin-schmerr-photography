@@ -3,6 +3,8 @@
 // Two home page blocks fed by the Publications list:
 //   publishedMarquee  the magazine names, once each, in a strip
 //   tearSheetStack    the publications' tear sheets
+//   proofStrip        press features between short quotes
+//   pressContents     the About page's "As seen in" contents line
 // Each holds only its heading; the names and pictures come from the list, so a
 // new publication shows up with no page edit. No colour field (rule 9); both
 // SELF_CONTAINED in sectionCadence.ts and self-filling in pageBuilderConfig.ts.
@@ -131,4 +133,33 @@ export const proofStrip = defineType({
   },
 });
 
-export const pressSectionSchemas = [publishedMarquee, tearSheetStack, proofStrip];
+// As seen in (the About page, 2026-11-20): every magazine once, set very large in the
+// display italic and parted by slashes like a contents line. Pointing at or focusing one
+// dims the others and shows that issue's tear sheet and date. PressContents.astro; the
+// names come from Publications, so the block holds only its label.
+export const pressContents = defineType({
+  name: 'pressContents',
+  title: 'As seen in',
+  type: 'object',
+  icon: DocumentsIcon,
+  description:
+    'Every magazine your work has run in, as one large contents line (from Publications).',
+  fields: [
+    defineField({
+      name: 'heading',
+      title: 'Label',
+      type: 'string',
+      initialValue: 'As seen in',
+      validation: (Rule) => Rule.max(60),
+    }),
+  ],
+  preview: {
+    select: { heading: 'heading' },
+    prepare: ({ heading }) => ({
+      title: heading || 'As seen in',
+      subtitle: 'The magazines, from Publications',
+    }),
+  },
+});
+
+export const pressSectionSchemas = [publishedMarquee, tearSheetStack, proofStrip, pressContents];

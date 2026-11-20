@@ -174,18 +174,16 @@ test('a sent contact form sends generate_lead', async ({ page }) => {
   await page.route(/\/api\/contact\/?(\?.*)?$/, (route) =>
     route.fulfill({ status: 200, contentType: 'application/json', body: '{"ok":true}' }),
   );
+  // Reduced motion keeps the booking request's four chapters stacked, so every required
+  // answer is on screen at once (src/scripts/booking-form.ts).
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/contact/', { waitUntil: 'domcontentloaded' });
-  const form = page.locator('form[aria-busy]');
-  await form.scrollIntoViewIfNeeded();
-  const name = page.locator('#name');
-  // Wait for the island: a controlled input keeps what is typed once React owns it.
-  await expect(async () => {
-    await name.fill('Probe');
-    await page.waitForTimeout(150);
-    await expect(name).toHaveValue('Probe');
-  }).toPass({ timeout: 10_000 });
+  const form = page.locator('form[data-bk-form]');
+  // Wait for the script to wire the form; a submit before that is the browser's own post.
+  await expect(page.locator('[data-booking][data-bk-ready]')).toHaveCount(1, { timeout: 10_000 });
 
-  // Fill every visible required field with something valid.
+  // Fill every visible required field with something valid (one radio per group is enough).
+  const groups = new Set<string>();
   for (const field of await form.locator('[required]:visible').all()) {
     const tag = await field.evaluate((el) => el.tagName.toLowerCase());
     const type = (await field.getAttribute('type')) ?? '';
@@ -195,7 +193,11 @@ test('a sent contact form sends generate_lead', async ({ page }) => {
         .evaluateAll((os) => os.map((o) => (o as HTMLOptionElement).value).filter(Boolean));
       await field.selectOption(values[0]);
     } else if (type === 'checkbox' || type === 'radio') {
-      await field.check();
+      const group = (await field.getAttribute('name')) ?? '';
+      if (type === 'radio' && groups.has(group)) continue;
+      groups.add(group);
+      // A sitting card's radio is visually hidden inside its label: check it directly.
+      await field.check({ force: true });
     } else if (type === 'email') {
       await field.fill('probe@example.com');
     } else {

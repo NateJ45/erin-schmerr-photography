@@ -5,7 +5,8 @@
 // the home page, as a short signed note on the page's own paper (no dark
 // panel). A large heading on the left; on the right the note, the one filled
 // button and the signature, set in the display face's italic (DESIGN.md: no
-// script font). Stacks on a phone, on the one left edge.
+// script font), or her scanned signature when Signature image is set. Stacks on a
+// phone, on the one left edge.
 //
 // The button is the page's one booking ask: SectionRenderer gives this block
 // the accent even when the header's button goes to the same place
@@ -14,7 +15,8 @@
 //
 // SELF_CONTAINED: plain page ground, no surface prop.
 import CtaLink from '@/components/CtaLink.astro';
-import type { ProjectedCtaBlock } from '@/lib/pageBuilder.types';
+import SanityImage from '@/components/SanityImage.astro';
+import type { ProjectedCtaBlock, SanityImageObject } from '@/lib/pageBuilder.types';
 import '@/styles/portfolio.css';
 
 interface Props {
@@ -23,6 +25,8 @@ interface Props {
   body?: string;
   cta?: ProjectedCtaBlock | null;
   signature?: string;
+  /** A scan of her signature (optional); shown in place of the typed name, which stays for screen readers. */
+  signatureImage?: SanityImageObject | null;
   headingId?: string;
   primaryVariant?: 'primary' | 'secondary';
 }
@@ -33,6 +37,7 @@ const {
   body,
   cta,
   signature,
+  signatureImage,
   headingId = 'signed-close-heading',
   primaryVariant = 'primary',
 } = Astro.props;
@@ -59,7 +64,20 @@ const {
       {signature && (
         <p class="signed-close__sign">
           <span class="portfolio-label">Signed,</span>
-          <span class="signed-close__name font-display">{signature}</span>
+          {signatureImage?.asset ? (
+            <>
+              <SanityImage
+                source={signatureImage}
+                width={480}
+                alt=""
+                class="signed-close__mark"
+                loading="lazy"
+              />
+              <span class="sr-only">{signature}</span>
+            </>
+          ) : (
+            <span class="signed-close__name font-display">{signature}</span>
+          )}
         </p>
       )}
     </div>

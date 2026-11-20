@@ -515,11 +515,24 @@ export const HOME_SECTION_TYPES = [
   { type: 'signedClose' }, // scaffold: stories
 ];
 
-export const ABOUT_SECTION_TYPES = [
+// The general library plus the people-page blocks. Contact and Privacy build on this list, not on
+// ABOUT_SECTION_TYPES, so the About page's own blocks stay on the About page.
+const PEOPLE_SECTION_TYPES = [
   ...SECTION_TYPES,
   { type: 'storySection' }, // scaffold: about
   { type: 'teamSection' },
   { type: 'dynamicListSection' },
+];
+
+export const ABOUT_SECTION_TYPES = [
+  ...PEOPLE_SECTION_TYPES,
+  // The boutique About page (aboutSections.ts, 2026-11-20), its contents line and its close.
+  { type: 'aboutOpening' }, // scaffold: about
+  { type: 'aboutStory' }, // scaffold: about
+  { type: 'aboutApproach' }, // scaffold: about
+  { type: 'processFigures' }, // scaffold: about
+  { type: 'pressContents' }, // scaffold: press
+  { type: 'signedClose' }, // scaffold: stories
 ];
 
 export const SERVICES_SECTION_TYPES = [
@@ -532,7 +545,7 @@ export const SERVICES_SECTION_TYPES = [
 // take the block their page is built around (mainPageSections.ts); Journal takes its posts block
 // (journalPostsSection.ts). Those blocks are offered on their own page only, not in the general
 // library or the saved sections.
-export const CONTACT_SECTION_TYPES = [...ABOUT_SECTION_TYPES, { type: 'contactFormSection' }];
-export const PRIVACY_SECTION_TYPES = [...ABOUT_SECTION_TYPES, { type: 'privacyPolicySection' }];
+export const CONTACT_SECTION_TYPES = [...PEOPLE_SECTION_TYPES, { type: 'contactFormSection' }];
+export const PRIVACY_SECTION_TYPES = [...PEOPLE_SECTION_TYPES, { type: 'privacyPolicySection' }];
 
 export const PROCESS_SECTION_TYPES = [...SECTION_TYPES];

@@ -1,0 +1,647 @@
+/* Safe to edit by hand
+   =============================================================================
+   page-booking.css - the booking request (src/components/booking/BookingForm.astro)
+   =============================================================================
+   Imported by the component, so the per-page purge keeps it only on /contact/ (and the
+   styleguide fixture). DESIGN.md "Booking request": paper, ink rules, square corners, the
+   one filled Dusk button, nothing blurred over anything. Colours are the brand tokens.
+
+   THREE STATES, all readable without JavaScript:
+     - default (no JS, or reduced motion): the four chapters stacked;
+     - `.bk--stepped` (set by src/scripts/booking-form.ts): one chapter at a time, the
+       others carry `hidden`;
+     - sent: `.bk.is-sent` (script) or `#booking-sent:target` (the no-JS redirect) hides
+       the form and shows the thank-you and the "What happens next" strip.
+   Motion is CSS only (no library) and only under `prefers-reduced-motion: no-preference`.
+   ============================================================================= */
+
+.bk {
+  --bk-ink: var(--color-foreground);
+  --bk-muted: var(--color-muted-foreground);
+  --bk-rule: var(--color-border-soft);
+  --bk-soft: var(--color-muted);
+  --bk-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  background: var(--color-background);
+}
+
+/* ---- Masthead ---------------------------------------------------------------- */
+.bk__head {
+  max-width: 40rem;
+}
+.bk__title {
+  margin-top: 0.75rem;
+  font-size: clamp(2.75rem, 7vw, 5.5rem);
+  line-height: 0.95;
+  letter-spacing: -0.01em;
+  color: var(--bk-ink);
+  text-wrap: balance;
+}
+.bk__sub {
+  margin-top: 1.25rem;
+  font-size: var(--text-lg);
+  color: var(--bk-muted);
+  max-width: 34rem;
+}
+.bk__availability {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--text-lg);
+  color: var(--bk-ink);
+}
+.bk__availability-rule {
+  flex: none;
+  width: 2.5rem;
+  height: 1px;
+  background: var(--bk-ink);
+}
+.bk__intro {
+  margin-top: 1rem;
+  color: var(--bk-muted);
+}
+
+/* ---- The form and its chapters ---------------------------------------------- */
+.bk__stage {
+  margin-top: clamp(2.5rem, 6vw, 4rem);
+}
+.bk__form {
+  display: grid;
+  gap: clamp(3rem, 7vw, 4.5rem);
+}
+.bk--stepped .bk__form {
+  gap: 2rem;
+}
+.bk__chapter {
+  min-width: 0;
+  border: 0;
+  border-top: 1px solid var(--bk-ink);
+  padding: 1.5rem 0 0;
+  margin: 0;
+}
+.bk__chapter[hidden] {
+  display: none;
+}
+/* One chapter at a time: the progress line above is the rule, so the chapter drops its own. */
+.bk--stepped .bk__chapter {
+  border-top: 0;
+  padding-top: 0.5rem;
+}
+.bk__legend {
+  float: left; /* lets the legend sit inside the ruled box like any heading */
+  width: 100%;
+  padding: 0;
+  margin-bottom: 1.75rem;
+}
+.bk__legend + * {
+  clear: both;
+}
+.bk__chapter-title {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  font-weight: 400;
+  outline-offset: 6px;
+}
+.bk__numeral {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  line-height: 1;
+  /* Dusk, through the link token so the shared dark suites still measure AA. */
+  color: var(--color-link);
+}
+.bk__chapter-name {
+  font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+  line-height: 1.05;
+  color: var(--bk-ink);
+}
+
+/* ---- Progress line (stepped only) ------------------------------------------- */
+.bk__progress {
+  display: grid;
+  gap: 0.6rem;
+}
+.bk__progress[hidden] {
+  display: none;
+}
+.bk__progress-track {
+  display: block;
+  height: 1px;
+  background: var(--bk-rule);
+  overflow: hidden;
+}
+.bk__progress-fill {
+  display: block;
+  height: 100%;
+  background: var(--bk-ink);
+  transform: scaleX(0.25);
+  transform-origin: left center;
+  transition: transform 600ms var(--bk-ease);
+}
+
+/* ---- Chapter I: sitting cards (Biograph's tall photo cards, corners squared) -- */
+.bk__sittings {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.75rem 1rem;
+}
+/* One row from 40rem: as many columns as there are sittings (set inline, at most 4). */
+@media (min-width: 40rem) {
+  .bk__sittings {
+    grid-template-columns: repeat(var(--bk-cols, 4), minmax(0, 1fr));
+    gap: 1rem;
+  }
+}
+.bk-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  cursor: pointer;
+  min-width: 0;
+}
+.bk-card__input {
+  /* Unseen but real: it lies over the whole card, so a press, a hit test and the focus
+     ring all land on the card (the whole card is also its label). */
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.bk-card__frame {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background-color: var(--bk-soft);
+  background-image: var(--bk-lqip, none);
+  background-size: cover;
+  background-position: center;
+  outline: 1px solid transparent;
+  outline-offset: 5px;
+  transition: outline-color 300ms var(--bk-ease);
+}
+.bk-card__img,
+.bk__portrait-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.bk-card__img {
+  transition: transform 900ms var(--bk-ease);
+}
+.bk-card__frame--empty {
+  display: grid;
+  place-items: center;
+}
+.bk-card__ph {
+  font-size: var(--text-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bk-muted);
+}
+.bk-card__meta {
+  display: grid;
+  gap: 0.25rem;
+}
+.bk-card__num {
+  font-size: var(--text-xs);
+  letter-spacing: 0.14em;
+  font-variant-numeric: tabular-nums;
+  color: var(--bk-muted);
+}
+.bk-card__title {
+  font-size: 1.35rem;
+  line-height: 1.1;
+  color: var(--bk-ink);
+}
+.bk-card__line {
+  font-size: var(--text-sm);
+  color: var(--bk-muted);
+}
+.bk-card__line--ph {
+  font-style: italic;
+}
+.bk-card__mark {
+  position: absolute;
+  top: 0.6rem;
+  left: 0.6rem;
+  padding: 0.3rem 0.55rem;
+  font-size: var(--text-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  background: var(--color-background);
+  color: var(--bk-ink);
+  opacity: 0;
+  transition: opacity 300ms var(--bk-ease);
+}
+.bk-card:hover .bk-card__img {
+  transform: scale(1.03);
+}
+.bk-card:has(.bk-card__input:checked) .bk-card__frame {
+  outline-color: var(--bk-ink);
+}
+.bk-card:has(.bk-card__input:checked) .bk-card__mark {
+  opacity: 1;
+}
+.bk-card:has(.bk-card__input:focus-visible) .bk-card__frame {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 4px;
+}
+.bk-card:has(.bk-card__input[aria-invalid='true']) .bk-card__frame {
+  outline-color: var(--color-destructive);
+}
+
+/* ---- Chapter II: season chips ------------------------------------------------ */
+.bk__group {
+  border: 0;
+  padding: 0;
+  margin: 0 0 1.75rem;
+  min-width: 0;
+}
+.bk__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 0.75rem;
+}
+.bk-chip {
+  position: relative;
+  cursor: pointer;
+}
+.bk-chip__input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  margin: 0;
+  cursor: pointer;
+}
+.bk-chip__face {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0 1.1rem;
+  border: 1px solid var(--bk-rule);
+  font-size: var(--text-sm);
+  color: var(--bk-ink);
+  transition:
+    border-color 300ms var(--bk-ease),
+    background-color 300ms var(--bk-ease),
+    color 300ms var(--bk-ease);
+}
+.bk-chip:hover .bk-chip__face {
+  border-color: var(--bk-ink);
+}
+.bk-chip__input:checked + .bk-chip__face {
+  background: var(--bk-ink);
+  border-color: var(--bk-ink);
+  color: var(--color-background);
+}
+.bk-chip__input:focus-visible + .bk-chip__face {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 3px;
+}
+.bk-chip__input[aria-invalid='true'] + .bk-chip__face {
+  border-color: var(--color-destructive);
+}
+
+/* ---- Text fields: a single ink rule, no box ---------------------------------- */
+.bk__field {
+  display: grid;
+  gap: 0.5rem;
+  margin-bottom: 1.75rem;
+}
+.bk__label {
+  font-size: var(--text-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bk-ink);
+  padding: 0;
+}
+.bk__optional {
+  color: var(--bk-muted);
+  letter-spacing: 0.08em;
+  text-transform: none;
+}
+.bk__hint {
+  font-size: var(--text-sm);
+  color: var(--bk-muted);
+  max-width: 36rem;
+}
+.bk__input {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.5rem 0;
+  border: 0;
+  border-bottom: 1px solid var(--bk-ink);
+  border-radius: 0;
+  background: transparent;
+  font-size: var(--text-lg);
+  color: var(--bk-ink);
+}
+.bk__textarea {
+  padding: 0.75rem;
+  border: 1px solid var(--bk-ink);
+  line-height: 1.55;
+  resize: vertical;
+  font-size: var(--text-base);
+}
+.bk__input:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 3px;
+}
+.bk__input[aria-invalid='true'] {
+  border-color: var(--color-destructive);
+}
+.bk__error {
+  margin-top: 0.5rem;
+  font-size: var(--text-sm);
+  color: var(--color-destructive);
+}
+.bk__error[hidden] {
+  display: none;
+}
+.bk__alert {
+  padding: 0.9rem 1rem;
+  border-left: 2px solid var(--color-destructive);
+  background: var(--bk-soft);
+  color: var(--bk-ink);
+}
+.bk__alert[hidden] {
+  display: none;
+}
+
+/* The honeypot: out of sight and out of the tab order. */
+.bk__hp {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* ---- Continue, Back, Send ---------------------------------------------------- */
+.bk__nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+.bk__nav[hidden],
+.bk__back[hidden] {
+  display: none;
+}
+.bk__continue,
+.bk__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 2.75rem;
+  min-width: 2.75rem;
+  padding: 0 0.25rem;
+  font-size: var(--text-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bk-ink);
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+.bk__continue {
+  margin-left: auto;
+}
+.bk__continue::after {
+  content: '';
+  width: 2.5rem;
+  height: 1px;
+  background: currentColor;
+  transition: width 300ms var(--bk-ease);
+}
+.bk__continue:hover::after {
+  width: 3.5rem;
+}
+.bk__back {
+  color: var(--bk-muted);
+}
+.bk__back:hover {
+  color: var(--bk-ink);
+}
+.bk__send {
+  margin-left: auto;
+  min-height: 2.75rem;
+  padding: 0 2rem;
+  border: 0;
+  border-radius: 0;
+  background: var(--color-primary-dark);
+  color: #fff;
+  font-size: var(--text-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 300ms var(--bk-ease);
+}
+.bk__send:hover {
+  background: var(--color-primary);
+}
+.bk__send:disabled {
+  opacity: 0.7;
+  cursor: progress;
+}
+.bk__continue:focus-visible,
+.bk__back:focus-visible,
+.bk__send:focus-visible,
+.bk__direct a:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 3px;
+}
+.bk__direct {
+  margin-top: 2.5rem;
+  font-size: var(--text-sm);
+  color: var(--bk-muted);
+}
+.bk__direct a {
+  color: var(--color-link);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ---- No-JS failure panel (`:target`) ----------------------------------------- */
+.bk__failed {
+  display: none;
+  margin-bottom: 2rem;
+  padding: 1rem 1.1rem;
+  border-left: 2px solid var(--color-destructive);
+  background: var(--bk-soft);
+  color: var(--bk-ink);
+}
+.bk__failed:target {
+  display: block;
+}
+
+/* ---- The portrait, held in view from lg up ----------------------------------- */
+.bk__aside {
+  display: none;
+}
+@media (min-width: 64rem) {
+  .bk__aside {
+    display: block;
+  }
+  .bk__portrait {
+    position: sticky;
+    top: 7rem;
+  }
+}
+.bk__portrait {
+  margin: 0;
+}
+.bk__portrait-frame {
+  display: block;
+  aspect-ratio: 3 / 4;
+  max-height: calc(100vh - 10rem);
+  overflow: hidden;
+  background-color: var(--bk-soft);
+  background-image: var(--bk-lqip, none);
+  background-size: cover;
+  background-position: center;
+}
+.bk__portrait figcaption {
+  margin-top: 0.75rem;
+}
+
+/* ---- After sending ----------------------------------------------------------- */
+.bk-sent {
+  display: none;
+}
+.bk.is-sent .bk-sent,
+.bk-sent:target {
+  display: block;
+}
+.bk.is-sent .bk__layout,
+.bk:has(.bk-sent:target) .bk__layout {
+  display: none;
+}
+.bk-sent:focus {
+  outline: none;
+}
+.bk-sent__letter {
+  max-width: 44rem;
+}
+.bk-sent__title {
+  margin-top: 0.75rem;
+  font-size: clamp(3rem, 9vw, 7rem);
+  line-height: 0.95;
+  letter-spacing: -0.01em;
+  color: var(--bk-ink);
+}
+.bk-sent__note {
+  margin-top: 1.5rem;
+  font-size: var(--text-lg);
+  color: var(--bk-muted);
+  max-width: 36rem;
+}
+.bk-sent__note--ph {
+  font-style: italic;
+}
+.bk-sent__sign {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+.bk-sent__name {
+  font-style: italic;
+  font-size: clamp(2rem, 4vw, 3rem);
+  color: var(--bk-ink);
+}
+
+/* "What happens next": Forge Automotive's staggered numbered panels, rebuilt on paper.
+   Their dark glass becomes the soft paper band with an ink rule on top; no blur. */
+.bk-next {
+  margin-top: clamp(4rem, 9vw, 7rem);
+}
+.bk-next__heading {
+  font-weight: 400;
+}
+.bk-next__list {
+  display: grid;
+  gap: 1rem;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.bk-next__step {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 2.5rem;
+  min-height: 15rem;
+  padding: 1.5rem 1.5rem 1.75rem;
+  border-top: 1px solid var(--bk-ink);
+  background: var(--bk-soft);
+}
+.bk-next__num {
+  font-style: italic;
+  font-size: clamp(4rem, 9vw, 6.5rem);
+  line-height: 0.9;
+  color: var(--bk-ink);
+}
+.bk-next__text {
+  display: grid;
+  gap: 0.6rem;
+}
+.bk-next__title {
+  font-size: 1.6rem;
+  line-height: 1.1;
+  color: var(--bk-ink);
+}
+.bk-next__body {
+  font-size: var(--text-sm);
+  color: var(--bk-muted);
+  max-width: 22rem;
+}
+@media (min-width: 48rem) {
+  .bk-next__list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: start;
+  }
+  .bk-next__step {
+    min-height: 22rem;
+    margin-top: calc(var(--i, 0) * 2rem);
+  }
+}
+
+/* ---- Motion: only where it is welcome ----------------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+  .bk__chapter.is-entering {
+    animation: bk-enter 600ms var(--bk-ease) both;
+  }
+  .bk.is-sent .bk-sent__letter {
+    animation: bk-enter 900ms var(--bk-ease) both;
+  }
+  .bk.is-sent .bk-next__step {
+    animation: bk-rise 900ms var(--bk-ease) both;
+    animation-delay: calc(300ms + var(--i, 0) * 140ms);
+  }
+}
+@keyframes bk-enter {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+}
+@keyframes bk-rise {
+  from {
+    opacity: 0;
+    transform: translateY(2.5rem);
+  }
+}

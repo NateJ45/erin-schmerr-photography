@@ -1230,6 +1230,108 @@ export type NavLink = {
   href?: string;
 };
 
+export type ProcessFigures = {
+  _type: 'processFigures';
+  label?: string;
+  heading?: string;
+  figures?: Array<{
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    caption?: string;
+    _type: 'image';
+    _key: string;
+  }>;
+};
+
+export type AboutApproach = {
+  _type: 'aboutApproach';
+  eyebrow?: string;
+  statement?: string;
+  body?: Array<{
+    children?: Array<{
+      marks?: Array<string>;
+      text?: string;
+      _type: 'span';
+      _key: string;
+    }>;
+    style?: 'normal';
+    listItem?: never;
+    markDefs?: Array<{
+      href?: string;
+      _type: 'link';
+      _key: string;
+    }>;
+    level?: number;
+    _type: 'block';
+    _key: string;
+  }>;
+  voice?: string;
+  voiceCredit?: string;
+  image?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: 'image';
+  };
+};
+
+export type AboutStory = {
+  _type: 'aboutStory';
+  eyebrow?: string;
+  heading?: string;
+  body?: Array<{
+    children?: Array<{
+      marks?: Array<string>;
+      text?: string;
+      _type: 'span';
+      _key: string;
+    }>;
+    style?: 'normal';
+    listItem?: never;
+    markDefs?: Array<{
+      href?: string;
+      _type: 'link';
+      _key: string;
+    }>;
+    level?: number;
+    _type: 'block';
+    _key: string;
+  }>;
+  portrait?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: 'image';
+  };
+};
+
+export type AboutOpening = {
+  _type: 'aboutOpening';
+  eyebrow?: string;
+  headline?: string;
+  subhead?: string;
+  image?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: 'image';
+  };
+};
+
+export type PressContents = {
+  _type: 'pressContents';
+  heading?: string;
+};
+
 export type ProofStrip = {
   _type: 'proofStrip';
   heading?: string;
@@ -1260,6 +1362,13 @@ export type SignedClose = {
   body?: string;
   cta?: CtaBlock;
   signature?: string;
+  signatureImage?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: 'image';
+  };
 };
 
 export type CrewSection = {
@@ -3180,6 +3289,30 @@ export type ContactPage = {
       _key: string;
     } & FormQuestion
   >;
+  bookingSittings?: Array<{
+    title?: string;
+    line?: string;
+    image?: {
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      alt?: string;
+      _type: 'image';
+    };
+    _type: 'bookingSitting';
+    _key: string;
+  }>;
+  bookingPortrait?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: 'image';
+  };
+  bookingThanksNote?: string;
+  bookingSignature?: string;
   whatToExpectEyebrow?: string;
   whatToExpectHeadline?: string;
   whatToExpectContent?: Array<{
@@ -3497,6 +3630,24 @@ export type AboutPage = {
     | ({
         _key: string;
       } & DynamicListSection)
+    | ({
+        _key: string;
+      } & AboutOpening)
+    | ({
+        _key: string;
+      } & AboutStory)
+    | ({
+        _key: string;
+      } & AboutApproach)
+    | ({
+        _key: string;
+      } & ProcessFigures)
+    | ({
+        _key: string;
+      } & PressContents)
+    | ({
+        _key: string;
+      } & SignedClose)
   >;
   seoTitle?: string;
   seoDescription?: string;
@@ -4110,6 +4261,11 @@ export type AllSanitySchemaTypes =
   | BusinessInfo
   | SiteSettings
   | NavLink
+  | ProcessFigures
+  | AboutApproach
+  | AboutStory
+  | AboutOpening
+  | PressContents
   | ProofStrip
   | TearSheetStack
   | PublishedMarquee

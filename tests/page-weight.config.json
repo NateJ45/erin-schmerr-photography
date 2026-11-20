@@ -18,7 +18,7 @@
   },
   "pages": {
     "/contact/": {
-      "_why": "The form island loads React and the form libraries (1596 KB decoded when measured, 2026-10-27).",
+      "_why": "Was the React form island (1596 KB decoded, 2026-10-27). Since 2026-11-20 the booking request is vanilla TS; the budget is left as it was until re-measured.",
       "maxScriptKb": 2000
     }
   },

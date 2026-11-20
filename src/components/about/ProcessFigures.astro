@@ -1,0 +1,86 @@
+---
+// scaffold-file: about
+// Safe to edit by hand
+// Page-builder block `processFigures` (aboutSections.ts): behind the scenes, after
+// the M. Fisher reference. A hairline across the column, a small "(Process)"
+// label under it, the heading's first word at the left edge and the rest at
+// the right, then an uneven gallery of up to five photos, each captioned
+// "Fig 01." to "Fig 05." above it like a plate in a book: the first wide on the
+// left, the second tall on the right, the third large on the left, the last
+// two small side by side on the right. A phone stacks them, the two small
+// ones still side by side. Empty slots draw labelled placeholders, so the
+// layout reads as itself until her photos arrive.
+//
+// SELF_CONTAINED: plain page ground. No motion beyond the photos' own focus pull.
+import FocusImage from '@/components/portfolio/FocusImage.astro';
+import { figureLabel, headingEnds } from '@/lib/about-page';
+import { placeholderPhoto, type PortfolioPhoto } from '@/lib/portfolio';
+import type { SanityImageObject } from '@/lib/pageBuilder.types';
+import '@/styles/page-about.css';
+
+type Figure = SanityImageObject & { _key?: string; caption?: string };
+
+interface Props {
+  label?: string;
+  heading?: string;
+  figures?: Figure[] | null;
+  headingId?: string;
+}
+
+const {
+  label = 'Process',
+  heading = 'Behind the scenes',
+  figures,
+  headingId = 'about-process',
+} = Astro.props;
+const [left, right] = headingEnds(heading);
+
+// Each slot's shape, so the gallery keeps its rhythm whatever the photos are.
+const SLOTS = [
+  { crop: 3 / 2, width: 900, sizes: '(min-width: 64rem) 38vw, 100vw' },
+  { crop: 3 / 4, width: 900, sizes: '(min-width: 64rem) 38vw, 100vw' },
+  { crop: 4 / 5, width: 900, sizes: '(min-width: 64rem) 38vw, 100vw' },
+  { crop: 4 / 5, width: 500, sizes: '(min-width: 64rem) 18vw, 50vw' },
+  { crop: 4 / 5, width: 500, sizes: '(min-width: 64rem) 18vw, 50vw' },
+];
+const given = (figures ?? []).filter((f) => f?.asset);
+const plates = SLOTS.map((slot, i) => {
+  const fig = given[i];
+  return {
+    ...slot,
+    label: figureLabel(i),
+    caption: fig?.caption,
+    photo: fig
+      ? (fig as PortfolioPhoto)
+      : placeholderPhoto(i, `Placeholder: behind-the-scenes photo ${i + 1} goes here`),
+  };
+});
+---
+
+<section class="about-process bg-background" aria-labelledby={headingId}>
+  <div class="mx-auto max-w-content px-m py-section-lg">
+    <div class="about-process__rule">
+      <p class="about-process__label">({label})</p>
+      <h2 id={headingId} class="about-process__title font-display">
+        <span>{left}</span>
+        {right && <span class="about-process__title-end">{right}</span>}
+      </h2>
+    </div>
+    <ol class="about-process__grid list-none" aria-label={`${heading}, photographs`}>
+      {plates.map((p, i) => (
+        <li class:list={['about-process__fig', `about-process__fig--${i + 1}`]}>
+          <figure>
+            <p class="about-process__num" aria-hidden="true">
+              {p.label}
+            </p>
+            <FocusImage photo={p.photo} width={p.width} crop={p.crop} sizes={p.sizes} />
+            <figcaption class="about-process__caption">
+              <span class="sr-only">{p.label} </span>
+              {p.caption}
+            </figcaption>
+          </figure>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
