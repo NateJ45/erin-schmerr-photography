@@ -1,26 +1,48 @@
 ---
 // scaffold-file: sessions
 // Safe to edit by hand
-// Page-builder block `heirloomsSpec` (sessionSections.ts): prints, albums and
-// wall pieces, each set like a gallery spec sheet (modelled on an object
-// maker's product page, with no cart and no price): the kind in brackets, the
-// name large in the display face, a sentence, then ruled "(Paper)", "(Size)",
-// "(Finish)" rows, label left and value right. The photos stack in the picture
-// track of the shared split (.split, card 91) instead of the reference's
-// sideways slider, so nothing moves on its own and every photo is reachable
-// without a control. From 64rem the spec sheet stays in view while its photos
-// pass. A piece with no photos shows one placeholder frame.
+// Page-builder block `heirloomsSpec` (sessionSections.ts): what a session
+// becomes, in three movements.
+//
+// 1. Wall art, by size (phase 2, 2026-11-20): the sizes, Mini to Statement,
+//    drawn TO SCALE on one wall: each a framed rectangle at its real
+//    proportion, all hung on the same eye line, the name in the display face,
+//    the size and how it feels on a wall under it. Sizes without inches are
+//    listed by name only (scaleSizes() in src/lib/sessions.ts).
+// 2. The pieces: prints, albums and wall pieces, each set like a gallery spec
+//    sheet (modelled on an object maker's product page, with no cart and no
+//    price): the kind in brackets, the name large, a sentence, then ruled
+//    "(Paper)", "(Size)", "(Finish)" rows. The photos stack in the picture track
+//    of the shared split (.split, card 91); from 64rem the sheet stays in view
+//    while its photos pass. A piece with no photos shows one placeholder frame.
+// 3. Framed on real walls: her work in clients' homes, an uneven gallery with
+//    captions, so the art is seen where it will live.
+//
+// Every part is optional except the pieces. Nothing moves on its own.
 //
 // SELF_CONTAINED: plain page ground, no surface prop.
 import FocusImage from '@/components/portfolio/FocusImage.astro';
 import type { ProjectedHeirloomsSpecSection } from '@/lib/pageBuilder.types';
 import type { PortfolioPhoto } from '@/lib/portfolio';
+import { scaleSizes } from '@/lib/sessions';
 import '@/styles/page-sessions.css';
 
 type Props = Omit<ProjectedHeirloomsSpecSection, '_type' | '_key'> & { headingId?: string };
 
-const { eyebrow, heading = 'Heirlooms', intro, pieces, headingId = 'heirlooms' } = Astro.props;
+const {
+  eyebrow,
+  heading = 'Heirlooms',
+  intro,
+  pieces,
+  sizesHeading = 'Wall art, by size',
+  sizes,
+  wallsHeading = 'Framed on real walls',
+  walls,
+  headingId = 'heirlooms',
+} = Astro.props;
 const items = (pieces ?? []).filter((p) => p?.name);
+const scaled = scaleSizes(sizes);
+const wallPhotos = (walls ?? []).filter((w) => w?.asset);
 ---
 
 {items.length > 0 && (
@@ -28,11 +50,37 @@ const items = (pieces ?? []).filter((p) => p?.name);
     <div class="mx-auto max-w-content px-m py-section-lg">
       <header class="sx-head">
         {eyebrow && <p class="portfolio-label mb-4">{eyebrow}</p>}
-        <h2 id={headingId} class="font-display text-h2">
+        <h2 id={headingId} class="sx-big-title font-display">
           {heading}
         </h2>
-        {intro && <p class="mt-4 max-w-xl text-muted-foreground">{intro}</p>}
+        {intro && <p class="mt-6 max-w-xl text-lg text-muted-foreground">{intro}</p>}
       </header>
+
+      {scaled.length > 0 && (
+        <div class="sx-sizes">
+          <h3 id={`${headingId}-sizes`} class="sx-sizes__title portfolio-label">
+            {sizesHeading}
+          </h3>
+          <ol class="sx-sizes__wall" role="list">
+            {scaled.map((s) => (
+              <li class="sx-size">
+                <div class="sx-size__hang" aria-hidden="true">
+                  {s.drawn && (
+                    <span
+                      class="sx-size__frame"
+                      style={`--w: ${s.w.toFixed(4)}; --h: ${s.h.toFixed(4)}`}
+                    />
+                  )}
+                </div>
+                <p class="sx-size__name font-display">{s.name}</p>
+                {s.dims && <p class="sx-size__dims portfolio-label">{s.dims}</p>}
+                {s.feeling && <p class="sx-size__feel text-muted-foreground">{s.feeling}</p>}
+              </li>
+            ))}
+          </ol>
+        </div>
+      )}
+
       <div class="sx-heirlooms">
         {items.map((piece, i) => {
           const photos = (piece.photos ?? []).filter(Boolean);
@@ -75,6 +123,32 @@ const items = (pieces ?? []).filter((p) => p?.name);
           );
         })}
       </div>
+
+      {wallPhotos.length > 0 && (
+        <div class="sx-walls">
+          <h3 id={`${headingId}-walls`} class="sx-walls__title font-display">
+            {wallsHeading}
+          </h3>
+          <ul class="sx-walls__grid" role="list" data-count={wallPhotos.length}>
+            {wallPhotos.map((w, i) => (
+              <li class="sx-wall">
+                <figure>
+                  <FocusImage
+                    photo={w as PortfolioPhoto}
+                    width={1200}
+                    sizes="(min-width: 64rem) 50vw, 100vw"
+                    crop={i === 0 ? 3 / 2 : 4 / 5}
+                    alt={w.alt ?? ''}
+                  />
+                  {w.caption && (
+                    <figcaption class="sx-wall__cap portfolio-label">{w.caption}</figcaption>
+                  )}
+                </figure>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   </section>
 )}

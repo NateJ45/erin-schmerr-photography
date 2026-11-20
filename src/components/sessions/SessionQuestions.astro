@@ -1,59 +1,91 @@
 ---
 // scaffold-file: sessions
 // Safe to edit by hand
-// Page-builder block `sessionQuestions` (sessionSections.ts): the questions as
-// native <details> rows in the page's ruled style (a hairline above each, the
-// question in the display face, a thin drawn plus that turns to a minus), then
-// "Book a session". Native elements: a tap or the keyboard opens an answer,
-// it works without JavaScript and a browser's find-in-page opens the right one.
-// The heading and the booking link sit in the text track of the shared split
-// (.split, card 91), the rows in the other.
+// Page-builder block `sessionQuestions` (sessionSections.ts): worries first,
+// then the questions.
 //
-// The booking link takes the variant SectionRenderer's one-accent budget gives
-// it (card 158); it goes where the header's button goes, so it is normally the
-// quieter secondary. Left empty in the Studio it reads "Book a session" and
-// goes to the Contact page. Real answers are offered to Google as an FAQPage
-// (sectionFaqs(), src/lib/page-meta.ts); "Placeholder: ..." answers are not.
+// Phase 2 (2026-11-20): it opens on the worries people bring to a portrait
+// session, in their own words ("I hate photos of myself"), each set very large
+// in the display italic as a quotation with her answer under it, in a ruled
+// row of up to three (stacked on a phone). Families and first-timers read
+// these before any logistics.
+//
+// Then the questions as native <details> rows in the page's ruled style (a
+// hairline above each, the question in the display face, a thin drawn plus
+// that turns to a minus). Native elements: a tap or the keyboard opens an
+// answer, it works without JavaScript and a browser's find-in-page opens the
+// right one. The heading and a quiet text link to book sit in the text track of
+// the shared split (.split, card 91), the rows in the other.
+//
+// The booking link is a text link with a drawn underline, never a second
+// filled button: the page's one accent belongs to the close (card 158). Left
+// empty in the Studio it reads "Book a session" and goes to the Contact page.
+// Real answers are offered to Google as an FAQPage (sectionFaqs(),
+// src/lib/page-meta.ts); "Placeholder: ..." answers are not.
 //
 // SELF_CONTAINED: plain page ground, no surface prop.
-import CtaLink from '@/components/CtaLink.astro';
 import PortableText from '@/components/PortableText';
 import type { ProjectedSessionQuestionsSection } from '@/lib/pageBuilder.types';
 import type { PortableTextBlock } from '@portabletext/types';
+import { ctaHref } from '@/lib/cta-href';
 import '@/styles/page-sessions.css';
 
 type Props = Omit<ProjectedSessionQuestionsSection, '_type' | '_key'> & {
   headingId?: string;
+  /** Accepted for the renderer's one-accent budget; this block always draws the quiet link. */
   primaryVariant?: 'primary' | 'secondary';
 };
 
 const {
   eyebrow,
+  worriesHeading = 'What people worry about',
+  worries,
   heading = 'Questions',
   items,
   cta,
   headingId = 'session-questions',
-  primaryVariant = 'secondary',
 } = Astro.props;
 const rows = (items ?? []).filter((q) => q?.question);
+const fears = (worries ?? []).filter((w) => w?.worry);
+const bookHref = ctaHref(cta, '/contact/');
+const bookLabel = cta?.label || 'Book a session';
 ---
 
 {rows.length > 0 && (
   <section class="bg-background" aria-labelledby={headingId}>
+    {fears.length > 0 && (
+      <div class="sx-worries mx-auto max-w-content px-m pt-section-lg">
+        {eyebrow && <p class="portfolio-label mb-4">{eyebrow}</p>}
+        <h2 id={`${headingId}-worries`} class="sx-worries__title font-display">
+          {worriesHeading}
+        </h2>
+        <ul class="sx-worries__list" role="list" data-count={fears.length}>
+          {fears.map((w) => (
+            <li class="sx-worry">
+              <blockquote class="sx-worry__quote font-display">
+                <p>
+                  <span aria-hidden="true">“</span>
+                  {w.worry}
+                  <span aria-hidden="true">”</span>
+                </p>
+              </blockquote>
+              {w.reply && <p class="sx-worry__reply">{w.reply}</p>}
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
     <div class="sx-faq split mx-auto max-w-content px-m py-section-lg">
       <div class="sx-faq__head">
-        {eyebrow && <p class="portfolio-label mb-4">{eyebrow}</p>}
+        {eyebrow && fears.length === 0 && <p class="portfolio-label mb-4">{eyebrow}</p>}
         <h2 id={headingId} class="font-display text-h2">
           {heading}
         </h2>
-        <div class="mt-8" data-sx-book>
-          <CtaLink
-            cta={cta}
-            variant={primaryVariant}
-            fallbackHref="/contact/"
-            fallbackLabel="Book a session"
-          />
-        </div>
+        <p class="mt-8" data-sx-book>
+          <a class="sx-textlink" href={bookHref}>
+            {bookLabel}
+          </a>
+        </p>
       </div>
       <ul class="sx-faq__list" role="list">
         {rows.map((q) => (

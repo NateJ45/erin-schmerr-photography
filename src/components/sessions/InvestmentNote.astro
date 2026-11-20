@@ -2,52 +2,92 @@
 // scaffold-file: sessions
 // Safe to edit by hand
 // Page-builder block `investmentNote` (sessionSections.ts): a short, warm note
-// in two columns on the shared split (.split, card 91): the heading large in
-// the text track, the note in the other, set a size up from body text, and an
-// optional signature in the display italic (no script font). It carries no
-// figure of its own: prices live only in the sittings' "Investment from" field.
+// on investment in two columns on the shared split (.split, card 91): the
+// heading very large on the left, her words on the right, signed in the
+// display italic.
+//
+// Phase 2 (2026-11-20): a ledger under the note, between ink rules, like the
+// last page of a printed price list. "Most clients invest between" with the
+// range set huge in the display face, then the session fee with a line on
+// what it covers (the art is chosen separately, at the reveal), then a small
+// note on payment plans. EVERY figure is typed in the Studio, never in code.
+// An empty figure is not drawn: the range line goes, and the fee line keeps
+// only its words on what the fee covers (or goes too, when those are empty).
+// The ledger is left out when it has nothing to show.
 //
 // SELF_CONTAINED: plain page ground, no surface prop.
 import PortableText from '@/components/PortableText';
+import type { ProjectedInvestmentNoteSection } from '@/lib/pageBuilder.types';
 import type { PortableTextBlock } from '@portabletext/types';
+import { figure } from '@/lib/sessions';
 import '@/styles/page-sessions.css';
 
-interface Props {
-  eyebrow?: string;
-  heading?: string;
-  body?: PortableTextBlock[] | null;
-  signature?: string;
-  headingId?: string;
-}
+type Props = Omit<ProjectedInvestmentNoteSection, '_type' | '_key'> & { headingId?: string };
 
 const {
   eyebrow,
   heading = 'A note on investment',
   body,
   signature,
+  rangeLabel = 'Most clients invest between',
+  range,
+  feeLabel = 'The session fee',
+  fee,
+  feeNote,
+  financingNote,
   headingId = 'investment-note',
 } = Astro.props;
 const hasBody = Array.isArray(body) && body.length > 0;
+const rangeText = figure(range);
+const feeText = figure(fee);
+const hasLedger = !!(rangeText || feeText || feeNote || financingNote);
 ---
 
 {hasBody && (
   <section class="bg-background" aria-labelledby={headingId}>
-    <div class="sx-note split mx-auto max-w-content px-m py-section-lg">
-      <div>
-        {eyebrow && <p class="portfolio-label mb-4">{eyebrow}</p>}
-        <h2 id={headingId} class="sx-note__title font-display">
-          {heading}
-        </h2>
+    <div class="mx-auto max-w-content px-m py-section-lg">
+      <div class="sx-note split">
+        <div>
+          {eyebrow && <p class="portfolio-label mb-4">{eyebrow}</p>}
+          <h2 id={headingId} class="sx-note__title font-display">
+            {heading}
+          </h2>
+        </div>
+        <div class="sx-note__body">
+          <PortableText value={body as PortableTextBlock[]} />
+          {signature && (
+            <p class="sx-note__sign">
+              <span class="portfolio-label">Signed,</span>
+              <span class="sx-note__name font-display">{signature}</span>
+            </p>
+          )}
+        </div>
       </div>
-      <div class="sx-note__body">
-        <PortableText value={body as PortableTextBlock[]} />
-        {signature && (
-          <p class="sx-note__sign">
-            <span class="portfolio-label">Signed,</span>
-            <span class="sx-note__name font-display">{signature}</span>
-          </p>
-        )}
-      </div>
+      {hasLedger && (
+        <dl class="sx-ledger">
+          {rangeText && (
+            <div class="sx-ledger__row sx-ledger__row--range">
+              <dt class="portfolio-label">{rangeLabel}</dt>
+              <dd class="sx-ledger__figure font-display">{rangeText}</dd>
+            </div>
+          )}
+          {(feeText || feeNote) && (
+            <div class="sx-ledger__row">
+              <dt class="portfolio-label">{feeLabel}</dt>
+              <dd>
+                {feeText && <span class="sx-ledger__fee font-display">{feeText}</span>}
+                {feeNote && <span class="sx-ledger__note text-muted-foreground">{feeNote}</span>}
+              </dd>
+            </div>
+          )}
+          {financingNote && (
+            <div class="sx-ledger__row sx-ledger__row--small">
+              <dt class="sr-only">Payment plans</dt>
+              <dd class="text-muted-foreground">{financingNote}</dd>
+            </div>
+          )}
+        </dl>
+      )}
     </div>
   </section>
 )}

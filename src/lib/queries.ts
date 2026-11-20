@@ -113,9 +113,12 @@ const SECTION_ARMS = `
     // scaffold: sessions
     _type == "sessionsOpening" => { ..., photo${IMAGE_PROJECTION} },
     _type == "sessionSittings" => { ..., sittings[]{ ..., photo${IMAGE_PROJECTION} } },
-    _type == "sessionExperience" => { ..., photo${IMAGE_PROJECTION} },
-    _type == "heirloomsSpec" => { ..., pieces[]{ ..., photos[]${IMAGE_PROJECTION} } },
+    _type == "sessionExperience" => { ..., photo${IMAGE_PROJECTION}, steps[]{ ..., photo${IMAGE_PROJECTION} } },
+    _type == "heirloomsSpec" => { ..., pieces[]{ ..., photos[]${IMAGE_PROJECTION} }, walls[]${IMAGE_PROJECTION} },
     _type == "sessionQuestions" => { ..., cta${CTA_PROJECTION} },
+    _type == "sessionOffers" => { ..., offers[]{ ..., photo${IMAGE_PROJECTION} } },
+    _type == "sessionTeam" => { ..., photo${IMAGE_PROJECTION}, members[]{ ..., "person": collaborator->{ name, url, instagram } } },
+    _type == "sessionsClose" => { ..., photo${IMAGE_PROJECTION}, cta${CTA_PROJECTION} },
     // scaffold:end
     _type == "heroSection" => {
       ...,

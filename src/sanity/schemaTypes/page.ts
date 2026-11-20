@@ -23,6 +23,7 @@ import { PUBLISH_AT_GROUP, publishAtField } from './_publishAt';
 import { seoFields } from './_seoFields';
 import { RESERVED_SLUGS } from '../../lib/reservedSlugs';
 import { pageBuilderAuthoring } from '../pageBuilderAuthoring';
+import { SessionsPageBuilderInput } from '../components/SessionsPageBuilderInput'; // scaffold: sessions
 
 export const page = defineType({
   name: 'page',
@@ -77,6 +78,8 @@ export const page = defineType({
       options: sectionArrayOptions,
       // The authoring kit (card 109): Insert a saved section, plus gentle warnings.
       ...pageBuilderAuthoring,
+      // The Sessions page offers only its own blocks (wraps the kit's input).
+      components: { input: SessionsPageBuilderInput }, // scaffold: sessions
     }),
 
     // ── Menu placement ────────────────────────────────────────────────────────

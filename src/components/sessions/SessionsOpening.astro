@@ -3,10 +3,21 @@
 // Safe to edit by hand
 // Page-builder block `sessionsOpening` (sessionSections.ts): the Sessions page
 // opens on one very large Bodoni Moda line, the page's h1, with the words
-// typed in "turn" set in its italic (modelled on a closing line of big roman
-// type with italic words between). An optional small photo sits above the line
-// at the right, square-cornered; the eyebrow and a sentence sit on the one left
-// edge. Draws nothing without a line.
+// typed in "turn" set in its italic.
+//
+// With a photo (phase 2, 2026-11-20) the line runs ACROSS one of her
+// portraits: the photo stands tall at the right of the content column and the
+// line sits low on the left, crossing the photo's edge. It reads ink on the
+// paper and paper on the photo, like the home cinema's overlap frame: the h1 is
+// the ink copy; a second, aria-hidden copy in paper colour lives INSIDE the
+// photo's box (which clips it) at exactly the same place, measured in the
+// stage's container units, so the two line up whatever the screen. A veil on
+// the photo's lower half keeps the paper part readable. No blend modes. On a
+// phone the photo goes full width and the line overlaps its bottom edge.
+// Without a photo it is the plain big line, as before.
+//
+// Motion: both copies rise together a little on arrival, under html.motion
+// only. JS off and reduced motion: the finished frame.
 //
 // SELF_CONTAINED: plain page ground, no surface prop.
 import FocusImage from '@/components/portfolio/FocusImage.astro';
@@ -31,32 +42,67 @@ const hasPhoto = !!photo?.asset;
 
 {line && (
   <section class="bg-background" aria-labelledby={headingId}>
-    <div class="sx-opening mx-auto max-w-content px-m">
-      <div class="sx-opening__top">
-        {eyebrow && <p class="portfolio-label">{eyebrow}</p>}
-        {hasPhoto && (
-          <FocusImage
-            photo={photo as PortfolioPhoto}
-            width={480}
-            sizes="(min-width: 64rem) 16rem, 40vw"
-            crop={4 / 5}
-            loading="eager"
-            class="sx-opening__photo"
-          />
-        )}
+    {hasPhoto ? (
+      <div class="sx-open mx-auto max-w-content px-m">
+        {eyebrow && <p class="portfolio-label sx-open__eyebrow">{eyebrow}</p>}
+        <div class="sx-open__stage">
+          <div class="sx-open__photo">
+            <FocusImage
+              photo={photo as PortfolioPhoto}
+              width={1200}
+              sizes="(min-width: 48rem) 58vw, 100vw"
+              crop={4 / 5}
+              loading="eager"
+              fetchpriority="high"
+              pull={false}
+              class="sx-open__img"
+            />
+            <p
+              class="sx-open__line sx-open__line--over font-display"
+              aria-hidden="true"
+              data-contrast-decorative
+            >
+              {parts ? (
+                <>
+                  {parts[0]}
+                  <em>{parts[1]}</em>
+                  {parts[2]}
+                </>
+              ) : (
+                line
+              )}
+            </p>
+          </div>
+          <h1 id={headingId} class="sx-open__line font-display">
+            {parts ? (
+              <>
+                {parts[0]}
+                <em>{parts[1]}</em>
+                {parts[2]}
+              </>
+            ) : (
+              line
+            )}
+          </h1>
+        </div>
+        {intro && <p class="sx-open__intro text-lg text-muted-foreground">{intro}</p>}
       </div>
-      <h1 id={headingId} class="sx-opening__line font-display">
-        {parts ? (
-          <>
-            {parts[0]}
-            <em>{parts[1]}</em>
-            {parts[2]}
-          </>
-        ) : (
-          line
-        )}
-      </h1>
-      {intro && <p class="sx-opening__intro text-lg text-muted-foreground">{intro}</p>}
-    </div>
+    ) : (
+      <div class="sx-opening mx-auto max-w-content px-m">
+        {eyebrow && <p class="portfolio-label mb-6">{eyebrow}</p>}
+        <h1 id={headingId} class="sx-opening__line font-display">
+          {parts ? (
+            <>
+              {parts[0]}
+              <em>{parts[1]}</em>
+              {parts[2]}
+            </>
+          ) : (
+            line
+          )}
+        </h1>
+        {intro && <p class="sx-opening__intro text-lg text-muted-foreground">{intro}</p>}
+      </div>
+    )}
   </section>
 )}

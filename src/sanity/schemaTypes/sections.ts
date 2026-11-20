@@ -951,6 +951,9 @@ const SITE_INSERT_GROUPS: InsertGroup[] = [
       'heirloomsSpec',
       'investmentNote',
       'sessionQuestions',
+      'sessionOffers',
+      'sessionTeam',
+      'sessionsClose',
     ],
   },
   // scaffold:end

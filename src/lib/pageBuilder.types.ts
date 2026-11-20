@@ -620,8 +620,19 @@ export interface ProjectedSessionExperienceSection {
   _key: string;
   eyebrow?: string;
   heading?: string;
+  intro?: string;
   photo?: SanityImageObject | null;
-  steps?: { _key: string; title?: string; body?: string }[] | null;
+  steps?:
+    | {
+        _key: string;
+        title?: string;
+        when?: string;
+        body?: string;
+        photo?: SanityImageObject | null;
+        signature?: boolean;
+      }[]
+    | null;
+  signatureLabel?: string;
 }
 /** heirloomsSpec: prints, albums and wall pieces as a spec sheet (HeirloomsSpec.astro). */
 export interface ProjectedHeirloomsSpecSection {
@@ -640,6 +651,19 @@ export interface ProjectedHeirloomsSpecSection {
         photos?: (SanityImageObject & { _key?: string })[] | null;
       }[]
     | null;
+  sizesHeading?: string;
+  sizes?:
+    | {
+        _key: string;
+        name?: string;
+        dims?: string;
+        feeling?: string;
+        width?: number;
+        height?: number;
+      }[]
+    | null;
+  wallsHeading?: string;
+  walls?: (SanityImageObject & { _key?: string; caption?: string })[] | null;
 }
 /** investmentNote: a warm note beside its heading (InvestmentNote.astro). */
 export interface ProjectedInvestmentNoteSection {
@@ -649,15 +673,79 @@ export interface ProjectedInvestmentNoteSection {
   heading?: string;
   body?: PortableTextBlock[] | null;
   signature?: string;
+  rangeLabel?: string;
+  range?: string;
+  feeLabel?: string;
+  fee?: string;
+  feeNote?: string;
+  financingNote?: string;
 }
 /** sessionQuestions: native fold-out questions, then the booking link (SessionQuestions.astro). */
 export interface ProjectedSessionQuestionsSection {
   _type: 'sessionQuestions';
   _key: string;
   eyebrow?: string;
+  worriesHeading?: string;
+  worries?: { _key: string; worry?: string; reply?: string }[] | null;
   heading?: string;
   items?: { _key: string; question?: string; answer?: PortableTextBlock[] | null }[] | null;
   cta?: ProjectedCtaBlock | null;
+}
+/** sessionOffers: one chapter per kind of client, with optional tiers (SessionOffers.astro). */
+export interface ProjectedSessionOffersSection {
+  _type: 'sessionOffers';
+  _key: string;
+  eyebrow?: string;
+  heading?: string;
+  intro?: string;
+  offers?:
+    | {
+        _key: string;
+        kicker?: string;
+        name?: string;
+        line?: string;
+        photo?: SanityImageObject | null;
+        includes?: string[] | null;
+        fromLabel?: string;
+        from?: string;
+        tiers?:
+          | { _key: string; name?: string; line?: string; featured?: boolean; from?: string }[]
+          | null;
+        tierRows?: { _key: string; label?: string; values?: string[] | null }[] | null;
+      }[]
+    | null;
+  featuredLabel?: string;
+  askLabel?: string;
+}
+/** sessionTeam: hair, makeup and styling collaborators as a masthead (SessionTeam.astro). */
+export interface ProjectedSessionTeamSection {
+  _type: 'sessionTeam';
+  _key: string;
+  eyebrow?: string;
+  heading?: string;
+  intro?: string;
+  photo?: SanityImageObject | null;
+  members?:
+    | {
+        _key: string;
+        role?: string;
+        line?: string;
+        /** Projected from the Collaborator reference (queries.ts). */
+        person?: { name?: string; url?: string; instagram?: string } | null;
+      }[]
+    | null;
+}
+/** sessionsClose: a huge knockout word beside the booking ask (SessionsClose.astro). */
+export interface ProjectedSessionsCloseSection {
+  _type: 'sessionsClose';
+  _key: string;
+  eyebrow?: string;
+  word?: string;
+  photo?: SanityImageObject | null;
+  heading?: string;
+  body?: string;
+  cta?: ProjectedCtaBlock | null;
+  replyNote?: string;
 }
 // scaffold:end
 
@@ -715,5 +803,8 @@ export type PageBuilderBlock =
   | ProjectedHeirloomsSpecSection // scaffold: sessions
   | ProjectedInvestmentNoteSection // scaffold: sessions
   | ProjectedSessionQuestionsSection // scaffold: sessions
+  | ProjectedSessionOffersSection // scaffold: sessions
+  | ProjectedSessionTeamSection // scaffold: sessions
+  | ProjectedSessionsCloseSection // scaffold: sessions
   // The builder kit (builderBlocks.types.ts, PORTS.md card 173)
   | BuilderPageBlock;

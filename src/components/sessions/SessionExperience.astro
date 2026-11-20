@@ -2,22 +2,34 @@
 // scaffold-file: sessions
 // Safe to edit by hand
 // Page-builder block `sessionExperience` (sessionSections.ts): how a session
-// goes, as a tall photo pinned in the picture track of the shared split
+// goes, step by step, one photo per step.
+//
+// Phase 2 (2026-11-20): a pinned sequence. From 64rem up, with motion, the
+// photo frame stays in view in the picture track of the shared split
 // (.split--media-first, card 91) while the numbered steps scroll past in the
-// text track. The step crossing the middle of the screen is lit (ink, with a
-// short rule on the line that runs down the steps); the others rest in muted
-// ink. Modelled on a dark chronology with a pinned photo, turned to paper.
+// text track. The step crossing the middle of the screen is lit (ink, a short
+// tick on the rule down the steps, its number in the counter) and the frame
+// changes to that step's photo (a step without one shows the block's photo).
+// The step ticked "signature moment" (the reveal) is the page's set piece: its
+// title is set very large in the italic, it carries a small Dusk label, and
+// when it is lit the frame dims to a dark screening room with the photo shown
+// on a screen inside it, as it will be at the in-person reveal.
 //
 // The pinned version is switched on by the script below, which sets
 // `data-scrolly` only under html.motion (no reduced motion, JavaScript on) and
 // from 64rem up. Without it, which is the markup as served, the block is a
-// plain ordered list beside the photo: every step in full ink, nothing pinned,
-// nothing dimmed. Native scrolling throughout (rule 5); no scroll library.
+// plain numbered list with each step's photo beside it and the signature step
+// drawn on its screen in place: nothing pinned, nothing dimmed. Native
+// scrolling throughout (rule 5); no scroll library.
+//
+// The pinned frames carry the photos' descriptions; the photos inside the
+// list repeat them, so they are decorative (alt="").
 //
 // SELF_CONTAINED: plain page ground, no surface prop.
 import FocusImage from '@/components/portfolio/FocusImage.astro';
 import type { ProjectedSessionExperienceSection } from '@/lib/pageBuilder.types';
 import type { PortfolioPhoto } from '@/lib/portfolio';
+import { signatureIndex } from '@/lib/sessions';
 import '@/styles/page-sessions.css';
 
 type Props = Omit<ProjectedSessionExperienceSection, '_type' | '_key'> & { headingId?: string };
@@ -25,45 +37,88 @@ type Props = Omit<ProjectedSessionExperienceSection, '_type' | '_key'> & { headi
 const {
   eyebrow,
   heading = 'The experience',
+  intro,
   photo,
   steps,
+  signatureLabel = 'The signature moment',
   headingId = 'session-experience',
 } = Astro.props;
 const rows = (steps ?? []).filter((s) => s?.title);
+const sig = signatureIndex(rows);
 const pad = (n: number) => String(n).padStart(2, '0');
+const frameOf = (i: number) => (rows[i]?.photo?.asset ? rows[i].photo : photo) ?? null;
 ---
 
 {rows.length > 0 && (
   <section class="sx-exp bg-background" aria-labelledby={headingId} data-sx-experience>
-    <div class="split split--media-first mx-auto max-w-content px-m py-section-lg">
-      <div class="sx-exp__media">
-        <FocusImage
-          photo={photo as PortfolioPhoto}
-          width={900}
-          sizes="(min-width: 64rem) 40vw, 100vw"
-          crop={4 / 5}
-          alt={photo?.alt ?? ''}
-          class="sx-exp__photo"
-        />
-      </div>
-      <div class="sx-exp__text">
+    <div class="mx-auto max-w-content px-m py-section-lg">
+      <header class="sx-head sx-exp__head">
         {eyebrow && <p class="portfolio-label mb-4">{eyebrow}</p>}
-        <h2 id={headingId} class="font-display text-h2">
+        <h2 id={headingId} class="sx-exp__title font-display">
           {heading}
         </h2>
+        {intro && <p class="mt-6 max-w-xl text-lg text-muted-foreground">{intro}</p>}
+      </header>
+      <div class="sx-exp__split split split--media-first">
+        <div class="sx-exp__media">
+          <div class="sx-exp__frames">
+            {rows.map((_, i) => (
+              <figure
+                class:list={['sx-frame', i === sig && 'sx-frame--screen']}
+                data-sx-frame={i}
+                data-on={i === 0 ? '' : undefined}
+              >
+                <div class="sx-frame__pic">
+                  <FocusImage
+                    photo={frameOf(i) as PortfolioPhoto}
+                    width={900}
+                    sizes="(min-width: 64rem) 40vw, 100vw"
+                    crop={4 / 5}
+                    pull={false}
+                    alt={frameOf(i)?.alt ?? ''}
+                  />
+                </div>
+                {i === sig && (
+                  <figcaption class="sx-frame__cap" aria-hidden="true">
+                    On the big screen
+                  </figcaption>
+                )}
+              </figure>
+            ))}
+          </div>
+          <p class="sx-exp__count portfolio-label" aria-hidden="true">
+            <span data-sx-count>01</span> / {pad(rows.length)}
+          </p>
+        </div>
         <ol class="sx-exp__steps list-none" role="list">
-          {rows.map((step, i) => (
-            <li class="sx-step" data-sx-step>
-              <span class="sx-step__n portfolio-label" aria-hidden="true">
-                {pad(i + 1)}
-              </span>
-              <h3 class="sx-step__title font-display">
-                <span class="sr-only">Step {i + 1}: </span>
-                {step.title}
-              </h3>
-              {step.body && <p class="sx-step__body text-muted-foreground">{step.body}</p>}
-            </li>
-          ))}
+          {rows.map((step, i) => {
+            const own = frameOf(i);
+            return (
+              <li class:list={['sx-step', i === sig && 'sx-step--sig']} data-sx-step={i}>
+                <span class="sx-step__n font-display" aria-hidden="true">
+                  {pad(i + 1)}
+                </span>
+                <div class="sx-step__text">
+                  {i === sig && <p class="sx-step__sig portfolio-label">{signatureLabel}</p>}
+                  {step.when && <p class="sx-step__when portfolio-label">{step.when}</p>}
+                  <h3 class="sx-step__title font-display">
+                    <span class="sr-only">Step {i + 1}: </span>
+                    {step.title}
+                  </h3>
+                  {step.body && <p class="sx-step__body text-muted-foreground">{step.body}</p>}
+                </div>
+                <div class:list={['sx-step__photo', i === sig && 'sx-step__photo--screen']}>
+                  <FocusImage
+                    photo={own as PortfolioPhoto}
+                    width={720}
+                    sizes="(min-width: 48rem) 18rem, 100vw"
+                    crop={4 / 5}
+                    alt=""
+                  />
+                </div>
+              </li>
+            );
+          })}
         </ol>
       </div>
     </div>
@@ -71,9 +126,11 @@ const pad = (n: number) => String(n).padStart(2, '0');
 )}
 
 <script>
-  // Lights the step crossing the middle of the screen. Bound once per block;
-  // re-checked on Astro's page-load so a client-side visit works too.
+  // Lights the step crossing the middle of the screen and shows its photo in
+  // the pinned frame. Bound once per block; re-checked on Astro's page-load so a
+  // client-side visit works too.
   const WIDE = '(min-width: 64rem)';
+  const pad = (n: number) => String(n).padStart(2, '0');
 
   function initExperience() {
     const motion = document.documentElement.classList.contains('motion');
@@ -81,18 +138,24 @@ const pad = (n: number) => String(n).padStart(2, '0');
       if (block.dataset.bound) return;
       block.dataset.bound = '1';
       const steps = [...block.querySelectorAll<HTMLElement>('[data-sx-step]')];
+      const frames = [...block.querySelectorAll<HTMLElement>('[data-sx-frame]')];
+      const count = block.querySelector<HTMLElement>('[data-sx-count]');
       if (!motion || !('IntersectionObserver' in window) || steps.length < 2) return;
 
       const wide = window.matchMedia(WIDE);
       let observer: IntersectionObserver | null = null;
 
       const light = (step: HTMLElement) => {
-        for (const s of steps) {
-          const on = s === step;
+        const at = steps.indexOf(step);
+        steps.forEach((s, i) => {
+          const on = i === at;
           s.toggleAttribute('data-lit', on);
           if (on) s.setAttribute('aria-current', 'step');
           else s.removeAttribute('aria-current');
-        }
+        });
+        frames.forEach((f, i) => f.toggleAttribute('data-on', i === at));
+        block.toggleAttribute('data-screening', step.classList.contains('sx-step--sig'));
+        if (count) count.textContent = pad(at + 1);
       };
 
       const start = () => {
@@ -113,10 +176,13 @@ const pad = (n: number) => String(n).padStart(2, '0');
         observer?.disconnect();
         observer = null;
         block.removeAttribute('data-scrolly');
+        block.removeAttribute('data-screening');
         for (const s of steps) {
           s.removeAttribute('data-lit');
           s.removeAttribute('aria-current');
         }
+        frames.forEach((f, i) => f.toggleAttribute('data-on', i === 0));
+        if (count) count.textContent = pad(1);
       };
 
       const sync = () => (wide.matches ? start() : stop());

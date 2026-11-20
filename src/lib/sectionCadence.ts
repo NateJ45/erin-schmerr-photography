@@ -79,6 +79,9 @@ export const SELF_CONTAINED_TYPES = new Set([
   'heirloomsSpec',
   'investmentNote',
   'sessionQuestions',
+  'sessionOffers',
+  'sessionTeam',
+  'sessionsClose',
   // scaffold:end
 ]);
 
