@@ -2,7 +2,7 @@
 // screen, with the Vault Reveal Hero opening and a knockout start).
 //   - one h1, always shown; the first cover is the LCP (eager, high priority);
 //   - every featured story has one full-screen frame linked to its story (the first one through
-//     the opening frame's credit), in the three alternating layouts;
+//     the opening frame's credit), in the alternating layouts (cover, overlap, knockout);
 //   - the knockout and clipped copies are aria-hidden duplicates;
 //   - the opening plays once per tab and leaves everything at rest, the header included;
 //   - reduced motion and JavaScript off show everything at rest;
@@ -65,17 +65,21 @@ test('every featured story is one full-screen frame, linked to its story', async
   ))
     expect(Math.abs(box - vh)).toBeLessThanOrEqual(2);
 
-  // The layouts take turns by position: full bleed, overlap, knockout, overlap.
+  // The layouts take turns by position (CoverHero.astro CYCLE): every other frame a magazine
+  // cover, between them overlap (photo left), knockout, overlap (photo right). The full bleed
+  // frame left the rotation on 2026-11-20.
   const layouts = await frames.evaluateAll((els) =>
     els.map((el) => el.getAttribute('data-layout')),
   );
-  const cycle = ['bleed', 'overlap', 'knock', 'overlap'];
+  const cycle = ['cover', 'overlap', 'cover', 'knock', 'cover', 'overlap'];
   layouts.forEach((l, i) => expect(l).toBe(cycle[i % cycle.length]));
 
   // One real title per frame; the copies are hidden from assistive tech.
   await expect(page.locator('[data-cinema-frame] h2')).toHaveCount(hrefs.length - 1);
   for (const copy of await page
-    .locator('[data-cinema] .cinema-knock, [data-cinema] .cine__type--over, [data-hero-knock]')
+    .locator(
+      '[data-cinema] .cinema-knock, [data-cinema] .cine__type--over, [data-cinema] .cover__mast, [data-hero-knock]',
+    )
     .all())
     await expect(
       copy.locator('xpath=ancestor-or-self::*[@aria-hidden="true"]').first(),

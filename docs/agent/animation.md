@@ -17,6 +17,8 @@ What replaced each thing it did:
 - **The scroll controls** (home hero scroll cue, case-study TOC) call `scrollTo` / `scrollIntoView` with `behavior: 'smooth'`, or `'auto'` when the reader prefers reduced motion. Code that must place the page exactly (anything with a correction loop) uses `behavior: 'instant'`, since a glide re-aimed every frame never lands.
 - **The wheel is the browser's own**, untouched. A test that sets a scroll position as setup passes `behavior: 'instant'`, since `scroll-behavior` turns a two-argument `scrollTo` into a glide once something has been pressed.
 
+- **A `ScrollTrigger.refresh()` cancels a glide** (found 2026-11-20 by the hub test in `tests/builder-blocks.spec.ts`): the refresh puts the scroll back where it measured it, so a smooth in-page jump stops half way. The Footer's re-measure (a `ResizeObserver` on the body, for lazy pictures growing the page) therefore waits until the scrolling has been still for about 250 ms, and ScrollTrigger's own refresh on `load` is turned off (`autoRefreshEvents` without `load`; the observer covers it). Any new refresh call follows the same rule.
+
 **Caveat for testing:** Astro dev full-reloads on back/forward, so the traverse (restore-position) behaviour can only be verified against the production build, as `tests/native-scroll.spec.ts` does.
 
 ---
