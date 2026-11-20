@@ -56,11 +56,11 @@ export const storyIndex = defineType({
   },
 });
 
-// Home page block: "Cover hero". The opening of the home page: the featured
-// stories' covers, full bleed, crossfading one into the next, each easing from
-// blur to sharp (DESIGN.md "everything comes into focus"), with the headline and
-// two buttons over a soft scrim. The covers come from the Stories list (the
-// ones ticked Featured); the block holds only its words and buttons. No colour
+// Home page block: "Cover hero", drawn as the home "Cinema" (2026-11-20): an
+// opening frame with the headline huge over the first featured cover, then one
+// full-screen frame per featured story, each easing from soft to sharp
+// (DESIGN.md "everything comes into focus"). The covers come from the Stories
+// list (the ones ticked Featured); the block holds only its words. No colour
 // field (rule 9); SELF_CONTAINED in sectionCadence.ts.
 export const coverHero = defineType({
   name: 'coverHero',
@@ -68,7 +68,7 @@ export const coverHero = defineType({
   type: 'object',
   icon: ImagesIcon,
   description:
-    'The featured stories at full screen, one at a time: visitors point at or tap the small pictures to change story. Your headline sits small at the top.',
+    'Your name over your first featured story, then every featured story at full screen, one per screen, each linking to its story.',
   fields: [
     defineField({
       name: 'eyebrow',
@@ -80,13 +80,16 @@ export const coverHero = defineType({
     defineField({
       name: 'headline',
       title: 'Headline',
+      description:
+        'Set huge over the first photo (your name works best). One word is set in italic: the last, or the words you wrap in underscores, like Erin _Schmerr_.',
       type: 'string',
       validation: (Rule) => Rule.required().max(90),
     }),
     defineField({
       name: 'subhead',
-      title: 'A sentence under it',
-      description: 'Kept for later: the current home design does not show it.',
+      title: 'Small line under it',
+      description:
+        'One short line, set small in capitals under the headline, such as what you photograph and where.',
       type: 'text',
       rows: 2,
       validation: (Rule) => Rule.max(200),
@@ -98,8 +101,7 @@ export const coverHero = defineType({
       name: 'portrait',
       title: 'Your portrait in the headline (optional)',
       type: 'image',
-      description:
-        'A small picture of you, set inside the headline between two words. Use the hotspot to centre your face. Leave it empty and the headline reads as plain words.',
+      description: 'Kept for later: the current home design does not show it.',
       options: { hotspot: true },
     }),
     defineField({
@@ -111,13 +113,24 @@ export const coverHero = defineType({
       hidden: ({ parent }) => !(parent as { portrait?: { asset?: unknown } })?.portrait?.asset,
       validation: (Rule) => Rule.min(1).max(12).integer(),
     }),
-    defineField({ name: 'primaryCta', title: 'First button', type: 'ctaBlock' }),
-    defineField({ name: 'secondaryCta', title: 'Second button', type: 'ctaBlock' }),
+    defineField({
+      name: 'primaryCta',
+      title: 'First button',
+      description: 'Kept for later: the current home design does not show it.',
+      type: 'ctaBlock',
+    }),
+    defineField({
+      name: 'secondaryCta',
+      title: 'Second button',
+      description: 'Kept for later: the current home design does not show it.',
+      type: 'ctaBlock',
+    }),
     defineField({
       name: 'limit',
-      title: 'How many covers',
+      title: 'How many stories',
+      description: 'The featured stories shown, one per screen (up to 8).',
       type: 'number',
-      initialValue: 5,
+      initialValue: 8,
       validation: (Rule) => Rule.min(1).max(8).integer(),
     }),
   ],
@@ -125,7 +138,7 @@ export const coverHero = defineType({
     select: { headline: 'headline', media: 'portrait' },
     prepare: ({ headline, media }) => ({
       title: headline || 'Cover hero',
-      subtitle: 'Featured story covers, one per screen',
+      subtitle: 'Your name, then the featured stories, one per screen',
       media,
     }),
   },

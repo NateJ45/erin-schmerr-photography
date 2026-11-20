@@ -5,6 +5,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
+  cinemaPlain,
+  cinemaRuns,
   collaboratorHref,
   decadeNamed,
   formatExif,
@@ -156,6 +158,22 @@ test('splitAfterWord puts the portrait after the named word', () => {
   assert.deepEqual(splitAfterWord('One two', 5), ['One two', '']);
   assert.deepEqual(splitAfterWord('Alone', 1), ['Alone', '']);
   assert.deepEqual(splitAfterWord('One two', 0), ['One', 'two']);
+});
+
+test('cinemaRuns italicises the underscored words, else the last word', () => {
+  assert.deepEqual(cinemaRuns('Erin Schmerr'), [
+    { text: 'Erin ', italic: false },
+    { text: 'Schmerr', italic: true },
+  ]);
+  assert.deepEqual(cinemaRuns('A portrait, _made slowly._'), [
+    { text: 'A portrait, ', italic: false },
+    { text: 'made slowly.', italic: true },
+  ]);
+  // One word, nothing, or a stray underscore: plain, as written.
+  assert.deepEqual(cinemaRuns('Alone'), [{ text: 'Alone', italic: false }]);
+  assert.deepEqual(cinemaRuns(''), []);
+  assert.deepEqual(cinemaRuns('snake_case'), [{ text: 'snake_case', italic: false }]);
+  assert.equal(cinemaPlain('Erin _Schmerr_'), 'Erin Schmerr');
 });
 
 test('storyCast drops a venue already named as the place', () => {

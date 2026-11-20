@@ -2,96 +2,113 @@
 // scaffold-file: stories
 // Safe to edit by hand
 // Page-builder block `coverHero` (storyIndexSection.ts): the home page's
-// opening, a full-screen showcase of the featured stories.
+// "Cinema" (Nathan's pick, 2026-11-20, after kaatdm.com): the photographs at
+// full screen, one story per screen, with very few words.
 //
-// Two Details references, combined (2026-11-20):
-// - The LAYOUT is Martin Briceno's portfolio showcase (details.so/inspo/
-//   martinbriceno-tchizg): one story fills the screen, its title large at
-//   mid-left, its short line at mid-right, credits in small columns at the
-//   bottom left and a strip of landscape thumbnails at the bottom right.
-//   Pointing at (or focusing, or tapping) a thumbnail brings that story up.
-// - The OPENING is the Vault "Reveal Hero" (details.so/vault/hero-01): the
-//   cover opens from a narrow window to full bleed while it scales, the scrim
-//   fades in, and at 2.24 s the header, the words and the strip arrive together.
+// - The OPENING frame: the first featured story's cover full bleed, the block's
+//   headline (the page's h1) huge and centred in the display serif with one
+//   word in italic, the subhead as one small tracked line under it, and a small
+//   credit at the foot that links to that story.
+// - Then ONE FRAME PER FEATURED STORY, each a full screen, numbered "02 / 08"
+//   at the right edge, each linked to its story. Three layouts take turns by
+//   position, so the sequence reads like a magazine and editors pick nothing:
+//     a. full bleed: the cover fills the frame, the title centred near the foot
+//        over a dark foot gradient (the mockup's frame);
+//     b. overlap: the photo inset on paper, offset left or right, with a huge
+//        title crossing its edge, ink over paper and paper over the photo (two
+//        stacked display copies, the paper one clipped to the photo's box),
+//        with the real title as an ink caption on the paper side;
+//     c. knockout: a huge title cut out of the paper so the cover shows through
+//        it, beside the whole photo, with the real title as an ink caption.
 //
-// Deliberate changes from the references, recorded in the PR:
-// - The block's headline is the page's h1, set small at the top left (where
-//   Briceno's tagline sits) with the two buttons as text links on the right.
-//   The eyebrow and subhead fields are kept but not drawn here.
-// - The stage is the screen minus the paper header strip, so the thumbnails
-//   are on the first screen.
-// - The incoming cover also eases from soft to sharp (DESIGN.md's signature).
-// - The opening plays once per visit (per tab), on a full page load only;
-//   arriving through the site's own links shows the hero at rest.
+// The OPENING keeps the Vault "Reveal Hero" (details.so/vault/hero-01) with a
+// knockout start: on a first full load per tab the name stands huge on paper
+// with the cover showing through its letters, then the cover opens from a
+// narrow window behind it to full bleed and the name ends as paper-coloured
+// type over the photo; the header and the small words arrive at 2.24 s.
 //
-// Without JavaScript, or under reduced motion, the first story shows at rest
-// and every thumbnail is a plain link to its story. Motion is
-// src/scripts/cover-hero.ts (GSAP + SplitText).
+// Accessibility: every title has ONE real text node in the accessibility tree,
+// at AA on whatever it sits on. The knockout copies and the clipped paper
+// copies are aria-hidden duplicates marked data-contrast-decorative (the
+// contrast spec's hook for decoration), and print as plain ink. The h1 is
+// never hidden (card 213): during the opening its knockout duplicate sits
+// exactly over it.
+//
+// Without JavaScript, under reduced motion, in automated browsers and on paper
+// everything shows at rest. Motion: src/scripts/cover-hero.ts (GSAP,
+// ScrollTrigger, SplitText).
 import FocusImage from '@/components/portfolio/FocusImage.astro';
-import CtaLink from '@/components/CtaLink.astro';
-import { ctaHref } from '@/lib/cta-href';
-import SanityImage from '@/components/SanityImage.astro';
-import { getFeaturedStories } from '@/lib/storyQueries';
-import { photoRatio, splitAfterWord } from '@/lib/portfolio';
-import type { SanityImageObject } from '@/lib/pageBuilder.types';
+import { getFeaturedStories, type Story } from '@/lib/storyQueries';
+import { cinemaRuns, photoRatio } from '@/lib/portfolio';
+import { urlFor } from '@/lib/sanity';
 import '@/styles/portfolio.css';
 
-type CtaProp = Parameters<typeof CtaLink>[0]['cta'];
-
+// The CTA and portrait props are still passed by SectionRenderer; the Cinema
+// draws neither (the booking ask is the signed close below it).
 interface Props {
   eyebrow?: string;
   headline: string;
   subhead?: string;
-  primaryCta?: CtaProp;
-  secondaryCta?: CtaProp;
+  primaryCta?: unknown;
+  secondaryCta?: unknown;
   limit?: number;
-  portrait?: SanityImageObject | null;
+  portrait?: unknown;
   portraitAfterWord?: number;
   headingId?: string;
 }
 
-const {
-  headline,
-  primaryCta,
-  secondaryCta,
-  limit = 6,
-  portrait,
-  portraitAfterWord = 1,
-  headingId = 'cover-hero-heading',
-} = Astro.props;
+const { headline, subhead, limit = 8, headingId = 'cover-hero-heading' } = Astro.props;
 
-// Briceno's strip holds six; more would crowd the corner.
-const stories = (await getFeaturedStories(Math.min(limit, 6))).filter((s) => s.cover);
+const stories = (await getFeaturedStories(Math.min(Math.max(limit, 1), 8))).filter((s) => s.cover);
+const [first, ...rest] = stories;
+const total = stories.length;
+const pad = (n: number) => String(n).padStart(2, '0');
+const count = (n: number) => `${pad(n)} / ${pad(total)}`;
 
-// An optional small portrait of her sits inside the headline after word
-// `portraitAfterWord` (decorative: inside the h1 its words would interrupt).
-const hasPortrait = !!portrait?.asset;
-const [headBefore, headAfter] = hasPortrait
-  ? splitAfterWord(headline, portraitAfterWord)
-  : [headline, ''];
-
-// The three small credit columns. The first credited person, then the magazine
-// (or the place), then the year; a column with nothing to say is left out.
-const creditColumns = (story: (typeof stories)[number]) => {
-  const first = story.credits?.[0];
-  const year = story.date ? story.date.slice(0, 4) : null;
-  return [
-    first?.name ? { label: first.role ?? 'With', value: first.name } : null,
-    story.publication?.magazine
-      ? { label: 'Published', value: story.publication.magazine }
-      : story.location
-        ? { label: 'Place', value: story.location }
-        : null,
-    year ? { label: 'Year', value: year } : null,
-  ].filter((c): c is { label: string; value: string } => c !== null);
+// The small line under a title: the magazine and year, or the place and year.
+const lineOf = (s: Story) => {
+  const year = (s.publication?.date ?? s.date ?? '').slice(0, 4) || null;
+  const where = s.publication?.magazine ?? s.location ?? null;
+  return [where, year].filter(Boolean).join(', ');
 };
+
+// The cover as a plain URL, for the knockout fills (background-clip: text).
+const fillOf = (s: Story | undefined) =>
+  s?.cover?.asset ? urlFor(s.cover).width(1600).fit('max').auto('format').url() : null;
+const fillStyle = (s: Story | undefined) => {
+  const url = fillOf(s);
+  return url ? `--knock-fill: url("${url}")` : undefined;
+};
+
+// The layouts by position among the story frames: a, b (photo left), c, b (photo right).
+type Layout = 'bleed' | 'overlap' | 'knock';
+const CYCLE: { layout: Layout; side?: 'left' | 'right' }[] = [
+  { layout: 'bleed' },
+  { layout: 'overlap', side: 'left' },
+  { layout: 'knock' },
+  { layout: 'overlap', side: 'right' },
+];
+
+const headRuns = cinemaRuns(headline);
+// Her name is set very large (two lines); a longer headline steps down a size
+// so it still fits the first screen.
+const nameSize =
+  headRuns.map((r) => r.text).join('').length > 24 ? 'cinema-open__name--long' : null;
+
+// The opening knockout's fill: the first cover at the photo's own crop point
+// (SanityImage turns the hotspot into object-position the same way).
+const hotspot = (first?.cover as { hotspot?: { x?: number; y?: number } } | undefined)?.hotspot;
+const knockPos =
+  hotspot && typeof hotspot.x === 'number' && typeof hotspot.y === 'number'
+    ? `${(hotspot.x * 100).toFixed(1)}% ${(hotspot.y * 100).toFixed(1)}%`
+    : '50% 50%';
+const knockStyle = [fillStyle(first), `--knock-pos: ${knockPos}`].filter(Boolean).join('; ');
 ---
 
-<section class="cover-hero is-intro" aria-labelledby={headingId} data-cover-hero>
-  {/* Decide before first paint whether the opening plays (see the header
-      comment). A full page load only: on a router swap readyState is already
-      complete. The class hides the header and the words until the script runs;
-      the script clears it if anything fails. */}
+<section class="cinema" aria-labelledby={headingId} data-cover-hero data-cinema>
+  {/* Decide before first paint whether the opening plays. A full page load
+      only: on a router swap readyState is already complete. The class sets the
+      knockout start in CSS; the script clears it if anything fails. */}
   <script is:inline>
     (function () {
       var root = document.documentElement;
@@ -114,7 +131,7 @@ const creditColumns = (story: (typeof stories)[number]) => {
         root.classList.remove('first-visit');
         var loader = document.querySelector('.first-visit-loader');
         if (loader) loader.remove();
-        // A safety net: never leave the page hidden if the script fails to load.
+        // A safety net: never leave the page mid-opening if the script fails to load.
         setTimeout(function () {
           if (!root.classList.contains('showcase-running')) root.classList.remove('showcase-intro');
         }, 4000);
@@ -122,124 +139,173 @@ const creditColumns = (story: (typeof stories)[number]) => {
     })();
   </script>
 
-  <div class="cover-hero__media" data-hero-media data-first-viewport-exempt aria-hidden="true">
-    <div class="cover-hero__image" data-hero-image>
-      {stories.map((story, i) => (
-        <div
-          class:list={[
-            'cover-hero__slide',
-            i === 0 && 'is-active',
-            photoRatio(story.cover) < 0.95 && 'cover-hero__slide--portrait',
-          ]}
-          data-slide
-          data-first-viewport-exempt={i === 0 ? undefined : ''}
-        >
-          <FocusImage
-            photo={story.cover}
-            width={2400}
-            sizes="100vw"
-            loading={i === 0 ? 'eager' : 'lazy'}
-            fetchpriority={i === 0 ? 'high' : 'low'}
-            alt=""
-            class="cover-hero__frame"
-            pull={false}
-          />
-        </div>
-      ))}
-    </div>
-    <div class="cover-hero__overlay" data-hero-overlay></div>
-  </div>
-
-  <div class="cover-hero__stage mx-auto max-w-content px-l">
-    <div class="cover-hero__top">
-      <h1 id={headingId} class="cover-hero__headline font-display">
-        {hasPortrait ? (
-          <>
-            {headBefore}{' '}
-            <span class="cover-portrait" aria-hidden="true">
-              <SanityImage
-                source={portrait}
-                width={120}
-                height={96}
-                sizes="2rem"
-                loading="eager"
-                alt=""
-              />
-            </span>{' '}
-            {headAfter}
-          </>
-        ) : (
-          headline
+  {/* ---- The opening frame ---------------------------------------------- */}
+  <div class="cover-hero cinema-open" data-hero-open>
+    <div class="cover-hero__media" data-hero-media data-first-viewport-exempt aria-hidden="true">
+      <div class="cover-hero__image" data-hero-image>
+        {first && (
+          <div
+            class:list={[
+              'cinema__photo',
+              photoRatio(first.cover) < 0.95 && 'cinema__photo--portrait',
+            ]}
+          >
+            <FocusImage
+              photo={first.cover}
+              width={2400}
+              sizes="100vw"
+              loading="eager"
+              fetchpriority="high"
+              alt=""
+              class="cinema__frame-img"
+              pull={false}
+            />
+          </div>
         )}
+      </div>
+      <div class="cover-hero__overlay" data-hero-overlay></div>
+    </div>
+
+    <div class="cinema-open__words">
+      <h1 id={headingId} class:list={['cinema-open__name font-display', nameSize]}>
+        {headRuns.map((r) => (r.italic ? <em>{r.text}</em> : r.text))}
       </h1>
-      {(primaryCta || secondaryCta) && (
-        <p class="cover-hero__links" data-hero-fade>
-          {[primaryCta, secondaryCta].filter(Boolean).map((cta) => (
-            <a href={ctaHref(cta)}>{cta!.label}</a>
-          ))}
+      {subhead && (
+        <p class="cinema__line cinema-open__sub">
+          <span data-reveal-lines>{subhead}</span>
         </p>
       )}
     </div>
 
-    <div class="cover-hero__middle" aria-live="polite">
-      <div class="cover-hero__stack cover-hero__titles">
-        {stories.map((story, i) => (
-          <h2 class:list={['cover-hero__story font-display', i === 0 && 'is-active']} data-panel>
-            <a href={`/stories/${story.slug}/`} data-reveal-lines>
-              {story.title}
-            </a>
-          </h2>
-        ))}
-      </div>
-      <div class="cover-hero__stack cover-hero__deks">
-        {stories.map((story, i) => (
-          <p class:list={['cover-hero__dek', i === 0 && 'is-active']} data-panel>
-            <span data-reveal-lines>{story.dek ?? story.location ?? ''}</span>
-          </p>
-        ))}
+    {/* The knockout duplicate for the opening (decorative, aria-hidden): the
+        same words in the same place over the real h1, cut out of the paper so
+        the cover shows through them. The layer spans the whole frame and holds
+        the cover at the photo's own size and object-position, so the picture
+        inside the letters lines up with the photo that follows. Shown only while
+        the opening runs; the hidden copy of the small line keeps the layout
+        identical. */}
+    <div
+      class:list={['cinema-open__knock', first && photoRatio(first.cover) < 0.95 && 'is-portrait']}
+      aria-hidden="true"
+      data-hero-knock
+      style={knockStyle}
+    >
+      <div class="cinema-open__words">
+        <p class:list={['cinema-open__name font-display', nameSize]} data-contrast-decorative>
+          {headRuns.map((r) => (r.italic ? <em>{r.text}</em> : r.text))}
+        </p>
+        {subhead && <p class="cinema__line cinema-open__sub cinema-open__ghost">{subhead}</p>}
       </div>
     </div>
 
-    <div class="cover-hero__bottom">
-      <div class="cover-hero__stack cover-hero__credits">
-        {stories.map((story, i) => (
-          <dl class:list={['cover-hero__cols', i === 0 && 'is-active']} data-panel>
-            {creditColumns(story).map((c) => (
-              <div>
-                <dt data-reveal-lines>{c.label}</dt>
-                <dd data-reveal-lines>{c.value}</dd>
-              </div>
-            ))}
-          </dl>
-        ))}
-      </div>
-      {stories.length > 1 && (
-        <ol class="cover-hero__thumbs" aria-label="Featured stories" data-hero-fade>
-          {stories.map((story, i) => (
-            <li>
-              <a
-                href={`/stories/${story.slug}/`}
-                class:list={['cover-hero__thumb', i === 0 && 'is-active']}
-                aria-current={i === 0 ? 'true' : undefined}
-                data-thumb
-              >
-                <FocusImage
-                  photo={story.cover}
-                  width={240}
-                  sizes="6rem"
-                  crop={16 / 10}
-                  alt=""
-                  class="cover-hero__thumb-img"
-                  pull={false}
-                />
-                <span class="sr-only">{story.title}</span>
-              </a>
-            </li>
-          ))}
-        </ol>
-      )}
-    </div>
+    {first && (
+      <>
+        <p class="cinema-open__credit cinema__line" data-hero-fade>
+          <a href={`/stories/${first.slug}/`} data-frame-link>
+            {first.title}
+            {lineOf(first) && <span class="cinema-open__credit-line">, {lineOf(first)}</span>}
+          </a>
+        </p>
+        <span class="cinema__count" aria-hidden="true" data-contrast-decorative data-hero-fade>
+          {count(1)}
+        </span>
+      </>
+    )}
   </div>
+
+  {/* ---- One frame per featured story ------------------------------------ */}
+  {rest.length > 0 && (
+    <ol class="cinema__frames" aria-label="Featured stories" start={2}>
+      {rest.map((story, k) => {
+        const { layout, side } = CYCLE[k % CYCLE.length];
+        const runs = cinemaRuns(story.title);
+        const line = lineOf(story);
+        const href = `/stories/${story.slug}/`;
+        const portrait = photoRatio(story.cover) < 0.95;
+        const titleId = `cinema-title-${k + 2}`;
+        return (
+          <li
+            class:list={['cine', `cine--${layout}`, side && `cine--${side}`]}
+            data-cinema-frame
+            data-layout={layout}
+          >
+            <div
+              class:list={['cine__photo', 'cinema__photo', portrait && 'cinema__photo--portrait']}
+              aria-hidden="true"
+            >
+              <FocusImage
+                photo={story.cover}
+                width={layout === 'bleed' ? 2400 : 1600}
+                sizes={layout === 'bleed' ? '100vw' : '(min-width: 768px) 60vw, 100vw'}
+                loading="lazy"
+                alt=""
+                class="cinema__frame-img"
+                pull={false}
+              />
+            </div>
+
+            {layout === 'knock' && (
+              <p
+                class="cine__knock cinema-knock font-display"
+                aria-hidden="true"
+                data-contrast-decorative
+                data-frame-slide
+                style={fillStyle(story)}
+              >
+                {runs.map((r) => (r.italic ? <em>{r.text}</em> : r.text))}
+              </p>
+            )}
+
+            {layout !== 'overlap' && (
+              <div class="cine__type">
+                <h2 id={titleId} class="cine__title font-display" data-frame-slide>
+                  <a href={href} data-frame-link>
+                    <span data-frame-lines>
+                      {runs.map((r) => (r.italic ? <em>{r.text}</em> : r.text))}
+                    </span>
+                  </a>
+                </h2>
+                {line && <p class="cinema__line cine__line">{line}</p>}
+              </div>
+            )}
+
+            {/* Overlap: the huge title is display type in two aria-hidden copies
+                in the same place, ink and a paper one clipped to the photo's
+                box, so no single text node has to straddle two grounds. The
+                real title is the ink caption on paper past the photo's edge. */}
+            {layout === 'overlap' && (
+              <>
+                {['ink', 'over'].map((copy) => (
+                  <div
+                    class:list={['cine__type', copy === 'over' && 'cine__type--over']}
+                    aria-hidden="true"
+                  >
+                    <p class="cine__title font-display" data-contrast-decorative data-frame-slide>
+                      <span data-frame-lines>
+                        {runs.map((r) => (r.italic ? <em>{r.text}</em> : r.text))}
+                      </span>
+                    </p>
+                  </div>
+                ))}
+                <div class="cine__caption">
+                  <h2 id={titleId} class="cine__cap-title font-display">
+                    <a href={href} data-frame-link>
+                      {runs.map((r) => (r.italic ? <em>{r.text}</em> : r.text))}
+                    </a>
+                  </h2>
+                  {line && <p class="cinema__line cine__line">{line}</p>}
+                </div>
+              </>
+            )}
+
+            <span class="cinema__count" aria-hidden="true" data-contrast-decorative>
+              {count(k + 2)}
+            </span>
+          </li>
+        );
+      })}
+    </ol>
+  )}
 </section>
 
 <script>
