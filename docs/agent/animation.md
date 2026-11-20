@@ -175,6 +175,13 @@ The home page opens with the `coverHero` block, rebuilt 2026-11-20 as the "Cinem
 - **First viewport (card 213).** The h1 is never hidden or split: it shows from the first paint (under the knockout during the opening). Only the photo layer (`[data-hero-media]`) carries `data-first-viewport-exempt`, because starting clipped is the effect; Lighthouse's LCP still passes. A page printed mid-opening prints at rest, with the knockout duplicate left out and every other knockout or clipped copy as plain ink.
 - **Opening height** is the screen minus the paper header (`--site-header-h`, measured by the inline script); the story frames are each `100svh`.
 
+## Magazine pages (`/stories/`, `/stories/<slug>/`, `/press/`; this site only, 2026-11-20)
+
+- **Floating preview** (`src/scripts/magazine-preview.ts`): one fixed frame holds every picture, stacked; the row under the mouse cross-fades its picture in (400ms) and the frame eases after the cursor with a requestAnimationFrame lerp (0.16 a frame, transforms only), revealed with a clip-path (700ms). A small ink label rides with the cursor. Live only under `html.motion` with `(hover: hover) and (pointer: fine) and (min-width: 64rem)`, and on `/stories/` only in the List view; it sets `data-preview="on"` on the list, which hides the rows' own small pictures. A scroll puts it away until the mouse moves; keyboard focus sets it beside the focused row (and keeps it there on scroll). Set up on `astro:page-load`, torn down on `astro:before-swap`.
+- **Press row inversion**: a `::before` ink fill grows from the bottom (`scaleY`, 600ms) on hover and focus, the words turn paper. CSS only.
+- **Cover to story**: `transition:name="story-cover-<slug>"` with `transition:animate="initial"` on the contents covers, the story's opening cover and the Previous and Next covers; `view-transition-class: story-cover` gives the group a 700ms morph on the site ease. `magazine.css` turns every view-transition animation off under reduced motion.
+- **Spread arrival**: the masthead rises 0.35em out of nothing (1.4s) and the small lines fade in (1s, 0.6s late), CSS keyframes under `html.motion` with `both` fill, so the end state is the plain page.
+
 ## View-transition cross-fade
 
 `<main id="main">` carries `view-transition-name: main-content` and cross-fades on every navigation (`vt-fade-out` 150ms -> `vt-fade-in` 200ms). The header and footer are named (`site-header` / `site-footer`) and pinned with `animation: none` so they stay put through the swap instead of flashing. Astro respects `prefers-reduced-motion` automatically -- reduced-motion users get an instant cut. Pure CSS, no JS. Under `layout.motion: flow` the flow layer replaces it with a lift and rise; under `none` pages cut (see "The flow layer").
