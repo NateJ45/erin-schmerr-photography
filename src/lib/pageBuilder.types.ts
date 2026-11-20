@@ -424,6 +424,13 @@ export interface ContactFormSettings {
   schedulingLink?: string | null;
   schedulingLinkLabel?: string | null;
   availabilityNote?: string | null;
+  /** The booking request's chapter I cards (empty: labelled placeholders). */
+  bookingSittings?:
+    { title?: string | null; line?: string | null; image?: SanityImageObject | null }[] | null;
+  /** Her portrait, held beside the form from lg up. */
+  bookingPortrait?: SanityImageObject | null;
+  bookingThanksNote?: string | null;
+  bookingSignature?: string | null;
 }
 /** contactFormSection: the contact form and its sidebar. */
 export interface ProjectedContactFormSection {

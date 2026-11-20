@@ -172,6 +172,72 @@ export const contactPage = defineType({
       of: [defineArrayMember({ type: 'formQuestion' })],
       validation: (Rule) => Rule.max(12),
     }),
+    // The booking request (2026-11-20, docs/agent/changelog.md): chapter I offers these sittings
+    // as photo cards. Leave it empty and the page shows labelled placeholders (her story covers
+    // as the pictures) until the real sittings are written here.
+    defineField({
+      name: 'bookingSittings',
+      title: 'Sittings to choose from',
+      type: 'array',
+      group: 'form',
+      description:
+        'The sittings a visitor picks from in chapter I of the booking form, each with a photo and one line. Two to four reads best. The form always adds "Not sure yet" at the end.',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          name: 'bookingSitting',
+          fields: [
+            defineField({
+              name: 'title',
+              title: 'Name of the sitting',
+              type: 'string',
+              validation: (Rule) => Rule.required().max(60),
+            }),
+            defineField({
+              name: 'line',
+              title: 'One line about it',
+              type: 'string',
+              validation: (Rule) => Rule.max(140),
+            }),
+            defineField({
+              name: 'image',
+              title: 'Photo',
+              type: 'image',
+              options: { hotspot: true },
+              fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
+            }),
+          ],
+          preview: { select: { title: 'title', subtitle: 'line', media: 'image' } },
+        }),
+      ],
+      validation: (Rule) => Rule.max(6),
+    }),
+    defineField({
+      name: 'bookingPortrait',
+      title: 'Portrait beside the form',
+      type: 'image',
+      group: 'form',
+      description:
+        'A portrait of you, held in view beside the booking form on a wide screen. Upright works best. Empty, the page uses the cover of your first featured story.',
+      options: { hotspot: true },
+      fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
+    }),
+    defineField({
+      name: 'bookingThanksNote',
+      title: 'Thank-you note',
+      type: 'text',
+      rows: 3,
+      group: 'form',
+      description:
+        'Shown after someone sends a booking request, above your signature. A sentence or two in your own words.',
+    }),
+    defineField({
+      name: 'bookingSignature',
+      title: 'Signature',
+      type: 'string',
+      group: 'form',
+      description: 'How you sign the thank-you note, for example your first name.',
+    }),
     defineField({
       name: 'whatToExpectEyebrow',
       title: '"What to expect" eyebrow',

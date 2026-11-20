@@ -5,7 +5,8 @@
 // A page builder since card 190 (ported from FBC Auburn): when the document's Page layout has
 // sections, they render through SectionRenderer, and the form is the "Contact form" block
 // (src/components/sections/ContactFormSection.astro). With an EMPTY Page layout the page draws
-// exactly what it always did: the hero fields, then that same block fed by the document itself.
+// the booking request (2026-11-20): that same block fed by the document itself, headed by the
+// Hero tab's words as the page's h1 (the Hero tab's image is not drawn).
 // So existing content keeps rendering with no migration; scripts/main-pages-builder.mjs seeds
 // the Page layout when the editor should be able to rearrange the page.
 
@@ -15,7 +16,6 @@ import { getContactPage, getSiteSettings } from '@/lib/queries';
 import { breadcrumbSchema } from '@/lib/schemas';
 import { site } from '@/data/site';
 import { firstReal, pageDescription, pageTitle } from '@/lib/page-meta';
-import Hero from '@/components/Hero.astro';
 import ContactFormSection from '@/components/sections/ContactFormSection.astro';
 
 const [page, siteSettings] = await Promise.all([getContactPage(), getSiteSettings()]);
@@ -27,9 +27,19 @@ const description = pageDescription(
   'Tell me about the portrait you have in mind, the era, the story or the film, and I’ll write back to plan a session in Cincinnati or West Chester, Ohio.',
 );
 
-const heroEyebrow = firstReal(page?.heroEyebrow) ?? 'Get in Touch.';
-const heroHeadline = firstReal(page?.heroHeadline) ?? 'Start the Conversation.';
-const heroSubhead = firstReal(page?.heroSubhead) ?? '';
+// The Hero tab's words head the booking request. The starter's seeded defaults ("Get in
+// Touch.", "Start the Conversation.") read as a contact form, so they give way to the booking
+// wording; anything she types in the Studio wins.
+const STARTER_WORDS = /^(get in touch\.?|start the conversation\.?)$/i;
+const own = (v: unknown) => {
+  const t = firstReal(v);
+  return t && !STARTER_WORDS.test(t) ? t : null;
+};
+const heroEyebrow = own(page?.heroEyebrow) ?? 'Book a session';
+const heroHeadline = own(page?.heroHeadline) ?? 'Request a sitting.';
+const heroSubhead =
+  own(page?.heroSubhead) ??
+  'Four short chapters: the sitting, the season, your story and how to reach you.';
 
 // The Page layout, when the editor has built one. Empty means the classic layout below.
 const sections = page?.pageBuilder?.length ? page.pageBuilder : null;
@@ -47,18 +57,15 @@ const schemas = [
     <SectionRenderer {sections} idPrefix="contact" />
   ) : (
     <>
-      {/* Hero: same image-or-text shape every other page uses. */}
-      <Hero
+      {/* The booking request carries the page's h1 itself (2026-11-20): no separate hero, so
+          the form starts in the first screen beside her portrait. */}
+      <ContactFormSection
+        settings={page}
         eyebrow={heroEyebrow}
-        headline={heroHeadline}
+        heading={heroHeadline}
         subhead={heroSubhead}
-        backgroundImage={page?.heroImage}
-        headingId="contact-hero-heading"
-        size="short"
-        scriptAccent={page?.heroScriptAccent}
+        headingLevel="h1"
       />
-
-      <ContactFormSection settings={page} />
     </>
   )}
 </BaseLayout>

@@ -57,7 +57,10 @@ const SECTION_ARMS = `
         formFields[]{ label, kind, options, required },
         whatToExpectEyebrow, whatToExpectHeadline, whatToExpectContent,
         postInquiryRoadmap[]{ title, body, timeEstimate },
-        schedulingLink, schedulingLinkLabel, availabilityNote
+        schedulingLink, schedulingLinkLabel, availabilityNote,
+        bookingSittings[]{ title, line, image${IMAGE_PROJECTION} },
+        bookingPortrait${IMAGE_PROJECTION},
+        bookingThanksNote, bookingSignature
       }
     },
     // The form builder (card 194): the form's words only. The recipient's NAME is looked up for
@@ -502,7 +505,11 @@ export async function getContactPage() {
     },
     schedulingLink,
     schedulingLinkLabel,
-    availabilityNote
+    availabilityNote,
+    bookingSittings[]{ title, line, image${IMAGE_PROJECTION} },
+    bookingPortrait${IMAGE_PROJECTION},
+    bookingThanksNote,
+    bookingSignature
   }`,
     {},
     null,

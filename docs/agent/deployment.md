@@ -103,6 +103,8 @@ All of these are OPTIONAL. With none of them set the route still exists, still v
 
 Bindings (`CONTACT_DB` for D1, `EMAIL` for Email Sending) are configured in `wrangler.jsonc`, which carries the full enable-it checklist as a comment.
 
+**The booking request without JavaScript (`/api/booking/`, this site only).** A plain HTML form cannot send JSON, so `src/pages/api/booking.ts` turns the posted booking form into the same JSON the browser sends and calls this route's own POST (so every setting above applies unchanged), then answers with a 303 to `/contact/#booking-sent` or `#booking-failed`. It needs nothing of its own.
+
 **Store first, notify second.** The endpoint writes the submission to D1 before it tries to email anything, so a message survives a bounce, a spam filter, or a missing transport. A row with `notified = 0` and a `notify_error` is a repairable problem; with a form service the same event is a lost customer and nobody knows.
 
 - `PUBLIC_CF_ANALYTICS_TOKEN` -- Cloudflare Web Analytics token. Without it the analytics beacon doesn't render.
