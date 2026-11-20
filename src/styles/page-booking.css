@@ -17,13 +17,20 @@
    `:has()` every kind's questions stay listed under their own heading.
    ============================================================================= */
 
-.bk {
+/* On a jewel band (2026-11-20, src/lib/jewel-cadence.ts) the same four tokens are declared
+   again, so they read the band's re-pointed values (globals.css ".jewel"), not the paper ones
+   they resolved to on .bk. */
+.bk,
+.bk .jewel {
   --bk-ink: var(--color-foreground);
   --bk-muted: var(--color-muted-foreground);
   --bk-rule: var(--color-border-soft);
   --bk-soft: var(--color-muted);
   --bk-ease: cubic-bezier(0.22, 1, 0.36, 1);
   background: var(--color-background);
+}
+.bk .jewel {
+  --bk-rule: var(--color-border);
 }
 
 /* A fact only Erin can confirm (src/data/funnel.ts `confirmed: false`). */
@@ -207,11 +214,11 @@
 
 /* ---- The form and its chapters ------------------------------------------------------ */
 .bk__stage {
-  margin-top: clamp(2.5rem, 6vw, 4rem);
+  margin-top: var(--space-pause);
 }
 .bk__form {
   display: grid;
-  gap: clamp(3rem, 7vw, 4.5rem);
+  gap: var(--space-pause);
 }
 .bk--stepped .bk__form {
   gap: 2rem;
@@ -870,7 +877,7 @@
   color: var(--bk-ink);
 }
 .bk-sent__guide {
-  margin-top: clamp(3.5rem, 8vw, 6rem);
+  margin-top: var(--space-pause-lg);
 }
 .bk-sent__guide > .portfolio-label {
   margin-bottom: 1rem;

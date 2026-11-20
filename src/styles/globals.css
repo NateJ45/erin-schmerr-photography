@@ -266,6 +266,38 @@
   --feature-link: var(--color-bg);
   --feature-accent: var(--color-secondary); /* accent word, display size, ~3.9:1 */
 
+  /* Jewel tones (2026-11-20), taken from Erin's own photographs: the Halloween and
+     Valentine reds (wine), the "Taking Up Space" pink (magenta), the lamp-lit rooms
+     (amber) and Midsummer's greens (forest). Each has a -deep and a -soft step, and
+     each band names its own ink, caption and accent. Declared here and NOT in .dark:
+     like Feature, a jewel band is the same colour whatever the reader's theme. The
+     four bands are measured pairs in src/lib/surfaces.ts (the contrast gate); the
+     ratios in the comments are WCAG 2.x against the band. */
+  --jewel-wine: #6e1420;
+  --jewel-wine-deep: #4a0d16;
+  --jewel-wine-soft: #f0d9d6;
+  --jewel-wine-ink: #f3eee7; /* 10.2:1 */
+  --jewel-wine-muted: #e8cfcb; /* 8.0:1 */
+  --jewel-wine-accent: #f5e3c0; /* 9.3:1 */
+  --jewel-magenta: #8f2458;
+  --jewel-magenta-deep: #5e1739;
+  --jewel-magenta-soft: #f2d7e2;
+  --jewel-magenta-ink: #f3eee7; /* 7.1:1 */
+  --jewel-magenta-muted: #f0d3df; /* 5.9:1 */
+  --jewel-magenta-accent: #f5e3c0; /* 6.5:1 */
+  --jewel-amber: #c8893a;
+  --jewel-amber-deep: #7a4a14;
+  --jewel-amber-soft: #f5e3c0;
+  --jewel-amber-ink: #1f1b18; /* 5.8:1, dark ink on the light jewel */
+  --jewel-amber-muted: #3b2410; /* 4.9:1 */
+  --jewel-amber-accent: #4a0d16; /* wine-deep */
+  --jewel-forest: #2f4a32;
+  --jewel-forest-deep: #1e3122;
+  --jewel-forest-soft: #d9e2d1;
+  --jewel-forest-ink: #f3eee7; /* 8.5:1 */
+  --jewel-forest-muted: #cbd8c4; /* 6.6:1 */
+  --jewel-forest-accent: #f2d7e2; /* 7.3:1 */
+
   /* Charts (kept neutral, not used at launch) */
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
@@ -404,6 +436,21 @@
   --pad-panel: var(--spacing-l); /* a feature panel */
   --gap-grid: var(--spacing-m); /* between cards in a grid */
   --gap-heading: var(--spacing-l); /* a section heading to its content */
+
+  /* Pauses INSIDE a band (2026-11-20, Tate: "too much white space"). The site's editorial
+     blocks used to type their own big clamps (up to 9 to 16rem); they read these now, so the
+     whole site tightens or loosens from here. --space-band-end closes a page band that has no
+     section padding of its own; --space-stagger is the drop of an offset plate in a grid. */
+  --space-pause: clamp(2rem, 4.5vw, 3.5rem);
+  /* The band rhythm itself, retuned here for this site (the density slot is "standard"; these
+     sit a step under its 3-5rem and 4-7rem, because the jewel bands now do the separating
+     that empty paper used to do). */
+  --spacing-section-md: clamp(2.5rem, 5vw, 4rem);
+  --spacing-section-lg: clamp(3rem, 6.5vw, 5.5rem);
+  --space-pause-lg: clamp(2.5rem, 6vw, 4.5rem);
+  --space-band-end: clamp(2.5rem, 6vw, 4.5rem);
+  --space-stagger: clamp(3rem, 10vw, 8rem);
+  --space-stagger-sm: clamp(2rem, 6vw, 5rem);
 
   /* Shadows. */
   --shadow-card: 0 16px 34px -18px rgba(42, 45, 49, 0.22); /* a card lifted on hover */
@@ -953,6 +1000,82 @@ html:has(.mobile-menu[open]) {
   --section-accent: var(--feature-accent);
   background-color: var(--feature);
   color: var(--feature-foreground);
+}
+
+/* Jewel bands (2026-11-20; src/lib/jewel-cadence.ts assigns them, src/lib/surfaces.ts
+   measures them). A jewel band is a full-bleed colour field from Erin's photographs. Like
+   Feature it re-points the page tokens for everything inside, and it ALSO re-points the
+   Tailwind `--color-*` aliases, because the site's own blocks read those directly and a
+   :root alias resolves at the root, not in the band. Each band sets the four role tokens
+   (--jw, --jw-ink, --jw-muted, --jw-accent) and the shared rule does the rest. */
+.surface-jewel-wine {
+  --jw: var(--jewel-wine);
+  --jw-deep: var(--jewel-wine-deep);
+  --jw-ink: var(--jewel-wine-ink);
+  --jw-muted: var(--jewel-wine-muted);
+  --jw-accent: var(--jewel-wine-accent);
+  --section-accent: var(--jewel-wine-accent);
+  --ring: var(--jewel-wine-ink);
+}
+.surface-jewel-magenta {
+  --jw: var(--jewel-magenta);
+  --jw-deep: var(--jewel-magenta-deep);
+  --jw-ink: var(--jewel-magenta-ink);
+  --jw-muted: var(--jewel-magenta-muted);
+  --jw-accent: var(--jewel-magenta-accent);
+  --section-accent: var(--jewel-magenta-accent);
+  --ring: var(--jewel-magenta-ink);
+}
+.surface-jewel-amber {
+  --jw: var(--jewel-amber);
+  --jw-deep: var(--jewel-amber-deep);
+  --jw-ink: var(--jewel-amber-ink);
+  --jw-muted: var(--jewel-amber-muted);
+  --jw-accent: var(--jewel-amber-accent);
+  --section-accent: var(--jewel-amber-accent);
+  --ring: var(--jewel-amber-ink);
+}
+.surface-jewel-forest {
+  --jw: var(--jewel-forest);
+  --jw-deep: var(--jewel-forest-deep);
+  --jw-ink: var(--jewel-forest-ink);
+  --jw-muted: var(--jewel-forest-muted);
+  --jw-accent: var(--jewel-forest-accent);
+  --section-accent: var(--jewel-forest-accent);
+  --ring: var(--jewel-forest-ink);
+}
+.jewel {
+  --background: var(--jw);
+  --foreground: var(--jw-ink);
+  --muted: var(--jw);
+  --muted-foreground: var(--jw-muted);
+  --card: var(--jw);
+  --card-foreground: var(--jw-ink);
+  --link: var(--jw-ink);
+  --primary: var(--jw-ink);
+  --primary-foreground: var(--jw);
+  --border: color-mix(in oklab, var(--jw-ink) 30%, transparent);
+  --color-background: var(--jw);
+  --color-foreground: var(--jw-ink);
+  --color-muted: var(--jw);
+  --color-muted-foreground: var(--jw-muted);
+  --color-card: var(--jw);
+  --color-card-foreground: var(--jw-ink);
+  --color-link: var(--jw-ink);
+  --color-primary: var(--jw-ink);
+  --color-primary-foreground: var(--jw);
+  --color-border: color-mix(in oklab, var(--jw-ink) 30%, transparent);
+  --color-ring: var(--jw-ink);
+  --color-accent: var(--jw-ink);
+  background-color: var(--jw);
+  color: var(--jw-ink);
+}
+/* A jewel on an element that sits inside the page gutter (a masthead): the colour is painted
+   out to both edges of the screen by a spread shadow, and clip-path trims it back to the
+   element's own height. Paint only, so the page cannot scroll sideways and nothing moves. */
+.jewel-bleed {
+  box-shadow: 0 0 0 100vmax var(--jw);
+  clip-path: inset(0 -100vmax);
 }
 
 /* Focus rings on dark surfaces (PORTS.md card 156). The page ring is a mid grey-blue, about 7:1

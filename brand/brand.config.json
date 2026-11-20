@@ -121,7 +121,7 @@
   "layout": {
     "header": "inline",
     "hero": "editorial",
-    "density": "airy",
+    "density": "standard",
     "cards": "outline",
     "motion": "reveal"
   },

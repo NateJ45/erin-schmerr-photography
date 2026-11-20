@@ -2144,7 +2144,7 @@ export type HoursSection = {
   layout?: 'card' | 'band';
   showAddress?: boolean;
   showChanges?: boolean;
-  look?: 'standard' | 'quiet' | 'feature';
+  look?: 'standard' | 'quiet' | 'feature' | 'jewel';
 };
 
 export type HubSection = {
@@ -2221,7 +2221,7 @@ export type StepsRailSection = {
   firstStepCard?: boolean;
   endHeading?: string;
   link?: CtaBlock;
-  look?: 'standard' | 'quiet' | 'feature';
+  look?: 'standard' | 'quiet' | 'feature' | 'jewel';
 };
 
 export type IconCardsSection = {
@@ -2255,7 +2255,7 @@ export type IconCardsSection = {
     _type: 'iconCard';
     _key: string;
   }>;
-  look?: 'standard' | 'quiet' | 'feature';
+  look?: 'standard' | 'quiet' | 'feature' | 'jewel';
 };
 
 export type CalendarSubscribeSection = {
@@ -2263,7 +2263,7 @@ export type CalendarSubscribeSection = {
   heading?: string;
   intro?: string;
   feed?: string;
-  look?: 'standard' | 'quiet' | 'feature';
+  look?: 'standard' | 'quiet' | 'feature' | 'jewel';
 };
 
 export type NewsletterSection = {
@@ -2271,7 +2271,7 @@ export type NewsletterSection = {
   heading?: string;
   intro?: string;
   signupUrl?: string;
-  look?: 'standard' | 'quiet' | 'feature';
+  look?: 'standard' | 'quiet' | 'feature' | 'jewel';
 };
 
 export type ProgressSection = {
@@ -2283,7 +2283,7 @@ export type ProgressSection = {
   raised?: number;
   asOf?: string;
   link?: CtaBlock;
-  look?: 'standard' | 'quiet' | 'feature';
+  look?: 'standard' | 'quiet' | 'feature' | 'jewel';
 };
 
 export type ContactCardSection = {
@@ -2295,7 +2295,7 @@ export type ContactCardSection = {
   email?: string;
   address?: string;
   hours?: string;
-  look?: 'standard' | 'quiet' | 'feature';
+  look?: 'standard' | 'quiet' | 'feature' | 'jewel';
 };
 
 export type PhotoCardsSection = {
@@ -2310,7 +2310,7 @@ export type PhotoCardsSection = {
     _type: 'photoCard';
     _key: string;
   }>;
-  look?: 'standard' | 'quiet' | 'feature';
+  look?: 'standard' | 'quiet' | 'feature' | 'jewel';
 };
 
 export type ScheduleSection = {
@@ -2401,7 +2401,7 @@ export type ScheduleSection = {
     _type: 'scheduleDay';
     _key: string;
   }>;
-  look?: 'standard' | 'quiet' | 'feature';
+  look?: 'standard' | 'quiet' | 'feature' | 'jewel';
 };
 
 export type EventDetailsSection = {
@@ -2572,7 +2572,7 @@ export type EventDetailsSection = {
   };
   button?: CtaBlock;
   showCalendar?: boolean;
-  look?: 'standard' | 'quiet' | 'feature';
+  look?: 'standard' | 'quiet' | 'feature' | 'jewel';
 };
 
 export type LetterSection = {
@@ -2620,7 +2620,7 @@ export type TimelineSection = {
     _type: 'timelineEntry';
     _key: string;
   }>;
-  look?: 'standard' | 'quiet' | 'feature';
+  look?: 'standard' | 'quiet' | 'feature' | 'jewel';
 };
 
 export type NoticeSection = {
@@ -2642,7 +2642,7 @@ export type CountdownSection = {
   duringText?: string;
   afterText?: string;
   link?: CtaBlock;
-  look?: 'standard' | 'quiet' | 'feature';
+  look?: 'standard' | 'quiet' | 'feature' | 'jewel';
 };
 
 export type TabsSection = {
@@ -2672,7 +2672,7 @@ export type TabsSection = {
     _type: 'tabPanel';
     _key: string;
   }>;
-  look?: 'standard' | 'quiet' | 'feature';
+  look?: 'standard' | 'quiet' | 'feature' | 'jewel';
 };
 
 export type AccordionSection = {
@@ -2702,7 +2702,7 @@ export type AccordionSection = {
     _type: 'accordionItem';
     _key: string;
   }>;
-  look?: 'standard' | 'quiet' | 'feature';
+  look?: 'standard' | 'quiet' | 'feature' | 'jewel';
 };
 
 export type PhotoSection = {
@@ -2730,7 +2730,7 @@ export type ButtonRowSection = {
     _type: 'quickLink';
     _key: string;
   }>;
-  look?: 'standard' | 'quiet' | 'feature';
+  look?: 'standard' | 'quiet' | 'feature' | 'jewel';
 };
 
 export type ColumnsSection = {
@@ -2760,7 +2760,7 @@ export type ColumnsSection = {
     _type: 'textColumn';
     _key: string;
   }>;
-  look?: 'standard' | 'quiet' | 'feature';
+  look?: 'standard' | 'quiet' | 'feature' | 'jewel';
 };
 
 export type FormReference = {
@@ -2875,7 +2875,7 @@ export type VideoSection = {
   url?: string;
   heading?: string;
   caption?: string;
-  look?: 'standard' | 'quiet' | 'feature';
+  look?: 'standard' | 'quiet' | 'feature' | 'jewel';
 };
 
 export type CtaBandSection = {
@@ -2927,7 +2927,7 @@ export type QuoteSection = {
   quote?: string;
   attribution?: string;
   detail?: string;
-  look?: 'standard' | 'quiet' | 'feature';
+  look?: 'standard' | 'quiet' | 'feature' | 'jewel';
 };
 
 export type GallerySection = {
@@ -2944,7 +2944,7 @@ export type GallerySection = {
     _key: string;
   }>;
   columns?: 2 | 3 | 4;
-  look?: 'standard' | 'quiet' | 'feature';
+  look?: 'standard' | 'quiet' | 'feature' | 'jewel';
 };
 
 export type ImageTextSection = {
@@ -2979,7 +2979,7 @@ export type ImageTextSection = {
     _key: string;
   }>;
   cta?: CtaBlock;
-  look?: 'standard' | 'quiet' | 'feature';
+  look?: 'standard' | 'quiet' | 'feature' | 'jewel';
 };
 
 export type RichTextSection = {
@@ -3008,7 +3008,7 @@ export type RichTextSection = {
   }>;
   width?: 'normal' | 'narrow';
   align?: 'left' | 'center';
-  look?: 'standard' | 'quiet' | 'feature';
+  look?: 'standard' | 'quiet' | 'feature' | 'jewel';
 };
 
 export type HeroSection = {

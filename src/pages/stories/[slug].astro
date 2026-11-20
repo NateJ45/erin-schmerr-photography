@@ -47,6 +47,7 @@ import { breadcrumbSchema } from '@/lib/schemas';
 import { storySchema } from '@/lib/portfolio-schemas';
 import { site } from '@/data/site';
 import { pageDescription, pageTitle } from '@/lib/page-meta';
+import { jewelAt, jewelClass } from '@/lib/jewel-cadence';
 import '@/styles/magazine.css';
 
 export async function getStaticPaths() {
@@ -131,6 +132,10 @@ const schemas = [
 ];
 // The share picture: the story's own SEO image, else its cover (a real file only).
 const shareImage = story.seoImage ?? (story.cover?.asset ? story.cover : undefined);
+
+// Each story's ask takes the next jewel along from the one before it (by its number), so a
+// reader turning from story to story sees the colour change.
+const askJewel = jewelAt(Number(number) || 0);
 ---
 
 <BaseLayout
@@ -293,21 +298,30 @@ const shareImage = story.seoImage ?? (story.cover?.asset ? story.cover : undefin
       </section>
     )}
 
-    <section class="mag-ask" aria-labelledby="story-ask">
-      <span class="mag-ask__end" aria-hidden="true"></span>
-      <h2 id="story-ask" class="mag-ask__line">
-        Want a sitting like this one?
-      </h2>
-      <p class="mag-ask__text">
-        Bring me a decade, a character or a book you love, and I will plan the clothes, the place
-        and the light with you.
-      </p>
-      <p>
-        <a class="bq-button" href="/contact/">
-          Plan your sitting
-        </a>
-      </p>
-    </section>
+    {/* The ask is a jewel band (src/lib/jewel-cadence.ts), a different jewel per story;
+        src/scripts/jewel-motion.ts plays the colour bleed into it and the shutter out. */}
+    <div
+      class:list={['mag-ask-band', jewelClass(askJewel)]}
+      data-band="jewel"
+      data-jewel={askJewel}
+      data-dark-surface={askJewel === 'amber' ? undefined : ''}
+    >
+      <section class="mag-ask" aria-labelledby="story-ask">
+        <span class="mag-ask__end" aria-hidden="true"></span>
+        <h2 id="story-ask" class="mag-ask__line">
+          Want a sitting like this one?
+        </h2>
+        <p class="mag-ask__text">
+          Bring me a decade, a character or a book you love, and I will plan the clothes, the place
+          and the light with you.
+        </p>
+        <p>
+          <a class="bq-button" href="/contact/">
+            Plan your sitting
+          </a>
+        </p>
+      </section>
+    </div>
 
     {(prev || next) && (
       <nav class="mag-turn" aria-label="More stories">
@@ -357,3 +371,8 @@ const shareImage = story.seoImage ?? (story.cover?.asset ? story.cover : undefin
     )}
   </article>
 </BaseLayout>
+
+<script>
+  // The jewel hand-offs between bands (colour bleed, shutter, stacked sheets).
+  import '@/scripts/jewel-motion';
+</script>

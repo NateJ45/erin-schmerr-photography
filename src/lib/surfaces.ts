@@ -37,7 +37,10 @@
 // =============================================================================
 
 /** The surface names the components and the cadence already use. */
-export type SurfaceValue = 'background' | 'muted' | 'card' | 'ink' | 'feature';
+export type SurfaceValue = 'background' | 'muted' | 'card' | 'ink' | 'feature' | JewelSurface;
+
+/** The four jewel bands (2026-11-20), assigned by src/lib/jewel-cadence.ts. */
+export type JewelSurface = 'jewel-wine' | 'jewel-magenta' | 'jewel-amber' | 'jewel-forest';
 
 /**
  * The surfaces a CONTENT block can be handed by src/lib/sectionCadence.ts:
@@ -167,6 +170,41 @@ export const SECTION_SURFACES: SurfacePair[] = [
       link: '--feature-link',
     },
   },
+  // The jewel bands (2026-11-20): the site's colour fields, taken from Erin's photographs.
+  // Theme-static like Feature, and NOT in the content cadence: src/lib/jewel-cadence.ts hands
+  // them to the site's own blocks and to a content block whose look is Jewel. The gate below
+  // measures text, headings, links, the accent word and the focus ring on each.
+  ...(
+    [
+      ['wine', 'Wine', 'The deep red of her Halloween and Valentine sets.', '#6E1420', '#F3EEE7'],
+      ['magenta', 'Magenta', 'The hot pink of her "Taking Up Space" set.', '#8F2458', '#F3EEE7'],
+      [
+        'amber',
+        'Amber',
+        'The gold of her lamp-lit rooms; the one light jewel, so dark ink.',
+        '#C8893A',
+        '#1F1B18',
+      ],
+      ['forest', 'Forest', 'The greens of her Midsummer set.', '#2F4A32', '#F3EEE7'],
+    ] as const
+  ).map(([key, title, hint, dot, ink]): SurfacePair => ({
+    value: `jewel-${key}`,
+    title,
+    hint,
+    className: `jewel surface-jewel-${key}`,
+    dot,
+    dotDark: dot,
+    dotInk: ink,
+    themeStatic: true,
+    ring: `--jewel-${key}-ink`,
+    accentToken: `--jewel-${key}-accent`,
+    tokens: {
+      bg: `--jewel-${key}`,
+      text: `--jewel-${key}-ink`,
+      heading: `--jewel-${key}-ink`,
+      link: `--jewel-${key}-ink`,
+    },
+  })),
 ];
 
 export const SURFACE_BY_VALUE: Record<string, SurfacePair> = Object.fromEntries(

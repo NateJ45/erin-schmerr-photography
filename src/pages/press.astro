@@ -73,7 +73,8 @@ const schemas = [
   ogCard={{ kicker: 'Press' }}
 >
   <section class="mag-press" data-mag-preview-root aria-labelledby="press-heading">
-    <header class="mag-press__head">
+    {/* The masthead sits on a jewel (src/lib/jewel-cadence.ts), bled to both edges. */}
+    <header class="mag-press__head jewel surface-jewel-forest jewel-bleed" data-dark-surface>
       <p class="mag-kicker">Published</p>
       <h1 id="press-heading" class="mag-contents__title font-display">
         Press<sup class="mag-count">({publications.length})</sup>

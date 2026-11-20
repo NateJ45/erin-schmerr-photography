@@ -27,7 +27,7 @@
 import type { SurfaceValue } from './surfaces.ts';
 
 /** Every look this template knows. A block offers a subset (LOOKS_BY_TYPE). */
-export type SectionLook = 'standard' | 'quiet' | 'feature';
+export type SectionLook = 'standard' | 'quiet' | 'feature' | 'jewel';
 
 export interface LookOption {
   value: SectionLook;
@@ -61,13 +61,24 @@ export const SECTION_LOOKS: LookOption[] = [
     hint: 'The deep brand color with light text. Use it once or twice a page, for the part that matters most.',
     surface: 'feature',
   },
+  // Jewel (2026-11-20, Tate Fine Art Photography): a full-bleed colour field from the
+  // photographer's own palette. The editor asks for colour, never picks one: the page's jewel
+  // cadence (src/lib/jewel-cadence.ts) chooses which of the four jewels, in turn, and keeps two
+  // colour fields from touching. The block itself still gets a plain cadence surface; the band
+  // around it re-points that surface to the jewel.
+  {
+    value: 'jewel',
+    title: 'Colour',
+    hint: 'A full colour field from her photographs. The page picks which colour, in turn, so two never touch.',
+    surface: null,
+  },
 ];
 
 export const LOOK_BY_VALUE: Record<string, LookOption> = Object.fromEntries(
   SECTION_LOOKS.map((l) => [l.value, l]),
 );
 
-const ALL: SectionLook[] = ['standard', 'quiet', 'feature'];
+const ALL: SectionLook[] = ['standard', 'quiet', 'feature', 'jewel'];
 
 /**
  * Which blocks offer a look, and which looks each one offers.

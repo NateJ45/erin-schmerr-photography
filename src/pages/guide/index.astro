@@ -20,6 +20,7 @@ import { breadcrumbSchema } from '@/lib/schemas';
 import { site } from '@/data/site';
 import { GUIDE, splitTurn } from '@/data/sitting-guide';
 import type { PortfolioPhoto } from '@/lib/portfolio';
+import { jewelClass } from '@/lib/jewel-cadence';
 import type { SanityImageObject } from '@/lib/pageBuilder.types';
 import { getFeaturedStories } from '@/lib/storyQueries'; // scaffold: stories
 import '@/styles/page-guide.css';
@@ -92,47 +93,51 @@ const email = siteSettings?.email as string | undefined;
       </ol>
     </section>
 
-    {/* ---- The pull ---- */}
-    <section class="gd-section mx-auto max-w-content px-m" aria-label="From the guide">
-      <div class="gd-pull split">
-        <blockquote class="gd-pull__quote">
-          <p>{GUIDE.pull}</p>
-          <span class="gd-pull__by">Erin, in the guide</span>
-        </blockquote>
-        <div class="gd-pull__photos">
-          {[pic(2), pic(3)].map(
-            (p) =>
-              p && (
-                <div class="gd-pull__photo">
-                  <SanityImage
-                    source={p}
-                    width={560}
-                    height={700}
-                    sizes="(min-width: 64rem) 20vw, 45vw"
-                    alt=""
-                  />
-                </div>
-              ),
-          )}
+    {/* ---- The pull: a jewel band (src/lib/jewel-cadence.ts; motion in jewel-motion.ts) ---- */}
+    <div class={jewelClass('wine')} data-band="jewel" data-jewel="wine" data-dark-surface>
+      <section class="gd-section mx-auto max-w-content px-m" aria-label="From the guide">
+        <div class="gd-pull split">
+          <blockquote class="gd-pull__quote">
+            <p>{GUIDE.pull}</p>
+            <span class="gd-pull__by">Erin, in the guide</span>
+          </blockquote>
+          <div class="gd-pull__photos">
+            {[pic(2), pic(3)].map(
+              (p) =>
+                p && (
+                  <div class="gd-pull__photo">
+                    <SanityImage
+                      source={p}
+                      width={560}
+                      height={700}
+                      sizes="(min-width: 64rem) 20vw, 45vw"
+                      alt=""
+                    />
+                  </div>
+                ),
+            )}
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
 
-    {/* ---- A taste ---- */}
-    <section class="gd-section mx-auto max-w-content px-m" aria-labelledby="gd-taste-title">
-      <p class="portfolio-label">A taste of chapter I</p>
-      <h2 class="gd-contents__title font-display" id="gd-taste-title">
-        What to <em>wear</em>
-      </h2>
-      <ul class="gd-taste__notes">
-        {taste.map((n) => (
-          <li class="gd-taste__note">
-            <h3>{n.heading}</h3>
-            <p>{n.body}</p>
-          </li>
-        ))}
-      </ul>
-    </section>
+    {/* ---- A taste: a full-width paper sheet, so the jewel hand-off has a band to open ---- */}
+    <div class="gd-sheet" data-band="paper">
+      <section class="gd-section mx-auto max-w-content px-m" aria-labelledby="gd-taste-title">
+        <p class="portfolio-label">A taste of chapter I</p>
+        <h2 class="gd-contents__title font-display" id="gd-taste-title">
+          What to <em>wear</em>
+        </h2>
+        <ul class="gd-taste__notes">
+          {taste.map((n) => (
+            <li class="gd-taste__note">
+              <h3>{n.heading}</h3>
+              <p>{n.body}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+    </div>
 
     {/* ---- The ask ---- */}
     <section class="gd-capture" id="guide-ask" aria-labelledby="gd-ask-title">
@@ -183,3 +188,8 @@ const email = siteSettings?.email as string | undefined;
     </section>
   </div>
 </BaseLayout>
+
+<script>
+  // The jewel hand-offs between bands (colour bleed, shutter, stacked sheets).
+  import '@/scripts/jewel-motion';
+</script>
