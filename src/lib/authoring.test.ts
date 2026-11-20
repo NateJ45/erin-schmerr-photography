@@ -320,6 +320,8 @@ const LIBRARY = [
   // Each in a file of its own (card 197); the documents one goes with its scaffold capability.
   ...declaredTypes('latestVideoSection.ts'),
   ...declaredTypes('documentsSection.ts'),
+  // The Sessions page's blocks, spread into sections.ts (scaffold capability `sessions`).
+  ...declaredTypes('sessionSections.ts'),
 ].filter((t) => t !== 'syncedSection');
 
 // The blocks a main page is built around (card 190). They are offered on their own page only, so

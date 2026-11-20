@@ -64,6 +64,15 @@ export const SELF_CONTAINED_TYPES = new Set([
   'craftNotes', // scaffold: stories
   'crewSection', // scaffold: stories
   'signedClose', // scaffold: stories
+  // The Sessions page's blocks sit on the plain page ground too (sessionSections.ts).
+  // scaffold: sessions
+  'sessionsOpening',
+  'sessionSittings',
+  'sessionExperience',
+  'heirloomsSpec',
+  'investmentNote',
+  'sessionQuestions',
+  // scaffold:end
 ]);
 
 /** _type strings for blocks that receive alternating surface assignment. */

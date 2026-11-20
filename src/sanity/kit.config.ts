@@ -439,7 +439,13 @@ export const pageRules: PageRules = {
   // Document types the rules below apply to ('page' is a Custom page). The
   // built-in pages often open with something else on purpose, so they are off.
   appliesTo: ['page'],
-  mustStartWith: ['heroSection'],
-  atMostOnce: ['heroSection'],
+  mustStartWith: [
+    'heroSection',
+    'sessionsOpening', // scaffold: sessions
+  ],
+  atMostOnce: [
+    'heroSection',
+    'sessionsOpening', // scaffold: sessions
+  ],
   maxSections: 20,
 };

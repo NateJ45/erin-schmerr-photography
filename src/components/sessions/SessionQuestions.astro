@@ -1,0 +1,75 @@
+---
+// scaffold-file: sessions
+// Safe to edit by hand
+// Page-builder block `sessionQuestions` (sessionSections.ts): the questions as
+// native <details> rows in the page's ruled style (a hairline above each, the
+// question in the display face, a thin drawn plus that turns to a minus), then
+// "Book a session". Native elements: a tap or the keyboard opens an answer,
+// it works without JavaScript and a browser's find-in-page opens the right one.
+// The heading and the booking link sit in the text track of the shared split
+// (.split, card 91), the rows in the other.
+//
+// The booking link takes the variant SectionRenderer's one-accent budget gives
+// it (card 158); it goes where the header's button goes, so it is normally the
+// quieter secondary. Left empty in the Studio it reads "Book a session" and
+// goes to the Contact page. Real answers are offered to Google as an FAQPage
+// (sectionFaqs(), src/lib/page-meta.ts); "Placeholder: ..." answers are not.
+//
+// SELF_CONTAINED: plain page ground, no surface prop.
+import CtaLink from '@/components/CtaLink.astro';
+import PortableText from '@/components/PortableText';
+import type { ProjectedSessionQuestionsSection } from '@/lib/pageBuilder.types';
+import type { PortableTextBlock } from '@portabletext/types';
+import '@/styles/page-sessions.css';
+
+type Props = Omit<ProjectedSessionQuestionsSection, '_type' | '_key'> & {
+  headingId?: string;
+  primaryVariant?: 'primary' | 'secondary';
+};
+
+const {
+  eyebrow,
+  heading = 'Questions',
+  items,
+  cta,
+  headingId = 'session-questions',
+  primaryVariant = 'secondary',
+} = Astro.props;
+const rows = (items ?? []).filter((q) => q?.question);
+---
+
+{rows.length > 0 && (
+  <section class="bg-background" aria-labelledby={headingId}>
+    <div class="sx-faq split mx-auto max-w-content px-m py-section-lg">
+      <div class="sx-faq__head">
+        {eyebrow && <p class="portfolio-label mb-4">{eyebrow}</p>}
+        <h2 id={headingId} class="font-display text-h2">
+          {heading}
+        </h2>
+        <div class="mt-8" data-sx-book>
+          <CtaLink
+            cta={cta}
+            variant={primaryVariant}
+            fallbackHref="/contact/"
+            fallbackLabel="Book a session"
+          />
+        </div>
+      </div>
+      <ul class="sx-faq__list" role="list">
+        {rows.map((q) => (
+          <li>
+            <details class="sx-q">
+              <summary class="sx-q__summary">
+                <span class="sx-q__question font-display">{q.question}</span>
+                <span class="sx-q__mark" aria-hidden="true" />
+              </summary>
+              <div class="sx-q__answer text-muted-foreground">
+                <PortableText value={(q.answer ?? []) as PortableTextBlock[]} />
+              </div>
+            </details>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+)}
