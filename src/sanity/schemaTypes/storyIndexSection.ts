@@ -68,11 +68,12 @@ export const coverHero = defineType({
   type: 'object',
   icon: ImagesIcon,
   description:
-    'The featured stories, one per screen, each pulling into focus as you scroll. Your headline sits on the first.',
+    'The featured stories at full screen, one at a time: visitors point at or tap the small pictures to change story. Your headline sits small at the top.',
   fields: [
     defineField({
       name: 'eyebrow',
       title: 'Small line above the headline',
+      description: 'Kept for later: the current home design does not show it.',
       type: 'string',
       validation: (Rule) => Rule.max(80),
     }),
@@ -85,6 +86,7 @@ export const coverHero = defineType({
     defineField({
       name: 'subhead',
       title: 'A sentence under it',
+      description: 'Kept for later: the current home design does not show it.',
       type: 'text',
       rows: 2,
       validation: (Rule) => Rule.max(200),

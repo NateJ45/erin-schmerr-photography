@@ -2,34 +2,37 @@
 // scaffold-file: stories
 // Safe to edit by hand
 // Page-builder block `coverHero` (storyIndexSection.ts): the home page's
-// opening, as full-screen slides (picked 2026-11-18, design-directions
-// "direction I"). Each featured story gets the whole screen. The slides are
-// sticky, so the next one slides up over the last as you scroll, and each one
-// racks from soft and slightly large to sharp as it arrives (CSS scroll-driven,
-// in portfolio.css). A portrait shows whole over its own blurred LQIP (the
-// focus-image frame already paints that blur); a landscape cover fills the
-// screen.
+// opening, a full-screen showcase of the featured stories.
 //
-// Nothing moves on its own, so there is no Pause button. The first slide never
-// animates and its image is the LCP (eager, fetchpriority high); the rest load
-// lazily. JavaScript plays no part: no JS, reduced motion, touch, or a browser
-// without scroll-driven animations all get the same slides standing still
-// (touch keeps a lighter scale-and-fade). Words sit on paper chips, so they
-// read over any photograph in the light-only theme.
+// Two Details references, combined (2026-11-20):
+// - The LAYOUT is Martin Briceno's portfolio showcase (details.so/inspo/
+//   martinbriceno-tchizg): one story fills the screen, its title large at
+//   mid-left, its short line at mid-right, credits in small columns at the
+//   bottom left and a strip of landscape thumbnails at the bottom right.
+//   Pointing at (or focusing, or tapping) a thumbnail brings that story up.
+// - The OPENING is the Vault "Reveal Hero" (details.so/vault/hero-01): the
+//   cover opens from a narrow window to full bleed while it scales, the scrim
+//   fades in, and at 2.24 s the header, the words and the strip arrive together.
 //
-// An optional small portrait of her sits inside the headline, after word
-// `portraitAfterWord` (splitAfterWord in portfolio.ts), so the page opens on a
-// person. Empty, the headline is plain words exactly as before. The picture is
-// decorative (empty alt, aria-hidden): inside the h1 any words it carried would
-// be read in the middle of the headline.
+// Deliberate changes from the references, recorded in the PR:
+// - The block's headline is the page's h1, set small at the top left (where
+//   Briceno's tagline sits) with the two buttons as text links on the right.
+//   The eyebrow and subhead fields are kept but not drawn here.
+// - The stage is the screen minus the paper header strip, so the thumbnails
+//   are on the first screen.
+// - The incoming cover also eases from soft to sharp (DESIGN.md's signature).
+// - The opening plays once per visit (per tab), on a full page load only;
+//   arriving through the site's own links shows the hero at rest.
 //
-// The buttons are secondary outlines: the page's one filled accent button
-// belongs to the booking band further down (card 158).
+// Without JavaScript, or under reduced motion, the first story shows at rest
+// and every thumbnail is a plain link to its story. Motion is
+// src/scripts/cover-hero.ts (GSAP + SplitText).
 import FocusImage from '@/components/portfolio/FocusImage.astro';
 import CtaLink from '@/components/CtaLink.astro';
+import { ctaHref } from '@/lib/cta-href';
 import SanityImage from '@/components/SanityImage.astro';
 import { getFeaturedStories } from '@/lib/storyQueries';
-import { formatMonthYear, photoRatio, splitAfterWord } from '@/lib/portfolio';
+import { photoRatio, splitAfterWord } from '@/lib/portfolio';
 import type { SanityImageObject } from '@/lib/pageBuilder.types';
 import '@/styles/portfolio.css';
 
@@ -48,118 +51,197 @@ interface Props {
 }
 
 const {
-  eyebrow,
   headline,
-  subhead,
   primaryCta,
   secondaryCta,
-  limit = 5,
+  limit = 6,
   portrait,
   portraitAfterWord = 1,
   headingId = 'cover-hero-heading',
 } = Astro.props;
-const stories = (await getFeaturedStories(limit)).filter((s) => s.cover);
-const pad = (n: number) => String(n).padStart(2, '0');
+
+// Briceno's strip holds six; more would crowd the corner.
+const stories = (await getFeaturedStories(Math.min(limit, 6))).filter((s) => s.cover);
+
+// An optional small portrait of her sits inside the headline after word
+// `portraitAfterWord` (decorative: inside the h1 its words would interrupt).
 const hasPortrait = !!portrait?.asset;
 const [headBefore, headAfter] = hasPortrait
   ? splitAfterWord(headline, portraitAfterWord)
   : [headline, ''];
+
+// The three small credit columns. The first credited person, then the magazine
+// (or the place), then the year; a column with nothing to say is left out.
+const creditColumns = (story: (typeof stories)[number]) => {
+  const first = story.credits?.[0];
+  const year = story.date ? story.date.slice(0, 4) : null;
+  return [
+    first?.name ? { label: first.role ?? 'With', value: first.name } : null,
+    story.publication?.magazine
+      ? { label: 'Published', value: story.publication.magazine }
+      : story.location
+        ? { label: 'Place', value: story.location }
+        : null,
+    year ? { label: 'Year', value: year } : null,
+  ].filter((c): c is { label: string; value: string } => c !== null);
+};
 ---
 
-<section class="cover-hero" aria-labelledby={headingId}>
-  {stories.length === 0 && (
-    <div class="cover-slide cover-slide--empty">
-      <div class="cover-slide__intro cover-chip">
-        {eyebrow && <p class="cover-slide__eyebrow">{eyebrow}</p>}
-        <h1 id={headingId} class="cover-slide__title font-display">
-          {hasPortrait ? (
-            <>
-              {headBefore}{' '}
-              <span class="cover-portrait" aria-hidden="true">
-                <SanityImage
-                  source={portrait}
-                  width={240}
-                  height={192}
-                  sizes="7rem"
-                  loading="eager"
-                  alt=""
-                />
-              </span>{' '}
-              {headAfter}
-            </>
-          ) : (
-            headline
-          )}
-        </h1>
-        {subhead && <p class="cover-slide__subhead">{subhead}</p>}
+<section class="cover-hero is-intro" aria-labelledby={headingId} data-cover-hero>
+  {/* Decide before first paint whether the opening plays (see the header
+      comment). A full page load only: on a router swap readyState is already
+      complete. The class hides the header and the words until the script runs;
+      the script clears it if anything fails. */}
+  <script is:inline>
+    (function () {
+      var root = document.documentElement;
+      var header = document.querySelector('.site-header');
+      if (header) root.style.setProperty('--site-header-h', header.offsetHeight + 'px');
+      var seen = false;
+      try {
+        seen = sessionStorage.getItem('tate-intro') === '1';
+      } catch (e) {}
+      // Automated browsers (tests, Lighthouse) see the hero at rest unless a
+      // test asks for the opening with sessionStorage tate-intro-test.
+      var bot = false;
+      try {
+        bot = navigator.webdriver && sessionStorage.getItem('tate-intro-test') !== '1';
+      } catch (e) {}
+      if (document.readyState === 'loading' && root.classList.contains('motion') && !seen && !bot) {
+        root.classList.add('showcase-intro');
+        // On the home page this opening is the welcome: drop the site-wide
+        // first-visit loader (FirstVisitLoader.astro) so nobody sits through two.
+        root.classList.remove('first-visit');
+        var loader = document.querySelector('.first-visit-loader');
+        if (loader) loader.remove();
+        // A safety net: never leave the page hidden if the script fails to load.
+        setTimeout(function () {
+          if (!root.classList.contains('showcase-running')) root.classList.remove('showcase-intro');
+        }, 4000);
+      }
+    })();
+  </script>
+
+  <div class="cover-hero__media" data-hero-media data-first-viewport-exempt aria-hidden="true">
+    <div class="cover-hero__image" data-hero-image>
+      {stories.map((story, i) => (
+        <div
+          class:list={[
+            'cover-hero__slide',
+            i === 0 && 'is-active',
+            photoRatio(story.cover) < 0.95 && 'cover-hero__slide--portrait',
+          ]}
+          data-slide
+          data-first-viewport-exempt={i === 0 ? undefined : ''}
+        >
+          <FocusImage
+            photo={story.cover}
+            width={2400}
+            sizes="100vw"
+            loading={i === 0 ? 'eager' : 'lazy'}
+            fetchpriority={i === 0 ? 'high' : 'low'}
+            alt=""
+            class="cover-hero__frame"
+            pull={false}
+          />
+        </div>
+      ))}
+    </div>
+    <div class="cover-hero__overlay" data-hero-overlay></div>
+  </div>
+
+  <div class="cover-hero__stage mx-auto max-w-content px-l">
+    <div class="cover-hero__top">
+      <h1 id={headingId} class="cover-hero__headline font-display">
+        {hasPortrait ? (
+          <>
+            {headBefore}{' '}
+            <span class="cover-portrait" aria-hidden="true">
+              <SanityImage
+                source={portrait}
+                width={120}
+                height={96}
+                sizes="2rem"
+                loading="eager"
+                alt=""
+              />
+            </span>{' '}
+            {headAfter}
+          </>
+        ) : (
+          headline
+        )}
+      </h1>
+      {(primaryCta || secondaryCta) && (
+        <p class="cover-hero__links" data-hero-fade>
+          {[primaryCta, secondaryCta].filter(Boolean).map((cta) => (
+            <a href={ctaHref(cta)}>{cta!.label}</a>
+          ))}
+        </p>
+      )}
+    </div>
+
+    <div class="cover-hero__middle" aria-live="polite">
+      <div class="cover-hero__stack cover-hero__titles">
+        {stories.map((story, i) => (
+          <h2 class:list={['cover-hero__story font-display', i === 0 && 'is-active']} data-panel>
+            <a href={`/stories/${story.slug}/`} data-reveal-lines>
+              {story.title}
+            </a>
+          </h2>
+        ))}
+      </div>
+      <div class="cover-hero__stack cover-hero__deks">
+        {stories.map((story, i) => (
+          <p class:list={['cover-hero__dek', i === 0 && 'is-active']} data-panel>
+            <span data-reveal-lines>{story.dek ?? story.location ?? ''}</span>
+          </p>
+        ))}
       </div>
     </div>
-  )}
-  {stories.map((story, i) => (
-    <article
-      class:list={[
-        'cover-slide',
-        i === 0 && 'cover-slide--first',
-        photoRatio(story.cover) < 0.95 && 'cover-slide--portrait',
-      ]}
-      aria-label={i === 0 ? undefined : story.title}
-      data-first-viewport-exempt={i === 0 ? undefined : ''}
-    >
-      <FocusImage
-        photo={story.cover}
-        width={2400}
-        sizes="100vw"
-        loading={i === 0 ? 'eager' : 'lazy'}
-        fetchpriority={i === 0 ? 'high' : 'low'}
-        alt={story.cover?.alt ?? ''}
-        class="cover-slide__frame"
-        pull={false}
-      />
-      {i === 0 && (
-        <div class="cover-slide__intro cover-chip">
-          {eyebrow && <p class="cover-slide__eyebrow">{eyebrow}</p>}
-          <h1 id={headingId} class="cover-slide__title font-display">
-            {hasPortrait ? (
-              <>
-                {headBefore}{' '}
-                <span class="cover-portrait" aria-hidden="true">
-                  <SanityImage
-                    source={portrait}
-                    width={240}
-                    height={192}
-                    sizes="7rem"
-                    loading="eager"
-                    alt=""
-                  />
-                </span>{' '}
-                {headAfter}
-              </>
-            ) : (
-              headline
-            )}
-          </h1>
-          {subhead && <p class="cover-slide__subhead">{subhead}</p>}
-          {(primaryCta || secondaryCta) && (
-            <div class="cover-slide__ctas">
-              {primaryCta && <CtaLink cta={primaryCta} variant="secondary" />}
-              {secondaryCta && <CtaLink cta={secondaryCta} variant="secondary" />}
-            </div>
-          )}
-        </div>
-      )}
-      <div class="cover-slide__foot">
-        <p class="cover-slide__caption cover-chip">
-          <a href={`/stories/${story.slug}/`}>
-            <span class="cover-slide__story">{story.title}</span>
-            <span class="cover-slide__where">
-              {[story.location, formatMonthYear(story.date)].filter(Boolean).join(', ')}
-            </span>
-          </a>
-        </p>
-        <span class="cover-slide__count cover-chip" aria-hidden="true">
-          {pad(i + 1)} / {pad(stories.length)}
-        </span>
+
+    <div class="cover-hero__bottom">
+      <div class="cover-hero__stack cover-hero__credits">
+        {stories.map((story, i) => (
+          <dl class:list={['cover-hero__cols', i === 0 && 'is-active']} data-panel>
+            {creditColumns(story).map((c) => (
+              <div>
+                <dt data-reveal-lines>{c.label}</dt>
+                <dd data-reveal-lines>{c.value}</dd>
+              </div>
+            ))}
+          </dl>
+        ))}
       </div>
-    </article>
-  ))}
+      {stories.length > 1 && (
+        <ol class="cover-hero__thumbs" aria-label="Featured stories" data-hero-fade>
+          {stories.map((story, i) => (
+            <li>
+              <a
+                href={`/stories/${story.slug}/`}
+                class:list={['cover-hero__thumb', i === 0 && 'is-active']}
+                aria-current={i === 0 ? 'true' : undefined}
+                data-thumb
+              >
+                <FocusImage
+                  photo={story.cover}
+                  width={240}
+                  sizes="6rem"
+                  crop={16 / 10}
+                  alt=""
+                  class="cover-hero__thumb-img"
+                  pull={false}
+                />
+                <span class="sr-only">{story.title}</span>
+              </a>
+            </li>
+          ))}
+        </ol>
+      )}
+    </div>
+  </div>
 </section>
+
+<script>
+  import '@/scripts/cover-hero';
+</script>
