@@ -82,7 +82,8 @@ function setup(): void {
     // 3. The slow photos.
     frames.forEach((frame) => {
       const picture = frame.firstElementChild as HTMLElement | null;
-      if (!picture) return;
+      // A placeholder stays put, so its "Placeholder" label is never cropped.
+      if (!picture || picture.classList.contains('focus-image--placeholder')) return;
       gsap.fromTo(
         picture,
         { yPercent: -5 },

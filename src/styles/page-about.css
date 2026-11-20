@@ -45,7 +45,7 @@
 .about-parallax {
   overflow: hidden;
 }
-html.motion .about-parallax > .focus-image {
+html.motion .about-parallax > .focus-image:not(.focus-image--placeholder) {
   scale: 1.12;
   will-change: transform;
 }
