@@ -1,17 +1,47 @@
-/* Erin Schmerr Photography: the header and the phone menu, "the boutique bar" and
-   "the boutique drop" (2026-11-20; DESIGN.md, Components). Replaces the darkroom
-   film-leader header and contact-sheet menu. Loaded after erin.css (BaseLayout).
+/* Tate Fine Art Photography: the header and the menu, "the jewel masthead" and "the jewel
+   flood" (2026-11-20; DESIGN.md, Components). Built on the same day's "boutique bar" and
+   replacing its paper "boutique drop". Loaded after erin.css (BaseLayout).
    Markup: src/components/Header.astro and MobileNav.astro.
 
-   Quiet luxury on warm paper: the brand faces only, square corners, hairlines,
-   no shadows, one outlined button family. Every effect has a reduced-motion
-   fallback, and nothing in the first viewport starts hidden (card 213): the
-   only hidden start states are inside the closed menu dialog. */
+   The bar stays quiet luxury on warm paper (square corners, hairlines, no shadows) and
+   gains presence: a larger wordmark, nav links that roll from small capitals into Bodoni
+   italic, a magenta rule that draws under them, a wine fill on "Get in touch", a jewel
+   "Menu" button, and a see-through state over the home cinema. The menu is a full-screen
+   wine panel that rises behind amber and magenta sheets (Details Vault navigation-07) with
+   Radaville's huge serif names, letter-by-letter italic swap and turning preview photo.
+
+   The jewel tones come from the colour layer (--jewel-*); the fallbacks here are the same
+   values, so this file reads right before or without it. Every effect has a reduced-motion
+   fallback, and nothing in the first viewport starts hidden (card 213): the only hidden
+   start states are inside the closed menu dialog. */
+
+:root {
+  --jw-wine: var(--jewel-wine, #5a1a2a);
+  --jw-wine-deep: var(--jewel-wine-deep, #3d0f1b);
+  --jw-magenta: var(--jewel-magenta, #b0175f);
+  --jw-amber: var(--jewel-amber, #c8862a);
+  --jw-paper: #f3eee7;
+  --jw-paper-soft: rgb(243 238 231 / 0.72);
+  /* Radaville's overlay curve, and the Vault toggle's ease-out for small UI. */
+  --jw-ease: cubic-bezier(0.76, 0, 0.24, 1);
+  --jw-ease-out: cubic-bezier(0.165, 0.84, 0.44, 1);
+}
 
 /* ---- Header: the bar ------------------------------------------------------- */
 .bq-header {
+  /* One fixed row height, so the home cinema can slide exactly under it. */
+  --bq-hdr-h: 3.75rem;
   /* Compaction (globals.css, card 157): a gentle tighten, not the starter's. */
   --hdr-tighten: 0.75rem;
+  transition:
+    transform 300ms cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 500ms var(--ease-focus),
+    box-shadow 300ms ease;
+}
+@media (min-width: 1024px) {
+  .bq-header {
+    --bq-hdr-h: 5.25rem;
+  }
 }
 /* Flat: when the page has moved, a hairline under the bar instead of a shadow. */
 .site-header.bq-header[data-scrolled] {
@@ -22,12 +52,8 @@
 .bq-header__row {
   justify-content: space-between;
   gap: 1rem;
-  padding: 0.5rem var(--spacing-m);
-}
-@media (min-width: 1024px) {
-  .bq-header__row {
-    padding-block: 1rem;
-  }
+  height: var(--bq-hdr-h);
+  padding: 0 var(--spacing-m);
 }
 
 .bq-header__brand {
@@ -37,6 +63,7 @@
   min-width: 0;
 }
 .bq-header__logo {
+  position: relative;
   transition: opacity 300ms var(--ease-focus);
 }
 .bq-header__logo:hover {
@@ -46,92 +73,167 @@
   height: auto;
   width: 100%;
 }
+/* The paper wordmark only shows over the cinema (data-over, below). */
+.bq-header .site-header__logo .bq-header__logo-over {
+  display: none;
+}
 @media (max-width: 1023.98px) {
   .bq-header .site-header__logo {
-    max-width: min(15rem, calc(100vw - 9.5rem));
+    max-width: min(15rem, calc(100vw - 10.5rem));
   }
 }
+/* The masthead: the wordmark runs larger at rest than the old bar's. */
 @media (min-width: 1024px) {
   .bq-header .site-header__logo img {
     width: auto;
-    height: clamp(1.375rem, 1.9vw, 1.75rem);
+    height: clamp(1.625rem, 2.2vw, 2.125rem);
   }
 }
 
-/* The place block: two small serif lines beside the wordmark (M. Fisher's address). */
+/* The place block: two small serif lines beside the wordmark (M. Fisher's address), the
+   second in italic like a masthead's dateline. */
 .bq-place {
   display: none;
   margin: 0;
+  padding-left: clamp(1.25rem, 3vw, 3rem);
+  border-left: 1px solid var(--border);
   font-family: var(--font-display);
-  /* Bodoni at caption size: 16px with a little air (erin.css, --display-track-sm), and
-     font-optical-sizing picks the sturdy small cut. */
   font-size: 1rem;
   letter-spacing: var(--display-track-sm);
   line-height: 1.2;
   color: var(--foreground);
   white-space: nowrap;
+  transition:
+    color 500ms var(--ease-focus),
+    border-color 500ms var(--ease-focus);
 }
 .bq-place span {
   display: block;
+}
+.bq-place span + span {
+  font-style: italic;
 }
 @media (min-width: 768px) {
   .bq-place {
     display: block;
   }
 }
-/* Between 1024 and 1180 the nav needs the room. */
-@media (min-width: 1024px) and (max-width: 1179.98px) {
+/* Between 1024 and 1240 the nav needs the room. */
+@media (min-width: 1024px) and (max-width: 1239.98px) {
   .bq-place {
     display: none;
   }
 }
 
-/* The nav: small Jost, set plainly. */
+/* The nav: small tracked capitals, like a masthead's contents line. */
 .bq-header__nav {
-  gap: clamp(1rem, 1.8vw, 1.75rem);
+  gap: clamp(1rem, 1.6vw, 1.5rem);
 }
 .bq-nav {
   display: flex;
   align-items: center;
-  gap: clamp(1rem, 1.9vw, 1.875rem);
+  gap: clamp(1rem, 1.7vw, 1.75rem);
 }
 .bq-nav__link {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 0.35em;
   min-height: 44px;
   font-family: var(--font-body);
-  font-size: 0.8125rem;
-  letter-spacing: 0.01em;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
   white-space: nowrap;
   color: var(--foreground);
   text-decoration: none;
   cursor: pointer;
   list-style: none;
-  transition: opacity 300ms var(--ease-focus);
+  transition:
+    opacity 300ms var(--ease-focus),
+    color 500ms var(--ease-focus);
 }
 .bq-nav__link::-webkit-details-marker {
   display: none;
 }
-/* The page you are on: a hairline under its name. */
-.bq-nav__link[aria-current='page'] {
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.45em;
+
+/* The roll: the capitals lift away and the same word in Bodoni italic rises in. Both copies
+   share one grid cell; the cell clips. The second copy is aria-hidden. */
+.bq-roll {
+  display: inline-grid;
+  height: 1.5rem;
+  overflow: hidden;
 }
-/* Dim the others (after Quadplex 80): one link hovered or focused, the rest step back. */
+.bq-roll > span {
+  grid-area: 1 / 1;
+  display: block;
+  line-height: 1.5rem;
+  transition: transform 600ms var(--jw-ease-out);
+}
+.bq-roll__b {
+  font-family: var(--font-display);
+  font-size: 1.0625rem;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  text-align: center;
+  color: var(--jw-magenta);
+  transform: translateY(100%);
+}
+/* The rule under the word: drawn in magenta on hover, in ink under the page you are on. */
+.bq-nav__link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.55rem;
+  height: 1px;
+  background: var(--jw-magenta);
+  transform: scaleX(0);
+  transform-origin: right center;
+  transition: transform 600ms var(--jw-ease-out);
+}
+.bq-nav__group > .bq-nav__link::after {
+  right: 1.1em;
+}
+.bq-nav__link[aria-current='page']::after {
+  background: currentColor;
+  transform: scaleX(1);
+}
 @media (hover: hover) {
+  .bq-nav__link:hover .bq-roll__a {
+    transform: translateY(-100%);
+  }
+  .bq-nav__link:hover .bq-roll__b {
+    transform: none;
+  }
+  .bq-nav__link:hover::after {
+    background: var(--jw-magenta);
+    transform: scaleX(1);
+    transform-origin: left center;
+  }
+  /* Dim the others (after Quadplex 80): one link hovered or focused, the rest step back. */
   .bq-header__nav:has(.bq-nav__link:hover, .bq-nav__link:focus-visible)
     .bq-nav__link:not(:hover, :focus-visible) {
     opacity: 0.38;
   }
 }
+.bq-nav__link:focus-visible .bq-roll__a {
+  transform: translateY(-100%);
+}
+.bq-nav__link:focus-visible .bq-roll__b {
+  transform: none;
+}
+
 .bq-nav__menu {
   display: none;
   margin-top: 0.25rem;
   padding: 0.5rem 0;
   background: var(--background);
   border: 1px solid var(--border);
+  border-top: 2px solid var(--jw-wine);
 }
 .site-nav__group[open] > .bq-nav__menu {
   display: grid;
@@ -141,20 +243,20 @@
   align-items: center;
   min-height: 44px;
   padding-inline: 1rem;
-  font-size: 0.8125rem;
+  font-family: var(--font-display);
+  font-size: 1rem;
   color: var(--foreground);
   text-decoration: none;
 }
 .bq-nav__sub:hover,
 .bq-nav__sub[aria-current='page'] {
-  text-decoration: underline;
-  text-underline-offset: 0.35em;
+  font-style: italic;
+  color: var(--jw-magenta);
 }
 
 /* Buttons: one family (rule 17). Outlined, square, small tracked capitals; the hover
-   fills with ink. "Get in touch" in the bar and the menu, "Menu" and "Close". */
-.bq-button,
-.bq-menu-button {
+   fills with ink. "Get in touch" in the bar floods with wine from below instead. */
+.bq-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -174,19 +276,43 @@
   cursor: pointer;
   transition:
     background-color 300ms var(--ease-focus),
-    color 300ms var(--ease-focus);
-}
-.bq-menu-button {
-  min-width: 44px;
-  padding-inline: 0.95rem;
+    color 300ms var(--ease-focus),
+    border-color 300ms var(--ease-focus);
 }
 @media (hover: hover) {
-  .bq-button:hover,
-  .bq-menu-button:hover {
+  .bq-button:hover {
     background: var(--foreground);
     color: var(--background);
   }
 }
+.bq-button--flood {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+.bq-button--flood > span {
+  position: relative;
+  z-index: 1;
+}
+.bq-button--flood::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--jw-wine);
+  transform: translateY(101%);
+  transition: transform 600ms var(--jw-ease-out);
+}
+@media (hover: hover) {
+  .bq-button--flood:hover {
+    background: transparent;
+    border-color: var(--jw-wine);
+    color: var(--jw-paper);
+  }
+  .bq-button--flood:hover::before {
+    transform: none;
+  }
+}
+
 .bq-icon-button {
   display: inline-flex;
   align-items: center;
@@ -194,174 +320,503 @@
   width: 44px;
   height: 44px;
   color: var(--foreground);
-  transition: opacity 300ms var(--ease-focus);
+  transition:
+    opacity 300ms var(--ease-focus),
+    color 500ms var(--ease-focus);
 }
 .bq-icon-button:hover {
   opacity: 0.6;
 }
+
+/* ---- The "Menu" button (the Vault's toggle: a rolling label and a turning mark) ---- */
+.jw-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-height: 44px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--foreground);
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 500ms var(--ease-focus);
+}
+.jw-toggle__label {
+  display: block;
+  height: 1.25em;
+  overflow: hidden;
+  line-height: 1.25em;
+}
+.jw-toggle__roll {
+  display: block;
+  transition: transform 600ms var(--jw-ease-out);
+}
+.jw-toggle__roll > span {
+  display: block;
+}
+.jw-toggle__mark {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  background: var(--jw-wine);
+  color: var(--jw-paper);
+  transition: background-color 400ms var(--ease-focus);
+}
+.jw-toggle__mark svg {
+  display: block;
+  transform: rotate(45deg);
+  transition: transform 600ms var(--jw-ease-out);
+}
+@media (hover: hover) {
+  .jw-toggle:hover .jw-toggle__roll {
+    transform: translateY(-50%);
+  }
+  .jw-toggle:hover .jw-toggle__mark {
+    background: var(--jw-magenta);
+  }
+  .jw-toggle:hover .jw-toggle__mark svg {
+    transform: rotate(135deg);
+  }
+}
+/* "Close", inside the menu: a paper square holding the cross. */
+.jw-toggle--close {
+  color: var(--jw-paper);
+}
+.jw-toggle--close .jw-toggle__mark {
+  background: var(--jw-paper);
+  color: var(--jw-wine);
+}
+.jw-toggle--close .jw-toggle__mark svg {
+  transform: none;
+}
+@media (hover: hover) {
+  .jw-toggle--close:hover .jw-toggle__mark {
+    background: var(--jw-amber);
+    color: var(--jw-wine-deep);
+  }
+  .jw-toggle--close:hover .jw-toggle__mark svg {
+    transform: rotate(90deg);
+  }
+}
+/* A narrow phone keeps the mark and drops the visible word (its name stays). */
+@media (max-width: 359.98px) {
+  .jw-toggle__label {
+    display: none;
+  }
+}
+
 .bq-nav__link:focus-visible,
 .bq-nav__sub:focus-visible,
 .bq-button:focus-visible,
-.bq-menu-button:focus-visible,
+.jw-toggle:focus-visible,
 .bq-icon-button:focus-visible,
-.bq-header__logo:focus-visible,
-.bq-line__link:focus-visible,
-.bq-drop__small:focus-visible,
-.bq-drop__contact a:focus-visible {
-  outline: 1px solid var(--foreground);
+.bq-header__logo:focus-visible {
+  outline: 1px solid currentColor;
   outline-offset: 4px;
 }
 
-.bq-header__phone {
+.bq-header__end {
   display: flex;
   align-items: center;
   gap: 0.25rem;
+}
+@media (min-width: 1024px) {
+  .bq-header__end {
+    margin-left: clamp(1rem, 1.6vw, 1.5rem);
+  }
+}
+.bq-header__phone {
+  display: flex;
+  align-items: center;
 }
 @media (min-width: 1024px) {
   .bq-header__phone {
     display: none;
   }
 }
+@media (min-width: 1024px) {
+  .bq-header__row {
+    justify-content: flex-start;
+  }
+  .bq-header__brand {
+    margin-right: auto;
+  }
+}
 
-/* ---- Phone menu: the drop ------------------------------------------------- */
-/* The dialog covers the screen (transparent); the paper panel drops from the top and
-   stops short, so a strip of the page stays visible, dimmed, below it. A tap on that
-   strip lands on the dialog itself and closes the menu (MobileNav.astro). */
-.mobile-menu.bq-drop {
+/* ---- Over the cinema --------------------------------------------------------- */
+/* On the home page the bar floats over the opening photo: the cinema slides up under it
+   (the negative margin is exactly the row height) and starts at the very top of the
+   screen. With JavaScript the bar is see-through while the opening frame is under it
+   (data-over, Header.astro); without it the bar stays solid paper over the photo's top. */
+html:has(.cinema-open) .site-header.bq-header {
+  margin-bottom: calc(-1 * var(--bq-hdr-h));
+}
+html:has(.cinema-open) .cinema {
+  --site-header-h: 0px;
+}
+.site-header.bq-header[data-over] {
+  background-color: transparent;
+  box-shadow: none;
+}
+/* A soft scrim from the top, so paper words read on any photo. */
+.site-header.bq-header::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: calc(100% + 3rem);
+  background: linear-gradient(to bottom, rgb(18 16 14 / 0.5), rgb(18 16 14 / 0));
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 500ms var(--ease-focus);
+}
+.site-header.bq-header[data-over]::before {
+  opacity: 1;
+}
+.bq-header[data-over] .bq-place,
+.bq-header[data-over] .bq-nav__link,
+.bq-header[data-over] .bq-icon-button,
+.bq-header[data-over] .site-header__row > .bq-header__end .jw-toggle,
+.bq-header[data-over] .bq-header__nav > .bq-button {
+  color: var(--jw-paper);
+}
+.bq-header[data-over] .bq-place {
+  border-left-color: rgb(243 238 231 / 0.4);
+}
+.bq-header[data-over] .bq-header__nav > .bq-button {
+  border-color: var(--jw-paper);
+}
+.bq-header[data-over] .bq-roll__b,
+.bq-header[data-over] .bq-nav__link:hover::after {
+  color: var(--jw-paper);
+  background: var(--jw-paper);
+}
+.bq-header[data-over] .bq-roll__b {
+  background: none;
+}
+.bq-header[data-over] .site-header__logo .bq-header__logo-over {
+  display: block;
+}
+.bq-header[data-over] .site-header__logo img:not(.bq-header__logo-over) {
+  display: none;
+}
+/* A logo uploaded in Site settings has no paper twin: whiten it instead. */
+.bq-header[data-over] .site-header__logo:not(:has(.bq-header__logo-over)) img {
+  display: block;
+  filter: brightness(0) invert(0.95);
+}
+
+/* ---- The menu: the jewel flood ---------------------------------------------- */
+/* The dialog fills the screen and is see-through: the amber and magenta sheets and the wine
+   panel rise inside it, so the page behind shows (lifting) until they cover it. */
+.mobile-menu.jw-menu {
   inset: 0;
   width: 100%;
   height: 100dvh;
+  color: var(--jw-paper);
+  background: transparent;
 }
-.bq-drop::backdrop {
-  background: rgb(31 27 24 / 0.5);
+.jw-menu::backdrop {
+  background: transparent;
 }
-.mobile-menu.bq-drop .mobile-menu__panel {
+.jw-sheet {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.jw-sheet--amber {
+  background: var(--jw-amber);
+}
+.jw-sheet--magenta {
+  background: var(--jw-magenta);
+}
+.mobile-menu.jw-menu .mobile-menu__panel {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
-  height: calc(100dvh - 4.5rem);
+  height: 100dvh;
   overflow-x: hidden;
   overflow-y: auto;
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--jw-wine);
+  color: var(--jw-paper);
   box-shadow: none;
 }
-.bq-drop__top {
+.jw-menu__top {
   display: flex;
+  flex: none;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 0.5rem var(--spacing-m);
+  height: var(--bq-hdr-h, 3.75rem);
+  padding: 0 var(--spacing-m);
 }
-.bq-drop__title,
-.bq-drop__group-label {
-  margin: 0;
+.jw-menu__brand {
+  display: block;
+  max-width: min(15rem, calc(100vw - 10.5rem));
+  color: var(--jw-paper);
+  font-family: var(--font-display);
+  text-decoration: none;
+}
+.jw-menu__brand img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+@media (min-width: 1024px) {
+  .jw-menu {
+    --bq-hdr-h: 5.25rem;
+  }
+  .jw-menu__brand {
+    max-width: none;
+  }
+  .jw-menu__brand img {
+    width: auto;
+    height: clamp(1.625rem, 2.2vw, 2.125rem);
+  }
+}
+
+/* The body: the names on the left; on the right the info columns over the preview photo. */
+.jw-menu__body {
+  display: grid;
+  flex: 1 0 auto;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  gap: 2rem;
+  padding: clamp(0.5rem, 3vh, 2.5rem) var(--spacing-m) 1.5rem;
+}
+@media (min-width: 768px) {
+  .jw-menu__body {
+    grid-template-columns: minmax(0, 1fr) minmax(12rem, 19rem);
+    align-content: stretch;
+    gap: clamp(2rem, 5vw, 5rem);
+  }
+}
+.jw-group + .jw-group {
+  margin-top: 1.25rem;
+}
+.jw-group__label {
+  margin: 0 0 0.25rem;
   font-family: var(--font-body);
   font-size: 0.6875rem;
   font-weight: 500;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--muted-foreground);
+  color: var(--jw-amber);
 }
-
-/* The lines and one photo frame (the Exo Ape detail). On a phone the frame sits under
-   the lines, set off to the right like a print on a page; from 560px it stands beside
-   them. */
-.bq-drop__body {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  align-content: start;
-  gap: 1.5rem;
-  padding: clamp(0.75rem, 3vh, 2rem) var(--spacing-m) 1.5rem;
-}
-@media (min-width: 560px) {
-  .bq-drop__body {
-    grid-template-columns: minmax(0, 1fr) clamp(10rem, 30vw, 15rem);
-    align-items: start;
-  }
-}
-.bq-drop__group + .bq-drop__group {
-  margin-top: 1.25rem;
-}
-.bq-drop__group-label {
-  padding-bottom: 0.25rem;
-}
-.bq-drop__list {
+.jw-list {
   margin: 0;
   padding: 0;
   list-style: none;
 }
-.bq-line__link {
-  display: flex;
-  align-items: baseline;
-  gap: 0.5rem;
+.jw-line__link {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  max-width: 100%;
   min-height: 44px;
-  color: var(--foreground);
+  color: var(--jw-paper);
   text-decoration: none;
+  transition: opacity 400ms var(--ease-focus);
 }
-.bq-line__num {
-  flex: none;
-  min-width: 1.9rem;
-  font-family: var(--font-body);
-  font-size: 0.6875rem;
-  font-variant-numeric: tabular-nums;
-  color: var(--muted-foreground);
-}
-/* Each line is its own clip, so the words can roll up through it. */
-.bq-line__clip {
+/* Each name is its own line mask, so the words can rise through it. */
+.jw-line__clip {
   display: block;
   min-width: 0;
   overflow: hidden;
-  padding-bottom: 0.06em;
+  padding-bottom: 0.08em;
 }
-.bq-line__label {
+.jw-line__roll {
+  position: relative;
+  display: block;
+}
+.jw-word {
   display: block;
   font-family: var(--font-display);
-  font-size: clamp(2.375rem, 12vw, 4rem);
-  line-height: 1.05;
-  letter-spacing: -0.01em;
-  overflow-wrap: anywhere;
+  font-size: clamp(2.5rem, min(13vw, 12vh), 8rem);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.015em;
+  white-space: nowrap;
 }
-.bq-line__link[aria-current='page'] .bq-line__label {
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.12em;
-}
-/* Dim the others here too, for a mouse on a tablet. */
-@media (hover: hover) {
-  .bq-line__label {
-    transition: opacity 300ms var(--ease-focus);
-  }
-  .bq-drop__nav:has(.bq-line__link:hover) .bq-line__link:not(:hover) .bq-line__label {
-    opacity: 0.38;
-  }
-}
-
-/* The photo frame: every line's photo stacked, the shown one faded in. */
-.bq-frame {
-  position: relative;
-  justify-self: end;
-  width: min(52%, 13rem);
-  aspect-ratio: 4 / 5;
-  overflow: hidden;
-  background: var(--muted);
-}
-@media (min-width: 560px) {
-  .bq-frame {
-    position: sticky;
-    top: 0;
-    width: 100%;
-  }
-}
-.bq-frame__photo {
+.jw-word--alt {
   position: absolute;
   inset: 0;
+  font-style: italic;
+  color: var(--jw-amber);
+}
+.jw-char {
+  display: inline-block;
+  white-space: pre;
+  transform-origin: 0 60%;
+  transition:
+    transform 600ms cubic-bezier(0.77, 0, 0.175, 1),
+    opacity 600ms cubic-bezier(0.77, 0, 0.175, 1);
+  /* Radaville's stagger: 0.18s spread over the word, after 0.1s. */
+  transition-delay: calc(0.1s + var(--c, 0) * 0.18s / var(--n, 1));
+}
+.jw-word--alt .jw-char {
   opacity: 0;
-  transition: opacity 900ms var(--ease-focus);
+  transform: scaleX(0);
 }
-.bq-frame__photo.is-shown {
+.jw-line__num {
+  flex: none;
+  padding-top: 0.6em;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.08em;
+  color: var(--jw-paper-soft);
+  transition: color 400ms var(--ease-focus);
+}
+/* The page you are on: an amber rule under its name. */
+.jw-line__link[aria-current='page'] .jw-word:not(.jw-word--alt) {
+  text-decoration: underline;
+  text-decoration-color: var(--jw-amber);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.1em;
+}
+/* The swap: roman letters fold away to the right as the italic ones open (Radaville). */
+@media (hover: hover) {
+  .jw-line__link:hover .jw-word:not(.jw-word--alt) .jw-char {
+    opacity: 0;
+    transform: translateX(50%) scaleX(0);
+  }
+  .jw-line__link:hover .jw-word--alt .jw-char {
+    opacity: 1;
+    transform: none;
+  }
+  .jw-line__link:hover .jw-line__num {
+    color: var(--jw-amber);
+  }
+  .jw-menu__nav:has(.jw-line__link:hover) .jw-line__link:not(:hover) {
+    opacity: 0.45;
+  }
+}
+.jw-line__link:focus-visible {
+  outline: 1px solid var(--jw-paper);
+  outline-offset: 4px;
+}
+.jw-line__link:focus-visible .jw-word:not(.jw-word--alt) .jw-char {
+  opacity: 0;
+  transform: translateX(50%) scaleX(0);
+}
+.jw-line__link:focus-visible .jw-word--alt .jw-char {
   opacity: 1;
+  transform: none;
 }
-.bq-frame__photo img {
+
+/* The side: numbered info columns (Radaville), then the preview photo. On a phone the two
+   sit side by side under the names. */
+.jw-menu__side {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 7.5rem;
+  align-items: end;
+  gap: 1.25rem;
+}
+@media (min-width: 768px) {
+  .jw-menu__side {
+    grid-template-columns: minmax(0, 1fr);
+    align-content: space-between;
+    align-items: start;
+    gap: 2rem;
+  }
+}
+.jw-info {
+  display: grid;
+  gap: 1.25rem;
+  margin: 0;
+}
+.jw-info__block {
+  display: grid;
+  gap: 0.15rem;
+}
+.jw-info dt {
+  display: flex;
+  gap: 0.6rem;
+  margin-bottom: 0.25rem;
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--jw-paper);
+}
+.jw-info__num {
+  font-variant-numeric: tabular-nums;
+  color: var(--jw-amber);
+}
+.jw-info dd {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  color: var(--jw-paper-soft);
+  overflow-wrap: anywhere;
+}
+.jw-info a,
+.jw-small {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  color: var(--jw-paper);
+  text-decoration: underline;
+  text-decoration-color: rgb(243 238 231 / 0.35);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.3em;
+  transition: text-decoration-color 300ms var(--ease-focus);
+}
+.jw-small {
+  min-height: 44px;
+  font-size: 0.875rem;
+}
+.jw-info a:hover,
+.jw-small:hover {
+  text-decoration-color: var(--jw-amber);
+}
+.jw-info a:focus-visible,
+.jw-small:focus-visible,
+.jw-button:focus-visible,
+.jw-menu__brand:focus-visible,
+.jw-toggle--close:focus-visible {
+  outline: 1px solid var(--jw-paper);
+  outline-offset: 4px;
+}
+
+/* The preview photo: every line's photo stacked; the shown one turns in over the last. */
+.jw-frame {
+  position: relative;
+  justify-self: end;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: var(--jw-wine-deep);
+}
+@media (min-width: 768px) {
+  .jw-frame {
+    width: min(100%, 16rem);
+  }
+}
+.jw-frame__photo {
+  position: absolute;
+  inset: 0;
+  visibility: hidden;
+}
+.jw-frame__photo.is-prev {
+  z-index: 1;
+  visibility: visible;
+}
+.jw-frame__photo.is-shown {
+  z-index: 2;
+  visibility: visible;
+}
+.jw-frame__photo img {
   display: block;
   width: 100%;
   height: 100%;
@@ -381,81 +836,132 @@
   background: linear-gradient(160deg, #efe7dc, #bfb2a2);
 }
 
-/* The foot: the inquiry, then how to reach her. */
-.bq-drop__foot {
-  display: grid;
-  gap: 0.25rem;
-  margin-top: auto;
+/* The foot: the inquiry, then search and the second button. */
+.jw-menu__foot {
+  display: flex;
+  flex: none;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1.5rem;
   padding: 1rem var(--spacing-m) 1.25rem;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid rgb(243 238 231 / 0.2);
 }
-.bq-drop__cta {
-  justify-self: start;
-  margin-bottom: 0.5rem;
-}
-.bq-drop__small,
-.bq-drop__contact a {
+.jw-button {
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
+  justify-content: center;
   min-height: 44px;
-  font-size: 0.875rem;
-  color: var(--foreground);
+  padding-inline: 1.25rem;
+  border: 1px solid var(--jw-paper);
+  color: var(--jw-paper);
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
   text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background-color 300ms var(--ease-focus),
+    color 300ms var(--ease-focus);
 }
-.bq-drop__small {
-  justify-self: start;
-}
-.bq-drop__contact {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0 1.25rem;
-}
-.bq-drop__contact a {
-  overflow-wrap: anywhere;
+@media (hover: hover) {
+  .jw-button:hover {
+    background: var(--jw-paper);
+    color: var(--jw-wine);
+  }
 }
 
-/* ---- The drop's motion (after Vero) --------------------------------------- */
-/* Open: the panel unclips from the top in 500ms; the lines roll up, 50ms apart.
-   Close (MobileNav.astro adds .is-leaving): the clip runs back up in 400ms. */
+/* ---- The flood's motion ------------------------------------------------------ */
+/* Open: amber, magenta, then the wine panel rise from the bottom (1.1s, 80ms apart);
+   the names rise through their masks from 0.55s, 70ms apart; the side and the foot
+   arrive last. Close (MobileNav.astro adds .is-leaving): the names leave upwards, then
+   the panel and the sheets clip away to the top in reverse order. */
 @media (prefers-reduced-motion: no-preference) {
-  .mobile-menu.bq-drop[open] .mobile-menu__panel {
-    animation: bq-drop-down 500ms cubic-bezier(0.25, 0.1, 0.25, 1) both;
+  .jw-menu[open] .jw-sheet--amber {
+    animation: jw-rise 1100ms var(--jw-ease) both;
   }
-  .mobile-menu.bq-drop.is-leaving .mobile-menu__panel {
-    animation: bq-drop-up 400ms cubic-bezier(0.25, 0.1, 0.25, 1) both;
+  .jw-menu[open] .jw-sheet--magenta {
+    animation: jw-rise 1100ms var(--jw-ease) 80ms both;
   }
-  .bq-drop[open] .bq-line__label {
-    animation: bq-roll 1000ms cubic-bezier(0.22, 1, 0.36, 1) both;
-    animation-delay: calc(150ms + var(--i, 0) * 50ms);
+  .mobile-menu.jw-menu[open] .mobile-menu__panel {
+    animation: jw-rise 1100ms var(--jw-ease) 160ms both;
   }
-  .bq-drop[open] .bq-line__num,
-  .bq-drop[open] .bq-frame,
-  .bq-drop[open] .bq-drop__foot {
-    animation: bq-rise 900ms cubic-bezier(0.22, 1, 0.36, 1) 300ms both;
+  .jw-menu[open] .jw-line__roll {
+    animation: jw-roll 1100ms var(--jw-ease-out) both;
+    animation-delay: calc(550ms + var(--i, 0) * 70ms);
+  }
+  .jw-menu[open] .jw-menu__top > *,
+  .jw-menu[open] .jw-group__label,
+  .jw-menu[open] .jw-line__num,
+  .jw-menu[open] .jw-menu__side,
+  .jw-menu[open] .jw-menu__foot {
+    animation: jw-arrive 900ms var(--jw-ease-out) 850ms both;
+  }
+  .jw-menu[open] .jw-frame__photo.is-shown {
+    animation: jw-turn 800ms cubic-bezier(0.215, 0.61, 0.355, 1) both;
+  }
+
+  /* Leaving: these come after the [open] rules, which still match while it leaves. */
+  .jw-menu.is-leaving .jw-line__roll {
+    animation: jw-exit 500ms cubic-bezier(0.73, 0, 0.86, 0.65) both;
+    animation-delay: calc(var(--i, 0) * 35ms);
+  }
+  .jw-menu.is-leaving .jw-menu__top > *,
+  .jw-menu.is-leaving .jw-group__label,
+  .jw-menu.is-leaving .jw-line__num,
+  .jw-menu.is-leaving .jw-menu__side,
+  .jw-menu.is-leaving .jw-menu__foot {
+    animation: jw-fade-out 300ms ease-in both;
+  }
+  .mobile-menu.jw-menu.is-leaving .mobile-menu__panel {
+    animation: jw-leave 800ms var(--jw-ease) 250ms both;
+  }
+  .jw-menu.is-leaving .jw-sheet--magenta {
+    animation: jw-leave 800ms var(--jw-ease) 330ms both;
+  }
+  .jw-menu.is-leaving .jw-sheet--amber {
+    animation: jw-leave 800ms var(--jw-ease) 410ms both;
+  }
+
+  /* The page push (Radaville): the page lifts as the sheets rise and settles as they go. */
+  html:has(.jw-menu[open]) #main {
+    transition: transform 1100ms var(--jw-ease);
+  }
+  html.menu-push #main {
+    transform: translateY(-4rem);
   }
 }
-.bq-drop[open]::backdrop {
-  animation: bq-fade 300ms ease-out both;
-}
-.bq-drop.is-leaving::backdrop {
-  animation: bq-fade 400ms ease-in reverse both;
-}
-/* Reduced motion: a plain fade, nothing rolls. */
+/* Reduced motion: the panel fades in, the sheets stay out, nothing rolls or turns. */
 @media (prefers-reduced-motion: reduce) {
-  .mobile-menu.bq-drop[open] .mobile-menu__panel {
-    animation: bq-fade 200ms ease-out both;
+  .jw-sheet {
+    display: none;
+  }
+  .mobile-menu.jw-menu[open] .mobile-menu__panel {
+    animation: jw-fade 200ms ease-out both;
+  }
+  .jw-char,
+  .bq-roll > span,
+  .jw-toggle__roll,
+  .jw-toggle__mark svg,
+  .bq-button--flood::before,
+  .bq-nav__link::after {
+    transition: none;
+  }
+  .jw-line__link:hover .jw-word:not(.jw-word--alt) .jw-char,
+  .jw-line__link:focus-visible .jw-word:not(.jw-word--alt) .jw-char {
+    transform: none;
   }
 }
-@keyframes bq-drop-down {
+@keyframes jw-rise {
   from {
-    clip-path: inset(0 0 100% 0);
+    clip-path: inset(100% 0 0 0);
   }
   to {
     clip-path: inset(0 0 0 0);
   }
 }
-@keyframes bq-drop-up {
+@keyframes jw-leave {
   from {
     clip-path: inset(0 0 0 0);
   }
@@ -463,7 +969,7 @@
     clip-path: inset(0 0 100% 0);
   }
 }
-@keyframes bq-roll {
+@keyframes jw-roll {
   from {
     transform: translateY(105%);
   }
@@ -471,19 +977,40 @@
     transform: none;
   }
 }
+@keyframes jw-exit {
+  from {
+    transform: none;
+  }
+  to {
+    transform: translateY(-105%);
+  }
+}
 /* Transform only: text never passes through a faint, low-contrast state (axe reads the
    menu as it opens; tests/wayfinding.spec.ts). */
-@keyframes bq-rise {
+@keyframes jw-arrive {
   from {
     transform: translateY(0.75rem);
   }
   to {
-    opacity: 1;
     transform: none;
   }
 }
-@keyframes bq-fade {
+@keyframes jw-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes jw-fade {
   from {
     opacity: 0;
+  }
+}
+/* Radaville's slideRotate: in from the lower right, turning from -53deg. */
+@keyframes jw-turn {
+  from {
+    transform: translate(70%, 100%) rotate(-53deg) scale(0.9);
+  }
+  to {
+    transform: none;
   }
 }
