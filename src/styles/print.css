@@ -42,6 +42,19 @@
   .flow-line {
     clip-path: none !important;
   }
+  /* The jewel bands (src/scripts/jewel-motion.ts): the colour bleed lifts a band's content from
+     0.12 to full strength as it scrolls in, by an inline style, so a band print never scrolled to
+     printed at 0.12. The shutter slats laid over the band after it are decoration. The masthead
+     bleed is a filled border image, which no background rule reaches. */
+  [data-band='jewel'] > * {
+    opacity: 1 !important;
+  }
+  [data-jewel-shutter] {
+    display: none !important;
+  }
+  .jewel-bleed {
+    border-image: none !important;
+  }
   /* The image curtain is a panel laid OVER a picture to uncover it; in print it is just in the way. */
   .img-curtain {
     display: none !important;

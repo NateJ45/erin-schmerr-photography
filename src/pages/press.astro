@@ -142,7 +142,12 @@ const schemas = [
       ))}
     </div>
 
-    <div class="mag-preview mag-preview--sheet" data-mag-preview aria-hidden="true">
+    <div
+      class="mag-preview mag-preview--sheet"
+      data-mag-preview
+      aria-hidden="true"
+      data-first-viewport-exempt
+    >
       {rows.map((row) => (
         <span class="mag-preview__pic" data-preview-pic={row.index}>
           {row.preview ? (
