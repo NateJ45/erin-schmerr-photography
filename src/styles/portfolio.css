@@ -920,20 +920,27 @@ html.showcase-intro .cover-hero__media {
 .cine--overlap .cine__type {
   position: absolute;
   inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 52svh 4% 0 40%;
 }
-.cine--overlap.cine--right .cine__type {
-  align-items: flex-end;
-  padding: 52svh 40% 0 4%;
-  text-align: right;
-}
+/* The title straddles the photo's inner edge whatever its length: its box
+   starts AT the edge and the `translate` property (separate from the transform
+   GSAP slides) pulls 57% of its own width back over the photo, so about 57% is
+   paper on the photo and 43% ink on the paper. It shrink-wraps to one line up
+   to half the screen, then wraps, so a long title keeps the same share. Photo
+   left: the edge is at 64% (6% + 58%); photo right: at 36%, mirrored. */
 .cine--overlap .cine__title {
+  position: absolute;
+  top: 52svh;
+  left: 64%;
+  width: max-content;
+  max-width: 50vw;
+  translate: -57% 0;
   font-size: clamp(4rem, 9vw, 10rem);
   line-height: 0.92;
   text-wrap: balance;
+}
+.cine--overlap.cine--right .cine__title {
+  left: 36%;
+  translate: -43% 0;
 }
 .cine__caption {
   position: absolute;
@@ -1013,13 +1020,14 @@ html.showcase-intro .cover-hero__media {
     width: auto;
     height: 64svh;
   }
-  .cine--overlap .cine__type,
-  .cine--overlap.cine--right .cine__type {
-    align-items: flex-start;
-    padding: 65svh 1rem 0;
-    text-align: left;
-  }
-  .cine--overlap .cine__title {
+  /* Stacked: the title straddles the photo's bottom edge (72svh) instead,
+     about 57% of its height on the photo. */
+  .cine--overlap .cine__title,
+  .cine--overlap.cine--right .cine__title {
+    top: 72svh;
+    left: 1rem;
+    max-width: calc(100vw - 3rem);
+    translate: 0 -57%;
     font-size: clamp(3rem, 14vw, 5rem);
   }
   .cine__caption,
