@@ -723,6 +723,51 @@ const SECTIONS: Record<string, unknown>[] = [
     signature: 'Your name',
   },
   // scaffold:end
+  // scaffold: press
+  {
+    _type: 'pressContents',
+    _key: 'press-contents',
+    heading: 'As seen in',
+  },
+  // scaffold:end
+  // scaffold: about
+  {
+    _type: 'aboutOpening',
+    _key: 'about-opening',
+    eyebrow: 'About',
+    headline: 'A sentence about why you _started_, in your own words.',
+    subhead: 'What you photograph, and where.',
+    image: image('One of your photographs'),
+  },
+  {
+    _type: 'aboutStory',
+    _key: 'about-story',
+    eyebrow: 'How it started',
+    heading: 'How you came to photography.',
+    body: [
+      para('as1', 'A first short paragraph of your story.'),
+      para('as2', 'A second paragraph: what you noticed, and what you set out to do.'),
+    ],
+    portrait: image('A portrait of you'),
+  },
+  {
+    _type: 'aboutApproach',
+    _key: 'about-approach',
+    eyebrow: 'Approach',
+    statement: 'What you look for in a portrait.',
+    body: [para('aa1', 'A paragraph on how you work with the people in front of the camera.')],
+    voice: 'A line you have said about your work.',
+    voiceCredit: 'You, in an interview',
+    image: image('One of your soft-light photographs'),
+  },
+  {
+    _type: 'processFigures',
+    _key: 'about-process',
+    label: 'Process',
+    heading: 'Behind the scenes',
+    figures: [],
+  },
+  // scaffold:end
   // ── The Sessions page (sessionSections.ts). No money figure: the investment row stays hidden.
   // scaffold: sessions
   {

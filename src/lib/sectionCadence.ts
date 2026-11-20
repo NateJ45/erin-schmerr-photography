@@ -64,6 +64,12 @@ export const SELF_CONTAINED_TYPES = new Set([
   'craftNotes', // scaffold: stories
   'crewSection', // scaffold: stories
   'signedClose', // scaffold: stories
+  'pressContents', // scaffold: press
+  // The About page's own blocks, on the plain page ground like the portfolio's.
+  'aboutOpening', // scaffold: about
+  'aboutStory', // scaffold: about
+  'aboutApproach', // scaffold: about
+  'processFigures', // scaffold: about
   // The Sessions page's blocks sit on the plain page ground too (sessionSections.ts).
   // scaffold: sessions
   'sessionsOpening',
