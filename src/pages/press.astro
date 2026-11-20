@@ -1,25 +1,59 @@
 ---
 // scaffold-file: press
 // Safe to edit by hand
-// /press/: every publication, grouped by the year of its date (newest first,
-// undated last), set as an index: the year in a left rail that stays in view
-// while its features scroll past, each feature a row with its tear sheet,
-// issue and date, the magazine large, its excerpt and a link to the piece. The year is
-// worked out from `date`, never typed (rule 15). With no Sanity data it shows
-// the placeholder publications from src/lib/pressQueries.ts.
+// /press/: every publication as a ruled row (DESIGN.md "Press page",
+// 2026-11-20; replaced the year-rail index). After henriheymans.com's
+// recognitions list (Details q4vcwxRNPgidCixn9RN1Mu), rebuilt in paper, ink and
+// Bodoni Moda: the magazine huge in the display face on the left, the story or
+// issue and the month on the right. Each row is one link: to the story it ran
+// (the story that names this publication, derived in getPublications()), else
+// to the feature itself. Pointing at or focusing a row fills it with ink from
+// the bottom up and turns its words paper, and the tear sheet floats beside the
+// cursor (src/scripts/magazine-preview.ts; a mouse from 64rem up with motion
+// allowed). Touch, reduced motion and no JavaScript show the tear sheet small
+// at the end of each row instead.
+//
+// Newest first, in years: each year opens with a small label row whose id is
+// `press-<year>` (or press-undated), the anchors the About page's contents line
+// links to (src/lib/press-contents.ts). The year is worked out from `date`,
+// never typed (rule 15). With no Sanity data it shows the placeholder
+// publications from src/lib/pressQueries.ts.
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import FocusImage from '@/components/portfolio/FocusImage.astro';
 import { getSiteSettings } from '@/lib/queries';
 import { getPublications } from '@/lib/pressQueries';
 import { formatMonthYear, groupByYear } from '@/lib/portfolio';
+import { urlFor } from '@/lib/sanity';
 import { breadcrumbSchema } from '@/lib/schemas';
 import { personSchema } from '@/lib/site-graph';
 import { site } from '@/data/site';
-import '@/styles/portfolio.css';
+import '@/styles/magazine.css';
 
 const [publications, siteSettings] = await Promise.all([getPublications(), getSiteSettings()]);
-const years = groupByYear(publications);
 const placeholder = publications.every((p) => p.isPlaceholder);
+
+let running = 0;
+const years = groupByYear(publications).map((group) => ({
+  label: group.year ?? 'Undated',
+  id: `press-${group.year ?? 'undated'}`,
+  rows: group.items.map((pub) => {
+    const index = running++;
+    const sheet = pub.tearSheet;
+    const href = pub.story ? `/stories/${pub.story.slug}/` : (pub.url ?? '');
+    return {
+      pub,
+      index,
+      href,
+      external: !pub.story && !!pub.url,
+      what: pub.story?.title ?? pub.issue ?? '',
+      when: formatMonthYear(pub.date),
+      action: pub.story ? 'Read the story' : pub.url ? 'Read the feature' : '',
+      preview: sheet?.asset ? urlFor(sheet).width(720).auto('format').quality(75).url() : '',
+      focus: `${Math.round((sheet?.hotspot?.x ?? 0.5) * 100)}% ${Math.round((sheet?.hotspot?.y ?? 0.5) * 100)}%`,
+    };
+  }),
+}));
+const rows = years.flatMap((y) => y.rows);
 
 const schemas = [
   breadcrumbSchema([
@@ -33,71 +67,101 @@ const schemas = [
 
 <BaseLayout
   title={`Press | ${site.name}`}
-  description="Where my work has been published: magazine features and interviews, with the tear sheets."
+  description="Where my photographs have been published: magazine features, interviews and covers, each with the story behind it."
   {schemas}
   {siteSettings}
   ogCard={{ kicker: 'Press' }}
 >
-  <section class="bg-background" aria-labelledby="press-heading">
-    <div class="mx-auto max-w-content px-m py-section-md">
-      <header class="press-head">
-        <h1 id="press-heading" class="font-display text-h1 leading-headline-tight">
-          Press
-        </h1>
-        <p class="portfolio-label">
-          {publications.length} {publications.length === 1 ? 'feature' : 'features'}, newest first
-        </p>
-      </header>
+  <section class="mag-press" data-mag-preview-root aria-labelledby="press-heading">
+    <header class="mag-press__head">
+      <p class="mag-kicker">Published</p>
+      <h1 id="press-heading" class="mag-contents__title font-display">
+        Press<sup class="mag-count">({publications.length})</sup>
+      </h1>
+      <p class="mag-contents__dek">
+        The magazines and books that have run my photographs, newest first. Each one opens the story
+        behind it, or the feature itself.
+      </p>
       {placeholder && (
         <p class="portfolio-label mt-4">
           Placeholder publications, shown until the first one is added.
         </p>
       )}
+    </header>
 
-      {years.map((group) => {
-        const yearId = `press-${group.year ?? 'undated'}`;
-        return (
-          <section class="press-year" aria-labelledby={yearId}>
-            <h2 id={yearId} class="press-year__label font-display">
-              {group.year ?? 'Undated'}
-            </h2>
-            <ul class="press-list list-none">
-              {group.items.map((pub) => (
-                <li class="press-entry">
-                  <div class="press-entry__sheet">
+    <div class="mag-press__list">
+      {years.map((year) => (
+        <section class="mag-press__year" aria-labelledby={year.id}>
+          <h2 id={year.id} class="mag-press__year-label">
+            {year.label}
+          </h2>
+          <ul class="mag-press__rows" role="list">
+            {year.rows.map((row) => {
+              const inner = (
+                <>
+                  <span class="mag-press__name font-display">{row.pub.magazine}</span>
+                  <span class="mag-press__side">
+                    {row.what && <span class="mag-press__what">{row.what}</span>}
+                    <span class="mag-press__when">
+                      {[row.when, row.action].filter(Boolean).join(' · ')}
+                      {row.external && <span class="sr-only"> (opens the publisher's site)</span>}
+                    </span>
+                  </span>
+                  <span class="mag-press__sheet">
                     <FocusImage
-                      photo={pub.tearSheet}
-                      width={700}
+                      photo={row.pub.tearSheet}
+                      width={300}
                       crop={4 / 5}
-                      sizes="(min-width: 64rem) 18rem, 40vw"
+                      sizes="5rem"
+                      alt=""
                     />
-                  </div>
-                  <div class="press-entry__text">
-                    <p class="portfolio-label">
-                      {[pub.issue, formatMonthYear(pub.date)].filter(Boolean).join(', ')}
-                    </p>
-                    <h3 class="press-entry__title font-display">{pub.magazine}</h3>
-                    {pub.excerpt && (
-                      <p class="press-entry__excerpt text-muted-foreground">{pub.excerpt}</p>
-                    )}
-                    {pub.url && (
-                      <p class="mt-6">
-                        <a
-                          class="portfolio-label portfolio-link text-foreground"
-                          href={pub.url}
-                          rel="noopener"
-                        >
-                          Read the feature
-                        </a>
-                      </p>
-                    )}
-                  </div>
+                  </span>
+                </>
+              );
+              return (
+                <li class="mag-press__row">
+                  {row.href ? (
+                    <a
+                      class="mag-press__link"
+                      href={row.href}
+                      rel={row.external ? 'noopener' : undefined}
+                      data-preview-index={row.index}
+                      data-cursor-label={row.action}
+                    >
+                      {inner}
+                    </a>
+                  ) : (
+                    <div class="mag-press__link mag-press__link--still">{inner}</div>
+                  )}
                 </li>
-              ))}
-            </ul>
-          </section>
-        );
-      })}
+              );
+            })}
+          </ul>
+        </section>
+      ))}
     </div>
+
+    <div class="mag-preview mag-preview--sheet" data-mag-preview aria-hidden="true">
+      {rows.map((row) => (
+        <span class="mag-preview__pic" data-preview-pic={row.index}>
+          {row.preview ? (
+            <img
+              src={row.preview}
+              alt=""
+              loading="lazy"
+              decoding="async"
+              style={`object-position: ${row.focus}`}
+            />
+          ) : (
+            <span class="mag-preview__ph">Placeholder</span>
+          )}
+        </span>
+      ))}
+    </div>
+    <span class="mag-cursor" data-mag-cursor aria-hidden="true"></span>
   </section>
 </BaseLayout>
+
+<script>
+  import '@/scripts/magazine-preview';
+</script>

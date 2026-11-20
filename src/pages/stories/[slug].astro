@@ -1,38 +1,53 @@
 ---
 // scaffold-file: stories
 // Safe to edit by hand
-// /stories/<slug>/: one story, played as a slideshow film (picked 2026-11-18,
-// design-directions "direction I"; DESIGN.md "Story page"). The cover and then
-// the photos (storyFrames) are full-screen frames: a portrait shown whole over
-// its own blurred LQIP on a wide screen, the caption as a subtitle on a paper
-// chip, the title on a chip at the top. src/scripts/story-film.ts stacks them in
-// one screen and plays them (4.8s holds, a slow push-in, segmented progress,
-// Pause/Play, Previous/Next, arrow keys, Space, swipe) and burns each print into
-// the next with src/scripts/film-burn.ts (WebGL, where CORS allows; else a
-// crossfade with a focus pull). The cast, the story's line, place and date and
-// "Published in" are the end credits, the film's last frame. Without
-// JavaScript all of it is a vertical run of full-bleed frames, first frame
-// first. After the film: "How this was made" (where the idea came from, the
-// place, the cast from storyCast) beside "Want a session like this?", then
-// "Next story" with its cover (the first story follows the last) and a quiet
-// link back to the previous story.
+// /stories/<slug>/: one story, set like a magazine feature (DESIGN.md "Story
+// page", 2026-11-20; replaced the slideshow film of 2026-11-18).
+//
+// 1. THE SPREAD. The cover full bleed (a portrait shows whole over a blurred,
+//    darkened copy of itself on a wide screen, so her Instagram-sized copies
+//    are never blown up), the publication set over its top as a masthead
+//    (storyMasthead(): the magazine, else the house name "Tate"), sized from its
+//    letter count so it holds one line, and the story's title across the
+//    cover's bottom edge: ink on paper below, paper on the photograph above
+//    (two copies, the paper one aria-hidden and clipped; never a blend mode).
+//    The cover shares transition:name `story-cover-<slug>` with the /stories/
+//    thumbnail, so the thumbnail grows into it (Astro's router; at rest under
+//    reduced motion, where the router skips the animation).
+// 2. THE STANDFIRST AND CREDITS. The story's line large in the display italic
+//    beside a credits box ruled like a magazine masthead: photography, the
+//    cast and crew from the credits, then publication, issue and date, where
+//    the idea started and the place.
+// 3. THE FEATURE. The rest of the photos (storyFrames(), the cover never
+//    twice) laid out by editorialRuns(): a pair, a single on paper, a full
+//    bleed, repeating, every plate numbered and captioned (her caption and the
+//    camera line).
+// 4. THE TURN. A short invitation with the site's outlined button, then the
+//    previous and next stories set large with their covers (the first story
+//    follows the last). Their covers carry the same transition names, so the
+//    next story's cover grows into its spread too.
 //
 // getStaticPaths reads every story once and hands each page its own story and
 // its neighbours as props, so a page never re-queries. With no Sanity data it
 // builds the placeholder stories (src/lib/storyQueries.ts).
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import FocusImage from '@/components/portfolio/FocusImage.astro';
-import CreditBlock from '@/components/portfolio/CreditBlock.astro';
-import CtaLink from '@/components/CtaLink.astro';
 import { getSiteSettings } from '@/lib/queries';
 import { getStories, type Story } from '@/lib/storyQueries';
-import { formatExif, formatMonthYear, photoRatio, storyCast, storyFrames } from '@/lib/portfolio';
-import { urlFor } from '@/lib/sanity';
+import {
+  collaboratorHref,
+  formatExif,
+  formatMonthYear,
+  photoRatio,
+  storyFrames,
+  type PortfolioPhoto,
+} from '@/lib/portfolio';
+import { editorialRuns, mastheadSize, plateNo, storyMasthead } from '@/lib/magazine';
 import { breadcrumbSchema } from '@/lib/schemas';
 import { storySchema } from '@/lib/portfolio-schemas';
 import { site } from '@/data/site';
 import { pageDescription, pageTitle } from '@/lib/page-meta';
-import '@/styles/portfolio.css';
+import '@/styles/magazine.css';
 
 export async function getStaticPaths() {
   const stories = await getStories();
@@ -40,14 +55,14 @@ export async function getStaticPaths() {
     const prev = stories[i - 1] ?? null;
     // The first story follows the last, so every story ends on a next one.
     const next = stories[i + 1] ?? (stories.length > 1 ? stories[0] : null);
+    const brief = (s: Story) => ({ title: s.title, slug: s.slug, cover: s.cover ?? null });
     return {
       params: { slug: story.slug },
       props: {
         story,
-        prev: prev ? { title: prev.title, slug: prev.slug } : null,
-        next: next
-          ? { title: next.title, slug: next.slug, dek: next.dek ?? null, cover: next.cover ?? null }
-          : null,
+        number: i + 1,
+        prev: prev && prev.slug !== next?.slug ? brief(prev) : null,
+        next: next ? brief(next) : null,
       },
     };
   });
@@ -56,48 +71,48 @@ export async function getStaticPaths() {
 interface Neighbour {
   title: string;
   slug: string;
-  dek?: string | null;
-  cover?: Story['cover'];
+  cover: PortfolioPhoto | null;
 }
 
-const { story, prev, next } = Astro.props as {
+const { story, number, prev, next } = Astro.props as {
   story: Story;
+  number: number;
   prev: Neighbour | null;
   next: Neighbour | null;
 };
 
 const siteSettings = await getSiteSettings();
 
+// The house name: the first word of the site's name ("Tate"), as the footer sets it.
+const house = site.name.split(/\s+/)[0] ?? site.name;
+const pub = story.publication;
+const masthead = storyMasthead(story, house);
+const issueLine = pub?.magazine
+  ? [pub.issue, formatMonthYear(pub.date)].filter(Boolean).join(', ')
+  : [story.location, formatMonthYear(story.date)].filter(Boolean).join(', ');
 const when = formatMonthYear(story.date);
-const meta = [story.location, when].filter(Boolean).join(', ');
-// The burn reads each photo through WebGL at this width. It is not a srcset
-// step (src/lib/imageLadder.ts), so its CORS request never meets a cached
-// non-CORS copy of the same file.
-const BURN_WIDTH = 1280;
-const frames = storyFrames(story.cover, story.photos).map((photo, i) => {
-  const ratio = photoRatio(photo);
-  return {
-    photo,
-    first: i === 0,
-    portrait: ratio < 1,
-    ratio,
-    // The subtitle: her caption, else the photo's own description.
-    caption: (photo.caption ?? '').trim() || (photo.alt ?? '').trim(),
-    exif: formatExif(photo.exif),
-    lqip: photo.asset?.metadata?.lqip ?? '',
-    burnSrc: photo.asset ? urlFor(photo).width(BURN_WIDTH).quality(70).auto('format').url() : '',
-    x: photo.hotspot?.x ?? 0.5,
-    y: photo.hotspot?.y ?? 0.5,
-  };
-});
-const hasCredits = (story.credits ?? []).some((c) => c?.name);
-// "How this was made": only the facts this story has.
-const cast = storyCast(story.credits, story.location);
-const made = [
-  { label: 'Started from', value: story.startedFrom ?? '' },
-  { label: 'Place', value: story.location ?? '' },
-  { label: 'The cast', value: cast.join(', ') },
+
+const frames = storyFrames(story.cover, story.photos);
+const cover = frames[0] ?? null;
+const runs = editorialRuns(frames.slice(1), 2);
+const lqip = (p: PortfolioPhoto | null | undefined) => p?.asset?.metadata?.lqip ?? '';
+const bleedStyle = (p: PortfolioPhoto | null | undefined) =>
+  [`--r: ${photoRatio(p).toFixed(4)}`, lqip(p) ? `--bleed-lqip: url("${lqip(p)}")` : '']
+    .filter(Boolean)
+    .join('; ');
+const caption = (p: PortfolioPhoto) => (p.caption ?? '').trim();
+
+// The credits box: photography first, then the cast and crew, then where it ran.
+const credits = (story.credits ?? []).filter((c) => c?.name);
+const facts = [
+  { label: 'Publication', value: pub?.magazine ?? '', href: pub?.url ?? '' },
+  { label: 'Issue', value: pub?.issue ?? '', href: '' },
+  { label: 'Published', value: formatMonthYear(pub?.date), href: '' },
+  { label: 'Started from', value: story.startedFrom ?? '', href: '' },
+  { label: 'Place', value: story.location ?? '', href: '' },
+  { label: 'Photographed', value: when, href: '' },
 ].filter((row) => row.value);
+
 // Real words only (src/lib/page-meta.ts): a placeholder dek falls through to the plain line.
 const title = pageTitle(story.seoTitle, `${story.title} | ${site.name}`);
 const description = pageDescription(
@@ -105,10 +120,6 @@ const description = pageDescription(
   story.dek,
   `${story.title}, a portrait story by Erin Schmerr, ${site.name}.`,
 );
-// scaffold: press
-const pub = story.publication;
-const pubLine = pub?.magazine ? [pub.magazine, pub.issue].filter(Boolean).join(', ') : '';
-// scaffold:end
 
 const schemas = [
   breadcrumbSchema([
@@ -132,199 +143,217 @@ const shareImage = story.seoImage ?? (story.cover?.asset ? story.cover : undefin
   ogType="article"
   ogCard={{ kicker: 'Stories' }}
 >
-  <article class="story bg-background" aria-labelledby="story-title">
-    <section
-      class="film"
-      data-film
-      aria-roledescription="film"
-      aria-label={`${story.title}, frame by frame`}
-    >
-      <div class="film__title film__chip">
-        <p class="film__kicker">
-          <a class="portfolio-link" href="/stories/">
-            Stories
-          </a>
-          {story.isPlaceholder && <span> · Placeholder</span>}
-        </p>
-        <h1 id="story-title" class="film__h1 font-display">
+  <article class="mag-story" aria-labelledby="story-title">
+    <header class="mag-spread">
+      <div
+        class="mag-bleed mag-spread__cover"
+        style={bleedStyle(cover)}
+        transition:name={`story-cover-${story.slug}`}
+        transition:animate="initial"
+      >
+        <FocusImage
+          photo={cover}
+          width={1800}
+          sizes="(min-aspect-ratio: 1/1) 70vw, 100vw"
+          loading="eager"
+          fetchpriority="high"
+          class="mag-bleed__pic"
+          pull={false}
+        />
+        <div class="mag-spread__top">
+          <p class="mag-spread__kicker">
+            <a href="/stories/">Stories</a>, No. {plateNo(number)}
+            {story.isPlaceholder && <span>, placeholder</span>}
+          </p>
+          <p class="mag-spread__masthead" style={`--mast: ${mastheadSize(masthead)}`}>
+            {masthead}
+          </p>
+          {issueLine && <p class="mag-spread__issue">{issueLine}</p>}
+        </div>
+      </div>
+      <div class="mag-spread__title">
+        <h1 id="story-title" class="mag-spread__h1">
           {story.title}
         </h1>
-        {meta && <p class="film__meta">{meta}</p>}
-      </div>
-
-      <ol class="film__frames">
-        {frames.map((f, i) => (
-          <li
-            class:list={[
-              'film__frame',
-              f.portrait ? 'film__frame--portrait' : 'film__frame--landscape',
-            ]}
-            data-film-frame
-            data-caption={f.caption || undefined}
-            data-burn-src={f.burnSrc || undefined}
-            data-lqip={f.lqip || undefined}
-            data-ratio={f.ratio.toFixed(4)}
-            data-x={f.x.toFixed(3)}
-            data-y={f.y.toFixed(3)}
-            data-first-viewport-exempt={i === 0 ? undefined : ''}
-            aria-label={`Frame ${i + 1} of ${frames.length + 1}`}
-          >
-            <FocusImage
-              photo={f.photo}
-              width={f.portrait ? 1600 : 2400}
-              sizes={f.portrait ? '(min-aspect-ratio: 1/1) 85vh, 100vw' : '100vw'}
-              loading={f.first ? 'eager' : 'lazy'}
-              fetchpriority={f.first ? 'high' : 'low'}
-              class="film__pic"
-              pull={false}
-            />
-            {(f.caption || f.exif) && (
-              <p class="film__sub film__chip">
-                {f.caption}
-                {f.exif && <span class="film__exif">{f.exif}</span>}
-              </p>
-            )}
-          </li>
-        ))}
-        <li
-          class="film__frame film__frame--end"
-          data-film-frame
-          data-end
-          data-first-viewport-exempt
-          aria-label={`Frame ${frames.length + 1} of ${frames.length + 1}, end credits`}
+        <span
+          class="mag-spread__h1 mag-spread__h1--over"
+          aria-hidden="true"
+          data-contrast-decorative
         >
-          <div class="film__end">
-            <p class="film__end-title font-display">{hasCredits ? 'Starring' : 'The end'}</p>
-            {hasCredits && <CreditBlock credits={story.credits} heading="The cast and crew" />}
-            {story.dek && <p class="film__end-dek text-muted-foreground">{story.dek}</p>}
-            {meta && <p class="portfolio-label mt-4">{meta}</p>}
-            {/* scaffold: press */}
-            {pubLine && (
-              <p class="portfolio-label mt-4">
-                Published in{' '}
-                {pub?.url ? (
-                  <a class="portfolio-link text-foreground" href={pub.url} rel="noopener">
-                    {pubLine}
-                  </a>
-                ) : (
-                  <span class="text-foreground">{pubLine}</span>
-                )}
-              </p>
-            )}
-            {/* scaffold:end */}
-            <p class="film__end-links">
-              <button type="button" class="film__btn film__chip" data-film-again hidden>
-                Watch again
-              </button>
-              <a class="portfolio-label portfolio-link" href="#story-made-heading">
-                How this was made
-              </a>
-            </p>
-          </div>
-        </li>
-      </ol>
-
-      <div class="film__progress" data-film-progress aria-hidden="true" hidden></div>
-      <div class="film__controls" data-film-controls hidden>
-        <span class="film__count film__chip" data-film-count aria-hidden="true"></span>
-        <span class="film__buttons">
-          <button
-            type="button"
-            class="film__btn film__chip"
-            data-film-prev
-            aria-label="Previous frame"
-          >
-            <svg
-              viewBox="0 0 20 20"
-              aria-hidden="true"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.5"
-            >
-              <path d="M12.5 4.5 7 10l5.5 5.5" />
-            </svg>
-          </button>
-          <button type="button" class="film__btn film__chip" data-film-play>
-            Pause
-          </button>
-          <button type="button" class="film__btn film__chip" data-film-next aria-label="Next frame">
-            <svg
-              viewBox="0 0 20 20"
-              aria-hidden="true"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.5"
-            >
-              <path d="M7.5 4.5 13 10l-5.5 5.5" />
-            </svg>
-          </button>
+          {story.title}
         </span>
       </div>
-      <p class="sr-only" data-film-live aria-live="polite"></p>
-    </section>
+    </header>
 
-    <section
-      class="story-made split mx-auto max-w-content px-m"
-      aria-labelledby="story-made-heading"
-    >
-      <div>
-        <h2 id="story-made-heading" class="portfolio-label mb-4">
-          How this was made
+    <section class="mag-standfirst" aria-labelledby="story-credits">
+      <div class="mag-standfirst__text">
+        {story.dek && <p class="mag-standfirst__dek">{story.dek}</p>}
+        <p class="mag-standfirst__count">
+          {frames.length}
+          {frames.length === 1 ? 'photograph' : 'photographs'}
+          {when && <span>, {when}</span>}
+        </p>
+      </div>
+      <aside class="mag-box">
+        <h2 id="story-credits" class="mag-box__head">
+          Credits
         </h2>
-        {made.length > 0 && (
-          <dl class="credit-block">
-            {made.map((row) => (
+        <dl class="mag-box__list">
+          <div>
+            <dt>Photography</dt>
+            <dd>Erin Schmerr</dd>
+          </div>
+          {credits.map((c) => {
+            const href = collaboratorHref(c);
+            return (
               <div>
-                <dt class="portfolio-label">{row.label}</dt>
-                <dd class="text-foreground">{row.value}</dd>
+                <dt>{c.role || 'Credit'}</dt>
+                <dd>
+                  {href ? (
+                    <a href={href} rel="noopener">
+                      {c.name}
+                    </a>
+                  ) : (
+                    c.name
+                  )}
+                </dd>
+              </div>
+            );
+          })}
+        </dl>
+        {facts.length > 0 && (
+          <dl class="mag-box__list mag-box__list--facts">
+            {facts.map((row) => (
+              <div>
+                <dt>{row.label}</dt>
+                <dd>
+                  {row.href ? (
+                    <a href={row.href} rel="noopener">
+                      {row.value}
+                    </a>
+                  ) : (
+                    row.value
+                  )}
+                </dd>
               </div>
             ))}
           </dl>
         )}
-      </div>
-      <div>
-        <p class="story-made__ask font-display">Want a session like this?</p>
-        <p class="mt-3 text-muted-foreground">
-          Bring me a decade, a character or a story, and I will plan the rest with you.
-        </p>
-        <p class="mt-6">
-          <CtaLink cta={{ label: 'Get in touch', href: '/contact/' }} variant="secondary" />
-        </p>
-      </div>
+      </aside>
     </section>
 
-    <nav class="story-next mx-auto max-w-content px-m" aria-label="More stories">
-      {next && (
-        <a href={`/stories/${next.slug}/`} class="story-next__link">
-          <span class="story-next__text">
-            <span class="portfolio-label block">Next story</span>
-            <span class="story-next__title font-display">{next.title}</span>
-            {next.dek && <span class="mt-3 block text-muted-foreground">{next.dek}</span>}
-          </span>
-          {next.cover && (
-            <span class="story-next__cover">
+    {runs.length > 0 && (
+      <section class="mag-feature" aria-label={`${story.title}, the photographs`}>
+        {runs.map((run) =>
+          run.kind === 'bleed' ? (
+            <figure class="mag-run mag-run--bleed">
+              <div class="mag-bleed" style={bleedStyle(run.plates[0].photo)}>
+                <FocusImage
+                  photo={run.plates[0].photo}
+                  width={1800}
+                  sizes="(min-aspect-ratio: 1/1) 70vw, 100vw"
+                  class="mag-bleed__pic"
+                />
+              </div>
+              <figcaption class="mag-cap">
+                <span class="mag-cap__no">{plateNo(run.plates[0].no)}</span>
+                <span class="mag-cap__text">
+                  {caption(run.plates[0].photo)}
+                  {formatExif(run.plates[0].photo.exif) && (
+                    <span class="mag-cap__exif">{formatExif(run.plates[0].photo.exif)}</span>
+                  )}
+                </span>
+              </figcaption>
+            </figure>
+          ) : (
+            <div
+              class:list={['mag-run', `mag-run--${run.kind}`, run.side && `mag-run--${run.side}`]}
+            >
+              {run.plates.map((plate) => (
+                <figure class="mag-plate">
+                  <FocusImage
+                    photo={plate.photo}
+                    width={1200}
+                    sizes="(min-width: 48rem) 45vw, 100vw"
+                  />
+                  <figcaption class="mag-cap">
+                    <span class="mag-cap__no">{plateNo(plate.no)}</span>
+                    <span class="mag-cap__text">
+                      {caption(plate.photo)}
+                      {formatExif(plate.photo.exif) && (
+                        <span class="mag-cap__exif">{formatExif(plate.photo.exif)}</span>
+                      )}
+                    </span>
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+          ),
+        )}
+      </section>
+    )}
+
+    <section class="mag-ask" aria-labelledby="story-ask">
+      <span class="mag-ask__end" aria-hidden="true"></span>
+      <h2 id="story-ask" class="mag-ask__line">
+        Want a sitting like this one?
+      </h2>
+      <p class="mag-ask__text">
+        Bring me a decade, a character or a book you love, and I will plan the clothes, the place
+        and the light with you.
+      </p>
+      <p>
+        <a class="bq-button" href="/contact/">
+          Plan your sitting
+        </a>
+      </p>
+    </section>
+
+    {(prev || next) && (
+      <nav class="mag-turn" aria-label="More stories">
+        {prev && (
+          <a href={`/stories/${prev.slug}/`} class="mag-turn__link mag-turn__link--prev">
+            <span
+              class="mag-turn__cover"
+              transition:name={`story-cover-${prev.slug}`}
+              transition:animate="initial"
+            >
+              <FocusImage
+                photo={prev.cover}
+                width={700}
+                crop={4 / 5}
+                sizes="(min-width: 48rem) 16vw, 30vw"
+                alt=""
+              />
+            </span>
+            <span class="mag-turn__text">
+              <span class="mag-turn__label">Previous story</span>
+              <span class="mag-turn__title">{prev.title}</span>
+            </span>
+          </a>
+        )}
+        {next && (
+          <a href={`/stories/${next.slug}/`} class="mag-turn__link mag-turn__link--next">
+            <span
+              class="mag-turn__cover"
+              transition:name={`story-cover-${next.slug}`}
+              transition:animate="initial"
+            >
               <FocusImage
                 photo={next.cover}
                 width={900}
                 crop={4 / 5}
-                sizes="(min-width: 48rem) 30vw, 60vw"
+                sizes="(min-width: 48rem) 22vw, 40vw"
                 alt=""
               />
             </span>
-          )}
-        </a>
-      )}
-      {prev && (
-        <p class="mt-10">
-          <a href={`/stories/${prev.slug}/`} class="portfolio-label portfolio-link">
-            Previous story: {prev.title}
+            <span class="mag-turn__text">
+              <span class="mag-turn__label">Next story</span>
+              <span class="mag-turn__title">{next.title}</span>
+            </span>
           </a>
-        </p>
-      )}
-    </nav>
+        )}
+      </nav>
+    )}
   </article>
 </BaseLayout>
-
-<script>
-  import '@/scripts/story-film';
-</script>

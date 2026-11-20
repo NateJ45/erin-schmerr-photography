@@ -588,6 +588,25 @@ The items below apply to any project built on this starter. Replace the angle-br
 
 ---
 
+## Cover cut-outs (the home Cinema's cover frames)
+
+The cover frames set a story's title behind the person in its cover photo. That needs a cut-out of the person, made by `scripts/make-cutouts.mjs` and stored on the story as `coverCutout` (read-only in the Studio). Run it when a featured story is added, or when a cover photo changes (the old cut-out goes stale on its own and the site stops using it until the script runs again). Without a cut-out a cover frame still works: the title sits over the photo.
+
+One-time setup, outside the repo (the matting library carries the ONNX runtime, so it is not a site dependency): `npm install --prefix C:\tools\cutouts @huggingface/transformers@4.3.2`.
+
+```powershell
+$env:CUTOUT_TOOLS_DIR = 'C:\tools\cutouts'
+node scripts/make-cutouts.mjs                                   # dry run: which stories need one
+node scripts/make-cutouts.mjs --out C:\temp\cutouts --compare C:\temp\cutouts-check   # make them locally, look first
+# See them on the page: astro dev reads the folder (never a build)
+$env:CINEMA_CUTOUTS_DIR = 'C:\temp\cutouts'; npm run dev
+# Write them, under the write protocol (back up, dry run, apply, verify):
+npx sanity dataset export production C:\backups\erin-before-cutouts.tar.gz --raw
+$env:NCS_PRODUCTION_WRITE = 'yes'; node scripts/make-cutouts.mjs --apply; Remove-Item Env:NCS_PRODUCTION_WRITE
+```
+
+Options: `--only <slug>`, `--all` (every story, not only the featured ones), `--force` (remake up-to-date ones). The `--compare` images show the photo, the cut-out on dusk and on paper side by side: check hair edges and stray props before writing. A group scene usually gets no cut-out (the script says "no clear subject found" and skips it). Never point `--out` or `--compare` inside the repo; the script refuses. The first `--apply` must come after the schema field has deployed (rule 1). Then publish a rebuild so the site picks them up (rule 6).
+
 ## Patch Sanity content programmatically
 
 For one-off content updates (backfilling new fields, fixing typos across many docs), write a script in `scripts/`. Pattern:

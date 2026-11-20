@@ -388,6 +388,24 @@ export type Story = {
   location?: string;
   startedFrom?: string;
   cover?: Photo;
+  coverCutout?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    cutoutOf?: string;
+    subject?: {
+      top?: number;
+      bottom?: number;
+      left?: number;
+      right?: number;
+      headTop?: number;
+      headBottom?: number;
+      headX?: number;
+      coverage?: number;
+    };
+    _type: 'image';
+  };
   featured?: boolean;
   publication?: PublicationReference;
   photos?: Array<
