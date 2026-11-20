@@ -13,8 +13,8 @@
 //      Footer columns, else the top menu; the no-JS "Menu" link lands here), the newsletter
 //      as a single underlined email field when Site settings switch it on (the site's own
 //      NewsletterSignup, restyled), the places she works (Site settings service areas, each
-//      with the business facts' address where it is in that town, else "Town, ST" from the
-//      facts' state; never typed here), then Instagram and the other social links, email
+//      with the business facts' address where it is in that town, else the facts'
+//      state written out, "Ohio"; never typed here), then Instagram and the other social links, email
 //      and phone at the right.
 //   4. "Tate" (the first word of the site name) set huge across the full width. It builds in
 //      letter by letter the first time it scrolls into view: each glyph starts eroded by a
@@ -34,7 +34,7 @@ import { getNavPages, getAllPageSlugs } from '@/lib/queries';
 import { resolveSiteSettings, type RawChromeSettings } from '@/lib/siteSettings';
 import { mergePageSwitches } from '@/lib/page-switches';
 import { publicPath } from '@/lib/page-path';
-import { placeLine } from '@/lib/place-line';
+import { stateName } from '@/lib/state-name';
 import { pickActionBar, whereNextRows } from '@/lib/wayfinding';
 import WhereNext from '@/components/WhereNext.astro';
 import ActionBar from '@/components/ActionBar.astro';
@@ -116,7 +116,8 @@ const pages = columns
   .filter((l) => (seen.has(l.href) ? false : (seen.add(l.href), true)));
 
 // The places she works (Detroit's two-place column): each service area, with the business
-// facts' street address under the town it is in, else "Cincinnati, OH" from the facts' state.
+// facts' street address (street, then "Town, OH") under the town it is in, else only the
+// facts' state written out ("Ohio"), so the town is never said twice. No state: no line.
 const areas = (siteSettings?.serviceAreas ?? []).map((a) => a.trim()).filter(Boolean);
 const placeNames = areas.length > 0 ? areas : facts.address ? [facts.address.city] : [];
 const places = placeNames.map((name) => {
@@ -124,7 +125,7 @@ const places = placeNames.map((name) => {
     facts.address && facts.address.city.toLowerCase() === name.toLowerCase() ? facts.address : null;
   return {
     name,
-    lines: addr ? addr.lines : [placeLine({ city: name, state: siteSettings?.state })],
+    lines: addr ? addr.lines : [stateName(siteSettings?.state)].filter(Boolean),
     mapsUrl: addr?.mapsUrl ?? null,
     confirmed: addr ? addr.confirmed : true,
   };
@@ -202,15 +203,17 @@ const actionBar =
               </span>
               {p.name}
             </p>
-            <p class="bq-place__lines">
-              {p.lines.map((line, i) => (
-                <>
-                  {i > 0 && <br />}
-                  {line}
-                </>
-              ))}
-              <ToConfirm confirmed={p.confirmed} />
-            </p>
+            {p.lines.length > 0 && (
+              <p class="bq-place__lines">
+                {p.lines.map((line, i) => (
+                  <>
+                    {i > 0 && <br />}
+                    {line}
+                  </>
+                ))}
+                <ToConfirm confirmed={p.confirmed} />
+              </p>
+            )}
             {p.mapsUrl && (
               <a class="bq-quiet" href={p.mapsUrl} target="_blank" rel="noopener noreferrer">
                 Map
