@@ -49,6 +49,7 @@ import CraftNotes from '@/components/portfolio/CraftNotes.astro'; // scaffold: s
 import CrewList from '@/components/portfolio/CrewList.astro'; // scaffold: stories
 import SignedClose from '@/components/portfolio/SignedClose.astro'; // scaffold: stories
 import PressContents from '@/components/portfolio/PressContents.astro'; // scaffold: press
+import KindWords from '@/components/portfolio/KindWords.astro'; // scaffold: testimonials
 // The About page's own blocks (aboutSections.ts).
 import AboutOpening from '@/components/about/AboutOpening.astro'; // scaffold: about
 import AboutStory from '@/components/about/AboutStory.astro'; // scaffold: about
@@ -490,6 +491,14 @@ const editKeyOf = (block: unknown) => {
       ) : // scaffold-branch: press
       s._type === 'pressContents' ? (
         <PressContents heading={s.heading} headingId={headingId} />
+      ) : // scaffold-branch: testimonials
+      s._type === 'kindWords' ? (
+        <KindWords
+          heading={s.heading}
+          quotes={s.quotes}
+          crossfade={s.crossfade}
+          headingId={headingId}
+        />
       ) : // scaffold-branch: about
       s._type === 'aboutOpening' ? (
         <AboutOpening

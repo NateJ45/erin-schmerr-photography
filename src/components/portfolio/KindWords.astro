@@ -1,0 +1,185 @@
+---
+// scaffold-file: testimonials
+// Safe to edit by hand
+// Page-builder block `kindWords` (kindWordsSection.ts, 2026-11-20): "Kind words".
+// Clients' words as ruled editorial rows, like the letters page of a magazine:
+// a number, the client's square portrait, then the quote long and large in
+// Bodoni Moda with a hanging Dusk quote mark, and under it the name and the
+// kind of sitting in small tracked capitals. Ink rule above the list,
+// hairlines between rows.
+//
+// The words come from Testimonial documents (the block's picks, in order, or
+// every testimonial; src/lib/kind-words.ts). A quote not ticked Confirmed in
+// the Studio carries "Placeholder: replace with a real client's words" above
+// it, and a missing portrait draws FocusImage's labelled placeholder, so a
+// stand-in never passes for a client.
+//
+// "One at a time" (crossfade): with motion allowed and two or more quotes, the
+// rows stack in one place and cross-fade slowly (1.6s, every 8s), pausing on
+// hover, keyboard focus and the Pause button (WCAG 2.2.2). The rows not on
+// show are inert and hidden from screen readers while it plays. Without
+// JavaScript, under reduced motion or with one quote, every row shows as a
+// plain list, which is also how it prints.
+//
+// SELF_CONTAINED: plain page ground (sectionCadence.ts). No colour field (rule 9).
+import FocusImage from '@/components/portfolio/FocusImage.astro';
+import { sanityFetch } from '@/lib/sanity';
+import { PHOTO_PROJECTION, placeholderPhoto } from '@/lib/portfolio';
+import { emphasisRuns } from '@/lib/about-page';
+import {
+  isPlaceholderQuote,
+  kindWordsEntries,
+  KIND_WORDS_PLACEHOLDER,
+  type KindWordsDoc,
+} from '@/lib/kind-words';
+import '@/styles/kind-words.css';
+
+interface Props {
+  heading?: string;
+  quotes?: { _ref?: string }[] | null;
+  crossfade?: boolean;
+  headingId?: string;
+}
+
+const { heading, quotes, crossfade = false, headingId = 'kind-words' } = Astro.props;
+
+const docs = await sanityFetch<KindWordsDoc>(
+  `*[_type == "testimonial" && defined(quote)]{
+    _id, quote, attribution, sessionType, confirmed, featured, date,
+    photo${PHOTO_PROJECTION}
+  }`,
+  {},
+  [],
+);
+const entries = kindWordsEntries(docs, quotes);
+const fade = crossfade && entries.length > 1;
+const titleRuns = emphasisRuns(heading?.trim() || 'Kind _words_');
+const two = (n: number) => String(n).padStart(2, '0');
+---
+
+{entries.length > 0 && (
+  <section class="kw bg-background" aria-labelledby={headingId} data-kind-words>
+    <div class="mx-auto max-w-content px-m py-section-lg">
+      <header class="kw__head">
+        <h2 id={headingId} class="kw__title font-display">
+          {titleRuns.map((r) => (r.italic ? <em>{r.text}</em> : r.text))}
+        </h2>
+        <p class="kw__count portfolio-label" aria-hidden="true">
+          {fade ? (
+            <span data-kw-counter>01 / {two(entries.length)}</span>
+          ) : (
+            <span>
+              {two(entries.length)} {entries.length === 1 ? 'letter' : 'letters'}
+            </span>
+          )}
+        </p>
+      </header>
+
+      <ol class="kw__rows list-none" data-kw-rows data-kw-fade={fade ? 'on' : undefined}>
+        {entries.map((d, i) => {
+          const placeholder = isPlaceholderQuote(d);
+          const name = d.attribution?.trim() || 'Client name';
+          return (
+            <li class="kw__row" data-kw-row data-active={i === 0 ? '' : undefined}>
+              <span class="kw__num portfolio-label" aria-hidden="true">
+                No. {two(i + 1)}
+              </span>
+              <div class="kw__portrait">
+                <FocusImage
+                  photo={d.photo?.asset ? d.photo : placeholderPhoto(i, 'Portrait to come')}
+                  width={480}
+                  crop={1}
+                  sizes="(min-width: 64rem) 15rem, 40vw"
+                  alt={d.photo?.asset ? (d.photo.alt ?? `Portrait of ${name}`) : ''}
+                />
+              </div>
+              <figure class="kw__words">
+                {placeholder && <p class="kw__flag portfolio-label">{KIND_WORDS_PLACEHOLDER}</p>}
+                <blockquote class="kw__quote font-display">
+                  <p>
+                    <span class="kw__mark" aria-hidden="true">
+                      &ldquo;
+                    </span>
+                    {d.quote?.trim()}
+                  </p>
+                </blockquote>
+                <figcaption class="kw__credit">
+                  <span class="kw__name">{name}</span>
+                  {d.sessionType?.trim() && <span class="kw__session">{d.sessionType.trim()}</span>}
+                </figcaption>
+              </figure>
+            </li>
+          );
+        })}
+      </ol>
+
+      {fade && (
+        <p class="kw__controls" data-kw-controls hidden>
+          <button type="button" class="kw__pause" data-kw-pause aria-pressed="false">
+            Pause
+          </button>
+        </p>
+      )}
+    </div>
+  </section>
+)}
+
+<script>
+  // "One at a time": cross-fade the rows of every Kind words block set to it. Armed only with
+  // motion allowed; otherwise the rows stay a plain list (the markup's resting state).
+  const HOLD_MS = 8000;
+  const timers: number[] = [];
+
+  function setup(block: HTMLElement) {
+    const list = block.querySelector<HTMLElement>('[data-kw-rows][data-kw-fade="on"]');
+    if (!list) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const rows = [...list.querySelectorAll<HTMLElement>('[data-kw-row]')];
+    const controls = block.querySelector<HTMLElement>('[data-kw-controls]');
+    const pause = block.querySelector<HTMLButtonElement>('[data-kw-pause]');
+    const counter = block.querySelector<HTMLElement>('[data-kw-counter]');
+    if (rows.length < 2 || !pause || !controls) return;
+
+    let at = 0;
+    let paused = false;
+    let held = false;
+    const total = String(rows.length).padStart(2, '0');
+    const show = (n: number) => {
+      at = (n + rows.length) % rows.length;
+      rows.forEach((row, i) => {
+        const on = i === at;
+        row.toggleAttribute('data-active', on);
+        row.toggleAttribute('inert', !on);
+        if (on) row.removeAttribute('aria-hidden');
+        else row.setAttribute('aria-hidden', 'true');
+      });
+      if (counter) counter.textContent = `${String(at + 1).padStart(2, '0')} / ${total}`;
+    };
+
+    list.classList.add('kw__rows--playing');
+    controls.hidden = false;
+    show(0);
+    const timer = window.setInterval(() => {
+      if (!paused && !held && !document.hidden) show(at + 1);
+    }, HOLD_MS);
+    timers.push(timer);
+
+    // Hold while a pointer is over the quotes or focus is inside them.
+    list.addEventListener('pointerenter', () => (held = true));
+    list.addEventListener('pointerleave', () => (held = false));
+    list.addEventListener('focusin', () => (held = true));
+    list.addEventListener('focusout', () => (held = false));
+    pause.addEventListener('click', () => {
+      paused = !paused;
+      pause.setAttribute('aria-pressed', String(paused));
+      pause.textContent = paused ? 'Play' : 'Pause';
+    });
+  }
+
+  document.addEventListener('astro:page-load', () => {
+    document.querySelectorAll<HTMLElement>('[data-kind-words]').forEach(setup);
+  });
+  document.addEventListener('astro:before-swap', () => {
+    timers.splice(0).forEach((t) => window.clearInterval(t));
+  });
+</script>

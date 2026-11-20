@@ -9,7 +9,7 @@
 //   - Skip-to-main link, Header, <main id="main">, Footer
 //   - Native scrolling: smooth only for anchors/controls, only under no-preference
 //     (Lenis was removed 2026-10-17, PORTS.md card 102; see the note above the script)
-//   - BackToTop React island
+//   - No floating back-to-top button (2026-11-20): the footer's small print ends with the link
 
 import { ClientRouter } from 'astro:transitions';
 import { site } from '@/data/site';
@@ -27,7 +27,6 @@ import Footer from '@/components/Footer.astro';
 import SitePopup from '@/components/SitePopup.astro';
 import ClientNotes from '@/components/ClientNotes.astro';
 import FlowMotion from '@/components/FlowMotion.astro';
-import BackToTop from '@/components/BackToTop';
 import Analytics from '@/components/Analytics.astro';
 import SiteEvents from '@/components/analytics/SiteEvents.astro';
 import '@/styles/globals.css';
@@ -401,14 +400,11 @@ const announcementStyle = ANNOUNCEMENT_STYLES[announcement?.style ?? 'info'] ?? 
     {hasFlow(pageLayout) && <FlowMotion />}
 
     {/*
-      BackToTop was previously `client:load` which forced the JS to
-      execute before the first paint completed. It is not interactive
-      until later in the page lifecycle (it only appears after the
-      visitor scrolls 600px). Hydrating with `client:idle` lets the
-      browser settle the main thread first and shifts ~10–20ms of TBT off
-      the critical path on mobile.
+      No floating back-to-top button (removed 2026-11-20, "no starter left"): the starter's round
+      island sat over full-bleed photographs and the home cinema's frame numbers on the right
+      edge. A plain "Back to top" link ends the footer's small print instead (Footer.astro).
+      BackToTop.tsx stays in the repo, unused.
     */}
-    <BackToTop client:idle />
 
     {/* The popup, when one is live for this page (SitePopup.astro has the rules). */}
     {showPopup && popup && <SitePopup popup={popup} />}

@@ -890,10 +890,20 @@ export const sectionThumbnailUrl = (type: string): string | undefined =>
 // (say, a church's service times and giving blocks) appends ITS groups here, or
 // spreads them in, and never edits the base list below: a group with a name that
 // already exists gains the types, a new name becomes a new group at the end.
+//
+// NO STARTER LEFT (2026-11-20). The menu now shows THIS SITE'S OWN BLOCKS ONLY: the groups in
+// SITE_INSERT_GROUPS below, and nothing else. The starter's library (STARTER_INSERT_GROUPS:
+// hero, rich text, the builder kit, the rich people blocks, media, files) is hidden from
+// editors, not deleted: its schemas stay registered, so the custom pages and the old process
+// page that still hold some of those blocks open and render as before. Hiding happens in two
+// places, because the menu's "All" tab lists every type an array accepts:
+//   1. Home, About, Contact and Privacy accept only site blocks (richSections.ts lists).
+//   2. Every page builder's input narrows its insert choices to SITE_BLOCK_TYPES
+//      (PageBuilderInput.tsx), which covers the custom pages and the saved sections.
+// To ADD A SITE BLOCK: put its type in a group below (a new group or an existing one, by
+// name), and in the page lists in richSections.ts where it belongs. Other workstreams' groups
+// (the sitting-guide invitation, the magazine blocks) merge in at the marked slot at the end.
 const SITE_INSERT_GROUPS: InsertGroup[] = [
-  ...BUILDER_INSERT_GROUPS,
-  { name: 'media', title: 'Media', of: ['latestVideoSection'] },
-  { name: 'files', title: 'Files to download', of: ['documentsSection'] }, // scaffold: documents
   {
     // Every main page a page builder (card 190): the piece a page is built around. Each shows
     // only on its own page (richSections.ts); a group whose types are absent does not appear.
@@ -915,6 +925,7 @@ const SITE_INSERT_GROUPS: InsertGroup[] = [
       'crewSection', // scaffold: stories
       'signedClose', // scaffold: stories
       'pressContents', // scaffold: press
+      'kindWords', // scaffold: testimonials
     ],
   },
   {
@@ -946,63 +957,85 @@ const SITE_INSERT_GROUPS: InsertGroup[] = [
     ],
   },
   // scaffold:end
+  // ── Other workstreams' site groups merge in here (append; keep both sides). ──
 ];
+
+/**
+ * Every block type this site offers editors: the types named in SITE_INSERT_GROUPS. The page
+ * builders' insert choices are narrowed to these (PageBuilderInput.tsx); everything else an
+ * array accepts stays valid and keeps rendering, it just is not offered.
+ */
+export const SITE_BLOCK_TYPES: ReadonlySet<string> = new Set(
+  SITE_INSERT_GROUPS.flatMap((g) => g.of),
+);
+
+/**
+ * The starter's insert groups, hidden since 2026-11-20 (see SITE_INSERT_GROUPS). Kept so the
+ * starter library can come back in one edit: set `groups` below to this list merged with the
+ * site's (withSiteGroups(STARTER_INSERT_GROUPS, SITE_INSERT_GROUPS)) and stop narrowing in
+ * PageBuilderInput.tsx.
+ */
+export const STARTER_INSERT_GROUPS: InsertGroup[] = withSiteGroups(
+  [
+    {
+      name: 'basics',
+      title: 'Basics',
+      of: ['heroSection', 'richTextSection', 'imageTextSection', 'spacerSection'],
+    },
+    {
+      name: 'proof',
+      title: 'Proof and trust',
+      of: [
+        'quoteSection',
+        'testimonialsSection', // scaffold: testimonials
+        'statSection',
+        'logoStripSection',
+        'guaranteeSection',
+      ],
+    },
+    {
+      // The authoring kit (card 109). A saved section can also be dropped in as
+      // a COPY from the "Insert a saved section" button under the sections list.
+      name: 'saved',
+      title: 'Saved and synced',
+      of: ['syncedSection'],
+    },
+    {
+      name: 'media',
+      title: 'Media',
+      of: ['gallerySection', 'videoSection', 'embedSection'],
+    },
+    {
+      name: 'signups',
+      title: 'Sign-ups',
+      of: ['rsvpSection', 'formSection'],
+    },
+    {
+      name: 'business',
+      title: 'About the business',
+      of: [
+        'storySection', // scaffold: about
+        'founderSection', // scaffold: about
+        'teamSection',
+        'serviceAreaSection',
+        'dynamicListSection',
+        'ctaBandSection',
+      ],
+    },
+  ],
+  [
+    ...BUILDER_INSERT_GROUPS,
+    { name: 'media', title: 'Media', of: ['latestVideoSection'] },
+    { name: 'files', title: 'Files to download', of: ['documentsSection'] }, // scaffold: documents
+  ],
+);
 
 export const SECTION_INSERT_MENU: ArrayOptions['insertMenu'] = {
   filter: true,
   // Grid first, so the picker opens on pictures; the list view stays one click
   // away and keeps the search box (the authoring kit, card 109).
   views: [{ name: 'grid', previewImageUrl: sectionThumbnailUrl }, { name: 'list' }],
-  groups: withSiteGroups(
-    [
-      {
-        name: 'basics',
-        title: 'Basics',
-        of: ['heroSection', 'richTextSection', 'imageTextSection', 'spacerSection'],
-      },
-      {
-        name: 'proof',
-        title: 'Proof and trust',
-        of: [
-          'quoteSection',
-          'testimonialsSection', // scaffold: testimonials
-          'statSection',
-          'logoStripSection',
-          'guaranteeSection',
-        ],
-      },
-      {
-        // The authoring kit (card 109). A saved section can also be dropped in as
-        // a COPY from the "Insert a saved section" button under the sections list.
-        name: 'saved',
-        title: 'Saved and synced',
-        of: ['syncedSection'],
-      },
-      {
-        name: 'media',
-        title: 'Media',
-        of: ['gallerySection', 'videoSection', 'embedSection'],
-      },
-      {
-        name: 'signups',
-        title: 'Sign-ups',
-        of: ['rsvpSection', 'formSection'],
-      },
-      {
-        name: 'business',
-        title: 'About the business',
-        of: [
-          'storySection', // scaffold: about
-          'founderSection', // scaffold: about
-          'teamSection',
-          'serviceAreaSection',
-          'dynamicListSection',
-          'ctaBandSection',
-        ],
-      },
-    ],
-    SITE_INSERT_GROUPS,
-  ),
+  groups: SITE_INSERT_GROUPS,
 };
 
 /** The `options` block every pageBuilder array should carry. */

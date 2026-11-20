@@ -11,10 +11,17 @@
 //                 link in an email, and must not take a reader off the list.
 //   link-problem  a confirm link that is broken, expired or too old.
 // Static and noindex; the unsubscribe button posts to /api/unsubscribe/.
+//
+// The site's own layout (2026-11-20, replaced the starter's plain prose page): a short letter on
+// paper. "(Newsletter)" small over an ink rule, the title very large in Bodoni Moda with one word
+// in its italic, the note in her voice, then the one action (the unsubscribe button is the page's
+// one filled Dusk button) and the ways back as small tracked links. Styles in page-quiet.css.
 // =============================================================================
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { getSiteSettings } from '@/lib/queries';
 import { site } from '@/data/site';
+import '@/styles/portfolio.css';
+import '@/styles/page-quiet.css';
 
 export function getStaticPaths() {
   return [
@@ -27,53 +34,60 @@ export function getStaticPaths() {
 const { state } = Astro.params as { state: 'confirmed' | 'unsubscribe' | 'link-problem' };
 const siteSettings = await getSiteSettings();
 
+// `title` is the page's name (the browser tab, plain words); `runs` is how the heading is set,
+// with the italic word marked.
 const COPY = {
   confirmed: {
     title: 'You are on the list',
-    body: `Thank you for confirming. The next ${site.name} newsletter will come to your inbox. Every issue has an unsubscribe link at the bottom, if you ever change your mind.`,
+    runs: [
+      { text: 'You are on the ', italic: false },
+      { text: 'list', italic: true },
+    ],
+    body: `Thank you for confirming. The next ${site.name} letter will come to your inbox. Every one has an unsubscribe link at the bottom, if you ever change your mind.`,
   },
   unsubscribe: {
     title: 'Unsubscribe from the newsletter',
-    body: 'Press the button and we will stop sending you the newsletter. You will not need to log in or give a reason.',
+    runs: [
+      { text: 'Leaving the ', italic: false },
+      { text: 'list', italic: true },
+    ],
+    body: 'Press the button and I will stop sending you the newsletter. You will not need to log in or give a reason.',
   },
   'link-problem': {
     title: 'That link did not work',
-    body: 'The link may be incomplete, or more than a week old. Sign up again on the website and we will send you a fresh one.',
+    runs: [
+      { text: 'That link did not ', italic: false },
+      { text: 'work', italic: true },
+    ],
+    body: 'The link may be incomplete, or more than a week old. Sign up again on the website and I will send you a fresh one.',
   },
 } as const;
 const copy = COPY[state];
 ---
 
 <BaseLayout title={copy.title} description={copy.body} siteSettings={siteSettings} noindex>
-  <section class="mx-auto max-w-prose px-m py-section-lg" aria-labelledby="email-state-heading">
-    <h1 id="email-state-heading" class="font-display text-h1 text-foreground">
-      {copy.title}
+  <section class="pq-letter mx-auto max-w-content px-m" aria-labelledby="email-state-heading">
+    <p class="pq-letter__kicker portfolio-label">(Newsletter)</p>
+    <h1 id="email-state-heading" class="pq-letter__title font-display">
+      {copy.runs.map((r) => (r.italic ? <em>{r.text}</em> : r.text))}
     </h1>
-    <p class="mt-m text-lg leading-relaxed text-foreground/85" data-email-body>
-      {copy.body}
-    </p>
-    {state === 'unsubscribe' && (
-      <div class="mt-l" data-unsubscribe>
-        <button
-          type="button"
-          class="press-tactile inline-flex min-h-[44px] items-center justify-center rounded-sm bg-primary-dark px-l py-s text-sm font-semibold text-white transition-colors hover:bg-accent-dark disabled:opacity-60"
-          data-unsubscribe-button
-        >
-          Unsubscribe me
-        </button>
-        <p
-          class="mt-m text-foreground/85"
-          role="status"
-          aria-live="polite"
-          data-unsubscribe-status
-        />
-      </div>
-    )}
-    <p class="mt-l">
-      <a href="/" class="underline underline-offset-2 hover:text-link">
-        Back to the home page
-      </a>
-    </p>
+    <div class="pq-letter__note">
+      <p class="pq-letter__body" data-email-body>
+        {copy.body}
+      </p>
+      {state === 'unsubscribe' && (
+        <div class="pq-letter__action" data-unsubscribe>
+          <button type="button" class="pq-button" data-unsubscribe-button>
+            Unsubscribe me
+          </button>
+          <p class="pq-letter__status" role="status" aria-live="polite" data-unsubscribe-status />
+        </div>
+      )}
+      <p class="pq-letter__ways">
+        <a href="/stories/">See the stories</a>
+        <a href="/">Back to the home page</a>
+      </p>
+    </div>
   </section>
 </BaseLayout>
 

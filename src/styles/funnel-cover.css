@@ -1,0 +1,260 @@
+/* Safe to edit by hand
+   =============================================================================
+   funnel-cover.css - the funnel's opening band (src/components/funnel/OverlapCover.astro)
+   =============================================================================
+   Imported by the component, so the per-page purge keeps it only where the band is drawn
+   (/contact/, /guide/, /guide/read/). DESIGN.md "Booking funnel".
+
+   The geometry lives in two custom properties and is read by BOTH the photo and the clip on
+   the headline's paper copy, so they cannot drift apart:
+     --fc-seam  where the photo starts, as a share of the stage's width (64rem up);
+     --fc-rise  how far the headline climbs over the photo's lower edge (below 64rem).
+   The paper copy's box is the stage's full width (64rem up) and starts exactly --fc-rise
+   above the photo's foot (below), so `inset()` percentages and lengths line up with the
+   photo's edge.
+   ============================================================================= */
+
+.fc {
+  --fc-seam: 44%;
+  --fc-rise: 5.25rem;
+  --fc-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --fc-dark: 18 14 12;
+  position: relative;
+  background: var(--color-background);
+  padding-top: clamp(1.5rem, 4vw, 3rem);
+}
+
+/* ---- Below 64rem: eyebrow, photo, then the headline climbing over its foot ---- */
+.fc__stage {
+  display: flex;
+  flex-direction: column;
+}
+.fc__type {
+  display: contents;
+}
+.fc__type > * {
+  order: 5;
+}
+.fc__eyebrow {
+  order: 0;
+  margin-bottom: 1rem;
+}
+.fc__photo {
+  order: 1;
+}
+.fc__titles {
+  order: 2;
+}
+.fc__sub {
+  order: 3;
+}
+
+.fc__photo {
+  position: relative;
+  margin: 0;
+  aspect-ratio: 4 / 5;
+  max-height: 78vh;
+  overflow: hidden;
+  background-color: var(--color-muted);
+  background-image: var(--fc-lqip, none);
+  background-size: cover;
+  background-position: center;
+}
+.fc__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform-origin: 60% 40%;
+}
+.fc__ph {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: var(--text-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-muted-foreground);
+}
+/* The veil under the paper copy: darkest where the words cross the photo. */
+.fc__veil {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    0deg,
+    rgb(var(--fc-dark) / 0.66) 0%,
+    rgb(var(--fc-dark) / 0.42) 22%,
+    rgb(var(--fc-dark) / 0) 52%
+  );
+  pointer-events: none;
+}
+.fc__credit {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  padding: 0.3rem 0.55rem;
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-size: var(--text-xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* The two copies share one grid cell. */
+.fc__titles {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  margin-top: calc(-1 * var(--fc-rise));
+  /* A short headline still reaches below the photo, its last line across the edge, so the
+     line under it never starts on the photo. */
+  min-height: calc(var(--fc-rise) + 0.75em);
+  align-items: end;
+  font-size: clamp(2.3rem, 11vw, 4.25rem);
+}
+.fc__title {
+  grid-area: 1 / 1;
+  margin: 0;
+  padding: 0 0.04em;
+  font-weight: 400;
+  font-size: clamp(2.3rem, 11vw, 4.25rem);
+  line-height: 0.98;
+  letter-spacing: -0.012em;
+  overflow-wrap: anywhere;
+  hyphens: manual;
+}
+.fc__title em {
+  font-style: italic;
+}
+.fc__title--ink {
+  color: var(--color-foreground);
+}
+.fc__title--ink em {
+  color: var(--color-link);
+}
+.fc__title--paper {
+  color: var(--color-background);
+  pointer-events: none;
+  user-select: none;
+  /* The twin sits at the foot of its box (align-items: end), so the photo edge is 0.75em
+     above its bottom when the headline is short, else --fc-rise below its top. */
+  clip-path: inset(0 0 max(calc(100% - var(--fc-rise)), 0.75em) 0);
+}
+.fc__title--paper em {
+  color: var(--color-background);
+}
+
+.fc__sub {
+  margin-top: 1.5rem;
+  max-width: 34rem;
+  font-size: var(--text-lg);
+  line-height: 1.5;
+  color: var(--color-muted-foreground);
+}
+
+/* ---- 64rem up: the photo on the right, the headline across its left edge ---- */
+@media (min-width: 64rem) {
+  .fc {
+    --fc-rise: 0;
+    padding-top: clamp(2rem, 4vw, 3.5rem);
+  }
+  .fc__stage {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto;
+    align-items: center;
+  }
+  .fc__type {
+    display: block;
+    grid-area: 1 / 1;
+    position: relative;
+    z-index: 1;
+    padding-block: 2rem;
+  }
+  .fc__type > * {
+    max-width: calc(var(--fc-seam) - 2.5rem);
+  }
+  .fc__type > .fc__titles {
+    max-width: none;
+  }
+  .fc__photo {
+    grid-area: 1 / 1;
+    justify-self: end;
+    width: calc(100% - var(--fc-seam));
+    height: clamp(32rem, 86vh, 54rem);
+    max-height: none;
+    aspect-ratio: auto;
+  }
+  .fc__veil {
+    background: linear-gradient(
+      90deg,
+      rgb(var(--fc-dark) / 0.72) 0%,
+      rgb(var(--fc-dark) / 0.5) 34%,
+      rgb(var(--fc-dark) / 0.12) 72%,
+      rgb(var(--fc-dark) / 0) 100%
+    );
+  }
+  .fc__titles {
+    margin-top: 0;
+  }
+  .fc__title {
+    font-size: clamp(3.25rem, 7vw, 7.25rem);
+    line-height: 0.95;
+  }
+  .fc__title--paper {
+    clip-path: inset(0 0 0 var(--fc-seam));
+  }
+  .fc__eyebrow {
+    margin-bottom: 1.5rem;
+  }
+}
+
+/* The one outlined "go to the form" link under the headline (both pages). */
+.fc-jump {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 2.75rem;
+  margin-top: 1.75rem;
+  padding: 0 1.4rem;
+  border: 1px solid var(--color-foreground);
+  font-size: var(--text-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-foreground);
+  text-decoration: none;
+  transition:
+    background-color 300ms var(--fc-ease),
+    color 300ms var(--fc-ease);
+}
+.fc-jump::after {
+  content: '';
+  width: 0.5rem;
+  height: 0.5rem;
+  border-right: 1px solid currentColor;
+  border-bottom: 1px solid currentColor;
+  transform: translateY(-0.15rem) rotate(45deg);
+}
+.fc-jump:hover {
+  background: var(--color-foreground);
+  color: var(--color-background);
+}
+.fc-jump:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 3px;
+}
+
+/* Motion's line masks (SplitText): room for descenders and the italic's overhang. */
+.fc-line-mask {
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+  padding-right: 0.08em;
+}
+
+@media print {
+  .fc__title--paper,
+  .fc__veil {
+    display: none;
+  }
+}

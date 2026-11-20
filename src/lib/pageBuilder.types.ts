@@ -571,6 +571,17 @@ export interface ProjectedPressContentsSection {
   heading?: string;
 }
 // scaffold:end
+// scaffold: testimonials
+/** kindWords: clients' words beside their portraits, from Testimonials (KindWords.astro). */
+export interface ProjectedKindWordsSection {
+  _type: 'kindWords';
+  _key: string;
+  heading?: string;
+  /** Chosen testimonials, in order (raw references; the block reads them itself). */
+  quotes?: { _key?: string; _ref?: string }[] | null;
+  crossfade?: boolean;
+}
+// scaffold:end
 // scaffold: sessions
 /** sessionsOpening: one very large line with an italic turn (SessionsOpening.astro). */
 export interface ProjectedSessionsOpeningSection {
@@ -780,6 +791,7 @@ export type PageBuilderBlock =
   | ProjectedTearSheetStackSection // scaffold: press
   | ProjectedProofStripSection // scaffold: press
   | ProjectedPressContentsSection // scaffold: press
+  | ProjectedKindWordsSection // scaffold: testimonials
   | ProjectedAboutOpeningSection // scaffold: about
   | ProjectedAboutStorySection // scaffold: about
   | ProjectedAboutApproachSection // scaffold: about

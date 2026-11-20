@@ -1,0 +1,190 @@
+/* scaffold-file: testimonials */
+/* Safe to edit by hand
+   Kind words (KindWords.astro, 2026-11-20): clients' words as ruled editorial rows.
+   Paper ground, ink rule over the list, hairlines between rows, square corners. */
+
+.kw__head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--foreground);
+}
+.kw__title {
+  margin: 0;
+  font-size: clamp(3rem, 8vw, 7.5rem);
+  line-height: 0.92;
+  letter-spacing: var(--display-track-lg, -0.015em);
+  font-weight: 400;
+  color: var(--foreground);
+}
+.kw__title em {
+  font-style: italic;
+  color: var(--primary);
+}
+.kw__count {
+  margin: 0 0 0.5rem;
+  white-space: nowrap;
+}
+
+/* One row: number, square portrait, then the words. Phones: the portrait and number side by
+   side above the words. */
+.kw__rows {
+  margin: 0;
+  padding: 0;
+}
+.kw__row {
+  display: grid;
+  grid-template-columns: minmax(0, 9rem) minmax(0, 1fr);
+  grid-template-areas:
+    'portrait num'
+    'words words';
+  gap: 1.25rem 1.25rem;
+  padding-block: 2.25rem;
+  border-bottom: 1px solid var(--border);
+}
+.kw__num {
+  grid-area: num;
+  align-self: start;
+}
+.kw__portrait {
+  grid-area: portrait;
+}
+.kw__words {
+  grid-area: words;
+  margin: 0;
+  min-width: 0;
+}
+@media (min-width: 48rem) {
+  .kw__row {
+    grid-template-columns: 4.5rem minmax(0, 13rem) minmax(0, 1fr);
+    grid-template-areas: 'num portrait words';
+    gap: 2.5rem;
+    padding-block: 3rem;
+  }
+}
+@media (min-width: 64rem) {
+  .kw__row {
+    grid-template-columns: 6rem minmax(0, 15rem) minmax(0, 1fr);
+    gap: 3.5rem;
+  }
+}
+
+.kw__flag {
+  margin: 0 0 1rem;
+  color: var(--primary);
+}
+.kw__quote {
+  margin: 0;
+}
+.kw__quote p {
+  position: relative;
+  margin: 0;
+  font-size: clamp(1.375rem, 2.4vw, 2.25rem);
+  line-height: 1.22;
+  font-weight: 400;
+  color: var(--foreground);
+  text-wrap: pretty;
+  max-width: 40ch;
+}
+/* The opening quote mark hangs in the margin from the tablet up, in Dusk italic. */
+.kw__mark {
+  font-style: italic;
+  color: var(--primary);
+  margin-right: 0.05em;
+}
+@media (min-width: 48rem) {
+  .kw__mark {
+    position: absolute;
+    right: 100%;
+    margin-right: 0.12em;
+  }
+}
+
+.kw__credit {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 1rem;
+  margin-top: 1.5rem;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.kw__name {
+  color: var(--foreground);
+  font-weight: 500;
+}
+/* A short ink rule before the kind of sitting, in place of a dash. */
+.kw__session {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  color: var(--muted-foreground);
+}
+.kw__session::before {
+  content: '';
+  width: 1.5rem;
+  height: 1px;
+  background: currentColor;
+}
+
+/* One at a time: armed by the script (motion allowed, two or more quotes). The rows share one
+   grid cell and cross-fade; the one on show is [data-active]. */
+.kw__rows--playing {
+  display: grid;
+}
+.kw__rows--playing > .kw__row {
+  grid-area: 1 / 1;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 1600ms var(--ease-focus),
+    visibility 0s linear 1600ms;
+}
+.kw__rows--playing > .kw__row[data-active] {
+  opacity: 1;
+  visibility: visible;
+  transition:
+    opacity 1600ms var(--ease-focus),
+    visibility 0s;
+}
+.kw__controls {
+  display: flex;
+  justify-content: flex-end;
+  margin: 1rem 0 0;
+}
+.kw__controls[hidden] {
+  display: none;
+}
+.kw__pause {
+  min-height: 44px;
+  padding: 0 0.25rem;
+  background: none;
+  border: 0;
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--foreground);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
+.kw__pause:focus-visible {
+  outline: 1px solid var(--foreground);
+  outline-offset: 4px;
+}
+
+@media print {
+  .kw__rows--playing > .kw__row {
+    opacity: 1;
+    visibility: visible;
+    grid-area: auto;
+  }
+  .kw__controls {
+    display: none;
+  }
+}

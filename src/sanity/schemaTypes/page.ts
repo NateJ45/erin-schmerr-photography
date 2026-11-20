@@ -18,6 +18,7 @@
 import { defineType, defineField } from 'sanity';
 import { DocumentsIcon } from '@sanity/icons/Documents';
 import { SECTION_TYPES, sectionArrayOptions } from './sections';
+import { SITE_GENERAL_TYPES } from './richSections';
 import { PUBLISH_AT_GROUP, publishAtField } from './_publishAt';
 import { seoFields } from './_seoFields';
 import { RESERVED_SLUGS } from '../../lib/reservedSlugs';
@@ -70,7 +71,9 @@ export const page = defineType({
       type: 'array',
       group: 'content',
       description: 'Build the page by adding sections. Drag to reorder. Add as many as you like.',
-      of: SECTION_TYPES,
+      // The general library (hidden from the insert menu since 2026-11-20, sections.ts) plus the
+      // site's own blocks that fit any page: Kind words, the contents line, the signed close.
+      of: [...SECTION_TYPES, ...SITE_GENERAL_TYPES],
       // Grouped + searchable insert menu, in the form AND in the preview canvas.
       options: sectionArrayOptions,
       // The authoring kit (card 109): Insert a saved section, plus gentle warnings.

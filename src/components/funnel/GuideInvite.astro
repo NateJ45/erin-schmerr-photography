@@ -1,0 +1,60 @@
+---
+// Safe to edit by hand
+// "Get the sitting guide": a compact invitation any page can carry (2026-11-20, phase 2).
+// A hairline band on paper: a small photo (optional), "The sitting guide" in Bodoni Moda with
+// its italic turn word, one line, then the email capture on one line and a link to /guide/.
+//
+// Placed today only where the booking funnel owns the page (the consultation's thank-you).
+// Other pages add it with:
+//   <GuideInvite id="sessions-guide" location="sessions_page" image={someCover} />
+// `id` must be unique on the page; `location` names the place for the generate_lead event.
+// It carries no button of the filled family (rule 17): its send is the outlined square button.
+import SanityImage from '@/components/SanityImage.astro';
+import GuideCapture from '@/components/funnel/GuideCapture.astro';
+import { GUIDE } from '@/data/sitting-guide';
+import type { SanityImageObject } from '@/lib/pageBuilder.types';
+import '@/styles/portfolio.css';
+import '@/styles/page-guide.css';
+
+interface Props {
+  id: string;
+  location: string;
+  image?: SanityImageObject | null;
+  /** The small line over the title. */
+  eyebrow?: string;
+  /** A heading level that fits the page around it. */
+  level?: 'h2' | 'h3';
+}
+
+const { id, location, image, eyebrow = 'Free to keep', level = 'h2' } = Astro.props;
+const H = level;
+const hasImage = Boolean((image as { asset?: unknown } | null | undefined)?.asset);
+---
+
+<aside class:list={['gi', hasImage && 'gi--photo']} aria-labelledby={`${id}-title`}>
+  {hasImage && (
+    <div class="gi__photo">
+      <SanityImage
+        source={image}
+        width={480}
+        height={600}
+        sizes="(min-width: 48rem) 12rem, 40vw"
+        alt=""
+        class="gi__img"
+      />
+    </div>
+  )}
+  <div class="gi__text">
+    <p class="portfolio-label">{eyebrow}</p>
+    <H class="gi__title font-display" id={`${id}-title`}>
+      The sitting <em>guide</em>
+    </H>
+    <p class="gi__line">{GUIDE.dek}</p>
+    <a class="gi__more" href="/guide/">
+      See what is inside
+    </a>
+  </div>
+  <div class="gi__capture">
+    <GuideCapture id={id} location={location} variant="compact" label="Send it" />
+  </div>
+</aside>

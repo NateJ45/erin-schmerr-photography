@@ -10,6 +10,12 @@
 // policy renders from code, and that copy branches on what this build REALLY ships
 // (analytics-config): this page once said flatly that visits were counted "without setting
 // cookies", which stopped being true the day GA4 became available.
+//
+// The site's own layout (2026-11-20; styles in page-quiet.css): a magazine's small print. From
+// 1024px a narrow rail holds "Last updated" and, for the built-in policy, a numbered contents
+// list that stays in view; beside it each section sits under a hairline with its Roman numeral
+// in the Dusk italic and its heading in Bodoni Moda. Typed policy text (the Studio body) gets the
+// same column and type, without the contents list (its headings are the editor's).
 import PortableTextStatic from '@/components/PortableTextStatic.astro';
 import { getSiteSettings } from '@/lib/queries';
 import { hasCfAnalytics, hasGa } from '@/lib/analytics-config';
@@ -19,6 +25,8 @@ import { site } from '@/data/site';
 import { formatDate } from '@/lib/format-date';
 import { PLACEHOLDER_TEXT, plainText } from '@/lib/page-meta';
 import type { PortableTextBlock } from '@portabletext/types';
+import '@/styles/portfolio.css';
+import '@/styles/page-quiet.css';
 
 interface Props {
   lastUpdated?: string | null;
@@ -37,47 +45,85 @@ const contactEmail = siteSettings?.email ?? `hello@${site.domain}`;
 const typedText = Array.isArray(body) ? plainText(body) : typeof body === 'string' ? body : '';
 const hasSanityBody =
   (Array.isArray(body) ? body.length > 0 : Boolean(body)) && !PLACEHOLDER_TEXT.test(typedText);
+
+// The built-in policy's sections, for the contents rail (ids match the headings below).
+const CONTENTS = [
+  { id: 'privacy-collected', n: 'I.', title: 'What gets collected' },
+  { id: 'privacy-never', n: 'II.', title: "What doesn't happen" },
+  { id: 'privacy-measured', n: 'III.', title: 'How traffic is measured' },
+  { id: 'privacy-unsubscribe', n: 'IV.', title: 'Unsubscribing from the newsletter' },
+  { id: 'privacy-requests', n: 'V.', title: 'Questions or data requests' },
+];
 ---
 
-{/* The label has to differ from the hero's heading ("Privacy Policy"), which
-    labels the hero's own region landmark. Two region landmarks with the same
-    accessible name fail axe's landmark-unique rule and, more to the point,
-    give a screen-reader user two identically named stops in the landmark
-    list with no way to tell them apart. */}
-<section class="bg-background" aria-label="Policy text">
-  <div class="mx-auto max-w-3xl px-m py-section-lg">
-    {lastUpdated && (
-      <p class="mb-l text-xs tracking-eyebrow text-foreground/80 uppercase">
-        Last updated: {lastUpdated}
-      </p>
-    )}
+{/* The label has to differ from the page's heading ("Privacy Policy"), which names the page.
+    Two region landmarks with the same accessible name fail axe's landmark-unique rule and give
+    a screen-reader user two identically named stops with no way to tell them apart. */}
+<section class="pq-policy bg-background" aria-label="Policy text">
+  <div class="pq-policy__grid mx-auto max-w-content px-m">
+    <aside class="pq-policy__rail">
+      {lastUpdated && (
+        <p class="pq-policy__date">
+          <span class="portfolio-label">Last updated</span>
+          <span class="font-display">{lastUpdated}</span>
+        </p>
+      )}
+      {!hasSanityBody && (
+        <nav aria-label="Sections of the policy">
+          <ol class="pq-policy__contents list-none">
+            {CONTENTS.map((c) => (
+              <li>
+                <a href={`#${c.id}`}>
+                  <span class="pq-policy__n font-display" aria-hidden="true">
+                    {c.n}
+                  </span>
+                  {c.title}
+                </a>
+              </li>
+            ))}
+          </ol>
+        </nav>
+      )}
+    </aside>
 
     {hasSanityBody ? (
-      <PortableTextStatic value={body as never} className="prose-friendly" />
+      <div class="pq-policy__text pq-policy__text--typed">
+        <PortableTextStatic value={body as never} className="prose-friendly" />
+      </div>
     ) : (
-      <div class="space-y-l leading-relaxed text-foreground">
-        <p class="text-foreground/80">
+      <div class="pq-policy__text">
+        <p class="pq-policy__lede">
           This is the privacy policy for {site.name}. The goal here is to be straightforward about
           what information is collected and why.
         </p>
 
-        <div>
-          <h2 class="mb-s font-display text-h3 text-foreground">What gets collected</h2>
-          <p class="text-foreground/80">
+        <div class="pq-policy__part">
+          <h2 id="privacy-collected">
+            <span class="pq-policy__n" aria-hidden="true">
+              I.
+            </span>
+            What gets collected
+          </h2>
+          <p>
             When you fill out the contact form on this site, you share your name, email address, and
             whatever details you include in your message. That information is used only to respond
-            to you and to help plan your project. Nothing else.
+            to you and to help plan your session. Nothing else.
           </p>
-          <p class="mt-s text-foreground/80">
+          <p>
             If you subscribe to the newsletter, your email address goes to the email marketing
             provider so occasional news and updates can reach you. It is not shared with anyone
             else.
           </p>
         </div>
 
-        <div>
-          <h2 class="mb-s font-display text-h3 text-foreground">What doesn't happen</h2>
-          <ul class="list-disc space-y-1 pl-l text-foreground/80">
+        <div class="pq-policy__part">
+          <h2 id="privacy-never">
+            <span class="pq-policy__n" aria-hidden="true">
+              II.
+            </span>
+            What doesn't happen
+          </h2>
+          <ul>
             <li>Your information is never sold.</li>
             <li>There is no ad targeting on this site.</li>
           </ul>
@@ -89,22 +135,27 @@ const hasSanityBody =
             including the cookie, because Google's own terms require a policy
             that discloses the use of Analytics and of cookies.
           */}
-        <div>
-          <h2 class="mb-s font-display text-h3 text-foreground">How traffic is measured</h2>
+        <div class="pq-policy__part">
+          <h2 id="privacy-measured">
+            <span class="pq-policy__n" aria-hidden="true">
+              III.
+            </span>
+            How traffic is measured
+          </h2>
           {!hasGa && !hasCfAnalytics && (
-            <p class="text-foreground/80">
+            <p>
               This site runs no analytics at all. Visits are not counted, and nothing is stored on
               your device for measurement.
             </p>
           )}
           {hasCfAnalytics && (
-            <p class="text-foreground/80">
+            <p>
               Page visits are counted with Cloudflare Web Analytics, which sets no cookies and does
               not identify individual visitors.
             </p>
           )}
           {hasGa && (
-            <p class="mt-s text-foreground/80">
+            <p>
               {/* "also" only reads right when the cookieless paragraph above it rendered. */}
               Page visits are {hasCfAnalytics ? 'also ' : ''}measured with Google Analytics, which
               does set cookies on your device (named <code>_ga</code> and <code>_ga_</code> followed
@@ -118,32 +169,37 @@ const hasSanityBody =
           )}
         </div>
 
-        <div>
-          <h2 class="mb-s font-display text-h3 text-foreground">
+        <div class="pq-policy__part">
+          <h2 id="privacy-unsubscribe">
+            <span class="pq-policy__n" aria-hidden="true">
+              IV.
+            </span>
             Unsubscribing from the newsletter
           </h2>
-          <p class="text-foreground/80">
+          <p>
             Every email includes an unsubscribe link at the bottom. Click it and you're off the list
             right away. If you run into any trouble, email directly and it'll be handled promptly.
           </p>
         </div>
 
-        <div>
-          <h2 class="mb-s font-display text-h3 text-foreground">Questions or data requests</h2>
-          <p class="text-foreground/80">
+        <div class="pq-policy__part">
+          <h2 id="privacy-requests">
+            <span class="pq-policy__n" aria-hidden="true">
+              V.
+            </span>
+            Questions or data requests
+          </h2>
+          <p>
             If you have questions about how your information is handled, or want your data removed,
             reach out at{' '}
-            <a
-              href={`mailto:${contactEmail}`}
-              class="text-link underline underline-offset-2 transition-colors hover:text-primary [overflow-wrap:anywhere]"
-            >
+            <a href={`mailto:${contactEmail}`} class="[overflow-wrap:anywhere]">
               {contactEmail}
             </a>
             . You'll hear back within a few business days.
           </p>
         </div>
 
-        <p class="border-t border-border-soft pt-l text-xs text-foreground/80">
+        <p class="pq-policy__reviewed">
           This policy was last reviewed in May 2026 and will be updated if anything meaningful
           changes about how this site handles your data.
         </p>

@@ -6,7 +6,10 @@
 // sections, they render through SectionRenderer, and the form is the "Contact form" block
 // (src/components/sections/ContactFormSection.astro). With an EMPTY Page layout the page draws
 // the booking request (2026-11-20): that same block fed by the document itself, headed by the
-// Hero tab's words as the page's h1 (the Hero tab's image is not drawn).
+// Hero tab's words as the page's h1 (the Hero tab's image is not drawn). Since phase 2 (also
+// 2026-11-20) it is consult-first: "Reserve a complimentary consultation", her photo large
+// with the headline across its edge, the steps, then the branching request beside a short
+// FAQ (BookingForm.astro, DESIGN.md "Booking funnel").
 // So existing content keeps rendering with no migration; scripts/main-pages-builder.mjs seeds
 // the Page layout when the editor should be able to rearrange the page.
 
@@ -21,25 +24,27 @@ import ContactFormSection from '@/components/sections/ContactFormSection.astro';
 const [page, siteSettings] = await Promise.all([getContactPage(), getSiteSettings()]);
 
 // Real words only (src/lib/page-meta.ts): a seeded placeholder in the Studio is skipped.
-const title = pageTitle(page?.seoTitle, 'Book a session');
+const title = pageTitle(page?.seoTitle, 'Reserve a complimentary consultation');
 const description = pageDescription(
   page?.seoDescription,
-  'Tell me about the portrait you have in mind, the era, the story or the film, and I’ll write back to plan a session in Cincinnati or West Chester, Ohio.',
+  'Reserve a complimentary, no-obligation consultation with Erin Schmerr for family, portrait or model and creative sittings in Cincinnati and West Chester, Ohio.',
 );
 
-// The Hero tab's words head the booking request. The starter's seeded defaults ("Get in
-// Touch.", "Start the Conversation.") read as a contact form, so they give way to the booking
-// wording; anything she types in the Studio wins.
-const STARTER_WORDS = /^(get in touch\.?|start the conversation\.?)$/i;
+// The Hero tab's words head the request. The starter's seeded defaults ("Get in Touch.",
+// "Start the Conversation.") and the first booking wording ("Book a session", "Request a
+// sitting.") give way to the consultation's; anything else she types in the Studio wins.
+// A word between underscores in the headline is set in the display italic.
+const STARTER_WORDS =
+  /^(get in touch\.?|start the conversation\.?|book a session\.?|request a sitting\.?)$/i;
 const own = (v: unknown) => {
   const t = firstReal(v);
   return t && !STARTER_WORDS.test(t) ? t : null;
 };
-const heroEyebrow = own(page?.heroEyebrow) ?? 'Book a session';
-const heroHeadline = own(page?.heroHeadline) ?? 'Request a sitting.';
+const heroEyebrow = own(page?.heroEyebrow) ?? 'Cincinnati and West Chester, Ohio';
+const heroHeadline = own(page?.heroHeadline) ?? 'Reserve a complimentary _consultation_';
 const heroSubhead =
   own(page?.heroSubhead) ??
-  'Four short chapters: the sitting, the season, your story and how to reach you.';
+  'Every portrait I make begins with a conversation. Tell me who it is for, and we will plan it together, with no obligation at all.';
 
 // The Page layout, when the editor has built one. Empty means the classic layout below.
 const sections = page?.pageBuilder?.length ? page.pageBuilder : null;
@@ -47,7 +52,7 @@ const sections = page?.pageBuilder?.length ? page.pageBuilder : null;
 const schemas = [
   breadcrumbSchema([
     { name: 'Home', url: site.url },
-    { name: 'Contact', url: `${site.url}/contact/` },
+    { name: 'Consultation', url: `${site.url}/contact/` },
   ]),
 ];
 ---

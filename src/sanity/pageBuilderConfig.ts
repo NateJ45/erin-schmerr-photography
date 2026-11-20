@@ -67,6 +67,8 @@ const SELF_FILLING_SECTIONS = [
   // Its line is the press features; the quotes are extra.
   'proofStrip', // scaffold: press
   'pressContents', // scaffold: press
+  // With no quotes picked it shows every testimonial.
+  'kindWords', // scaffold: testimonials
   'dynamicListSection',
   'guaranteeSection',
   // Its words are the channel's newest video, read at build time (card 197).
