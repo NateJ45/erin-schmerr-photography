@@ -64,6 +64,7 @@ import { ClipboardIcon } from '@sanity/icons/Clipboard';
 // The builder kit (PORTS.md card 173): columns, buttons, a wide photo, fold-outs,
 // tabs, a countdown, a dated notice, a timeline, a letter and the event blocks.
 import { BUILDER_INSERT_GROUPS, builderSectionSchemas } from './builderSections';
+import { sessionSectionSchemas } from './sessionSections'; // scaffold: sessions
 import { withSiteGroups, type InsertGroup } from '../../lib/insert-groups';
 
 // The photo hero's video checks (PORTS.md card 189), shared by the main clip and the phone copy: an
@@ -845,6 +846,8 @@ export const pageSectionSchemas = [
   formSection,
   // The builder kit (builderSections.ts, PORTS.md card 173).
   ...builderSectionSchemas,
+  // The Sessions page's own blocks (sessionSections.ts, 2026-11-20).
+  ...sessionSectionSchemas, // scaffold: sessions
 ];
 
 // The general blocks on their own. A saved section accepts these (plus the rich
@@ -913,6 +916,21 @@ const SITE_INSERT_GROUPS: InsertGroup[] = [
       'signedClose', // scaffold: stories
     ],
   },
+  // scaffold: sessions
+  {
+    // The Sessions page's own blocks (sessionSections.ts).
+    name: 'sessions',
+    title: 'Sessions',
+    of: [
+      'sessionsOpening',
+      'sessionSittings',
+      'sessionExperience',
+      'heirloomsSpec',
+      'investmentNote',
+      'sessionQuestions',
+    ],
+  },
+  // scaffold:end
 ];
 
 export const SECTION_INSERT_MENU: ArrayOptions['insertMenu'] = {
