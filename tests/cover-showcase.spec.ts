@@ -16,6 +16,8 @@ async function home(page: Page, { seen = true } = {}) {
     try {
       localStorage.setItem('es-first-visit-seen', '1');
       if (seenIntro) sessionStorage.setItem('tate-intro', '1');
+      // Automated browsers skip the opening unless asked (CoverHero.astro).
+      else sessionStorage.setItem('tate-intro-test', '1');
     } catch {
       /* storage blocked: the opening and the loader skip themselves */
     }

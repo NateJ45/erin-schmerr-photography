@@ -621,12 +621,13 @@ html.motion [data-focus].is-focused .focus-image__img {
     object-fit: contain;
   }
 }
-/* The Reveal Hero's 0.4 black, warmed to the site's ink, with a little more
-   at the foot where the credits and thumbnails sit. */
+/* The Reveal Hero's 0.4 black, warmed to the site's ink and taken to 0.6 so the
+   small story line keeps AA over a pale photograph (contrast.spec), with more at
+   the top and foot where the headline, credits and thumbnails sit. */
 .cover-hero__overlay {
   background:
     linear-gradient(to bottom, rgb(18 16 14 / 0.45) 0%, rgb(18 16 14 / 0) 22%),
-    linear-gradient(to top, rgb(18 16 14 / 0.55) 0%, rgb(18 16 14 / 0) 38%), rgb(18 16 14 / 0.45);
+    linear-gradient(to top, rgb(18 16 14 / 0.55) 0%, rgb(18 16 14 / 0) 38%), rgb(18 16 14 / 0.6);
 }
 
 /* The stage: three rows on the page's own left edge (rule 17). */

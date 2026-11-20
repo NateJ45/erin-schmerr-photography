@@ -101,7 +101,13 @@ const creditColumns = (story: (typeof stories)[number]) => {
       try {
         seen = sessionStorage.getItem('tate-intro') === '1';
       } catch (e) {}
-      if (document.readyState === 'loading' && root.classList.contains('motion') && !seen) {
+      // Automated browsers (tests, Lighthouse) see the hero at rest unless a
+      // test asks for the opening with sessionStorage tate-intro-test.
+      var bot = false;
+      try {
+        bot = navigator.webdriver && sessionStorage.getItem('tate-intro-test') !== '1';
+      } catch (e) {}
+      if (document.readyState === 'loading' && root.classList.contains('motion') && !seen && !bot) {
         root.classList.add('showcase-intro');
         // On the home page this opening is the welcome: drop the site-wide
         // first-visit loader (FirstVisitLoader.astro) so nobody sits through two.

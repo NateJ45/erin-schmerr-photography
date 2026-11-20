@@ -130,7 +130,9 @@ function setup(root: HTMLElement): Cleanup {
         )
         .to(image, { scale: 1, duration: 1.65, ease: 'power4.inOut' }, '<')
         .addLabel('content', 2.24)
-        .to(overlay, { autoAlpha: 1, duration: 1.7 }, '<+=0.5');
+        // The scrim is full before the words arrive at 2.24 s (the Vault starts it
+        // at 1.85 s for 1.7 s, which left the first lines on a bare photo).
+        .to(overlay, { autoAlpha: 1, duration: 0.9, ease: 'power2.out' }, 1.3);
       if (header) tl.to(header, { autoAlpha: 1, duration: 1, ease: 'expo.out' }, 'content');
       tl.to(fades, { autoAlpha: 1, duration: 1, ease: 'expo.out' }, 'content');
 
