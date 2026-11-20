@@ -51,6 +51,11 @@ describe('jewel cadence', () => {
     assert.equal(new Set(out).size, out.length);
   });
 
+  it('never puts colour on the last row, which sits on the jewel footer', () => {
+    const out = assignJewels([b('aboutOpening'), b('aboutApproach'), b('kindWords')]);
+    assert.equal(out[2], null);
+  });
+
   it('keeps colour away from a dark band', () => {
     const out = assignJewels([b('aboutOpening'), b('kindWords'), b('ctaBandSection')]);
     assert.equal(out[1], null);

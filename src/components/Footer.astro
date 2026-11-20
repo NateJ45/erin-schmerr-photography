@@ -1,30 +1,42 @@
 ---
 // Foundation, edit with care
-// Site footer: "the boutique close" (DESIGN.md, Components; 2026-11-20). Replaced the
-// "end credits" footer of 2026-11-18.
+// Site footer: "the jewel close" (DESIGN.md, Components; 2026-11-20). Replaced "the boutique
+// close" of the same day, which read too white and too quiet.
 //
-// Warm paper, quiet, in four bands (styles: src/styles/chrome-footer.css):
-//   1. Where next rows, when Site settings switch them on (card 191).
-//   2. The invitation: a centred line in Bodoni Moda with one italic word, a short
-//      sentence and an outlined square "Book a session" button (the header's `.bq-button`, with its label
-//      and link). Left out on the page the button points to. The two lines are a DRAFT for
-//      Erin to approve or rewrite (docs/PENDING.md).
-//   3. Under a hairline: the site's pages as one stacked list at the left (Site settings >
-//      Footer columns, else the top menu; the no-JS "Menu" link lands here), the newsletter
-//      as a single underlined email field when Site settings switch it on (the site's own
-//      NewsletterSignup, restyled), the places she works (Site settings service areas, each
-//      with the business facts' address where it is in that town, else the facts'
-//      state written out, "Ohio"; never typed here), then Instagram and the other social links, email
-//      and phone at the right.
-//   4. "Tate" (the first word of the site name) set huge across the full width. It builds in
-//      letter by letter the first time it scrolls into view: each glyph starts eroded by an
-//      SVG feMorphology filter whose radius shrinks to nothing, so the letter grows out from its
-//      spine (a CSS stand-in for the distance-field reveal on the reference). JavaScript arms
-//      it only when IntersectionObserver exists, motion is allowed and the word is below the
-//      fold; with JS off, under reduced motion, in print, or already on screen it is at rest.
-//   5. The small print: copyright, privacy or the legal links, Studio, the optional credit,
-//      and "Back to top" at the right (in place of the starter's floating button, 2026-11-20).
-//   6. The phone action bar (card 191), when this page has one.
+// A showpiece on a jewel colour field (wine, from the colour system's --jewel-* tokens, with
+// fallbacks so the footer stands on its own). Styles: src/styles/chrome-footer.css. Built from
+// three Details references (DESIGN.md names them):
+//   - Juan Mora (details.so/inspo/juanmora-aa03ca): the REVEAL. The page lifts off to uncover
+//     the footer: as the stage scrolls in, its content travels from 20vw above to rest (a
+//     parallax uncover, no pinning), and the stage opens from an inset rounded window to full
+//     bleed (a clip-path wipe). Both scrubbed to the scroll.
+//   - TOBACCO Theater (details.so/inspo/tobacco-ayqph6): the LAYOUT and the NAME. A big italic
+//     serif invitation at the left, the index at the right, and the name set huge across the
+//     foot, rising through its mask as the footer settles (scrubbed, back.out ease).
+//   - Details Vault "Cursor Trail Image" (vault:section-02): her photographs spawn as rounded
+//     cards behind the type as a mouse moves across the field (scale effect, the Vault's
+//     config). Mouse only here: on touch the Vault's press-drag would take the page's scroll.
+// Her photographs also run INSIDE the giant name: a strip of story covers that travels sideways with the scroll,
+// clipped to the letters by an SVG clipPath (textLength pins the word to the column, so it
+// never scrolls sideways). With no photos (CI, a fresh clone) the letters are solid amber.
+//
+// Bands, top to bottom:
+//   0. Where next rows, when Site settings switch them on (card 191), on paper above the field.
+//   1. The close: "Reserve a complimentary consultation" as one huge Bodoni link to the header
+//      button's target, a short line, and a small "Get the sitting guide" link (/guide/). Left
+//      out on the page the button points to, and where the page closes on its own invitation.
+//      The copy is a DRAFT for Erin (docs/PENDING.md).
+//   2. The index: the site's pages (Site settings > Footer columns, else the top menu; the
+//      no-JS "Menu" link lands here), the newsletter when switched on, the places she works
+//      (service areas with the business facts' address, else the state; never typed here),
+//      then Instagram and the other socials, email and phone.
+//   3. The giant name, a link home, photos in its letters.
+//   4. The small print: copyright, privacy or the legal links, Studio, the credit, Back to top.
+//   5. The phone action bar (card 191), when this page has one.
+//
+// Motion is armed by the script below only when JS runs, motion is allowed (html.motion) and
+// the footer starts below the fold; GSAP loads on demand. JS off, reduced motion and print
+// show everything at rest. Transform, opacity and clip-path only: nothing shifts layout.
 
 import { site } from '@/data/site';
 import { resolveSocialLinks, socialLabel, type SocialLink } from '@/lib/social-links';
@@ -41,6 +53,7 @@ import WhereNext from '@/components/WhereNext.astro';
 import ActionBar from '@/components/ActionBar.astro';
 import { resolveBusinessFacts, todayBarLine, type RawBusinessFacts } from '@/lib/business-facts';
 import ToConfirm from '@/components/business/ToConfirm.astro';
+import { getDarkroomData } from '@/components/darkroom/chrome-data';
 import '@/styles/chrome-footer.css';
 
 interface NewsletterConfig {
@@ -87,13 +100,15 @@ const email = siteSettings?.email ?? '';
 const phone = siteSettings?.phone ?? '';
 const socialLinks: SocialLink[] = chrome.showFooterSocials ? resolveSocialLinks(siteSettings) : [];
 
-// The invitation's button: the header button's label and link (Header.astro's default).
+// The close's link: the header button's target (Header.astro's default).
 const book = {
   label: siteSettings?.headerCta?.label?.trim() ? chrome.headerCta.label : 'Book a session',
   href: chrome.headerCta.href,
 };
 const here = publicPath(Astro.url.pathname);
-const showInvite = publicPath(book.href) !== here;
+const showClose = publicPath(book.href) !== here;
+const guideHref = '/guide/';
+const showGuide = here !== guideHref;
 
 // The site's pages as ONE list: the editor's footer columns (with switched-on pages,
 // card 187), else the top menu and the inquiry. Same href twice is drawn once.
@@ -116,9 +131,8 @@ const pages = columns
   .flatMap((col) => col.links)
   .filter((l) => (seen.has(l.href) ? false : (seen.add(l.href), true)));
 
-// The places she works (Detroit's two-place column): each service area, with the business
-// facts' street address (street, then "Town, OH") under the town it is in, else only the
-// facts' state written out ("Ohio"), so the town is never said twice. No state: no line.
+// The places she works: each service area, with the business facts' street address under
+// the town it is in, else only the facts' state written out ("Ohio"). No state: no line.
 const areas = (siteSettings?.serviceAreas ?? []).map((a) => a.trim()).filter(Boolean);
 const placeNames = areas.length > 0 ? areas : facts.address ? [facts.address.city] : [];
 const places = placeNames.map((name) => {
@@ -131,6 +145,24 @@ const places = placeNames.map((name) => {
     confirmed: addr ? addr.confirmed : true,
   };
 });
+
+// Her photographs: the featured story covers the phone menu already uses (read once per
+// build, chrome-data.ts). Only real pictures; tone placeholders are left out, so with no
+// stories the name is solid and there is no trail.
+const photos = (await getDarkroomData()).covers.filter((c) => c.src);
+
+// The name's clip geometry (objectBoundingBox units, see the clipPath below). The word is
+// set at NAME_FS in a NAME_W x NAME_H box, its baseline at NAME_BASE and its first ink at
+// x = 0. textLength pins the advance (NAME_ADV), so the word holds its width even before the
+// face loads. Measured for Bodoni Moda "Tate" (2026-11-20: at 560px the advance is 1087, ink
+// from 9 to 1063, cap 420, descent 9), scaled so the ink spans the box with no stretch; a fork
+// with another word re-measures (DESIGN.md, Footer).
+const NAME_W = 1000;
+const NAME_H = 412;
+const NAME_BASE = 402;
+const NAME_FS = 531;
+const NAME_ADV = 1031;
+const NAME_X = -8;
 
 const currentYear = new Date().getFullYear();
 const LEGAL_LINKS = chrome.legalNav;
@@ -147,232 +179,570 @@ const actionBar =
     : pickedBar;
 ---
 
-<footer id="site-footer" class="bqf-footer bg-background text-foreground">
+<footer id="site-footer" class="bqf-footer">
   {whereNext.length > 0 && <WhereNext rows={whereNext} />}
 
-  {showInvite && (
-    <section class="bqf-invite" aria-labelledby="bqf-invite-title">
-      {/* DRAFT copy for Erin (docs/PENDING.md): she approves or rewrites both lines. */}
-      <h2 id="bqf-invite-title" class="bqf-invite__title">
-        A portrait made to be <em>kept</em>
-      </h2>
-      <p class="bqf-invite__line">Tell me who it is for, and we will plan it together.</p>
-      <a href={book.href} class="bq-button bqf-invite__button">
-        {book.label}
-      </a>
-    </section>
-  )}
-
-  <div class="bqf-index" data-bqf-rise>
-    <div class="bqf-index__lead">
-      <nav aria-label="Footer">
-        <ul class="bqf-pages">
-          {pages.map((link, i) => (
-            <li>
-              <a
-                href={link.href}
-                aria-current={publicPath(link.href) === here ? 'page' : undefined}
-              >
-                <span class="bqf-rise" style={`--i:${i}`}>
-                  <span>{link.label}</span>
-                </span>
-              </a>
-            </li>
+  <div class="bqf-stage" data-bqf-stage>
+    {/* The Vault cursor trail's layer: cards are added here by the script, behind the type. */}
+    {photos.length > 0 && (
+      <div class="bqf-trail" data-bqf-trail aria-hidden="true">
+        <div data-bqf-trail-images hidden>
+          {photos.map((p) => (
+            <img src={p.src} width="320" height="400" alt="" loading="lazy" decoding="async" />
           ))}
-        </ul>
-      </nav>
-
-      {siteSettings?.newsletter?.enabled && (
-        <div class="bqf-newsletter">
-          <NewsletterSignup
-            client:visible
-            newsletter={siteSettings.newsletter}
-            source="footer"
-            idPrefix="footer-newsletter"
-          />
         </div>
-      )}
-    </div>
+      </div>
+    )}
 
-    {places.length > 0 && (
-      <ul class="bqf-places" aria-label="Where she works">
-        {places.map((p) => (
-          <li class="bqf-place">
-            <p class="bqf-place__name">
-              <span class="bqf-place__arrow" aria-hidden="true">
-                →
+    <div class="bqf-stage__inner" data-bqf-inner>
+      {showClose && (
+        <section class="bqf-close" aria-labelledby="bqf-close-title">
+          {/* DRAFT copy for Erin (docs/PENDING.md): she approves or rewrites these lines. */}
+          <h2 id="bqf-close-title" class="bqf-close__title">
+            <a href={book.href} class="bqf-close__link">
+              <span class="bqf-close__words">
+                Reserve a <em>complimentary</em> consultation
               </span>
-              {p.name}
-            </p>
-            {p.lines.length > 0 && (
-              <p class="bqf-place__lines">
-                {p.lines.map((line, i) => (
-                  <>
-                    {i > 0 && <br />}
-                    {line}
-                  </>
-                ))}
-                <ToConfirm confirmed={p.confirmed} />
-              </p>
-            )}
-            {p.mapsUrl && (
-              <a class="bqf-quiet" href={p.mapsUrl} target="_blank" rel="noopener noreferrer">
-                Map
-                <ArrowUpRight size={12} aria-hidden="true" />
+              <span class="bqf-close__arrow" aria-hidden="true">
+                <ArrowUpRight size={28} strokeWidth={1.25} />
+              </span>
+            </a>
+          </h2>
+          <div class="bqf-close__aside">
+            <p class="bqf-close__line">Tell me who it is for, and we will plan it together.</p>
+            {showGuide && (
+              <a href={guideHref} class="bqf-close__guide">
+                Get the sitting guide <span aria-hidden="true">→</span>
               </a>
             )}
-          </li>
-        ))}
-      </ul>
-    )}
+          </div>
+        </section>
+      )}
 
-    {(socialLinks.length > 0 || email || phone) && (
-      <ul class="bqf-reach">
-        {socialLinks.map((link, i) => (
-          <li>
-            <a class="bqf-quiet" href={link.url} target="_blank" rel="noopener noreferrer">
-              <span class="bqf-rise" style={`--i:${i}`}>
-                <span>{socialLabel(link)}</span>
+      <div class="bqf-index">
+        <div class="bqf-col">
+          <p class="bqf-label" aria-hidden="true">
+            Pages
+          </p>
+          <nav aria-label="Footer">
+            <ul class="bqf-pages">
+              {pages.map((link) => (
+                <li>
+                  <a
+                    href={link.href}
+                    aria-current={publicPath(link.href) === here ? 'page' : undefined}
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+          {siteSettings?.newsletter?.enabled && (
+            <div class="bqf-newsletter">
+              <NewsletterSignup
+                client:visible
+                newsletter={siteSettings.newsletter}
+                source="footer"
+                idPrefix="footer-newsletter"
+              />
+            </div>
+          )}
+        </div>
+
+        {places.length > 0 && (
+          <div class="bqf-col">
+            <p class="bqf-label" aria-hidden="true">
+              Places
+            </p>
+            <ul class="bqf-places" aria-label="Where she works">
+              {places.map((p) => (
+                <li class="bqf-place">
+                  <p class="bqf-place__name">{p.name}</p>
+                  {p.lines.length > 0 && (
+                    <p class="bqf-place__lines">
+                      {p.lines.map((line, i) => (
+                        <>
+                          {i > 0 && <br />}
+                          {line}
+                        </>
+                      ))}
+                      <ToConfirm confirmed={p.confirmed} />
+                    </p>
+                  )}
+                  {p.mapsUrl && (
+                    <a class="bqf-quiet" href={p.mapsUrl} target="_blank" rel="noopener noreferrer">
+                      Map
+                      <ArrowUpRight size={12} aria-hidden="true" />
+                    </a>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {(socialLinks.length > 0 || email || phone) && (
+          <div class="bqf-col">
+            <p class="bqf-label" aria-hidden="true">
+              Follow &amp; write
+            </p>
+            <ul class="bqf-reach">
+              {socialLinks.map((link) => (
+                <li>
+                  <a class="bqf-social" href={link.url} target="_blank" rel="noopener noreferrer">
+                    {socialLabel(link)}
+                    <ArrowUpRight size={16} strokeWidth={1.5} aria-hidden="true" />
+                  </a>
+                </li>
+              ))}
+              {email && (
+                <li>
+                  <CopyEmailButton email={email} variant="link" />
+                  <ToConfirm confirmed={facts.email?.confirmed} />
+                </li>
+              )}
+              {phone && (
+                <li>
+                  <a class="bqf-quiet" href={facts.phone?.href ?? `tel:${phone}`}>
+                    {phone}
+                  </a>
+                  <ToConfirm confirmed={facts.phone?.confirmed} />
+                </li>
+              )}
+            </ul>
+          </div>
+        )}
+      </div>
+
+      {/* The giant name, a link home named in full. Her photos run through its letters. */}
+      <div class="bqf-name-band">
+        <a
+          href="/"
+          class:list={['bqf-name', photos.length > 0 && 'bqf-name--photos']}
+          data-bqf-name
+          aria-label={`${site.name} home`}
+          style={`--bqf-name-ratio: ${NAME_W} / ${NAME_H}`}
+        >
+          <svg class="bqf-name__defs" aria-hidden="true" focusable="false">
+            <defs>
+              <clipPath id="bqf-name-clip" clipPathUnits="objectBoundingBox">
+                <text
+                  class="bqf-name__glyphs"
+                  transform={`scale(${1 / NAME_W} ${1 / NAME_H})`}
+                  x={NAME_X}
+                  y={NAME_BASE}
+                  font-size={NAME_FS}
+                  textLength={NAME_ADV}
+                  lengthAdjust="spacingAndGlyphs"
+                  set:text={bigWord}
+                />
+              </clipPath>
+            </defs>
+          </svg>
+          <span class="bqf-name__fill" aria-hidden="true">
+            {photos.length > 0 && (
+              <span class="bqf-name__strip" data-bqf-strip>
+                {[...photos, ...photos].map((p) => (
+                  <img
+                    src={p.src}
+                    srcset={p.srcset}
+                    width="320"
+                    height="400"
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                  />
+                ))}
               </span>
-              <ArrowUpRight size={12} aria-hidden="true" />
-            </a>
-          </li>
-        ))}
-        {email && (
-          <li>
-            <CopyEmailButton email={email} variant="link" />
-            <ToConfirm confirmed={facts.email?.confirmed} />
-          </li>
-        )}
-        {phone && (
-          <li>
-            <a class="bqf-quiet" href={facts.phone?.href ?? `tel:${phone}`}>
-              {phone}
-            </a>
-            <ToConfirm confirmed={facts.phone?.confirmed} />
-          </li>
-        )}
-      </ul>
-    )}
-  </div>
-
-  {/* The giant name, a link home named in full. Letters build in on first view (script). */}
-  <div class="bqf-mark-wrap">
-    <a href="/" class="bqf-mark" data-bqf-mark aria-label={`${site.name} home`}>
-      <span class="bqf-mark__word" aria-hidden="true">
-        {[...bigWord].map((ch, i) => (
-          <span class="bqf-mark__l" style={`--i:${i}`}>
-            {ch}
+            )}
           </span>
-        ))}
-      </span>
-      {/* One erode filter per letter, driven by the build-in script. */}
-      <svg class="bqf-mark__defs" aria-hidden="true" focusable="false">
-        <defs>
-          {[...bigWord].map((_, i) => (
-            <filter id={`bqf-erode-${i}`} color-interpolation-filters="sRGB">
-              <feMorphology operator="erode" radius="0" />
-            </filter>
-          ))}
-        </defs>
-      </svg>
-    </a>
-  </div>
-
-  <div class="bqf-small">
-    <p>
-      © {currentYear} {brandName}
-    </p>
-    {LEGAL_LINKS.length > 0 ? (
-      LEGAL_LINKS.map((l) => <a href={l.href}>{l.label}</a>)
-    ) : (
-      <a href="/privacy/">Privacy policy</a>
-    )}
-    <a href="/studio" rel="nofollow">
-      Studio
-    </a>
-    {siteCredit &&
-      (siteCreditUrl ? (
-        <a href={siteCreditUrl} target="_blank" rel="noopener noreferrer">
-          {siteCredit}
         </a>
-      ) : (
-        <span>{siteCredit}</span>
-      ))}
-    {/* In place of the starter's floating round button (2026-11-20). "#top" scrolls to the top
-        of the document in every browser with no element needed; the glide comes from
-        html[data-smooth-scroll] (rule 5). */}
-    <a href="#top" class="bqf-small__top">
-      Back to top <span aria-hidden="true">↑</span>
-    </a>
+      </div>
+
+      <div class="bqf-small">
+        <p>
+          © {currentYear} {brandName}
+        </p>
+        {LEGAL_LINKS.length > 0 ? (
+          LEGAL_LINKS.map((l) => <a href={l.href}>{l.label}</a>)
+        ) : (
+          <a href="/privacy/">Privacy policy</a>
+        )}
+        <a href="/studio" rel="nofollow">
+          {' '}
+          Studio{' '}
+        </a>
+        {siteCredit &&
+          (siteCreditUrl ? (
+            <a href={siteCreditUrl} target="_blank" rel="noopener noreferrer">
+              {siteCredit}
+            </a>
+          ) : (
+            <span>{siteCredit}</span>
+          ))}
+        {/* "#top" scrolls to the top in every browser; the glide is html[data-smooth-scroll]. */}
+        <a href="#top" class="bqf-small__top">
+          {' '}
+          Back to top <span aria-hidden="true">↑</span>{' '}
+        </a>
+      </div>
+    </div>
   </div>
 
   {actionBar && <ActionBar bar={actionBar} />}
 </footer>
 
 <script>
-  // The footer's two entrances (chrome-footer.css), after the Vero reference: the wordmark's
-  // letter build-in ([data-bqf-mark]) and the page and social labels wiping in from their
-  // baseline (clip-path) ([data-bqf-rise]). Each is armed only where it can play: motion allowed,
-  // IntersectionObserver present, and the element still below the fold (one already on
-  // screen stays at rest). Plays once, then the observer goes. Re-runs after a View
-  // Transitions swap, which draws a fresh footer.
+  // The footer's motion (Footer.astro header). Armed only with html.motion (JS on, motion
+  // allowed, the site's motion not 'none') and the stage still below the fold, so a footer
+  // already on screen never jumps. GSAP and ScrollTrigger load on demand, here only.
+  type Gsap = typeof import('gsap').gsap;
+  type Cleanup = () => void;
+  let cleanups: Cleanup[] = [];
 
-  // The reference's timing: 0.7s a letter, 0.15s apart, ease-out cubic; each letter fades
-  // in over the first 18% of its build. The erode radius starts at 0.055em (half the
-  // thickest hairline), so the glyph begins as its spine and grows to its full weight.
-  const LETTER_MS = 700;
-  const STAGGER_MS = 150;
-  const START_EM = 0.055;
-  function buildIn(mark: HTMLElement) {
-    const letters = [...mark.querySelectorAll<HTMLElement>('.bqf-mark__l')];
-    const radii = letters.map((_, i) =>
-      mark.querySelector<SVGFEMorphologyElement>(`#bqf-erode-${i} feMorphology`),
-    );
-    const fontPx = parseFloat(getComputedStyle(letters[0] ?? mark).fontSize) || 0;
-    const r0 = fontPx * START_EM;
-    letters.forEach((l, i) => {
-      l.style.opacity = '0';
-      radii[i]?.setAttribute('radius', String(r0));
-      if (radii[i]) l.style.filter = `url(#bqf-erode-${i})`;
-    });
-    mark.dataset.build = 'on';
-    const t0 = performance.now();
-    const frame = (now: number) => {
-      let running = false;
-      letters.forEach((l, i) => {
-        const p = Math.min(1, Math.max(0, (now - t0 - i * STAGGER_MS) / LETTER_MS));
-        if (p < 1) running = true;
-        const eased = 1 - (1 - p) ** 3;
-        l.style.opacity = String(Math.min(1, p / 0.18));
-        radii[i]?.setAttribute('radius', String(r0 * (1 - eased)));
-        if (p >= 1) l.style.filter = '';
-      });
-      if (running) requestAnimationFrame(frame);
-      else mark.dataset.build = 'done';
+  function teardown() {
+    for (const fn of cleanups) fn();
+    cleanups = [];
+  }
+
+  // The Vault's "Cursor Trail Image" (vault:section-02), scale effect, its config kept.
+  // Adapted: mouse pointers only (touch keeps the page's own scroll), cards go into the
+  // trail layer behind the type instead of the section itself.
+  function cursorTrail(gsap: Gsap, section: HTMLElement, layer: HTMLElement): Cleanup {
+    const config = {
+      maxActiveItems: 15,
+      poolSize: 24,
+      spawnDistance: 150,
+      itemTargetArea: 78000,
+      itemMaxWidth: 320,
+      itemMaxHeight: 300,
+      maxRotation: 18,
+      baseRotationRange: 2,
+      velocityRotationRange: 20,
+      directionBias: 0.7,
+      oppositeDirectionChance: 0.1,
+      rotationVelocityMaxDistance: 280,
+      rotationStartProgress: 0.25,
+      startScale: 0,
+      fullScale: 1,
+      scaleInDuration: 0.7,
+      scaleInEase: 'expo.out',
+      scaleHoldDuration: 0,
+      scaleOutDuration: 0.45,
+      endScale: 0,
+      scaleOutEase: 'expo.in',
     };
-    requestAnimationFrame(frame);
+    const sources = [...layer.querySelectorAll<HTMLImageElement>('[data-bqf-trail-images] img')]
+      .map((img) => {
+        const w = Number(img.getAttribute('width')) || 1;
+        const h = Number(img.getAttribute('height')) || 1;
+        const ratio = Math.max(w / h, 0.01);
+        let dw = Math.sqrt(config.itemTargetArea * ratio);
+        let dh = dw / ratio;
+        const k = Math.min(1, config.itemMaxWidth / dw, config.itemMaxHeight / dh);
+        dw *= k;
+        dh *= k;
+        return { src: img.getAttribute('src') ?? '', w, h, dw: Math.round(dw) };
+      })
+      .filter((s) => s.src);
+    if (!sources.length) return () => {};
+
+    const controller = new AbortController();
+    const active: HTMLElement[] = [];
+    const idle: HTMLElement[] = [];
+    const all = new Set<HTMLElement>();
+    const exiting = new Set<HTMLElement>();
+    const timelines = new WeakMap<HTMLElement, gsap.core.Timeline>();
+    const parts = new WeakMap<HTMLElement, { media: HTMLElement; image: HTMLImageElement }>();
+    let sourceIndex = 0;
+    let stack = 2;
+    let frame = 0;
+    let hasPoint = false;
+    let lastX = 0;
+    let lastY = 0;
+    let nextX = 0;
+    let nextY = 0;
+    let force = false;
+
+    function create(): HTMLElement {
+      const item = document.createElement('div');
+      const media = document.createElement('div');
+      const image = document.createElement('img');
+      item.className = 'bqf-trail__item';
+      media.className = 'bqf-trail__media';
+      image.alt = '';
+      image.decoding = 'async';
+      media.append(image);
+      item.append(media);
+      layer.append(item);
+      all.add(item);
+      parts.set(item, { media, image });
+      return item;
+    }
+    function removeActive(item: HTMLElement) {
+      const i = active.indexOf(item);
+      if (i !== -1) active.splice(i, 1);
+    }
+    function take(): HTMLElement | null {
+      const item = idle.pop();
+      if (item) {
+        timelines.get(item)?.kill();
+        timelines.delete(item);
+        gsap.killTweensOf([item, parts.get(item)!.media]);
+        removeActive(item);
+        exiting.delete(item);
+        return item;
+      }
+      return all.size < Math.max(config.maxActiveItems + 1, config.poolSize) ? create() : null;
+    }
+    function recycle(item: HTMLElement, tl: gsap.core.Timeline) {
+      if (timelines.get(item) !== tl) return;
+      timelines.delete(item);
+      removeActive(item);
+      exiting.delete(item);
+      gsap.set(item, { visibility: 'hidden' });
+      if (!idle.includes(item)) idle.push(item);
+    }
+    function markExiting(item: HTMLElement) {
+      removeActive(item);
+      exiting.add(item);
+    }
+    function exitOldest() {
+      if (active.length < config.maxActiveItems) return;
+      const item = active.shift();
+      if (!item || exiting.has(item)) return;
+      const { media } = parts.get(item)!;
+      markExiting(item);
+      timelines.get(item)?.kill();
+      gsap.killTweensOf([item, media]);
+      const tl: gsap.core.Timeline = gsap.timeline({ onComplete: () => recycle(item, tl) });
+      timelines.set(item, tl);
+      tl.to(
+        media,
+        { scale: config.endScale, duration: config.scaleOutDuration, ease: config.scaleOutEase },
+        0,
+      );
+    }
+    function rotationFor(dx: number, distance: number, min: number): number {
+      if (!distance) {
+        return gsap.utils.random(-config.baseRotationRange, config.baseRotationRange, 0.1);
+      }
+      const v = gsap.utils.clamp(
+        0,
+        1,
+        (distance - min) / (config.rotationVelocityMaxDistance - min),
+      );
+      const sign = dx / distance >= 0 ? 1 : -1;
+      const max = config.baseRotationRange + v * config.velocityRotationRange;
+      const lo = max * (1 - config.directionBias);
+      const s = Math.random() < config.oppositeDirectionChance ? -sign : sign;
+      return gsap.utils.clamp(
+        -config.maxRotation,
+        config.maxRotation,
+        gsap.utils.random(lo, max, 0.1) * s,
+      );
+    }
+    function spawn(x: number, y: number, dx: number, distance: number) {
+      const item = take();
+      if (!item) return;
+      exitOldest();
+      const { media, image } = parts.get(item)!;
+      const src = sources[sourceIndex];
+      sourceIndex = (sourceIndex + 1) % sources.length;
+      stack += 1;
+      const rotation = rotationFor(dx, distance, config.spawnDistance);
+      image.src = src.src;
+      item.style.width = `${src.dw}px`;
+      item.style.aspectRatio = `${src.w} / ${src.h}`;
+      gsap.set(item, {
+        x,
+        y,
+        xPercent: -50,
+        yPercent: -50,
+        visibility: 'visible',
+        rotation: rotation * config.rotationStartProgress,
+        scale: config.fullScale,
+        zIndex: stack,
+      });
+      gsap.set(media, { yPercent: 0, scale: config.startScale });
+      active.push(item);
+      const tl: gsap.core.Timeline = gsap.timeline({ onComplete: () => recycle(item, tl) });
+      timelines.set(item, tl);
+      const exitAt = config.scaleInDuration + config.scaleHoldDuration;
+      tl.to(
+        media,
+        { scale: config.fullScale, duration: config.scaleInDuration, ease: config.scaleInEase },
+        0,
+      );
+      tl.to(item, { rotation, duration: config.scaleInDuration, ease: config.scaleInEase }, 0);
+      tl.call(() => markExiting(item), [], exitAt);
+      tl.to(
+        media,
+        { scale: config.endScale, duration: config.scaleOutDuration, ease: config.scaleOutEase },
+        exitAt,
+      );
+    }
+    function queue(cx: number, cy: number, f = false) {
+      nextX = cx;
+      nextY = cy;
+      force = force || f;
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        const dx = hasPoint ? nextX - lastX : 0;
+        const dy = hasPoint ? nextY - lastY : 0;
+        const moved = dx * dx + dy * dy >= config.spawnDistance ** 2;
+        if (!force && hasPoint && !moved) return;
+        const rect = layer.getBoundingClientRect();
+        spawn(nextX - rect.left, nextY - rect.top, dx, Math.sqrt(dx * dx + dy * dy));
+        lastX = nextX;
+        lastY = nextY;
+        hasPoint = true;
+        force = false;
+      });
+    }
+    const opts = { signal: controller.signal };
+    section.addEventListener(
+      'pointermove',
+      (e) => {
+        if (e.pointerType !== 'mouse') return;
+        queue(e.clientX, e.clientY, !hasPoint);
+      },
+      opts,
+    );
+    section.addEventListener(
+      'pointerleave',
+      () => {
+        hasPoint = false;
+      },
+      opts,
+    );
+    return () => {
+      controller.abort();
+      cancelAnimationFrame(frame);
+      gsap.killTweensOf([...all]);
+      all.forEach((item) => {
+        timelines.get(item)?.kill();
+        item.remove();
+      });
+    };
   }
 
-  function armMarks() {
-    if (!('IntersectionObserver' in window)) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    for (const el of document.querySelectorAll<HTMLElement>('[data-bqf-mark], [data-bqf-rise]')) {
-      if (el.dataset.build) continue;
-      if (el.getBoundingClientRect().top < window.innerHeight) continue;
-      el.dataset.build = 'armed';
-      const io = new IntersectionObserver(
-        (entries) => {
-          if (!entries.some((e) => e.isIntersecting)) return;
-          io.disconnect();
-          if (el.hasAttribute('data-bqf-mark')) buildIn(el);
-          else el.dataset.build = 'on';
-        },
-        { threshold: el.hasAttribute('data-bqf-mark') ? 0.35 : 0.15 },
-      );
-      io.observe(el);
+  let generation = 0;
+  async function armFooter() {
+    teardown();
+    const mine = ++generation;
+    const html = document.documentElement;
+    const stage = document.querySelector<HTMLElement>('[data-bqf-stage]');
+    if (!stage || !html.classList.contains('motion')) return;
+    const inner = stage.querySelector<HTMLElement>('[data-bqf-inner]');
+    const name = stage.querySelector<HTMLElement>('[data-bqf-name]');
+    const strip = stage.querySelector<HTMLElement>('[data-bqf-strip]');
+    const trail = stage.querySelector<HTMLElement>('[data-bqf-trail]');
+
+    const [{ gsap }, { ScrollTrigger }] = await Promise.all([
+      import('gsap'),
+      import('gsap/ScrollTrigger'),
+    ]);
+    // A newer page arrived while GSAP loaded: that call arms the footer, not this one.
+    if (mine !== generation) return;
+    gsap.registerPlugin(ScrollTrigger);
+    const ctx = gsap.context(() => {}, stage);
+    cleanups.push(() => ctx.revert());
+
+    // The mouse trail runs wherever the stage is, on or below the fold.
+    if (trail && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      cleanups.push(cursorTrail(gsap, stage, trail));
     }
+
+    // The reveal and the name's rise: only when the footer starts below the fold, and only
+    // when the page can scroll far enough to finish them (a short page shows them at rest).
+    const maxScroll = () => ScrollTrigger.maxScroll(window) - 1;
+    // Lazy pictures above can grow the page after the first measure: re-measure when it
+    // does, so the reveal still ends exactly at the foot of the page.
+    let refreshTimer = 0;
+    const grow = new ResizeObserver(() => {
+      clearTimeout(refreshTimer);
+      refreshTimer = window.setTimeout(() => ScrollTrigger.refresh(), 200);
+    });
+    grow.observe(document.body);
+    cleanups.push(() => {
+      grow.disconnect();
+      clearTimeout(refreshTimer);
+    });
+    const stageTop = stage.getBoundingClientRect().top + window.scrollY;
+    if (stageTop - window.innerHeight <= 0 || maxScroll() - (stageTop - window.innerHeight) < 120) {
+      return;
+    }
+
+    ctx.add(() => {
+      // Juan Mora: the content travels from 20vw above to rest while the page lifts off it.
+      const lift = () => -Math.min(window.innerWidth * 0.2, window.innerHeight * 0.3);
+      gsap.fromTo(
+        inner,
+        { y: lift },
+        {
+          y: 0,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: stage,
+            start: 'top bottom',
+            end: maxScroll,
+            scrub: 0.8,
+            invalidateOnRefresh: true,
+          },
+        },
+      );
+      // The clip wipe: the field opens from an inset rounded window to full bleed.
+      gsap.fromTo(
+        stage,
+        { clipPath: 'inset(0% 6% 0% 6% round 2.5rem 2.5rem 0rem 0rem)' },
+        {
+          clipPath: 'inset(0% 0% 0% 0% round 0rem 0rem 0rem 0rem)',
+          ease: 'none',
+          scrollTrigger: {
+            trigger: stage,
+            start: 'top bottom',
+            end: 'top 35%',
+            scrub: 0.8,
+          },
+        },
+      );
+      // The photographs travel sideways through the letters with the scroll (scrubbed, so
+      // nothing moves on its own and no pause control is needed, WCAG 2.2.2).
+      if (strip) {
+        gsap.fromTo(
+          strip,
+          { xPercent: 0 },
+          {
+            xPercent: -25,
+            ease: 'none',
+            scrollTrigger: { trigger: stage, start: 'top bottom', end: maxScroll, scrub: 1.2 },
+          },
+        );
+      }
+      // TOBACCO: the name rises through its mask as the footer settles.
+      if (name) {
+        gsap.fromTo(
+          name,
+          { yPercent: 70 },
+          {
+            yPercent: 0,
+            ease: 'back.out(1.4)',
+            scrollTrigger: {
+              trigger: name.parentElement,
+              start: 'top bottom',
+              end: maxScroll,
+              scrub: 1,
+            },
+          },
+        );
+      }
+    });
   }
-  armMarks();
-  document.addEventListener('astro:page-load', armMarks);
+
+  // astro:page-load fires on the first load and after every swap (ClientRouter).
+  document.addEventListener('astro:page-load', () => void armFooter());
+  document.addEventListener('astro:before-swap', teardown);
 </script>

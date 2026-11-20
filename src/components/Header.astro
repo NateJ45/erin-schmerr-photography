@@ -1,7 +1,7 @@
 ---
 // Foundation, edit with care
-// Site header: "the boutique bar" (DESIGN.md, Components; 2026-11-20). Replaces the
-// darkroom film-leader strip of 2026-11-18.
+// Site header: "the jewel masthead" (DESIGN.md, Components; 2026-11-20), built on the same
+// day's "boutique bar", which replaced the darkroom film-leader strip of 2026-11-18.
 //
 //   ┌──────────────────────────────────────────────────────────────────────────┐
 //   │ Tate Fine Art Photography   Cincinnati          Stories Archive …  ⌕  [Get in touch] │
@@ -13,12 +13,22 @@
 // label typed in Site settings wins). Hovering or focusing one nav link dims the others
 // (after Quadplex 80); the page you are on carries a hairline under its name.
 //
+// The jewel masthead (2026-11-20, Nathan: "a more visually impressive header"): the
+// wordmark runs larger at rest; each nav link ROLLS on hover, its small tracked capitals
+// lifting away as the same word in Bodoni italic rises in, while a magenta rule draws under
+// it (the italic swap is Radaville's, details.so/inspo/radaville-uugkpt); "Get in touch"
+// fills with wine from below; and a "Menu" button with a rolling label and a turning mark
+// opens the full-screen jewel menu (MobileNav.astro) at every width. Over the home page's
+// cinema the bar is see-through: paper words on the photo under a soft scrim, the paper
+// wordmark (logo-dark.svg) in place of the ink one. Once the opening frame has scrolled up
+// under it the bar turns solid paper again (data-over, set by the script at the foot).
+//
 // Rule 4: every link is server-rendered here, dropdown groups are native <details>.
 // Scrolling down hides the bar (BaseLayout sets data-state="hidden"); scrolling up brings
 // it back, compacted a little (data-scrolled, below). Transforms only, so nothing under
 // it moves. The root keeps the class `site-header`: the home hero's opening hides and
 // fades the bar by that class. Below lg the row is the wordmark, search and the "Menu"
-// button (MobileNav.astro). Styles: src/styles/chrome-header.css.
+// button (MobileNav.astro); from lg the nav, search and "Get in touch" come before "Menu". Styles: src/styles/chrome-header.css.
 //
 // siteSettings is optional. Defaults render cleanly before Sanity is wired up.
 
@@ -158,6 +168,20 @@ function isGroupActive(items: { href: string }[]) {
             data-logo-dark-srcset={logoDarkSrcset}
           />
         )}
+        {/* The paper wordmark for the bar over the home cinema (data-over). Lazy: a page
+            with no cinema never shows it, so never fetches it. */}
+        {!logo && (
+          <img
+            src={logoDarkImg.src}
+            alt=""
+            width={280}
+            height={60}
+            class="bq-header__logo-over h-12 w-auto"
+            loading="lazy"
+            decoding="async"
+            aria-hidden="true"
+          />
+        )}
         {/* No-JS fallback (card 108): the light variant. */}
         {!logo && (
           <noscript>
@@ -202,7 +226,12 @@ function isGroupActive(items: { href: string }[]) {
               class="bq-nav__link"
               aria-current={isActive(item.href) ? 'page' : undefined}
             >
-              {item.label}
+              <span class="bq-roll">
+                <span class="bq-roll__a">{item.label}</span>
+                <span class="bq-roll__b" aria-hidden="true">
+                  {item.label}
+                </span>
+              </span>
             </a>
           ) : (
             <details class="site-nav__group bq-nav__group relative">
@@ -210,7 +239,12 @@ function isGroupActive(items: { href: string }[]) {
                 class="bq-nav__link"
                 aria-current={isGroupActive(item.items) ? 'page' : undefined}
               >
-                {item.label}
+                <span class="bq-roll">
+                  <span class="bq-roll__a">{item.label}</span>
+                  <span class="bq-roll__b" aria-hidden="true">
+                    {item.label}
+                  </span>
+                </span>
                 <ChevronDown
                   size={12}
                   className="site-nav__chevron transition-transform duration-150"
@@ -240,23 +274,30 @@ function isGroupActive(items: { href: string }[]) {
           class="bq-nav__link bq-nav__link--secondary"
           aria-current={isActive(headerSecondary.href) ? 'page' : undefined}
         >
-          {headerSecondary.label}
+          <span class="bq-roll">
+            <span class="bq-roll__a">{headerSecondary.label}</span>
+            <span class="bq-roll__b" aria-hidden="true">
+              {headerSecondary.label}
+            </span>
+          </span>
         </a>
       )}
       {headerCta.show && (
         <a
           href={headerCta.href}
-          class="bq-button"
+          class="bq-button bq-button--flood"
           aria-current={isActive(headerCta.href) ? 'page' : undefined}
         >
-          {headerCta.label}
+          <span>{headerCta.label}</span>
         </a>
       )}
     </div>
 
-    {/* Below lg: search and the "Menu" button, at the right of the row. */}
-    <div class="bq-header__phone lg:hidden">
-      <SearchButton class="bq-icon-button" size={18} />
+    {/* Search below lg, then the "Menu" button at every width, at the right of the row. */}
+    <div class="bq-header__end">
+      <div class="bq-header__phone lg:hidden">
+        <SearchButton class="bq-icon-button" size={18} />
+      </div>
       <MobileNav
         search={site.search.enabled}
         links={NAV_ITEMS}
@@ -268,6 +309,8 @@ function isGroupActive(items: { href: string }[]) {
         current={pathname}
         frames={chromeData.covers}
         pagePrints={chromeData.pagePrints}
+        logoSrc={logoDarkImg.src}
+        place={placeLines}
       />
     </div>
   </div>
@@ -454,6 +497,13 @@ function isGroupActive(items: { href: string }[]) {
     const y = window.scrollY;
     if (y > COMPACT_AT) header.setAttribute('data-scrolled', '');
     else if (y <= OPEN_AT) header.removeAttribute('data-scrolled');
+    // The jewel masthead over the home cinema: see-through while the opening frame is still
+    // under the bar, solid paper once it has scrolled up past it. The CSS pulls the cinema up
+    // under the bar (chrome-header.css, "Over the cinema"); with JavaScript off the bar stays
+    // solid paper there, which still reads.
+    const open = document.querySelector<HTMLElement>('.cinema-open');
+    const over = !!open && open.getBoundingClientRect().bottom > header.offsetHeight + 1;
+    header.toggleAttribute('data-over', over);
   };
 
   const hw = window as typeof window & { __headerStateBound?: boolean };

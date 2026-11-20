@@ -15,7 +15,8 @@
 //     jewel and not a dark band, and the row after it is not a dark band. Two
 //     colour fields never touch, so the page always alternates.
 //   - The first row is never a jewel: every page opens on paper, under its
-//     title or cover photograph.
+//     title or cover photograph. Nor is the last: the footer ("the jewel
+//     close") is the page's closing colour field, so the band above it is paper.
 //   - The jewels are dealt in JEWEL_ORDER, so a page of four colour fields
 //     shows all four, and the order starts from a different jewel on each page
 //     (seeded from the page's block types), so two pages read differently.
@@ -107,6 +108,7 @@ export function assignJewels(blocks: { _type: string; [k: string]: unknown }[]):
     const prevJewel = i > 0 && out[i - 1] !== null;
     const ok =
       i > 0 &&
+      i < blocks.length - 1 &&
       wantsJewel(block) &&
       !isDark(block) &&
       !prevJewel &&
