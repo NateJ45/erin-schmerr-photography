@@ -88,16 +88,25 @@
     linear-gradient(to top, rgb(18 16 14 / 0.45), rgb(18 16 14 / 0) 40%);
 }
 
-/* The cut-out layer: the photo's box and fit, with no ground of its own. */
-.cover__cut-layer {
+/* The cut-out layer: the photo's box and fit, with no ground of its own.
+   These MUST out-rank portfolio.css on specificity, never rely on file order:
+   the layer also carries `.cinema__photo` (a dark ground) and `.focus-image`
+   (a muted ground, a shadow and a blurred LQIP ::before), and in a production
+   build the bundler can put portfolio.css AFTER this file. On 2026-11-20 that
+   painted an opaque grey box over the photo and the masthead on every cover
+   with a cut-out (dev loaded the files the other way round, so it looked
+   right there). Hence the `.cinema` prefix and the doubled classes. */
+.cinema .cover__cut-layer.cinema__photo {
   position: absolute;
   inset: 0;
+  overflow: hidden;
   background: transparent;
 }
-.cover-cut {
+.cinema .focus-image.cover-cut {
   background: transparent;
+  box-shadow: none;
 }
-.cover-cut::before {
+.cinema .focus-image.cover-cut::before {
   display: none;
 }
 
