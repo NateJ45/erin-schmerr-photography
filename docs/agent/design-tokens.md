@@ -37,7 +37,16 @@ durations too): `--motion-ease` (expo-out), `--motion-fade` / `--motion-fade-dis
 Auburn's values from its 2026-10-25 audit ("gentle and quick").
 
 The band rhythm stays `--spacing-section-md` / `--spacing-section-lg` (the `density` layout slot moves
-them). FBC Auburn's brand layer holds its own values in the same names (13 / 15 / 18px text, a 20px card
+them).
+
+**This site (Tate, 2026-11-20, "too much white space").** The density slot went from `airy` to `standard`,
+and the one scale retunes the rhythm a step under standard: `--spacing-section-md` clamp(2.5rem, 5vw, 4rem)
+and `--spacing-section-lg` clamp(3rem, 6.5vw, 5.5rem), because the jewel bands now do the separating that
+empty paper used to. Pauses inside a band are tokens too, read by the editorial blocks that used to type
+their own clamps of up to 9 to 16rem (`magazine.css`, `page-sessions.css`, `page-booking.css`):
+`--space-pause` clamp(2rem, 4.5vw, 3.5rem), `--space-pause-lg` and `--space-band-end` clamp(2.5rem, 6vw,
+4.5rem), `--space-stagger` clamp(3rem, 10vw, 8rem) and `--space-stagger-sm` clamp(2rem, 6vw, 5rem) for the
+drop of an offset plate. Tighten or loosen the whole site from these. FBC Auburn's brand layer holds its own values in the same names (13 / 15 / 18px text, a 20px card
 corner, three navy-tinted shadows); that is the model for a site that wants a firmer system.
 
 ## Lining figures

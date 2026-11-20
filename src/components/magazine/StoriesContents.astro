@@ -72,7 +72,8 @@ const items = chapters.flatMap((c) => c.items);
   data-view="list"
   aria-labelledby="stories-heading"
 >
-  <header class="mag-contents__head">
+  {/* The masthead sits on a jewel (src/lib/jewel-cadence.ts), bled to both edges. */}
+  <header class="mag-contents__head jewel surface-jewel-wine jewel-bleed" data-dark-surface>
     <p class="mag-kicker">Contents</p>
     <h1 id="stories-heading" class="mag-contents__title font-display">
       Stories<sup class="mag-count">({items.length})</sup>

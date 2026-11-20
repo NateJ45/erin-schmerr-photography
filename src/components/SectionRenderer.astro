@@ -68,6 +68,7 @@ import FormSection from '@/components/sections/FormSection.astro';
 import BuilderBlock from '@/components/builder-blocks/BuilderBlock.astro';
 import { isBuilderBlock } from '@/lib/builderBlocks.types';
 import { classifySections } from '@/lib/sectionCadence';
+import { assignJewels, jewelClass } from '@/lib/jewel-cadence';
 import { sectionAnchors, sectionHeadingText } from '@/lib/section-anchors';
 import { primaryBudget, repeatsHeaderCta } from '@/lib/cta-budget';
 import { ctaHref } from '@/lib/cta-href';
@@ -144,6 +145,13 @@ const anchorIds =
     : classified.map(({ headingId }) => headingId);
 const rows = classified.map((row, i) => ({ ...row, headingId: anchorIds[i] }));
 
+// The jewel cadence (src/lib/jewel-cadence.ts, 2026-11-20): which rows are drawn as a
+// full-bleed colour field from the photographer's palette. A jewel row is wrapped in a
+// plain block div carrying the band's classes, which re-point the page tokens for the
+// section inside (globals.css, ".jewel"), so no section component needs a colour prop.
+// src/scripts/jewel-motion.ts animates the hand-offs between bands from data-band.
+const jewels = assignJewels(rows.map((r) => r.block as { _type: string; [k: string]: unknown }));
+
 // One accent button per page (src/lib/cta-budget.ts, card 158): the first
 // section that draws a primary button keeps it; every later one draws the
 // secondary variant. A closing band always draws one (CtaLink has a fallback).
@@ -200,6 +208,8 @@ const ruled = rows.map(
 // contents element has none. A plain block-level div around a full-width
 // <section> changes no layout.
 const Wrap = editDoc ? 'div' : Fragment;
+// A jewel row always gets a real div (its band), live and in preview.
+const JewelWrap = 'div';
 const wrapAttrs = (key: string | undefined) =>
   editDoc && key ? { 'data-sanity': sectionEditAttr(editDoc, key), ...SECTION_DRAG_FLOW } : {};
 // A section that came out of a synced section is not in the page itself; its
@@ -210,401 +220,419 @@ const editKeyOf = (block: unknown) => {
 };
 ---
 
-{rows.map(({ block: s, surface, insertDividerBefore, headingId }, rowIndex) => (
-  <>
-    {insertDividerBefore && !board && <SectionDivider />}
-    {ruled[rowIndex] && <BoardRule />}
+{rows.map(({ block: s, surface, insertDividerBefore, headingId }, rowIndex) => {
+  const jewel = jewels[rowIndex];
+  const Band = jewel ? JewelWrap : Wrap;
+  const bandAttrs = jewel
+    ? {
+        ...wrapAttrs(editKeyOf(s)),
+        class: jewelClass(jewel),
+        'data-band': 'jewel',
+        'data-jewel': jewel,
+        'data-dark-surface': jewel === 'amber' ? undefined : '',
+      }
+    : wrapAttrs(editKeyOf(s));
+  return (
+    <>
+      {insertDividerBefore && !board && !jewel && !jewels[rowIndex - 1] && <SectionDivider />}
+      {ruled[rowIndex] && <BoardRule />}
 
-    <Wrap {...wrapAttrs(editKeyOf(s))}>
-      {isBuilderBlock(s) ? (
-        // The builder kit (PORTS.md card 173): one branch, BuilderBlock picks the component.
-        <BuilderBlock
-          block={s}
-          surface={surface ?? 'background'}
-          headingId={headingId}
-          primaryVariant={ctaVariant(rowIndex)}
-          isFirst={rowIndex === 0}
-        />
-      ) : s._type === 'heroSection' ? (
-        <Hero
-          eyebrow={s.eyebrow}
-          headline={s.headline ?? ''}
-          subhead={s.subhead}
-          backgroundImage={s.backgroundImage}
-          primaryCta={s.primaryCta}
-          secondaryCta={s.secondaryCta}
-          scriptAccent={s.scriptAccent}
-          size={s.size ?? 'short'}
-          headingId={headingId}
-          primaryVariant={ctaVariant(rowIndex)}
-          heroStyle={s.heroStyle}
-          glance={s.glance}
-          backgroundVideo={s.backgroundVideo}
-          backgroundVideoPhone={s.backgroundVideoPhone}
-        />
-      ) : s._type === 'ctaBandSection' ? (
-        <FinalCta
-          eyebrow={s.eyebrow}
-          headline={s.headline}
-          subhead={s.subhead}
-          subheadRich={s.subheadRich}
-          cta={s.cta}
-          scriptAccent={s.scriptAccent}
-          headingAccent={s.headingAccent}
-          backgroundImage={s.backgroundImage}
-          headingId={headingId}
-          primaryVariant={ctaVariant(rowIndex)}
-        />
-      ) : s._type === 'statSection' ? (
-        <StatsRow
-          stats={
-            (s.stats ?? []).filter((x) => typeof x?.number === 'number') as {
-              number: number;
-              suffix?: string;
-              label: string;
-            }[]
-          }
-        />
-      ) : s._type === 'spacerSection' ? (
-        s.variant === 'space' ? (
-          <div class="py-section-md" aria-hidden="true" />
+      <Band {...bandAttrs}>
+        {isBuilderBlock(s) ? (
+          // The builder kit (PORTS.md card 173): one branch, BuilderBlock picks the component.
+          <BuilderBlock
+            block={s}
+            surface={surface ?? 'background'}
+            headingId={headingId}
+            primaryVariant={ctaVariant(rowIndex)}
+            isFirst={rowIndex === 0}
+          />
+        ) : s._type === 'heroSection' ? (
+          <Hero
+            eyebrow={s.eyebrow}
+            headline={s.headline ?? ''}
+            subhead={s.subhead}
+            backgroundImage={s.backgroundImage}
+            primaryCta={s.primaryCta}
+            secondaryCta={s.secondaryCta}
+            scriptAccent={s.scriptAccent}
+            size={s.size ?? 'short'}
+            headingId={headingId}
+            primaryVariant={ctaVariant(rowIndex)}
+            heroStyle={s.heroStyle}
+            glance={s.glance}
+            backgroundVideo={s.backgroundVideo}
+            backgroundVideoPhone={s.backgroundVideoPhone}
+          />
+        ) : s._type === 'ctaBandSection' ? (
+          <FinalCta
+            eyebrow={s.eyebrow}
+            headline={s.headline}
+            subhead={s.subhead}
+            subheadRich={s.subheadRich}
+            cta={s.cta}
+            scriptAccent={s.scriptAccent}
+            headingAccent={s.headingAccent}
+            backgroundImage={s.backgroundImage}
+            headingId={headingId}
+            primaryVariant={ctaVariant(rowIndex)}
+          />
+        ) : s._type === 'statSection' ? (
+          <StatsRow
+            stats={
+              (s.stats ?? []).filter((x) => typeof x?.number === 'number') as {
+                number: number;
+                suffix?: string;
+                label: string;
+              }[]
+            }
+          />
+        ) : s._type === 'spacerSection' ? (
+          s.variant === 'space' ? (
+            <div class="py-section-md" aria-hidden="true" />
+          ) : (
+            <SectionDivider variant={s.variant === 'line' ? 'line' : 'ornament'} />
+          )
+        ) : s._type === 'richTextSection' ? (
+          <RichTextSection
+            eyebrow={s.eyebrow}
+            heading={s.heading}
+            scriptAccent={s.scriptAccent}
+            headingAccent={s.headingAccent}
+            body={s.body}
+            width={s.width}
+            align={s.align}
+            surface={surface ?? 'background'}
+            headingId={headingId}
+          />
+        ) : s._type === 'imageTextSection' ? (
+          <ImageText
+            image={s.image}
+            imageSide={s.imageSide}
+            eyebrow={s.eyebrow}
+            heading={s.heading}
+            body={s.body}
+            cta={s.cta}
+            surface={surface ?? 'background'}
+            headingId={headingId}
+          />
+        ) : s._type === 'gallerySection' ? (
+          <GalleryGrid
+            heading={s.heading}
+            images={s.images}
+            columns={s.columns}
+            surface={surface ?? 'background'}
+            headingId={headingId}
+          />
+        ) : s._type === 'quoteSection' ? (
+          <QuoteBlock
+            quote={s.quote}
+            attribution={s.attribution}
+            detail={s.detail}
+            surface={surface ?? 'background'}
+          />
+        ) : s._type === 'videoSection' ? (
+          <VideoEmbed
+            url={s.url}
+            heading={s.heading}
+            caption={s.caption}
+            surface={surface ?? 'background'}
+            headingId={headingId}
+          />
+        ) : // scaffold-branch: about
+        s._type === 'founderSection' ? (
+          <FounderSection
+            portrait={s.portrait}
+            eyebrow={s.eyebrow}
+            headline={s.headline}
+            content={s.content}
+            cta={s.cta}
+            headingId={headingId}
+          />
+        ) : // scaffold-branch: testimonials
+        s._type === 'testimonialsSection' ? (
+          <TestimonialsSection
+            eyebrow={s.eyebrow}
+            headline={s.headline}
+            scriptAccent={s.scriptAccent}
+            headingAccent={s.headingAccent}
+            subhead={s.subhead}
+            subheadRich={s.subheadRich}
+            featuredQuote={s.featuredQuote}
+            testimonialsToShow={s.testimonialsToShow ?? []}
+            attribution={s.attribution}
+            headingId={headingId}
+          />
+        ) : // scaffold-branch: about
+        s._type === 'storySection' ? (
+          <StorySection
+            eyebrow={s.eyebrow}
+            headline={s.headline}
+            content={s.content}
+            portrait={s.portrait}
+            attribution={s.attribution}
+            credentialLine={s.credentialLine}
+            serviceAreaLine={s.serviceAreaLine}
+            surface={lightSurface(surface)}
+            headingId={headingId}
+          />
+        ) : s._type === 'serviceAreaSection' ? (
+          <ServiceAreaSection
+            eyebrow={s.eyebrow}
+            headline={s.headline}
+            description={s.description}
+            travelFees={s.travelFees ?? []}
+            showTravelFees={s.showTravelFees ?? true}
+            surface={lightSurface(surface)}
+            headingId={headingId}
+          />
+        ) : s._type === 'guaranteeSection' ? (
+          <GuaranteeSection
+            text={s.text}
+            siteSettingsText={s.siteSettingsText}
+            surface={lightSurface(surface)}
+          />
+        ) : s._type === 'logoStripSection' ? (
+          <LogoStrip
+            eyebrow={s.eyebrow}
+            headline={s.headline}
+            logos={s.logos ?? []}
+            layout={s.layout ?? 'row'}
+            headingId={headingId}
+          />
+        ) : s._type === 'teamSection' ? (
+          <TeamGrid
+            eyebrow={s.eyebrow}
+            headline={s.headline}
+            subhead={s.subhead}
+            subheadRich={s.subheadRich}
+            members={s.members ?? []}
+            headingId={headingId}
+          />
+        ) : s._type === 'rsvpSection' ? (
+          <RsvpSection block={s} surface={surface ?? 'background'} headingId={headingId} />
+        ) : s._type === 'latestVideoSection' ? (
+          <LatestVideo block={s} surface={surface ?? 'background'} headingId={headingId} />
+        ) : // scaffold-branch: documents
+        s._type === 'documentsSection' ? (
+          <DocumentsList
+            heading={s.heading}
+            intro={s.intro}
+            category={s.category}
+            limit={s.limit}
+            showDates={s.showDates}
+            items={s.items ?? []}
+            surface={surface ?? 'background'}
+            headingId={headingId}
+          />
+        ) : s._type === 'formSection' ? (
+          <FormSection block={s} surface={surface ?? 'background'} headingId={headingId} />
+        ) : s._type === 'embedSection' ? (
+          <EmbedSection
+            eyebrow={s.eyebrow}
+            headline={s.headline}
+            subhead={s.subhead}
+            embedUrl={s.embedUrl}
+            embedCode={s.embedCode}
+            runsOnPage={s.runsOnPage === true}
+            trustedCode={trustedCode}
+            heightHint={s.heightHint ?? 'medium'}
+            headingId={headingId}
+          />
+        ) : s._type === 'contactFormSection' ? (
+          <ContactFormSection settings={s.settings} sidebar={s.sidebar !== false} />
+        ) : s._type === 'privacyPolicySection' ? (
+          <PrivacyPolicy lastUpdated={s.lastUpdated} body={s.body} />
+        ) : // scaffold-branch: stories
+        s._type === 'coverHero' ? (
+          <CoverHero
+            eyebrow={s.eyebrow}
+            headline={s.headline ?? ''}
+            subhead={s.subhead}
+            primaryCta={s.primaryCta}
+            secondaryCta={s.secondaryCta}
+            limit={s.limit}
+            portrait={s.portrait}
+            portraitAfterWord={s.portraitAfterWord}
+            headingId={headingId}
+          />
+        ) : // scaffold-branch: stories
+        s._type === 'storyIndex' ? (
+          <StoryIndex
+            heading={s.heading}
+            layout={s.layout === 'list' ? 'list' : 'grid'}
+            limit={s.limit}
+            headingId={headingId}
+          />
+        ) : // scaffold-branch: press
+        s._type === 'publishedMarquee' ? (
+          <PublishedMarquee heading={s.heading} headingId={headingId} />
+        ) : // scaffold-branch: press
+        s._type === 'tearSheetStack' ? (
+          <TearSheetStack heading={s.heading} limit={s.limit} headingId={headingId} />
+        ) : // scaffold-branch: press
+        s._type === 'proofStrip' ? (
+          <ProofStrip
+            heading={s.heading}
+            showPress={s.showPress !== false}
+            quotes={s.quotes}
+            headingId={headingId}
+          />
+        ) : // scaffold-branch: stories
+        s._type === 'craftNotes' ? (
+          <CraftNotes
+            eyebrow={s.eyebrow}
+            heading={s.heading}
+            intro={s.intro}
+            notes={s.notes}
+            headingId={headingId}
+          />
+        ) : // scaffold-branch: stories
+        s._type === 'crewSection' ? (
+          <CrewList
+            eyebrow={s.eyebrow}
+            heading={s.heading}
+            body={s.body}
+            crewHeading={s.crewHeading}
+            crew={s.crew}
+            link={s.link}
+            headingId={headingId}
+          />
+        ) : // scaffold-branch: stories
+        s._type === 'signedClose' ? (
+          <SignedClose
+            eyebrow={s.eyebrow}
+            heading={s.heading}
+            body={s.body}
+            cta={s.cta}
+            signature={s.signature}
+            signatureImage={s.signatureImage}
+            headingId={headingId}
+            primaryVariant={ctaVariant(rowIndex)}
+          />
+        ) : // scaffold-branch: press
+        s._type === 'pressContents' ? (
+          <PressContents heading={s.heading} headingId={headingId} />
+        ) : // scaffold-branch: testimonials
+        s._type === 'kindWords' ? (
+          <KindWords
+            heading={s.heading}
+            quotes={s.quotes}
+            crossfade={s.crossfade}
+            headingId={headingId}
+          />
+        ) : // scaffold-branch: about
+        s._type === 'aboutOpening' ? (
+          <AboutOpening
+            eyebrow={s.eyebrow}
+            headline={s.headline}
+            subhead={s.subhead}
+            image={s.image}
+            headingId={headingId}
+          />
+        ) : // scaffold-branch: about
+        s._type === 'aboutStory' ? (
+          <AboutStory
+            eyebrow={s.eyebrow}
+            heading={s.heading}
+            body={s.body}
+            portrait={s.portrait}
+            headingId={headingId}
+          />
+        ) : // scaffold-branch: about
+        s._type === 'aboutApproach' ? (
+          <AboutApproach
+            eyebrow={s.eyebrow}
+            statement={s.statement}
+            body={s.body}
+            voice={s.voice}
+            voiceCredit={s.voiceCredit}
+            image={s.image}
+            headingId={headingId}
+          />
+        ) : // scaffold-branch: about
+        s._type === 'processFigures' ? (
+          <ProcessFigures
+            label={s.label}
+            heading={s.heading}
+            figures={s.figures}
+            headingId={headingId}
+          />
+        ) : // scaffold-branch: sessions
+        s._type === 'sessionsOpening' ? (
+          <SessionsOpening
+            eyebrow={s.eyebrow}
+            line={s.line}
+            turn={s.turn}
+            intro={s.intro}
+            photo={s.photo}
+            headingId={headingId}
+          />
+        ) : // scaffold-branch: sessions
+        s._type === 'sessionSittings' ? (
+          <SessionSittings
+            eyebrow={s.eyebrow}
+            heading={s.heading}
+            intro={s.intro}
+            sittings={s.sittings}
+            rows={s.rows}
+            investmentLabel={s.investmentLabel}
+            headingId={headingId}
+          />
+        ) : // scaffold-branch: sessions
+        s._type === 'sessionExperience' ? (
+          <SessionExperience {...s} headingId={headingId} />
+        ) : // scaffold-branch: sessions
+        s._type === 'heirloomsSpec' ? (
+          <HeirloomsSpec {...s} headingId={headingId} />
+        ) : // scaffold-branch: sessions
+        s._type === 'investmentNote' ? (
+          <InvestmentNote {...s} headingId={headingId} />
+        ) : // scaffold-branch: sessions
+        s._type === 'sessionQuestions' ? (
+          <SessionQuestions {...s} headingId={headingId} primaryVariant={ctaVariant(rowIndex)} />
+        ) : // scaffold-branch: sessions
+        s._type === 'sessionOffers' ? (
+          <SessionOffers {...s} headingId={headingId} />
+        ) : // scaffold-branch: sessions
+        s._type === 'sessionTeam' ? (
+          <SessionTeam {...s} headingId={headingId} />
+        ) : // scaffold-branch: sessions
+        s._type === 'sessionsClose' ? (
+          <SessionsClose {...s} headingId={headingId} primaryVariant={ctaVariant(rowIndex)} />
+        ) : s._type === 'dynamicListSection' ? (
+          <DynamicList
+            eyebrow={s.eyebrow}
+            headline={s.headline}
+            subhead={s.subhead}
+            subheadRich={s.subheadRich}
+            source={s.source}
+            items={s.items ?? []}
+            cta={s.cta}
+            columns={s.columns}
+            limit={s.limit}
+            headingId={headingId}
+          />
         ) : (
-          <SectionDivider variant={s.variant === 'line' ? 'line' : 'ornament'} />
-        )
-      ) : s._type === 'richTextSection' ? (
-        <RichTextSection
-          eyebrow={s.eyebrow}
-          heading={s.heading}
-          scriptAccent={s.scriptAccent}
-          headingAccent={s.headingAccent}
-          body={s.body}
-          width={s.width}
-          align={s.align}
-          surface={surface ?? 'background'}
-          headingId={headingId}
-        />
-      ) : s._type === 'imageTextSection' ? (
-        <ImageText
-          image={s.image}
-          imageSide={s.imageSide}
-          eyebrow={s.eyebrow}
-          heading={s.heading}
-          body={s.body}
-          cta={s.cta}
-          surface={surface ?? 'background'}
-          headingId={headingId}
-        />
-      ) : s._type === 'gallerySection' ? (
-        <GalleryGrid
-          heading={s.heading}
-          images={s.images}
-          columns={s.columns}
-          surface={surface ?? 'background'}
-          headingId={headingId}
-        />
-      ) : s._type === 'quoteSection' ? (
-        <QuoteBlock
-          quote={s.quote}
-          attribution={s.attribution}
-          detail={s.detail}
-          surface={surface ?? 'background'}
-        />
-      ) : s._type === 'videoSection' ? (
-        <VideoEmbed
-          url={s.url}
-          heading={s.heading}
-          caption={s.caption}
-          surface={surface ?? 'background'}
-          headingId={headingId}
-        />
-      ) : // scaffold-branch: about
-      s._type === 'founderSection' ? (
-        <FounderSection
-          portrait={s.portrait}
-          eyebrow={s.eyebrow}
-          headline={s.headline}
-          content={s.content}
-          cta={s.cta}
-          headingId={headingId}
-        />
-      ) : // scaffold-branch: testimonials
-      s._type === 'testimonialsSection' ? (
-        <TestimonialsSection
-          eyebrow={s.eyebrow}
-          headline={s.headline}
-          scriptAccent={s.scriptAccent}
-          headingAccent={s.headingAccent}
-          subhead={s.subhead}
-          subheadRich={s.subheadRich}
-          featuredQuote={s.featuredQuote}
-          testimonialsToShow={s.testimonialsToShow ?? []}
-          attribution={s.attribution}
-          headingId={headingId}
-        />
-      ) : // scaffold-branch: about
-      s._type === 'storySection' ? (
-        <StorySection
-          eyebrow={s.eyebrow}
-          headline={s.headline}
-          content={s.content}
-          portrait={s.portrait}
-          attribution={s.attribution}
-          credentialLine={s.credentialLine}
-          serviceAreaLine={s.serviceAreaLine}
-          surface={lightSurface(surface)}
-          headingId={headingId}
-        />
-      ) : s._type === 'serviceAreaSection' ? (
-        <ServiceAreaSection
-          eyebrow={s.eyebrow}
-          headline={s.headline}
-          description={s.description}
-          travelFees={s.travelFees ?? []}
-          showTravelFees={s.showTravelFees ?? true}
-          surface={lightSurface(surface)}
-          headingId={headingId}
-        />
-      ) : s._type === 'guaranteeSection' ? (
-        <GuaranteeSection
-          text={s.text}
-          siteSettingsText={s.siteSettingsText}
-          surface={lightSurface(surface)}
-        />
-      ) : s._type === 'logoStripSection' ? (
-        <LogoStrip
-          eyebrow={s.eyebrow}
-          headline={s.headline}
-          logos={s.logos ?? []}
-          layout={s.layout ?? 'row'}
-          headingId={headingId}
-        />
-      ) : s._type === 'teamSection' ? (
-        <TeamGrid
-          eyebrow={s.eyebrow}
-          headline={s.headline}
-          subhead={s.subhead}
-          subheadRich={s.subheadRich}
-          members={s.members ?? []}
-          headingId={headingId}
-        />
-      ) : s._type === 'rsvpSection' ? (
-        <RsvpSection block={s} surface={surface ?? 'background'} headingId={headingId} />
-      ) : s._type === 'latestVideoSection' ? (
-        <LatestVideo block={s} surface={surface ?? 'background'} headingId={headingId} />
-      ) : // scaffold-branch: documents
-      s._type === 'documentsSection' ? (
-        <DocumentsList
-          heading={s.heading}
-          intro={s.intro}
-          category={s.category}
-          limit={s.limit}
-          showDates={s.showDates}
-          items={s.items ?? []}
-          surface={surface ?? 'background'}
-          headingId={headingId}
-        />
-      ) : s._type === 'formSection' ? (
-        <FormSection block={s} surface={surface ?? 'background'} headingId={headingId} />
-      ) : s._type === 'embedSection' ? (
-        <EmbedSection
-          eyebrow={s.eyebrow}
-          headline={s.headline}
-          subhead={s.subhead}
-          embedUrl={s.embedUrl}
-          embedCode={s.embedCode}
-          runsOnPage={s.runsOnPage === true}
-          trustedCode={trustedCode}
-          heightHint={s.heightHint ?? 'medium'}
-          headingId={headingId}
-        />
-      ) : s._type === 'contactFormSection' ? (
-        <ContactFormSection settings={s.settings} sidebar={s.sidebar !== false} />
-      ) : s._type === 'privacyPolicySection' ? (
-        <PrivacyPolicy lastUpdated={s.lastUpdated} body={s.body} />
-      ) : // scaffold-branch: stories
-      s._type === 'coverHero' ? (
-        <CoverHero
-          eyebrow={s.eyebrow}
-          headline={s.headline ?? ''}
-          subhead={s.subhead}
-          primaryCta={s.primaryCta}
-          secondaryCta={s.secondaryCta}
-          limit={s.limit}
-          portrait={s.portrait}
-          portraitAfterWord={s.portraitAfterWord}
-          headingId={headingId}
-        />
-      ) : // scaffold-branch: stories
-      s._type === 'storyIndex' ? (
-        <StoryIndex
-          heading={s.heading}
-          layout={s.layout === 'list' ? 'list' : 'grid'}
-          limit={s.limit}
-          headingId={headingId}
-        />
-      ) : // scaffold-branch: press
-      s._type === 'publishedMarquee' ? (
-        <PublishedMarquee heading={s.heading} headingId={headingId} />
-      ) : // scaffold-branch: press
-      s._type === 'tearSheetStack' ? (
-        <TearSheetStack heading={s.heading} limit={s.limit} headingId={headingId} />
-      ) : // scaffold-branch: press
-      s._type === 'proofStrip' ? (
-        <ProofStrip
-          heading={s.heading}
-          showPress={s.showPress !== false}
-          quotes={s.quotes}
-          headingId={headingId}
-        />
-      ) : // scaffold-branch: stories
-      s._type === 'craftNotes' ? (
-        <CraftNotes
-          eyebrow={s.eyebrow}
-          heading={s.heading}
-          intro={s.intro}
-          notes={s.notes}
-          headingId={headingId}
-        />
-      ) : // scaffold-branch: stories
-      s._type === 'crewSection' ? (
-        <CrewList
-          eyebrow={s.eyebrow}
-          heading={s.heading}
-          body={s.body}
-          crewHeading={s.crewHeading}
-          crew={s.crew}
-          link={s.link}
-          headingId={headingId}
-        />
-      ) : // scaffold-branch: stories
-      s._type === 'signedClose' ? (
-        <SignedClose
-          eyebrow={s.eyebrow}
-          heading={s.heading}
-          body={s.body}
-          cta={s.cta}
-          signature={s.signature}
-          signatureImage={s.signatureImage}
-          headingId={headingId}
-          primaryVariant={ctaVariant(rowIndex)}
-        />
-      ) : // scaffold-branch: press
-      s._type === 'pressContents' ? (
-        <PressContents heading={s.heading} headingId={headingId} />
-      ) : // scaffold-branch: testimonials
-      s._type === 'kindWords' ? (
-        <KindWords
-          heading={s.heading}
-          quotes={s.quotes}
-          crossfade={s.crossfade}
-          headingId={headingId}
-        />
-      ) : // scaffold-branch: about
-      s._type === 'aboutOpening' ? (
-        <AboutOpening
-          eyebrow={s.eyebrow}
-          headline={s.headline}
-          subhead={s.subhead}
-          image={s.image}
-          headingId={headingId}
-        />
-      ) : // scaffold-branch: about
-      s._type === 'aboutStory' ? (
-        <AboutStory
-          eyebrow={s.eyebrow}
-          heading={s.heading}
-          body={s.body}
-          portrait={s.portrait}
-          headingId={headingId}
-        />
-      ) : // scaffold-branch: about
-      s._type === 'aboutApproach' ? (
-        <AboutApproach
-          eyebrow={s.eyebrow}
-          statement={s.statement}
-          body={s.body}
-          voice={s.voice}
-          voiceCredit={s.voiceCredit}
-          image={s.image}
-          headingId={headingId}
-        />
-      ) : // scaffold-branch: about
-      s._type === 'processFigures' ? (
-        <ProcessFigures
-          label={s.label}
-          heading={s.heading}
-          figures={s.figures}
-          headingId={headingId}
-        />
-      ) : // scaffold-branch: sessions
-      s._type === 'sessionsOpening' ? (
-        <SessionsOpening
-          eyebrow={s.eyebrow}
-          line={s.line}
-          turn={s.turn}
-          intro={s.intro}
-          photo={s.photo}
-          headingId={headingId}
-        />
-      ) : // scaffold-branch: sessions
-      s._type === 'sessionSittings' ? (
-        <SessionSittings
-          eyebrow={s.eyebrow}
-          heading={s.heading}
-          intro={s.intro}
-          sittings={s.sittings}
-          rows={s.rows}
-          investmentLabel={s.investmentLabel}
-          headingId={headingId}
-        />
-      ) : // scaffold-branch: sessions
-      s._type === 'sessionExperience' ? (
-        <SessionExperience {...s} headingId={headingId} />
-      ) : // scaffold-branch: sessions
-      s._type === 'heirloomsSpec' ? (
-        <HeirloomsSpec {...s} headingId={headingId} />
-      ) : // scaffold-branch: sessions
-      s._type === 'investmentNote' ? (
-        <InvestmentNote {...s} headingId={headingId} />
-      ) : // scaffold-branch: sessions
-      s._type === 'sessionQuestions' ? (
-        <SessionQuestions {...s} headingId={headingId} primaryVariant={ctaVariant(rowIndex)} />
-      ) : // scaffold-branch: sessions
-      s._type === 'sessionOffers' ? (
-        <SessionOffers {...s} headingId={headingId} />
-      ) : // scaffold-branch: sessions
-      s._type === 'sessionTeam' ? (
-        <SessionTeam {...s} headingId={headingId} />
-      ) : // scaffold-branch: sessions
-      s._type === 'sessionsClose' ? (
-        <SessionsClose {...s} headingId={headingId} primaryVariant={ctaVariant(rowIndex)} />
-      ) : s._type === 'dynamicListSection' ? (
-        <DynamicList
-          eyebrow={s.eyebrow}
-          headline={s.headline}
-          subhead={s.subhead}
-          subheadRich={s.subheadRich}
-          source={s.source}
-          items={s.items ?? []}
-          cta={s.cta}
-          columns={s.columns}
-          limit={s.limit}
-          headingId={headingId}
-        />
-      ) : (
-        // Unknown block type: render nothing, log in dev.
-        import.meta.env.DEV &&
-        console.warn(
-          // `s` is `never` here: every member of PageBuilderBlock is handled
-          // above, which is exactly what this branch exists to prove. The cast
-          // is only so the runtime warning can name the type Sanity actually
-          // sent when a NEW block ships without a mapping. Written as a
-          // Record rather than an inline object type on purpose: a brace
-          // inside an .astro template expression ends that expression, even
-          // inside a comment, so an inline object type breaks the parse.
-          `[SectionRenderer] Unknown block type: "${(s as Record<string, unknown>)._type}". Add a mapping in SectionRenderer.astro.`,
-        )
-      )}
-    </Wrap>
-  </>
-))}
+          // Unknown block type: render nothing, log in dev.
+          import.meta.env.DEV &&
+          console.warn(
+            // `s` is `never` here: every member of PageBuilderBlock is handled
+            // above, which is exactly what this branch exists to prove. The cast
+            // is only so the runtime warning can name the type Sanity actually
+            // sent when a NEW block ships without a mapping. Written as a
+            // Record rather than an inline object type on purpose: a brace
+            // inside an .astro template expression ends that expression, even
+            // inside a comment, so an inline object type breaks the parse.
+            `[SectionRenderer] Unknown block type: "${(s as Record<string, unknown>)._type}". Add a mapping in SectionRenderer.astro.`,
+          )
+        )}
+      </Band>
+    </>
+  );
+})}
+
+<script>
+  // The jewel hand-offs between bands (colour bleed, shutter, stacked sheets).
+  import '@/scripts/jewel-motion';
+</script>

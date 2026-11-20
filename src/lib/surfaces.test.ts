@@ -165,7 +165,9 @@ describe('the focus ring inside a dark band', () => {
     }
     it(`globals.css really points the "${s.value}" band's --ring at ${ring}`, () => {
       // The Feature band has its own class; the Ink band joins data-dark-surface.
-      const needle = s.className.startsWith('surface-') ? `.${s.className}` : '[data-dark-surface]';
+      // The band's own `surface-*` class (a jewel band also carries the shared `jewel` class).
+      const own = s.className.split(' ').find((c) => c.startsWith('surface-'));
+      const needle = own ? `.${own}` : '[data-dark-surface]';
       assert.ok(
         ruleBody(needle).includes(`--ring: var(${ring})`),
         `the rule for ${needle} does not set --ring to var(${ring})`,
@@ -210,7 +212,8 @@ describe('the heading accent word', () => {
         });
       }
       it(`globals.css really points the "${s.value}" band's accent at ${token}`, () => {
-        const selector = `.${s.className.split(' ')[0]}`;
+        const classes = s.className.split(' ');
+        const selector = `.${classes.find((c) => c.startsWith('surface-')) ?? classes[0]}`;
         const at = css.indexOf(`${selector} {`);
         assert.ok(at >= 0, `globals.css has no ${selector} rule`);
         const body = css.slice(at, css.indexOf('}', at));

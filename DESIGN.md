@@ -13,6 +13,18 @@ colors:
   dark-ink: '#EEE7DD'
   dark-muted: '#A99F94'
   dark-dusk: '#D6A898'
+  jewel-wine: '#6E1420'
+  jewel-wine-deep: '#4A0D16'
+  jewel-wine-soft: '#F0D9D6'
+  jewel-magenta: '#8F2458'
+  jewel-magenta-deep: '#5E1739'
+  jewel-magenta-soft: '#F2D7E2'
+  jewel-amber: '#C8893A'
+  jewel-amber-deep: '#7A4A14'
+  jewel-amber-soft: '#F5E3C0'
+  jewel-forest: '#2F4A32'
+  jewel-forest-deep: '#1E3122'
+  jewel-forest-soft: '#D9E2D1'
 typography:
   display:
     fontFamily: 'Bodoni Moda Variable, Georgia, Times New Roman, serif'
@@ -38,9 +50,10 @@ Direction chosen 2026-11-17 for the build on placeholder content. The brand name
 **Creative North Star: everything comes into focus.** A fine-art portrait portfolio that feels like a printed art book: warm paper, a large editorial serif, photos given room, and motion that behaves like a lens pulling focus.
 
 - **Light only** (2026-11-18, rule 3). Warm paper is the one ground; there is no theme toggle and the system dark setting is ignored. The dark column below is kept for reference and for the shared dark test suites.
-- **No polish-layer chrome.** No brand stripe, no card lift, no tinted bands around photos. Sections separate by space and hairline rules.
+- **No polish-layer chrome.** No brand stripe, no card lift, no tinted bands around photos.
+- **Jewel bands** (2026-11-20, Nathan: "I want my color, section transitions"). Paper alternates with full-bleed colour fields in four jewel tones taken from her own photographs (section 2), and the hand-off between bands is designed (section 6, "Colour and transitions"). Within a band, parts still separate by hairline rules.
 - **Square corners.** Radius 0 on photos, buttons and fields.
-- **One left edge, one row of chrome** (2026-11-17; the boutique bar since 2026-11-20). The header has no eyebrow strip; its one row uses the page gutter so the wordmark lines up with every heading below it. Content bands all sit on paper: the starter's paper-soft cadence, sunburst ornaments and testimonial glow are switched off in `src/styles/erin.css`, and sections part with a content-width hairline. The footer is "the jewel close" (2026-11-20), the one band that leaves the paper for a jewel colour field; its close, index, name and small print still sit on the same content column and gutter as the header.
+- **One left edge, one row of chrome** (2026-11-17; the boutique bar since 2026-11-20). The header has no eyebrow strip; its one row uses the page gutter so the wordmark lines up with every heading below it. The starter's paper-soft cadence, sunburst ornaments and testimonial glow are switched off in `src/styles/erin.css`; since 2026-11-20 the jewel cadence (`src/lib/jewel-cadence.ts`) alternates paper with colour instead. The footer is "the jewel close" (2026-11-20), a jewel colour field of its own; its close, index, name and small print still sit on the same content column and gutter as the header.
 
 ## 2. Colors
 
@@ -53,7 +66,22 @@ Direction chosen 2026-11-17 for the build on placeholder content. The brand name
 | Accent (links, the one filled button) | Dusk `#7A4A40`  | `#D6A898`            | 6.3 / 9.0          |
 | Hairline                              | `#D9CFC2`       | `oklch(1 0 0 / 12%)` | decorative         |
 
-Dusk is the only colour. It is used for links, the inquiry button and text selection, never as a section background.
+Dusk stays the accent on paper: links, the inquiry button and text selection.
+
+### Jewel tones (2026-11-20)
+
+Four colour fields taken from her photographs (Sanity's image palettes of her stories, read 2026-11-20): wine from the Halloween and Valentine reds, magenta from "Taking Up Space", amber from the lamp-lit rooms, forest from Midsummer's greens. Each has a deep and a soft step. Tokens: `--jewel-<name>`, `-deep`, `-soft`, `-ink`, `-muted`, `-accent` in `src/styles/globals.css` (the palette `:root`, not `.dark`: a band is the same colour whatever the reader's theme).
+
+| Jewel   | Field     | Deep      | Soft      | Ink on field  | Captions         | Accent word      |
+| ------- | --------- | --------- | --------- | ------------- | ---------------- | ---------------- |
+| Wine    | `#6E1420` | `#4A0D16` | `#F0D9D6` | Paper, 10.2:1 | `#E8CFCB`, 8.0:1 | `#F5E3C0`, 9.3:1 |
+| Magenta | `#8F2458` | `#5E1739` | `#F2D7E2` | Paper, 7.1:1  | `#F0D3DF`, 5.9:1 | `#F5E3C0`, 6.5:1 |
+| Amber   | `#C8893A` | `#7A4A14` | `#F5E3C0` | Ink, 5.8:1    | `#3B2410`, 4.9:1 | `#4A0D16`        |
+| Forest  | `#2F4A32` | `#1E3122` | `#D9E2D1` | Paper, 8.5:1  | `#CBD8C4`, 6.6:1 | `#F2D7E2`, 7.3:1 |
+
+Amber is the one light jewel and takes dark ink. Every pair is a measured surface in `src/lib/surfaces.ts`, held to AA by `surfaces.test.ts` (text, headings, links, accent word and focus ring).
+
+**How a band gets its colour.** Never a colour field on a block (rule 9). `src/lib/jewel-cadence.ts` decides: the site's own blocks listed in `JEWEL_BLOCKS` (story, process, press, kind words, the sessions blocks, the closes) and any content block whose `look` is "Colour" become jewel bands when the row before is not one, never the first or last row (the jewel footer closes the page) and never against a dark band; the jewels are dealt in turn (wine, forest, magenta, amber) from a start that varies per page. `SectionRenderer` wraps the row in `<div class="jewel surface-jewel-*" data-band="jewel">`, and `.jewel` re-points the page and `--color-*` tokens inside, so no component needs a colour prop. Hand-built pages carry the same classes: the booking path (forest), the guide's pull quote (wine), each story's closing ask (dealt by story number), and the Stories, Press and Archive mastheads (`.jewel-bleed` paints the colour edge to edge from inside the gutter).
 
 ## 3. Typography
 
@@ -103,6 +131,10 @@ Flat. Nothing floats except the lightbox and the phone menu. Depth comes from ph
 - **Buttons:** one family (rule 17). Text links with an underline that draws in; outlined square ink buttons (`.bq-button`, CtaLink's secondary) that fill with ink on hover; the single filled Dusk button is the inquiry. `CtaLink` draws both from `src/styles/cta.css`; nothing is rounded, raised or pressed in. The magazine pages use only `.bq-button` and text links.
 
 ## 6. Do's and Don'ts
+
+### Colour and transitions (2026-11-20)
+
+Three hand-offs, the same on every page (`src/scripts/jewel-motion.ts`, detail in `docs/agent/animation.md`): the **colour bleed** (a jewel band takes on its colour from the band before as it rises, its content coming up with it), the **shutter** (the paper band after a jewel opens out of slats in the jewel's colour; the Details Vault "Shutter transition") and **stacked sheets** (on wide screens a jewel band holds while the next sheet slides over it; the Details Vault "Parallax Transition", pin mode). Reduced motion or no JavaScript: every band sits at rest in its colour.
 
 Motion: slow optical easing `cubic-bezier(0.22, 1, 0.36, 1)`, 700 to 1200ms for focus pulls, 300ms for UI. Scrolling stays native (rule 5). Every effect has a reduced-motion and a touch fallback, and hidden start states sit under `html.motion` so the page reads without JavaScript. The site plan's interactions live in `src/styles/erin-motion.css`: a first-visit loader (`FirstVisitLoader.astro`: the name pulls into focus and the curtain lifts in 1.1s, once per device, never under reduced motion or with storage blocked; it hides nothing underneath), the footer's rolling credits. The header and phone menu keep their motion in `src/styles/chrome-header.css` (the dimmed nav, the drop and the rolling lines). The story page's film has its own motion (Story page, above).
 

@@ -49,10 +49,25 @@
 .mag-press__head {
   max-width: var(--mag-col);
   margin-inline: auto;
-  padding: clamp(2.5rem, 7vw, 6rem) var(--mag-gutter) clamp(2rem, 4vw, 3.5rem);
+  padding: var(--space-pause) var(--mag-gutter) clamp(1.5rem, 3vw, 2.5rem);
   display: grid;
   gap: 1rem 3rem;
   align-items: end;
+}
+/* On a jewel (2026-11-20): a little more air below, so the list starts on paper, clear of
+   the colour field. */
+.mag-contents__head.jewel,
+.mag-press__head.jewel {
+  margin-bottom: var(--space-pause);
+  padding-bottom: var(--space-pause);
+}
+/* The story's closing ask on its jewel band, full bleed (src/pages/stories/[slug].astro). */
+.mag-ask-band {
+  margin-top: var(--space-pause-lg);
+  padding-block: var(--spacing-section-md);
+}
+.mag-ask-band .mag-ask {
+  margin-top: 0;
 }
 .mag-contents__title {
   font-size: clamp(4.25rem, 16vw, 15rem);
@@ -211,12 +226,12 @@
 .mag-contents__items {
   max-width: var(--mag-col);
   margin-inline: auto;
-  padding: 0 var(--mag-gutter) clamp(4rem, 10vw, 8rem);
+  padding: 0 var(--mag-gutter) var(--space-band-end);
 }
 
 /* LIST: ruled rows, "Lead: Title (count)" in big Bodoni. */
 [data-view='list'] .mag-chapter {
-  margin: clamp(2.5rem, 5vw, 4rem) 0 0;
+  margin: var(--space-pause) 0 0;
   padding-bottom: 0.75rem;
   border-bottom: 1px solid var(--foreground);
   color: var(--foreground);
@@ -396,14 +411,14 @@
 @media (min-width: 48rem) {
   [data-view='grid'] .mag-contents__items {
     grid-template-columns: repeat(12, minmax(0, 1fr));
-    row-gap: clamp(3rem, 6vw, 6rem);
+    row-gap: var(--space-pause);
   }
   [data-view='grid'] .mag-item--s0 {
     grid-column: 1 / span 7;
   }
   [data-view='grid'] .mag-item--s1 {
     grid-column: 9 / span 4;
-    margin-top: clamp(6rem, 18vw, 16rem);
+    margin-top: var(--space-stagger);
   }
   [data-view='grid'] .mag-item--s2 {
     grid-column: 2 / span 4;
@@ -411,7 +426,7 @@
   }
   [data-view='grid'] .mag-item--s3 {
     grid-column: 7 / span 5;
-    margin-top: clamp(4rem, 10vw, 9rem);
+    margin-top: var(--space-stagger-sm);
   }
   [data-view='grid'] .mag-item--s4 {
     grid-column: 3 / span 6;
@@ -422,7 +437,7 @@
 /* ---------- /stories/<slug>/: the spread -------------------------------- */
 
 .mag-story {
-  padding-bottom: clamp(3rem, 8vw, 6rem);
+  padding-bottom: var(--space-band-end);
 }
 
 /* A photograph full bleed: on a screen its shape, the frame is the photo; on a
@@ -477,7 +492,7 @@
   display: grid;
   justify-items: center;
   gap: 0.5rem;
-  padding: clamp(1rem, 3vw, 2rem) var(--mag-gutter) clamp(3rem, 8vw, 6rem);
+  padding: clamp(1rem, 3vw, 2rem) var(--mag-gutter) var(--space-band-end);
   color: #f3eee7;
   text-align: center;
   background: linear-gradient(to bottom, var(--mag-scrim), rgb(18 16 14 / 0.3) 70%, transparent);
@@ -537,7 +552,7 @@
 /* The standfirst beside the credits box. */
 .mag-standfirst {
   max-width: var(--mag-col);
-  margin: clamp(2.5rem, 6vw, 5rem) auto 0;
+  margin: var(--space-pause) auto 0;
   padding-inline: var(--mag-gutter);
   display: grid;
   gap: 2.5rem 4rem;
@@ -615,8 +630,8 @@
 /* The feature: pair, single on paper, full bleed. */
 .mag-feature {
   display: grid;
-  gap: clamp(4rem, 10vw, 9rem);
-  margin-top: clamp(4rem, 10vw, 8rem);
+  gap: var(--space-pause-lg);
+  margin-top: var(--space-pause-lg);
 }
 .mag-run {
   max-width: var(--mag-col);
@@ -654,7 +669,7 @@
   }
   .mag-run--pair .mag-plate:last-child {
     grid-column: 8 / span 5;
-    margin-top: clamp(4rem, 14vw, 12rem);
+    margin-top: var(--space-stagger);
   }
   .mag-run--single {
     display: grid;
@@ -700,7 +715,7 @@
 /* The invitation and the turn to the next story. */
 .mag-ask {
   max-width: 44rem;
-  margin: clamp(5rem, 12vw, 9rem) auto 0;
+  margin: var(--space-pause-lg) auto 0;
   padding-inline: var(--mag-gutter);
   text-align: center;
   display: grid;
@@ -727,7 +742,7 @@
 
 .mag-turn {
   max-width: var(--mag-col);
-  margin: clamp(5rem, 12vw, 9rem) auto 0;
+  margin: var(--space-pause-lg) auto 0;
   padding-inline: var(--mag-gutter);
   display: grid;
   border-top: 1px solid var(--foreground);
@@ -818,10 +833,10 @@
 .mag-press__list {
   max-width: var(--mag-col);
   margin-inline: auto;
-  padding: 0 var(--mag-gutter) clamp(4rem, 10vw, 8rem);
+  padding: 0 var(--mag-gutter) var(--space-band-end);
 }
 .mag-press__year + .mag-press__year {
-  margin-top: clamp(2.5rem, 5vw, 4rem);
+  margin-top: var(--space-pause);
 }
 .mag-press__year-label {
   margin: 0;

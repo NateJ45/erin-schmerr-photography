@@ -62,11 +62,14 @@ function setup(): void {
     // 2. Paragraphs from a soft grey to full ink. The soft end is the muted
     // text colour (5.7:1 on paper), not an opacity, so a paragraph still
     // waiting below the fold passes AA contrast at every point of the tween.
-    const style = getComputedStyle(root);
-    const soft = style.getPropertyValue('--color-muted-foreground').trim();
-    const ink = style.getPropertyValue('--color-foreground').trim();
-    if (soft && ink) {
-      lighten.forEach((p) => {
+    // Read per paragraph, not from the root: on a jewel band (src/lib/jewel-cadence.ts) the
+    // band re-points both tokens, so the tween runs from the band's caption colour to its
+    // own ink and never paints paper ink onto a coloured field.
+    lighten.forEach((p) => {
+      const style = getComputedStyle(p);
+      const soft = style.getPropertyValue('--color-muted-foreground').trim();
+      const ink = style.getPropertyValue('--color-foreground').trim();
+      if (soft && ink) {
         gsap.fromTo(
           p,
           { color: soft },
@@ -76,8 +79,8 @@ function setup(): void {
             scrollTrigger: { trigger: p, start: 'top 92%', end: 'top 55%', scrub: true },
           },
         );
-      });
-    }
+      }
+    });
 
     // 3. The slow photos.
     frames.forEach((frame) => {

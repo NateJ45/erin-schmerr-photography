@@ -18,6 +18,15 @@
   --gd-soft: var(--color-muted);
   --gd-ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
+/* On a jewel band (2026-11-20, src/lib/jewel-cadence.ts) the tokens are declared again, so
+   they read the band's re-pointed values (globals.css ".jewel"), not the paper ones they
+   resolved to on .gd. */
+.gd .jewel {
+  --gd-ink: var(--color-foreground);
+  --gd-muted: var(--color-muted-foreground);
+  --gd-rule: var(--color-border);
+  --gd-soft: var(--color-muted);
+}
 
 /* ---- The capture --------------------------------------------------------------------- */
 .gc__form {
