@@ -24,6 +24,8 @@ export interface Publication {
   url?: string | null;
   excerpt?: string | null;
   tearSheet?: PortfolioPhoto | null;
+  /** The story this feature ran (derived: the story that names this publication), if any. */
+  story?: { title: string; slug: string } | null;
   isPlaceholder?: boolean;
 }
 
@@ -35,6 +37,7 @@ export const PLACEHOLDER_PUBLICATIONS: Publication[] = [
     date: '2026-03-01',
     excerpt: 'A line or two from the piece goes here. Replace it in the Studio.',
     tearSheet: placeholderPhoto(0, 'Placeholder tear sheet, Magazine name, Issue 00'),
+    story: { title: 'Placeholder story one', slug: 'placeholder-story-one' },
     isPlaceholder: true,
   },
   {
@@ -53,7 +56,8 @@ export async function getPublications(): Promise<Publication[]> {
   const rows = await sanityFetch<Publication>(
     `*[_type == "publication" && defined(magazine)] | order(date desc){
       _id, magazine, issue, date, url, excerpt,
-      tearSheet${PHOTO_PROJECTION}
+      tearSheet${PHOTO_PROJECTION},
+      "story": *[_type == "story" && publication._ref == ^._id && defined(slug.current)] | order(orderRank asc)[0]{ title, "slug": slug.current }
     }`,
     {},
     [],
