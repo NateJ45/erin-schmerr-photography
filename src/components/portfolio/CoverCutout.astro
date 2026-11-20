@@ -1,0 +1,52 @@
+---
+// scaffold-file: stories
+// Safe to edit by hand
+// The person from a cover on a transparent ground (scripts/make-cutouts.mjs),
+// drawn in EXACTLY the box, size and crop point of the photo under it, so it
+// registers pixel for pixel: the same `.focus-image` frame and `.focus-image__img`
+// fit as FocusImage (minus its blurred LQIP ground), the cover's crop and
+// hotspot applied through SanityImage, and the same width ladder. A local
+// cut-out (`astro dev` with CINEMA_CUTOUTS_DIR) is a plain <img> with the
+// cover's hotspot as its object-position. Always decorative (alt="").
+import SanityImage from '@/components/SanityImage.astro';
+import type { UsableCutout } from '@/lib/cinema-cover';
+import type { SanityImageObject } from '@/lib/pageBuilder.types';
+
+interface Props {
+  cutout: UsableCutout;
+  /** The cover's hotspot, for the local file's object-position. */
+  hotspot?: { x?: number; y?: number } | null;
+  width: number;
+  sizes: string;
+  loading?: 'lazy' | 'eager';
+  class?: string;
+}
+
+const { cutout, hotspot, width, sizes, loading = 'lazy', class: className } = Astro.props;
+const position =
+  hotspot && typeof hotspot.x === 'number' && typeof hotspot.y === 'number'
+    ? `object-position: ${(hotspot.x * 100).toFixed(1)}% ${(hotspot.y * 100).toFixed(1)}%`
+    : undefined;
+---
+
+<div class:list={['focus-image', 'cover-cut', className]}>
+  {cutout.source ? (
+    <SanityImage
+      source={cutout.source as unknown as SanityImageObject}
+      width={width}
+      sizes={sizes}
+      loading={loading}
+      alt=""
+      class="focus-image__img"
+    />
+  ) : (
+    <img
+      src={cutout.url}
+      alt=""
+      loading={loading}
+      decoding="async"
+      class="focus-image__img"
+      style={position}
+    />
+  )}
+</div>
