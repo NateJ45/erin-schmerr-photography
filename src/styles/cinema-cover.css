@@ -329,8 +329,22 @@ html.showcase-intro .cinema-open [data-hero-cut] {
   .cover__issue {
     font-size: 1.5rem;
   }
+  /* On a phone the photo fills the frame's height, so her head is wide on a
+     narrow screen and would cover most of the second line. Here the name sits
+     ABOVE the head instead: its foot lands just inside the top of her hair
+     (6% of the head down), so she still stands in front of the letters, and
+     the size is whatever fits between the header and that line (two lines of
+     0.84em), never over 19vw. The header is see-through over this frame, so
+     the clear at the top is its phone row height (3.75rem) plus a little air.
+     Desktop keeps the head-anchored rule above. */
   .cinema-open--cover {
-    --mast-fs: clamp(4rem, 22vw, 8rem);
+    --mast-top-clear: 4.25rem;
+    --mast-anchor: calc(var(--head-y) + var(--head-h) * 0.06);
+    --mast-fs: clamp(
+      2.75rem,
+      min(19vw, calc((var(--mast-anchor) - var(--mast-top-clear)) / 1.68)),
+      8rem
+    );
   }
 }
 

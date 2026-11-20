@@ -490,6 +490,20 @@ html:has(.cinema-open) .cinema {
 .bq-header[data-over] .bq-place {
   border-left-color: rgb(243 238 231 / 0.4);
 }
+/* Over the home cinema the place line steps aside: it crowded her giant name.
+   It fades back (still server-rendered, never removed) once the bar turns solid,
+   and stays on every other page. */
+html:has(.cinema-open) .bq-header[data-over] .bq-place {
+  opacity: 0;
+  visibility: hidden;
+}
+html:has(.cinema-open) .bq-header .bq-place {
+  transition:
+    color 500ms var(--ease-focus),
+    border-color 500ms var(--ease-focus),
+    opacity 500ms var(--ease-focus),
+    visibility 500ms;
+}
 .bq-header[data-over] .bq-header__nav > .bq-button {
   border-color: var(--jw-paper);
 }
