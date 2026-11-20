@@ -1,0 +1,62 @@
+---
+// scaffold-file: sessions
+// Safe to edit by hand
+// Page-builder block `sessionsOpening` (sessionSections.ts): the Sessions page
+// opens on one very large Instrument Serif line, the page's h1, with the words
+// typed in "turn" set in its italic (modelled on a closing line of big roman
+// type with italic words between). An optional small photo sits above the line
+// at the right, square-cornered; the eyebrow and a sentence sit on the one left
+// edge. Draws nothing without a line.
+//
+// SELF_CONTAINED: plain page ground, no surface prop.
+import FocusImage from '@/components/portfolio/FocusImage.astro';
+import { splitTurn } from '@/lib/sessions';
+import type { SanityImageObject } from '@/lib/pageBuilder.types';
+import type { PortfolioPhoto } from '@/lib/portfolio';
+import '@/styles/page-sessions.css';
+
+interface Props {
+  eyebrow?: string;
+  line?: string;
+  turn?: string;
+  intro?: string;
+  photo?: SanityImageObject | null;
+  headingId?: string;
+}
+
+const { eyebrow, line, turn, intro, photo, headingId = 'sessions-opening' } = Astro.props;
+const parts = splitTurn(line, turn);
+const hasPhoto = !!photo?.asset;
+---
+
+{line && (
+  <section class="bg-background" aria-labelledby={headingId}>
+    <div class="sx-opening mx-auto max-w-content px-m">
+      <div class="sx-opening__top">
+        {eyebrow && <p class="portfolio-label">{eyebrow}</p>}
+        {hasPhoto && (
+          <FocusImage
+            photo={photo as PortfolioPhoto}
+            width={480}
+            sizes="(min-width: 64rem) 16rem, 40vw"
+            crop={4 / 5}
+            loading="eager"
+            class="sx-opening__photo"
+          />
+        )}
+      </div>
+      <h1 id={headingId} class="sx-opening__line font-display">
+        {parts ? (
+          <>
+            {parts[0]}
+            <em>{parts[1]}</em>
+            {parts[2]}
+          </>
+        ) : (
+          line
+        )}
+      </h1>
+      {intro && <p class="sx-opening__intro text-lg text-muted-foreground">{intro}</p>}
+    </div>
+  </section>
+)}

@@ -1,0 +1,95 @@
+---
+// scaffold-file: sessions
+// Safe to edit by hand
+// Page-builder block `sessionSittings` (sessionSections.ts): the kinds of
+// session side by side, in ink on paper (a studio's offer sheet, not a pricing
+// table: no colour, no cards, no badges). Each column is a sample photo, the
+// sitting's number and name, a sentence, then the SAME ruled rows of what a
+// sitting includes; a row the sitting does not include is greyed in place, not
+// removed, so the columns compare line by line. The last row, "Investment
+// from", reads the figure typed in the Studio and is not drawn at all while
+// every sitting leaves it empty (showInvestment(), src/lib/sessions.ts).
+//
+// From 48rem the columns share rows through CSS subgrid, so a long name or line
+// in one column never knocks the rules out of line. Phones stack the columns,
+// each complete. Draws nothing without a named sitting.
+//
+// SELF_CONTAINED: plain page ground, no surface prop.
+import FocusImage from '@/components/portfolio/FocusImage.astro';
+import { roman, rowIncludes, showInvestment, sittingRows } from '@/lib/sessions';
+import type { ProjectedSessionSittingsSection } from '@/lib/pageBuilder.types';
+import type { PortfolioPhoto } from '@/lib/portfolio';
+import '@/styles/page-sessions.css';
+
+type Props = Omit<ProjectedSessionSittingsSection, '_type' | '_key'> & { headingId?: string };
+
+const {
+  eyebrow,
+  heading = 'The sittings',
+  intro,
+  sittings,
+  rows,
+  investmentLabel = 'Investment from',
+  headingId = 'session-sittings',
+} = Astro.props;
+
+const cols = (sittings ?? []).filter((s) => s?.name).slice(0, 3);
+const lines = sittingRows(rows);
+const priced = showInvestment(cols);
+// Head (photo, name, line), one track per included row, and the price row.
+const tracks = 3 + lines.length + (priced ? 1 : 0);
+---
+
+{cols.length > 0 && (
+  <section class="bg-background" aria-labelledby={headingId}>
+    <div class="mx-auto max-w-content px-m py-section-lg">
+      <header class="sx-head">
+        {eyebrow && <p class="portfolio-label mb-4">{eyebrow}</p>}
+        <h2 id={headingId} class="font-display text-h2">
+          {heading}
+        </h2>
+        {intro && <p class="mt-4 max-w-xl text-muted-foreground">{intro}</p>}
+      </header>
+      <div class="sx-sittings" style={`--sx-cols: ${cols.length}; --sx-tracks: ${tracks}`}>
+        {cols.map((s, i) => (
+          <article class="sx-sitting" aria-labelledby={`${headingId}-s${i + 1}`}>
+            <div class="sx-sitting__photo">
+              <FocusImage
+                photo={s.photo as PortfolioPhoto}
+                width={720}
+                sizes="(min-width: 48rem) 40vw, 100vw"
+                crop={4 / 5}
+                alt={s.photo?.alt ?? ''}
+              />
+            </div>
+            <h3 id={`${headingId}-s${i + 1}`} class="sx-sitting__name font-display">
+              <span class="sx-sitting__no portfolio-label">No. {roman(i + 1)}</span>
+              {s.name}
+            </h3>
+            <p class="sx-sitting__line text-muted-foreground">{s.line ?? ''}</p>
+            {lines.length > 0 && (
+              <ul class="sx-sitting__rows" role="list">
+                {lines.map((r) =>
+                  rowIncludes(r, i) ? (
+                    <li class="sx-row">{r.label}</li>
+                  ) : (
+                    <li class="sx-row sx-row--out">
+                      {r.label}
+                      <span class="sr-only"> (not part of this sitting)</span>
+                    </li>
+                  ),
+                )}
+              </ul>
+            )}
+            {priced && (
+              <p class="sx-row sx-row--price" data-investment>
+                <span>{investmentLabel}</span>
+                <span class="sx-row__figure font-display">{s.investmentFrom?.trim() || ''}</span>
+              </p>
+            )}
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+)}
