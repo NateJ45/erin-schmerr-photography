@@ -723,6 +723,78 @@ const SECTIONS: Record<string, unknown>[] = [
     signature: 'Your name',
   },
   // scaffold:end
+  // ── The Sessions page (sessionSections.ts). No money figure: the investment row stays hidden.
+  // scaffold: sessions
+  {
+    _type: 'sessionsOpening',
+    _key: 'sessions-opening',
+    eyebrow: 'Sessions',
+    line: 'A portrait, made slowly.',
+    turn: 'made slowly',
+    intro: 'A sentence on what a sitting feels like.',
+  },
+  {
+    _type: 'sessionSittings',
+    _key: 'session-sittings',
+    heading: 'The sittings',
+    sittings: [
+      { _key: 's1', name: 'Fine-art portrait', line: 'A sentence about it.', photo: image() },
+      { _key: 's2', name: 'Editorial collaboration', line: 'A sentence about it.', photo: image() },
+    ],
+    rows: [
+      { _key: 'r1', label: 'Styling', inFirst: true, inSecond: true },
+      { _key: 'r2', label: 'Hair and makeup', inFirst: true, inSecond: true },
+      { _key: 'r3', label: 'The reveal', inFirst: true, inSecond: true },
+      { _key: 'r4', label: 'Heirlooms', inFirst: true, inSecond: false },
+    ],
+  },
+  {
+    _type: 'sessionExperience',
+    _key: 'session-experience',
+    heading: 'The experience',
+    photo: image(),
+    steps: [
+      { _key: 'e1', title: 'Consultation', body: 'A sentence on the first conversation.' },
+      { _key: 'e2', title: 'Styling', body: 'A sentence on planning the look.' },
+      { _key: 'e3', title: 'The sitting', body: 'A sentence on the day.' },
+    ],
+  },
+  {
+    _type: 'heirloomsSpec',
+    _key: 'heirlooms',
+    heading: 'Heirlooms',
+    pieces: [
+      {
+        _key: 'p1',
+        kind: 'Print',
+        name: 'The fine-art print',
+        specs: [
+          { _key: 'a', label: 'Paper', value: 'Your paper' },
+          { _key: 'b', label: 'Size', value: 'Your sizes' },
+          { _key: 'c', label: 'Finish', value: 'Your finish' },
+        ],
+        photos: [image()],
+      },
+    ],
+  },
+  {
+    _type: 'investmentNote',
+    _key: 'investment-note',
+    heading: 'A note on investment',
+    body: [para('in1', 'A warm paragraph or two on how you think about the investment.')],
+    signature: 'Your name',
+  },
+  {
+    _type: 'sessionQuestions',
+    _key: 'session-questions',
+    heading: 'Questions',
+    items: [
+      { _key: 'q1', question: 'What should I wear?', answer: [para('qa1', 'Your answer.')] },
+      { _key: 'q2', question: 'How do I book?', answer: [para('qa2', 'Your answer.')] },
+    ],
+    cta: { _type: 'ctaBlock', label: 'Book a session', href: '/contact/' },
+  },
+  // scaffold:end
   // ── Hours and location (card 196) ──────────────────────────────────────────
   // These two fill themselves from Business info; on the wall they carry the
   // made-up facts below instead (the `facts` key exists only for fixtures).

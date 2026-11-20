@@ -105,6 +105,14 @@ const SECTION_ARMS = `
     _type == "coverHero" => { ..., portrait${IMAGE_PROJECTION}, primaryCta${CTA_PROJECTION}, secondaryCta${CTA_PROJECTION} }, // scaffold: stories
     _type == "crewSection" => { ..., link${CTA_PROJECTION} }, // scaffold: stories
     _type == "signedClose" => { ..., cta${CTA_PROJECTION} }, // scaffold: stories
+    // The Sessions page's blocks (sessionSections.ts).
+    // scaffold: sessions
+    _type == "sessionsOpening" => { ..., photo${IMAGE_PROJECTION} },
+    _type == "sessionSittings" => { ..., sittings[]{ ..., photo${IMAGE_PROJECTION} } },
+    _type == "sessionExperience" => { ..., photo${IMAGE_PROJECTION} },
+    _type == "heirloomsSpec" => { ..., pieces[]{ ..., photos[]${IMAGE_PROJECTION} } },
+    _type == "sessionQuestions" => { ..., cta${CTA_PROJECTION} },
+    // scaffold:end
     _type == "heroSection" => {
       ...,
       backgroundImage${IMAGE_PROJECTION},

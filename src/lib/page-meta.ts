@@ -73,11 +73,17 @@ export function realFaqs<T extends QA>(items: T[] | null | undefined): T[] {
   return (items ?? []).filter((f) => realText(f.question) && realText(plainText(f.answer)));
 }
 
-/** The questions in a page builder's fold-out sections (accordionSection), real answers only. */
+/**
+ * Blocks whose `items` are `{ question, answer }`: the builder kit's fold-outs and the Sessions
+ * page's questions (sessionSections.ts). A type missing from the dataset simply matches nothing.
+ */
+const FAQ_SECTION_TYPES = new Set(['accordionSection', 'sessionQuestions']);
+
+/** The questions in a page builder's fold-out sections, real answers only. */
 export function sectionFaqs(sections: unknown): QA[] {
   if (!Array.isArray(sections)) return [];
   const items = sections
-    .filter((s) => s && (s as { _type?: string })._type === 'accordionSection')
+    .filter((s) => s && FAQ_SECTION_TYPES.has((s as { _type?: string })._type ?? ''))
     .flatMap((s) => ((s as { items?: QA[] }).items ?? []) as QA[]);
   return realFaqs(items);
 }

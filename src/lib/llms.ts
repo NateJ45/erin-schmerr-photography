@@ -193,15 +193,25 @@ export function buildLlmsTxt(d: LlmsData): string {
 export function buildLlmsFull(d: LlmsData): string {
   const about = (d.aboutSections ?? []).flatMap(sectionText);
   const sessions = (d.sessionsSections ?? []) as Array<Record<string, unknown>>;
-  const sessionText = sessions.filter((s) => s?._type !== 'accordionSection').flatMap(sectionText);
+  // The fold-out questions, and the steps, of either the builder kit's blocks or the Sessions
+  // page's own (sessionSections.ts); a type missing from the dataset matches nothing.
+  const QA_TYPES = new Set(['accordionSection', 'sessionQuestions']);
+  const STEP_TYPES = new Set(['stepsRailSection', 'sessionExperience']);
+  const sessionText = sessions
+    .filter((s) => !QA_TYPES.has(String(s?._type)))
+    .flatMap((s) =>
+      s?._type === 'sessionsOpening' && realText(s.line)
+        ? [String(realText(s.line)), ...sectionText(s)]
+        : sectionText(s),
+    );
   const steps = sessions
-    .filter((s) => s?._type === 'stepsRailSection')
+    .filter((s) => STEP_TYPES.has(String(s?._type)))
     .flatMap((s) => (s.steps as Array<{ title?: string; body?: unknown }>) ?? [])
     .filter((st) => realText(st?.title))
     .map((st) => `- ${st.title}: ${plainText(st.body)}`);
   const faqs = realFaqs(
     sessions
-      .filter((s) => s?._type === 'accordionSection')
+      .filter((s) => QA_TYPES.has(String(s?._type)))
       .flatMap((s) => (s.items as Array<{ question?: string; answer?: unknown }>) ?? []),
   );
 

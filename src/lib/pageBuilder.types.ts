@@ -524,6 +524,84 @@ export interface ProjectedProofStripSection {
   quotes?: { _key: string; text?: string; credit?: string }[] | null;
 }
 // scaffold:end
+// scaffold: sessions
+/** sessionsOpening: one very large line with an italic turn (SessionsOpening.astro). */
+export interface ProjectedSessionsOpeningSection {
+  _type: 'sessionsOpening';
+  _key: string;
+  eyebrow?: string;
+  line?: string;
+  turn?: string;
+  intro?: string;
+  photo?: SanityImageObject | null;
+}
+/** sessionSittings: the sittings side by side on the same ruled rows (SessionSittings.astro). */
+export interface ProjectedSessionSittingsSection {
+  _type: 'sessionSittings';
+  _key: string;
+  eyebrow?: string;
+  heading?: string;
+  intro?: string;
+  sittings?:
+    | {
+        _key: string;
+        name?: string;
+        line?: string;
+        photo?: SanityImageObject | null;
+        investmentFrom?: string;
+      }[]
+    | null;
+  rows?:
+    | { _key: string; label?: string; inFirst?: boolean; inSecond?: boolean; inThird?: boolean }[]
+    | null;
+  investmentLabel?: string;
+}
+/** sessionExperience: a pinned photo beside numbered steps (SessionExperience.astro). */
+export interface ProjectedSessionExperienceSection {
+  _type: 'sessionExperience';
+  _key: string;
+  eyebrow?: string;
+  heading?: string;
+  photo?: SanityImageObject | null;
+  steps?: { _key: string; title?: string; body?: string }[] | null;
+}
+/** heirloomsSpec: prints, albums and wall pieces as a spec sheet (HeirloomsSpec.astro). */
+export interface ProjectedHeirloomsSpecSection {
+  _type: 'heirloomsSpec';
+  _key: string;
+  eyebrow?: string;
+  heading?: string;
+  intro?: string;
+  pieces?:
+    | {
+        _key: string;
+        kind?: string;
+        name?: string;
+        body?: string;
+        specs?: { _key: string; label?: string; value?: string }[] | null;
+        photos?: (SanityImageObject & { _key?: string })[] | null;
+      }[]
+    | null;
+}
+/** investmentNote: a warm note beside its heading (InvestmentNote.astro). */
+export interface ProjectedInvestmentNoteSection {
+  _type: 'investmentNote';
+  _key: string;
+  eyebrow?: string;
+  heading?: string;
+  body?: PortableTextBlock[] | null;
+  signature?: string;
+}
+/** sessionQuestions: native fold-out questions, then the booking link (SessionQuestions.astro). */
+export interface ProjectedSessionQuestionsSection {
+  _type: 'sessionQuestions';
+  _key: string;
+  eyebrow?: string;
+  heading?: string;
+  items?: { _key: string; question?: string; answer?: PortableTextBlock[] | null }[] | null;
+  cta?: ProjectedCtaBlock | null;
+}
+// scaffold:end
 
 // ---------------------------------------------------------------------------
 // Discriminated union
@@ -566,5 +644,12 @@ export type PageBuilderBlock =
   | ProjectedPublishedMarqueeSection // scaffold: press
   | ProjectedTearSheetStackSection // scaffold: press
   | ProjectedProofStripSection // scaffold: press
+  // The Sessions page (sessionSections.ts)
+  | ProjectedSessionsOpeningSection // scaffold: sessions
+  | ProjectedSessionSittingsSection // scaffold: sessions
+  | ProjectedSessionExperienceSection // scaffold: sessions
+  | ProjectedHeirloomsSpecSection // scaffold: sessions
+  | ProjectedInvestmentNoteSection // scaffold: sessions
+  | ProjectedSessionQuestionsSection // scaffold: sessions
   // The builder kit (builderBlocks.types.ts, PORTS.md card 173)
   | BuilderPageBlock;
