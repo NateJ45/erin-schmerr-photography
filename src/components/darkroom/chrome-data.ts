@@ -1,13 +1,14 @@
 // Safe to edit by hand
 // =============================================================================
-// The chrome's data: the phone menu's photo frame and the footer's end credits
+// The chrome's data: the phone menu's photo frame and the story credits
 // (DESIGN.md "Components"). The folder keeps the darkroom name from 2026-11-18.
 // =============================================================================
 // Everything here is DERIVED from content the site already shows (rule 15):
 //   - covers: the featured story covers, for the phone menu's photo frame. A page
 //     whose picture is already used (a press tear sheet for /press/, a story cover
 //     for /stories/) gets that picture.
-//   - credits: the footer's end credits. "Starring" is every person credited on
+//   - credits: the old end-credits footer's lists (the footer stopped drawing them
+//     on 2026-11-20; kept for reuse). "Starring" is every person credited on
 //     a story, "On location at" the stories' places and the venues credited on
 //     them, "As published in" the press magazines.
 //
