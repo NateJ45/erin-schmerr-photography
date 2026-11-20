@@ -16,8 +16,8 @@
 //   - Details Vault "Cursor Trail Image" (vault:section-02): her photographs spawn as rounded
 //     cards behind the type as a mouse moves across the field (scale effect, the Vault's
 //     config). Mouse only here: on touch the Vault's press-drag would take the page's scroll.
-// Her photographs also run INSIDE the giant name: a strip of story covers that travels sideways with the scroll,
-// clipped to the letters by an SVG clipPath (textLength pins the word to the column, so it
+// Her photographs also fill the giant name: one photograph per letter, each cropped to its
+// richest part and drifting up with the scroll, clipped to the letters by an SVG clipPath (textLength pins the word to the column, so it
 // never scrolls sideways). With no photos (CI, a fresh clone) the letters are solid amber.
 //
 // Bands, top to bottom:
@@ -53,7 +53,11 @@ import WhereNext from '@/components/WhereNext.astro';
 import ActionBar from '@/components/ActionBar.astro';
 import { resolveBusinessFacts, todayBarLine, type RawBusinessFacts } from '@/lib/business-facts';
 import ToConfirm from '@/components/business/ToConfirm.astro';
-import { getDarkroomData } from '@/components/darkroom/chrome-data';
+import {
+  getDarkroomData,
+  nameLetterPrints,
+  type NameTile,
+} from '@/components/darkroom/chrome-data';
 import '@/styles/chrome-footer.css';
 
 interface NewsletterConfig {
@@ -147,8 +151,8 @@ const places = placeNames.map((name) => {
 });
 
 // Her photographs: the featured story covers the phone menu already uses (read once per
-// build, chrome-data.ts). Only real pictures; tone placeholders are left out, so with no
-// stories the name is solid and there is no trail.
+// build, chrome-data.ts), for the cursor trail. Only real pictures; tone placeholders are
+// left out, so with no stories there is no trail (and the name, below, is solid amber).
 const photos = (await getDarkroomData()).covers.filter((c) => c.src);
 
 // The name's clip geometry (objectBoundingBox units, see the clipPath below). The word is
@@ -163,6 +167,31 @@ const NAME_BASE = 402;
 const NAME_FS = 531;
 const NAME_ADV = 1031;
 const NAME_X = -8;
+
+// One tile per letter, in the same NAME_W x NAME_H units: each letter holds ONE photograph,
+// cropped (chrome-data.ts, NAME_LETTER_PICKS) to the rich part of it, so no letter lands on
+// sky or a pale wall. Measured from the glyphs' advances at the textLength above (T -8 to 285,
+// a to 563, t to 743, e to 1023) and their ink tops (cap 0, t 0.2, a and e 0.34 of the
+// height), each a little wider than its ink. A fork with another word re-measures these too.
+const NAME_TILES = [
+  { x: 0, y: 0, w: 290, h: 1 },
+  { x: 283, y: 0.34, w: 282, h: 0.66 },
+  { x: 561, y: 0.2, w: 184, h: 0.8 },
+  { x: 741, y: 0.34, w: 259, h: 0.66 },
+];
+// The picture is drawn this much taller than its tile, so the scrubbed drift can move it up.
+const NAME_DRIFT = 1.1;
+const letterPrints = await nameLetterPrints(
+  NAME_TILES.map((t): NameTile => ({ width: t.w / NAME_W, aspect: t.w / (t.h * NAME_H) })),
+  NAME_DRIFT,
+);
+const pct = (n: number) => `${+(n * 100).toFixed(3)}%`;
+const letters = NAME_TILES.flatMap((t, i) => {
+  const p = letterPrints[i];
+  if (!p?.src) return [];
+  const style = `left: ${pct(t.x / NAME_W)}; top: ${pct(t.y)}; width: ${pct(t.w / NAME_W)}; height: ${pct(t.h)}`;
+  return [{ ...p, style }];
+});
 
 const currentYear = new Date().getFullYear();
 const LEGAL_LINKS = chrome.legalNav;
@@ -319,7 +348,7 @@ const actionBar =
       <div class="bqf-name-band">
         <a
           href="/"
-          class:list={['bqf-name', photos.length > 0 && 'bqf-name--photos']}
+          class:list={['bqf-name', letters.length > 0 && 'bqf-name--photos']}
           data-bqf-name
           aria-label={`${site.name} home`}
           style={`--bqf-name-ratio: ${NAME_W} / ${NAME_H}`}
@@ -341,21 +370,18 @@ const actionBar =
             </defs>
           </svg>
           <span class="bqf-name__fill" aria-hidden="true">
-            {photos.length > 0 && (
-              <span class="bqf-name__strip" data-bqf-strip>
-                {[...photos, ...photos].map((p) => (
-                  <img
-                    src={p.src}
-                    srcset={p.srcset}
-                    width="320"
-                    height="400"
-                    alt=""
-                    loading="lazy"
-                    decoding="async"
-                  />
-                ))}
+            {letters.map((p) => (
+              <span class="bqf-name__tile" style={p.style}>
+                <img
+                  src={p.src}
+                  srcset={p.srcset}
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                  data-bqf-letter-img
+                />
               </span>
-            )}
+            ))}
           </span>
         </a>
       </div>
@@ -638,7 +664,7 @@ const actionBar =
     if (!stage || !html.classList.contains('motion')) return;
     const inner = stage.querySelector<HTMLElement>('[data-bqf-inner]');
     const name = stage.querySelector<HTMLElement>('[data-bqf-name]');
-    const strip = stage.querySelector<HTMLElement>('[data-bqf-strip]');
+    const letterImgs = stage.querySelectorAll<HTMLElement>('[data-bqf-letter-img]');
     const trail = stage.querySelector<HTMLElement>('[data-bqf-trail]');
 
     const [{ gsap }, { ScrollTrigger }] = await Promise.all([
@@ -709,14 +735,15 @@ const actionBar =
           },
         },
       );
-      // The photographs travel sideways through the letters with the scroll (scrubbed, so
-      // nothing moves on its own and no pause control is needed, WCAG 2.2.2).
-      if (strip) {
+      // Each letter's photograph drifts up through its letter with the scroll (scrubbed, so
+      // nothing moves on its own and no pause control is needed, WCAG 2.2.2). The picture is
+      // NAME_DRIFT (1.1) times its tile's height, so 9% of it is spare and no edge shows.
+      if (letterImgs.length > 0) {
         gsap.fromTo(
-          strip,
-          { xPercent: 0 },
+          letterImgs,
+          { yPercent: 0 },
           {
-            xPercent: -25,
+            yPercent: -9,
             ease: 'none',
             scrollTrigger: { trigger: stage, start: 'top bottom', end: maxScroll, scrub: 1.2 },
           },

@@ -375,24 +375,27 @@ body:has(main :is(.signed-close, [data-final-cta])) .bqf-close {
 .bqf-name:not(.bqf-name--photos):hover .bqf-name__fill {
   background: var(--bqf-amber-soft);
 }
-.bqf-name__strip {
-  display: flex;
-  width: max-content;
-  height: 100%;
-}
-.bqf-name__strip img {
+/* One tile per letter (placed by Footer.astro's NAME_TILES), each holding one photograph
+   already cropped to its rich part (chrome-data.ts). The picture is 110% of its tile's height
+   (NAME_DRIFT) so the scrubbed drift can carry it up without showing an edge. */
+.bqf-name__tile {
+  position: absolute;
   display: block;
-  height: 100%;
-  width: auto;
-  aspect-ratio: 4 / 5;
+  overflow: hidden;
+}
+.bqf-name__tile img {
+  display: block;
+  width: 100%;
+  height: 110%;
+  max-width: none;
   object-fit: cover;
   transition: filter 500ms var(--ease-focus);
 }
 /* A warm jewel tint at rest, the true photographs on hover. */
-.bqf-name--photos .bqf-name__strip img {
-  filter: sepia(0.25) saturate(1.15);
+.bqf-name--photos .bqf-name__tile img {
+  filter: sepia(0.2) saturate(1.15);
 }
-.bqf-name--photos:hover .bqf-name__strip img {
+.bqf-name--photos:hover .bqf-name__tile img {
   filter: none;
 }
 
@@ -464,7 +467,7 @@ body:has(main :is(.signed-close, [data-final-cta])) .bqf-close {
     transform: none !important;
   }
   .bqf-trail,
-  .bqf-name__strip,
+  .bqf-name__tile,
   .bqf-close__arrow {
     display: none;
   }
