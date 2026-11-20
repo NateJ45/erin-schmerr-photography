@@ -60,6 +60,8 @@ The four core pages (home, about, services, process) and every custom `page` doc
 
 Blocks deliberately carry no `backgroundColor` field. Background assignment is `SectionRenderer`'s responsibility.
 
+**This site's Sessions blocks (scaffold capability `sessions`, 2026-11-20).** `sessionSections.ts` is spread into `pageSectionSchemas`, so every page builder offers `sessionsOpening`, `sessionSittings`, `sessionExperience`, `heirloomsSpec`, `investmentNote` and `sessionQuestions` (the "Sessions" insert group). All SELF_CONTAINED. Detail in DESIGN.md ("Sessions page") and `docs/claude/routes.md`.
+
 ### Rich section types (`src/sanity/schemaTypes/richSections.ts`)
 
 Ten additional types for the core pages. These are richer blocks that auto-populate from Sanity collections (services, testimonials, process steps, philosophy points) or use structured inline data:

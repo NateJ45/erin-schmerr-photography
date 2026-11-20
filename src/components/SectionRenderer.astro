@@ -48,6 +48,12 @@ import ProofStrip from '@/components/portfolio/ProofStrip.astro'; // scaffold: p
 import CraftNotes from '@/components/portfolio/CraftNotes.astro'; // scaffold: stories
 import CrewList from '@/components/portfolio/CrewList.astro'; // scaffold: stories
 import SignedClose from '@/components/portfolio/SignedClose.astro'; // scaffold: stories
+import SessionsOpening from '@/components/sessions/SessionsOpening.astro'; // scaffold: sessions
+import SessionSittings from '@/components/sessions/SessionSittings.astro'; // scaffold: sessions
+import SessionExperience from '@/components/sessions/SessionExperience.astro'; // scaffold: sessions
+import HeirloomsSpec from '@/components/sessions/HeirloomsSpec.astro'; // scaffold: sessions
+import InvestmentNote from '@/components/sessions/InvestmentNote.astro'; // scaffold: sessions
+import SessionQuestions from '@/components/sessions/SessionQuestions.astro'; // scaffold: sessions
 import FormSection from '@/components/sections/FormSection.astro';
 import BuilderBlock from '@/components/builder-blocks/BuilderBlock.astro';
 import { isBuilderBlock } from '@/lib/builderBlocks.types';
@@ -466,6 +472,64 @@ const editKeyOf = (block: unknown) => {
           body={s.body}
           cta={s.cta}
           signature={s.signature}
+          headingId={headingId}
+          primaryVariant={ctaVariant(rowIndex)}
+        />
+      ) : // scaffold-branch: sessions
+      s._type === 'sessionsOpening' ? (
+        <SessionsOpening
+          eyebrow={s.eyebrow}
+          line={s.line}
+          turn={s.turn}
+          intro={s.intro}
+          photo={s.photo}
+          headingId={headingId}
+        />
+      ) : // scaffold-branch: sessions
+      s._type === 'sessionSittings' ? (
+        <SessionSittings
+          eyebrow={s.eyebrow}
+          heading={s.heading}
+          intro={s.intro}
+          sittings={s.sittings}
+          rows={s.rows}
+          investmentLabel={s.investmentLabel}
+          headingId={headingId}
+        />
+      ) : // scaffold-branch: sessions
+      s._type === 'sessionExperience' ? (
+        <SessionExperience
+          eyebrow={s.eyebrow}
+          heading={s.heading}
+          photo={s.photo}
+          steps={s.steps}
+          headingId={headingId}
+        />
+      ) : // scaffold-branch: sessions
+      s._type === 'heirloomsSpec' ? (
+        <HeirloomsSpec
+          eyebrow={s.eyebrow}
+          heading={s.heading}
+          intro={s.intro}
+          pieces={s.pieces}
+          headingId={headingId}
+        />
+      ) : // scaffold-branch: sessions
+      s._type === 'investmentNote' ? (
+        <InvestmentNote
+          eyebrow={s.eyebrow}
+          heading={s.heading}
+          body={s.body}
+          signature={s.signature}
+          headingId={headingId}
+        />
+      ) : // scaffold-branch: sessions
+      s._type === 'sessionQuestions' ? (
+        <SessionQuestions
+          eyebrow={s.eyebrow}
+          heading={s.heading}
+          items={s.items}
+          cta={s.cta}
           headingId={headingId}
           primaryVariant={ctaVariant(rowIndex)}
         />

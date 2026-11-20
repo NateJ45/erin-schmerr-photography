@@ -1,0 +1,25 @@
+---
+// scaffold-file: sessions
+// Safe to edit by hand
+//
+// THE SESSIONS PAGE IN FIXED DATA: the six Sessions blocks in their intended
+// order (src/lib/sessions-fixture.ts), rendered through the real
+// SectionRenderer, so the page can be seen and tested before the photographer's
+// own words and photos are typed into the Studio. tests/sessions.spec.ts drives
+// it. Placeholder copy only; no money figure. noindex, out of the sitemap
+// ('/styleguide' is filtered in astro.config.mjs) and under a reserved slug,
+// like the other walls.
+
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import SectionRenderer from '@/components/SectionRenderer.astro';
+import { site } from '@/data/site';
+import { SESSIONS_FIXTURE } from '@/lib/sessions-fixture';
+---
+
+<BaseLayout
+  title={`Sessions page, fixed data | ${site.name}`}
+  description="The Sessions page in placeholder data. Not for visitors."
+  noindex
+>
+  <SectionRenderer sections={SESSIONS_FIXTURE} idPrefix="sx" />
+</BaseLayout>
