@@ -141,6 +141,11 @@ test.describe('Builder kit blocks', () => {
   });
 
   test('hub: the index jumps to a group and follows the scroll', async ({ page }) => {
+    // A visitor's jump after the page has loaded. Before `load` the wall above the hub is still
+    // laying out (its pictures, the motion's pinned spacers), so a glide could land short for
+    // reasons that are not the hub's. The Footer's re-measure used to cancel the glide even
+    // after load (fixed 2026-11-20: it now waits for the scrolling to stop).
+    await page.waitForLoadState('load');
     const hub = page.locator(box('hubSection'));
     const jumps = hub.locator('[data-hub-jump]');
     await expect(jumps).toHaveCount(3);
