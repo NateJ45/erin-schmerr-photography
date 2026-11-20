@@ -1,0 +1,66 @@
+/* Safe to edit by hand
+   This site's button family for CtaLink.astro (2026-11-20, replaced the starter's rounded,
+   pressable bronze pill and outline). Square, small tracked Jost capitals, no shadow, no press
+   scale; the same shape as the header's `.bq-button` (chrome-header.css). Rule 17: one family. */
+
+.tate-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding-inline: 1.75rem;
+  border: 1px solid transparent;
+  border-radius: 0;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  line-height: 1.2;
+  text-align: center;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition:
+    background-color 300ms var(--ease-focus),
+    border-color 300ms var(--ease-focus),
+    color 300ms var(--ease-focus);
+}
+.tate-cta:focus-visible {
+  outline: 1px solid var(--foreground);
+  outline-offset: 4px;
+}
+
+/* The page's one filled button: paper on Dusk; ink on hover. */
+.tate-cta--primary {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--primary-foreground);
+}
+.tate-cta--primary:hover {
+  background: var(--foreground);
+  border-color: var(--foreground);
+  color: var(--background);
+}
+
+/* The outlined ink button; fills with ink on hover. */
+.tate-cta--secondary {
+  background: transparent;
+  border-color: var(--foreground);
+  color: var(--foreground);
+}
+.tate-cta--secondary:hover {
+  background: var(--foreground);
+  color: var(--background);
+}
+
+/* Over a photograph: paper outline and paper text; the filled one stays Dusk. */
+.tate-cta--secondary.tate-cta--on-dark {
+  border-color: var(--primary-foreground);
+  color: var(--primary-foreground);
+}
+.tate-cta--secondary.tate-cta--on-dark:hover {
+  background: var(--primary-foreground);
+  color: var(--foreground);
+}
+.tate-cta--on-dark:focus-visible {
+  outline-color: var(--primary-foreground);
+}

@@ -1230,6 +1230,24 @@ export type NavLink = {
   href?: string;
 };
 
+export type TestimonialReference = {
+  _ref: string;
+  _type: 'reference';
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: 'testimonial';
+};
+
+export type KindWords = {
+  _type: 'kindWords';
+  heading?: string;
+  quotes?: Array<
+    {
+      _key: string;
+    } & TestimonialReference
+  >;
+  crossfade?: boolean;
+};
+
 export type ProcessFigures = {
   _type: 'processFigures';
   label?: string;
@@ -1574,13 +1592,6 @@ export type StorySection = {
   serviceAreaLine?: string;
 };
 
-export type TestimonialReference = {
-  _ref: string;
-  _type: 'reference';
-  _weak?: boolean;
-  [internalGroqTypeReferenceTo]?: 'testimonial';
-};
-
 export type TestimonialsSection = {
   _type: 'testimonialsSection';
   eyebrow?: string;
@@ -1814,6 +1825,17 @@ export type SectionPreset = {
       } & DynamicListSection)
   >;
   note?: string;
+};
+
+export type CtaBlock = {
+  _type: 'ctaBlock';
+  label?: string;
+  linkType?: 'internal' | 'external' | 'email' | 'phone';
+  internalLink?: HomePageReference | AboutPageReference | ContactPageReference | PageReference;
+  externalUrl?: string;
+  emailAddress?: string;
+  phoneNumber?: string;
+  openInNewTab?: boolean;
 };
 
 export type SessionQuestions = {
@@ -2938,157 +2960,17 @@ export type PrivacyPage = {
   pageBuilder?: Array<
     | ({
         _key: string;
-      } & HeroSection)
+      } & KindWords)
     | ({
         _key: string;
-      } & RichTextSection)
+      } & PressContents)
     | ({
         _key: string;
-      } & ImageTextSection)
-    | ({
-        _key: string;
-      } & GallerySection)
-    | ({
-        _key: string;
-      } & QuoteSection)
-    | ({
-        _key: string;
-      } & StatSection)
-    | ({
-        _key: string;
-      } & CtaBandSection)
-    | ({
-        _key: string;
-      } & VideoSection)
-    | ({
-        _key: string;
-      } & SpacerSection)
-    | ({
-        _key: string;
-      } & LogoStripSection)
-    | ({
-        _key: string;
-      } & EmbedSection)
-    | ({
-        _key: string;
-      } & RsvpSection)
-    | ({
-        _key: string;
-      } & LatestVideoSection)
-    | ({
-        _key: string;
-      } & DocumentsSection)
-    | ({
-        _key: string;
-      } & FormSection)
-    | ({
-        _key: string;
-      } & ColumnsSection)
-    | ({
-        _key: string;
-      } & ButtonRowSection)
-    | ({
-        _key: string;
-      } & PhotoSection)
-    | ({
-        _key: string;
-      } & AccordionSection)
-    | ({
-        _key: string;
-      } & TabsSection)
-    | ({
-        _key: string;
-      } & CountdownSection)
-    | ({
-        _key: string;
-      } & NoticeSection)
-    | ({
-        _key: string;
-      } & TimelineSection)
-    | ({
-        _key: string;
-      } & LetterSection)
-    | ({
-        _key: string;
-      } & EventDetailsSection)
-    | ({
-        _key: string;
-      } & ScheduleSection)
-    | ({
-        _key: string;
-      } & PhotoCardsSection)
-    | ({
-        _key: string;
-      } & ContactCardSection)
-    | ({
-        _key: string;
-      } & ProgressSection)
-    | ({
-        _key: string;
-      } & NewsletterSection)
-    | ({
-        _key: string;
-      } & CalendarSubscribeSection)
-    | ({
-        _key: string;
-      } & IconCardsSection)
-    | ({
-        _key: string;
-      } & StepsRailSection)
-    | ({
-        _key: string;
-      } & HubSection)
-    | ({
-        _key: string;
-      } & HoursSection)
-    | ({
-        _key: string;
-      } & MapSection)
-    | ({
-        _key: string;
-      } & SessionsOpening)
-    | ({
-        _key: string;
-      } & SessionSittings)
-    | ({
-        _key: string;
-      } & SessionExperience)
-    | ({
-        _key: string;
-      } & HeirloomsSpec)
-    | ({
-        _key: string;
-      } & InvestmentNote)
-    | ({
-        _key: string;
-      } & SessionQuestions)
-    | ({
-        _key: string;
-      } & SyncedSection)
-    | ({
-        _key: string;
-      } & StorySection)
-    | ({
-        _key: string;
-      } & TeamSection)
-    | ({
-        _key: string;
-      } & DynamicListSection)
+      } & SignedClose)
     | ({
         _key: string;
       } & PrivacyPolicySection)
   >;
-};
-
-export type CtaBlock = {
-  _type: 'ctaBlock';
-  label?: string;
-  linkType?: 'internal' | 'external' | 'email' | 'phone';
-  internalLink?: HomePageReference | AboutPageReference | ContactPageReference | PageReference;
-  externalUrl?: string;
-  emailAddress?: string;
-  phoneNumber?: string;
-  openInNewTab?: boolean;
 };
 
 export type Page = {
@@ -3229,6 +3111,15 @@ export type Page = {
     | ({
         _key: string;
       } & SyncedSection)
+    | ({
+        _key: string;
+      } & KindWords)
+    | ({
+        _key: string;
+      } & PressContents)
+    | ({
+        _key: string;
+      } & SignedClose)
   >;
   addToMainNav?: boolean;
   navGroup?: 'top' | 'services' | 'resources';
@@ -3342,142 +3233,13 @@ export type ContactPage = {
   pageBuilder?: Array<
     | ({
         _key: string;
-      } & HeroSection)
+      } & KindWords)
     | ({
         _key: string;
-      } & RichTextSection)
+      } & PressContents)
     | ({
         _key: string;
-      } & ImageTextSection)
-    | ({
-        _key: string;
-      } & GallerySection)
-    | ({
-        _key: string;
-      } & QuoteSection)
-    | ({
-        _key: string;
-      } & StatSection)
-    | ({
-        _key: string;
-      } & CtaBandSection)
-    | ({
-        _key: string;
-      } & VideoSection)
-    | ({
-        _key: string;
-      } & SpacerSection)
-    | ({
-        _key: string;
-      } & LogoStripSection)
-    | ({
-        _key: string;
-      } & EmbedSection)
-    | ({
-        _key: string;
-      } & RsvpSection)
-    | ({
-        _key: string;
-      } & LatestVideoSection)
-    | ({
-        _key: string;
-      } & DocumentsSection)
-    | ({
-        _key: string;
-      } & FormSection)
-    | ({
-        _key: string;
-      } & ColumnsSection)
-    | ({
-        _key: string;
-      } & ButtonRowSection)
-    | ({
-        _key: string;
-      } & PhotoSection)
-    | ({
-        _key: string;
-      } & AccordionSection)
-    | ({
-        _key: string;
-      } & TabsSection)
-    | ({
-        _key: string;
-      } & CountdownSection)
-    | ({
-        _key: string;
-      } & NoticeSection)
-    | ({
-        _key: string;
-      } & TimelineSection)
-    | ({
-        _key: string;
-      } & LetterSection)
-    | ({
-        _key: string;
-      } & EventDetailsSection)
-    | ({
-        _key: string;
-      } & ScheduleSection)
-    | ({
-        _key: string;
-      } & PhotoCardsSection)
-    | ({
-        _key: string;
-      } & ContactCardSection)
-    | ({
-        _key: string;
-      } & ProgressSection)
-    | ({
-        _key: string;
-      } & NewsletterSection)
-    | ({
-        _key: string;
-      } & CalendarSubscribeSection)
-    | ({
-        _key: string;
-      } & IconCardsSection)
-    | ({
-        _key: string;
-      } & StepsRailSection)
-    | ({
-        _key: string;
-      } & HubSection)
-    | ({
-        _key: string;
-      } & HoursSection)
-    | ({
-        _key: string;
-      } & MapSection)
-    | ({
-        _key: string;
-      } & SessionsOpening)
-    | ({
-        _key: string;
-      } & SessionSittings)
-    | ({
-        _key: string;
-      } & SessionExperience)
-    | ({
-        _key: string;
-      } & HeirloomsSpec)
-    | ({
-        _key: string;
-      } & InvestmentNote)
-    | ({
-        _key: string;
-      } & SessionQuestions)
-    | ({
-        _key: string;
-      } & SyncedSection)
-    | ({
-        _key: string;
-      } & StorySection)
-    | ({
-        _key: string;
-      } & TeamSection)
-    | ({
-        _key: string;
-      } & DynamicListSection)
+      } & SignedClose)
     | ({
         _key: string;
       } & ContactFormSection)
@@ -3494,142 +3256,13 @@ export type AboutPage = {
   pageBuilder?: Array<
     | ({
         _key: string;
-      } & HeroSection)
+      } & KindWords)
     | ({
         _key: string;
-      } & RichTextSection)
+      } & PressContents)
     | ({
         _key: string;
-      } & ImageTextSection)
-    | ({
-        _key: string;
-      } & GallerySection)
-    | ({
-        _key: string;
-      } & QuoteSection)
-    | ({
-        _key: string;
-      } & StatSection)
-    | ({
-        _key: string;
-      } & CtaBandSection)
-    | ({
-        _key: string;
-      } & VideoSection)
-    | ({
-        _key: string;
-      } & SpacerSection)
-    | ({
-        _key: string;
-      } & LogoStripSection)
-    | ({
-        _key: string;
-      } & EmbedSection)
-    | ({
-        _key: string;
-      } & RsvpSection)
-    | ({
-        _key: string;
-      } & LatestVideoSection)
-    | ({
-        _key: string;
-      } & DocumentsSection)
-    | ({
-        _key: string;
-      } & FormSection)
-    | ({
-        _key: string;
-      } & ColumnsSection)
-    | ({
-        _key: string;
-      } & ButtonRowSection)
-    | ({
-        _key: string;
-      } & PhotoSection)
-    | ({
-        _key: string;
-      } & AccordionSection)
-    | ({
-        _key: string;
-      } & TabsSection)
-    | ({
-        _key: string;
-      } & CountdownSection)
-    | ({
-        _key: string;
-      } & NoticeSection)
-    | ({
-        _key: string;
-      } & TimelineSection)
-    | ({
-        _key: string;
-      } & LetterSection)
-    | ({
-        _key: string;
-      } & EventDetailsSection)
-    | ({
-        _key: string;
-      } & ScheduleSection)
-    | ({
-        _key: string;
-      } & PhotoCardsSection)
-    | ({
-        _key: string;
-      } & ContactCardSection)
-    | ({
-        _key: string;
-      } & ProgressSection)
-    | ({
-        _key: string;
-      } & NewsletterSection)
-    | ({
-        _key: string;
-      } & CalendarSubscribeSection)
-    | ({
-        _key: string;
-      } & IconCardsSection)
-    | ({
-        _key: string;
-      } & StepsRailSection)
-    | ({
-        _key: string;
-      } & HubSection)
-    | ({
-        _key: string;
-      } & HoursSection)
-    | ({
-        _key: string;
-      } & MapSection)
-    | ({
-        _key: string;
-      } & SessionsOpening)
-    | ({
-        _key: string;
-      } & SessionSittings)
-    | ({
-        _key: string;
-      } & SessionExperience)
-    | ({
-        _key: string;
-      } & HeirloomsSpec)
-    | ({
-        _key: string;
-      } & InvestmentNote)
-    | ({
-        _key: string;
-      } & SessionQuestions)
-    | ({
-        _key: string;
-      } & SyncedSection)
-    | ({
-        _key: string;
-      } & StorySection)
-    | ({
-        _key: string;
-      } & TeamSection)
-    | ({
-        _key: string;
-      } & DynamicListSection)
+      } & SignedClose)
     | ({
         _key: string;
       } & AboutOpening)
@@ -3642,12 +3275,6 @@ export type AboutPage = {
     | ({
         _key: string;
       } & ProcessFigures)
-    | ({
-        _key: string;
-      } & PressContents)
-    | ({
-        _key: string;
-      } & SignedClose)
   >;
   seoTitle?: string;
   seoDescription?: string;
@@ -3760,145 +3387,13 @@ export type HomePage = {
   pageBuilder?: Array<
     | ({
         _key: string;
-      } & HeroSection)
+      } & KindWords)
     | ({
         _key: string;
-      } & RichTextSection)
+      } & PressContents)
     | ({
         _key: string;
-      } & ImageTextSection)
-    | ({
-        _key: string;
-      } & GallerySection)
-    | ({
-        _key: string;
-      } & QuoteSection)
-    | ({
-        _key: string;
-      } & StatSection)
-    | ({
-        _key: string;
-      } & CtaBandSection)
-    | ({
-        _key: string;
-      } & VideoSection)
-    | ({
-        _key: string;
-      } & SpacerSection)
-    | ({
-        _key: string;
-      } & LogoStripSection)
-    | ({
-        _key: string;
-      } & EmbedSection)
-    | ({
-        _key: string;
-      } & RsvpSection)
-    | ({
-        _key: string;
-      } & LatestVideoSection)
-    | ({
-        _key: string;
-      } & DocumentsSection)
-    | ({
-        _key: string;
-      } & FormSection)
-    | ({
-        _key: string;
-      } & ColumnsSection)
-    | ({
-        _key: string;
-      } & ButtonRowSection)
-    | ({
-        _key: string;
-      } & PhotoSection)
-    | ({
-        _key: string;
-      } & AccordionSection)
-    | ({
-        _key: string;
-      } & TabsSection)
-    | ({
-        _key: string;
-      } & CountdownSection)
-    | ({
-        _key: string;
-      } & NoticeSection)
-    | ({
-        _key: string;
-      } & TimelineSection)
-    | ({
-        _key: string;
-      } & LetterSection)
-    | ({
-        _key: string;
-      } & EventDetailsSection)
-    | ({
-        _key: string;
-      } & ScheduleSection)
-    | ({
-        _key: string;
-      } & PhotoCardsSection)
-    | ({
-        _key: string;
-      } & ContactCardSection)
-    | ({
-        _key: string;
-      } & ProgressSection)
-    | ({
-        _key: string;
-      } & NewsletterSection)
-    | ({
-        _key: string;
-      } & CalendarSubscribeSection)
-    | ({
-        _key: string;
-      } & IconCardsSection)
-    | ({
-        _key: string;
-      } & StepsRailSection)
-    | ({
-        _key: string;
-      } & HubSection)
-    | ({
-        _key: string;
-      } & HoursSection)
-    | ({
-        _key: string;
-      } & MapSection)
-    | ({
-        _key: string;
-      } & SessionsOpening)
-    | ({
-        _key: string;
-      } & SessionSittings)
-    | ({
-        _key: string;
-      } & SessionExperience)
-    | ({
-        _key: string;
-      } & HeirloomsSpec)
-    | ({
-        _key: string;
-      } & InvestmentNote)
-    | ({
-        _key: string;
-      } & SessionQuestions)
-    | ({
-        _key: string;
-      } & SyncedSection)
-    | ({
-        _key: string;
-      } & FounderSection)
-    | ({
-        _key: string;
-      } & TestimonialsSection)
-    | ({
-        _key: string;
-      } & TeamSection)
-    | ({
-        _key: string;
-      } & DynamicListSection)
+      } & SignedClose)
     | ({
         _key: string;
       } & CoverHero)
@@ -3920,9 +3415,6 @@ export type HomePage = {
     | ({
         _key: string;
       } & CrewSection)
-    | ({
-        _key: string;
-      } & SignedClose)
   >;
   seoTitle?: string;
   seoDescription?: string;
@@ -4035,6 +3527,8 @@ export type Testimonial = {
   _rev: string;
   quote?: string;
   attribution?: string;
+  sessionType?: string;
+  confirmed?: boolean;
   date?: string;
   source?: 'Facebook' | 'Google' | 'Houzz' | 'Direct (email or text)' | 'Other';
   location?: string;
@@ -4261,6 +3755,8 @@ export type AllSanitySchemaTypes =
   | BusinessInfo
   | SiteSettings
   | NavLink
+  | TestimonialReference
+  | KindWords
   | ProcessFigures
   | AboutApproach
   | AboutStory
@@ -4281,12 +3777,12 @@ export type AllSanitySchemaTypes =
   | GuaranteeSection
   | ServiceAreaSection
   | StorySection
-  | TestimonialReference
   | TestimonialsSection
   | FounderSection
   | SectionPresetReference
   | SyncedSection
   | SectionPreset
+  | CtaBlock
   | SessionQuestions
   | InvestmentNote
   | HeirloomsSpec
@@ -4335,7 +3831,6 @@ export type AllSanitySchemaTypes =
   | FormDateQuestion
   | FormQuestion
   | PrivacyPage
-  | CtaBlock
   | Page
   | ContactPage
   | AboutPage

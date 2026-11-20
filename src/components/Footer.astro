@@ -22,7 +22,8 @@
 //      spine (a CSS stand-in for the distance-field reveal on the reference). JavaScript arms
 //      it only when IntersectionObserver exists, motion is allowed and the word is below the
 //      fold; with JS off, under reduced motion, in print, or already on screen it is at rest.
-//   5. The small print: copyright, privacy or the legal links, Studio, the optional credit.
+//   5. The small print: copyright, privacy or the legal links, Studio, the optional credit,
+//      and "Back to top" at the right (in place of the starter's floating button, 2026-11-20).
 //   6. The phone action bar (card 191), when this page has one.
 
 import { site } from '@/data/site';
@@ -298,6 +299,12 @@ const actionBar =
       ) : (
         <span>{siteCredit}</span>
       ))}
+    {/* In place of the starter's floating round button (2026-11-20). "#top" scrolls to the top
+        of the document in every browser with no element needed; the glide comes from
+        html[data-smooth-scroll] (rule 5). */}
+    <a href="#top" class="bqf-small__top">
+      Back to top <span aria-hidden="true">↑</span>
+    </a>
   </div>
 
   {actionBar && <ActionBar bar={actionBar} />}

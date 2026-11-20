@@ -337,6 +337,8 @@ const PAGE_BLOCKS = [
   // removal (stories, press) has deleted the file.
   ...declaredTypes('storyIndexSection.ts'),
   ...declaredTypes('pressSections.ts'),
+  // Kind words (2026-11-20; goes with the testimonials capability).
+  ...declaredTypes('kindWordsSection.ts'),
 ];
 
 describe('page templates (src/sanity/pageTemplates.ts)', () => {

@@ -26,6 +26,24 @@ export const testimonial = defineType({
       description: 'Their name as they want it shown. Example: "Sara Hooker" or "Tom K.".',
       validation: (Rule) => Rule.required(),
     }),
+    // The Kind words block (kindWordsSection.ts, 2026-11-20) sets this under the name in small
+    // capitals, and shows a placeholder line over any quote not ticked Confirmed.
+    defineField({
+      name: 'sessionType',
+      title: 'Kind of sitting (optional)',
+      type: 'string',
+      description: 'Shown under their name. Example: "Family sitting" or "Editorial test".',
+      validation: (Rule) => Rule.max(60),
+    }),
+    defineField({
+      name: 'confirmed',
+      title: 'Confirmed',
+      type: 'boolean',
+      initialValue: false,
+      description:
+        'Tick once these are the client\'s own words and they are happy to be quoted. Until then the site marks the quote "Placeholder".',
+      options: { canvasApp: { exclude: true } },
+    }),
     defineField({
       name: 'date',
       title: 'Date',

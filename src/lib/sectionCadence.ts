@@ -65,6 +65,7 @@ export const SELF_CONTAINED_TYPES = new Set([
   'crewSection', // scaffold: stories
   'signedClose', // scaffold: stories
   'pressContents', // scaffold: press
+  'kindWords', // scaffold: testimonials
   // The About page's own blocks, on the plain page ground like the portfolio's.
   'aboutOpening', // scaffold: about
   'aboutStory', // scaffold: about
