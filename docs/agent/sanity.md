@@ -353,3 +353,7 @@ questions page the way a Squarespace page is built.
   "Add a copy" works from a draft, "Add synced" needs a published one, so example text cannot go live through a
   synced section. The authoring test checks templates and patterns alike: known block types, fresh keys, the
   `Example:` marker, the copy rules (no em-dashes, US spelling, no prices), the schema's limits and the page rules.
+
+## Authoring kit (moved from CLAUDE.md)
+
+Clients build their own pages (PORTS.md card 109): page templates (`src/sanity/pageTemplates.ts`, the site's own), a picture grid in the "+ Add item" menu (`npm run thumbnails` after a reskin or a new block), saved sections that can hold several sections and go in as a copy or SYNCED (`syncedSection`, resolved in `sectionsProjection()` and expanded by `SectionRenderer`), and page-builder WARNINGS (`pageRules` in `kit.config.ts`; never errors). The builder kit (card 173) adds twelve smaller blocks (columns, buttons, a wide photo, fold-outs, tabs, a countdown, a dated notice, a timeline, a letter, event details with an .ics link, a schedule, photo cards; `builderSections.ts`, `src/components/builder-blocks/`), templates in groups shown as "Group: Title", patterns kept as code in `sectionPatterns.ts` and seeded as drafts by `npm run seed:patterns`, and `withSiteGroups()` for a fork's own insert-menu groups. A new block needs a fixture on `/styleguide/sections/` and a thumbnail, or the `authoring` unit test fails. Full notes: `docs/agent/sanity.md`.

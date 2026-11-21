@@ -1,42 +1,37 @@
 # Erin Schmerr Photography website: CLAUDE.md
 
-Always-loaded rules for this repo, the portfolio site for Erin Schmerr, a fine-art portrait photographer in Cincinnati and West Chester, Ohio, whose business is **Tate Fine Art Photography** (the site name and wordmark since 2026-11-18; `brand/brand.config.json`, `scripts/build-wordmark.mjs`, Site settings title). The repo, Worker and pre-launch address keep the old `erin-schmerr-photography` slug. This file stays under 200 lines on purpose. File-specific rules live in `.claude/rules/*.md` and load only when you touch matching files; long reference lives in `docs/claude/` and `docs/agent/` and is read on demand. The docs map at the bottom lists every one of them.
+Always-loaded rules for this repo, the portfolio site for Erin Schmerr, whose business is **Tate Fine Art Photography** (site name and wordmark since 2026-11-18). The repo, Worker and pre-launch address keep the old `erin-schmerr-photography` slug. File-specific rules load from `.claude/rules/*.md` when you touch matching files; long reference lives in `docs/claude/` and `docs/agent/`.
 
 **This file is client-safe**: the repo is public and may be handed to the client, so it holds technical orientation only. Prices, contract text, strategy, opinions about people, private contacts and credentials never go in this repo (files, commits, PRs, issues, code comments).
 
 **Read this first.** Project records, rules and status are kept privately by the studio, outside this folder. Before doing any work, read the session guide: `C:\Users\natha\Documents\Claude\Projects\_vault\projects\erin-schmerr-photography-session-guide.md`. Also read `~/.claude/CLAUDE.md` and the Projects `CLAUDE.md`.
-
-**Her work, interim copies.** Since 2026-11-18, with her OK, the stories, press and archive show her own work taken from her Instagram (16 stories, 7 press entries; `ig-*` ids, written by `scripts/import-stories.mjs` from a manifest kept outside the repo). These are Instagram-sized stand-ins; her originals replace them when they arrive. The seeded `placeholder-*` documents stay in the dataset but step aside once a real one exists (`withoutSeedPlaceholders()`, `src/lib/portfolio.ts`); CI still builds from the placeholder snapshot. Copy that needs her words is still marked. Never put her photographs in the repo itself.
+**Her work, interim copies.** The stories, press and archive show stand-in copies of her own work (`ig-*` ids); never put her photographs in the repo itself. Detail: `docs/claude/overview.md`.
 
 **Read `docs/PENDING.md` early in a session.** It is the live registry of open loops: queued work, known gaps, and waiting-on-a-human items. If you finish or discover one, update it in the same commit.
 
-Companion tactical runbook: `OPERATIONS.md`. New-project setup entry point: `docs/bootstrap/NEW-PROJECT.md`, rewritten 2026-09-18 from the order the Stone Steps build actually followed; it is the start for any team adapting this starter for a new client, and `docs/bootstrap/setup-checklist.md` is its sign-off. Cross-repo shared-improvement registry: `PORTS.md` (see Ports below).
-
-Design context: `PRODUCT.md` (audience, purpose, content model in plain words) and `DESIGN.md` (Soft Focus Editorial: tokens, type, signature components), both written 2026-11-17.
+Companion tactical runbook: `OPERATIONS.md`. Setup entry point: `docs/bootstrap/NEW-PROJECT.md` and `docs/bootstrap/setup-checklist.md`. Shared-improvement registry: `PORTS.md`. Design context: `PRODUCT.md` and `DESIGN.md` (Soft Focus Editorial).
 
 ## What this is
 
-The portfolio on **Astro 7 + Sanity v6 + Cloudflare Workers**, forked from `ncs-astro-sanity-starter` (main at `0a9fef3`) on 2026-11-17. Sanity project `feuqkbki`, dataset `production` (public, so no personal data in it). Worker `erin-schmerr-photography`, pre-launch address https://erin-schmerr-photography.nathanjnixon86.workers.dev (domain not chosen; `brand/brand.config.json` `domain` and `SITE_URL` move at cutover). The text below is the starter's, kept because the machinery is the same. **Page-builder-first**: home and about render through `SectionRenderer` from Sanity `pageBuilder` arrays, and any Studio page gets a `/[slug]` route. Contact and Privacy are page builders too (card 190): empty Page layout draws the classic page, a filled one draws the sections around a block that holds the old piece (`docs/agent/page-architecture.md`). A new project pours in a brand (`brand/brand.config.json` then `npm run apply-brand`) and content. It ships FULL and subtracts: `npm run scaffold` removes the capabilities (`npm run scaffold -- --list`: `about`, `documents`, `testimonials`, and this site's portfolio, `stories` and `press`; `services` and `philosophy` were removed at fork time, `faq`, `journal` and `process` on 2026-11-18; routes in `docs/claude/routes.md`). Full overview and stack notes: `docs/claude/overview.md`.
+The portfolio on **Astro 7 + Sanity v6 + Cloudflare Workers**, forked from `ncs-astro-sanity-starter` on 2026-11-17. Sanity project `feuqkbki`, dataset `production` (public, so no personal data in it). Worker `erin-schmerr-photography`, pre-launch address https://erin-schmerr-photography.nathanjnixon86.workers.dev. **Page-builder-first**: pages render through `SectionRenderer` from Sanity `pageBuilder` arrays. Full overview, capabilities and scaffold list: `docs/claude/overview.md`.
 
 The must-knows:
 
 - TypeScript strict, `output: 'static'` with a handful of SSR routes (`/preview/**`, `/api/draft-mode/*`). Node 22.23.4+ (`.nvmrc`; CI reads it, PORTS.md card 209). Tailwind 4 via `@tailwindcss/vite` (no `tailwind.config.mjs`; tokens in `@theme` in `src/styles/globals.css`). React 19 islands only where interactive.
 - The Sanity Studio is **embedded at `/studio`**. There is no separate studio dev server or deploy. Never run `npx sanity deploy`. Its name, mark (`public/favicon.svg`) and accent and background colours come from `brand/brand.config.json` at build time, contrast-guarded by `studio-theme.test.ts` (PORTS.md card 110); `studio.components.logo` is dead in Sanity 6, so never use it. `/studio` is the site's own page (`src/pages/studio/index.astro`: title, icons, splash; card 120), so `astro.config.mjs` sets no `studioBasePath`. It installs to a phone as an app: `/studio/manifest.webmanifest` and a service worker scoped to `/studio/` (`public/studio/sw.js`, card 125) that must never cache a Sanity answer, `/api/**` or anything with a token.
 - `sanityFetch(query, params, fallback)` in `src/lib/sanity.ts` is the single chokepoint for Sanity reads; with no project configured it returns the fallback, so `npm run build` works on a fresh clone.
-- The business's facts (address, phone, email, opening hours, dated hours changes) are typed ONCE (Business info, Site settings) with `confirmed` flags and read through `resolveBusinessFacts()` (`src/lib/business-facts.ts`, `business-hours.ts`, `place-line.ts`); "Open now" is worked out on `site.timeZone` in the browser. Never type a time or an address into a component. Optional: no hours, nothing new. `docs/agent/business-facts.md` (card 196).
+- The business's facts (address, phone, email, hours) are typed ONCE (Business info, Site settings) and read through `resolveBusinessFacts()`. Never type a time or an address into a component: `docs/agent/business-facts.md`.
 - Hosting is **Cloudflare Workers**, not Pages. Deploy with `npm run deploy` (`wrangler deploy -c dist/server/wrangler.json`). A bare `wrangler deploy` 404s every sub-route.
 
 ## Commands
 
 - `npm run dev`: dev server on :4321, Studio at `/studio`.
 - `npm run typegen`: regenerate Sanity types. Run after ANY schema change, before `npm run build`. `npm run build:full` chains both.
-- `npm run build`: `node scripts/with-workerd.mjs astro build`, then `scripts/purge-page-css.mjs` (per-page CSS purge, card 159), then `scripts/build-brand-icons.mjs` (the favicon set from Site settings' square icon, if uploaded; card 168), then `scripts/build-og-cards.mjs` (every page's share card, cached; card 169), then `scripts/build-csp.mjs` (writes the public pages' `script-src` into `dist/client/_headers`; card 153, `docs/agent/deployment.md`), then `scripts/build-search-index.mjs` (writes the Pagefind index only when `site.search.enabled`; card 126, `docs/agent/site-search.md`). Does NOT chain typegen.
+- `npm run build`: `astro build` plus post-build scripts. Does NOT chain typegen. Full chain in `docs/claude/build-and-scripts.md`.
 - `npm run check` (`astro check && npm run lint`) is the fast gate; `npm run check:full` is typegen, build and unit tests (`test:unit` includes the scripts tests).
 - `npm run test:unit` (node --test, `src/lib/*.test.ts`, then `npm run test:scripts`; four are GATES: `theme-tokens`, `layout-variants`, `section-fields`, `site-layout`). `npm test` is the Playwright suite. Also `npm run format:check` and `npm run check:links`.
-- `npm run parity list | capture | compare [page] [--exclude globs]`: rendered-HTML parity. Build first. Use on any render-neutral change. `npm run test:scripts` tests the helpers in `scripts/lib/` (also run at the end of `test:unit`, so CI and deploy cover it).
 - `npm run preview`: `wrangler dev` on the last build; the only way to exercise SSR routes locally.
-- `npm run references -- <urls>` (reference screenshots into `docs/references/`), `npm run directions:shoot -- <folder>` (390/768/1280 shots of design-direction mockups), and the `/design-directions` command: see "Design flow" below.
-- `npm run apply-brand`, `npm run seed` (dry by default), `npm run scaffold`, `npm run audit:studio`, `npm run audit:data` (live data against the compiled schema, card 95), `npm run thumbnails` (the Studio block-picker pictures, card 109), `npm run og`, `npm run sync-check [site-repo]`, `npm run free-dist`: see `docs/claude/build-and-scripts.md` (seed and scaffold detail in `.claude/rules/scaffold.md`).
+- Everything else (parity, references, apply-brand, seed, scaffold, audits): `docs/claude/build-and-scripts.md`.
 
 ## Branch, CI and deploy
 
@@ -48,34 +43,28 @@ The must-knows:
 
 Numbering is load-bearing; other docs cite it. Rules 1 to 7 and 10 are in full below. The rest are one-liners; the full text loads from the file named when you touch matching files, or read it directly.
 
-1. **Never click "Remove field" in the Studio.** It deletes that field's data across every document and cannot be undone without a dataset restore. It appears when the Studio's schema is older than the data. Since the Studio is embedded (it ships with the site build) the sequence after a schema change is: edit schema, `npm run typegen`, commit, deploy. There is no separate `studio:deploy` step any more.
-2. **No em-dashes in public-facing site copy** (the text visitors read: page copy, component text, Sanity content). Use commas, colons, or restructure. Code comments, commit messages, plans, specs, and internal docs are exempt.
-3. **Light only** (decided 2026-11-18). There is no theme toggle and the system dark setting is ignored; do not add dark styles or verify UI in dark. The `.dark` tokens and the shared dark test suites stay (they seed the stored preference, which no visitor can set). Detail in `docs/agent/theme-and-color.md`.
-4. **Desktop nav is server-rendered** in `Header.astro`. Do not regress it to a client-only island. Detail in `docs/agent/page-architecture.md`.
-5. **Scrolling is the browser's own; there is no Lenis** (removed 2026-10-17, PORTS.md card 102). Astro's router resets to the top on a forward navigation and restores the position on Back/Forward; do not add a scroll library or an `after-swap` scroll call that fights it. In-page anchors and scroll controls glide through `html[data-smooth-scroll]` (set on the first press by the BaseLayout script, `no-preference` only); code that places the page itself uses `behavior: 'instant'`. Detail in `docs/agent/animation.md`, pinned by `tests/native-scroll.spec.ts`.
-6. **Content is statically built.** A Sanity edit only goes live after a rebuild (push to `main`, or the publish webhook). Detail in `docs/agent/deployment.md`.
-7. **After any schema change, run `npm run typegen` before `npm run build`.** `npm run build` runs `astro build` only and does not chain typegen. Use `npm run build:full` to run both in sequence. `src/lib/sanity.types.ts` is committed so collaborators can read schema types in code without running typegen.
-8. **Astro, adapter, wrangler, React and Sanity versions are a MATCHED SET; never bump one in isolation, never run `npm audit fix --force`. Never delete or regenerate `package-lock.json`; use `npm ci` for anything you reason from.** Pins and reasons: `.claude/rules/dependencies.md`. Curling a page is not verifying it.
-   8b. **A new logic-driving dropdown field goes into `NON_STEGA_FIELDS`** in `src/lib/cms-preview.ts` in the same commit, or the preview renders the wrong branch. Full text: `.claude/rules/sanity-schema.md`.
-9. **Blocks carry no colour/surface field;** `SectionRenderer` owns the cadence (and the one accent button per page, card 158), and `section-fields.test.ts` fails if one appears. The one exception is `look`, an enum of designed looks (`src/lib/section-looks.ts`) that the cadence resolves into a measured surface. Full text: `.claude/rules/sanity-schema.md`.
-10. **The reserved-slug guard lives inside `getStaticPaths` in `[slug].astro`,** not at module scope. This is an Astro isolated-scope requirement; shared list is in `src/lib/reservedSlugs.ts`. If you move the guard outside `getStaticPaths`, it silently stops working.
-11. **Fork residue:** this starter came from a client build, so check defaults for wrong nouns, logos and palettes (PORTS.md card 44). Full text: `.claude/rules/brand-reskin.md`.
-12. **`apply-brand` does not install font packages;** `npm install @fontsource/...` first. Full text: `.claude/rules/brand-reskin.md`.
-13. **Run `npm run build` after `apply-brand`.** Full text: `.claude/rules/brand-reskin.md`.
-14. **A capability is added with its scaffold markers in the same commit,** or `npm run scaffold -- --remove` silently leaves it behind. Full text: `.claude/rules/scaffold.md`.
-15. **Anything computable from data is derived at build time,** never stored as a field an editor can retype. Full text: `.claude/rules/sanity-schema.md`.
-16. **Retiring data is a backup-then-delete script, run dry first,** never a raw delete. Every data script is dry by default, and a write to the production dataset needs `--apply` AND `NCS_PRODUCTION_WRITE=yes` in the same command, set under the write protocol (backup, dry run, apply, verify; PORTS.md card 86). Never put backticked text in a shell string. Full text: `.claude/rules/data-scripts.md`.
-17. **One grammar per page:** one heading system, one left edge, one text/picture split (`.split`, PORTS.md card 91), one button family. Check with `node scripts/measure-columns.mjs`. Full text: `.claude/rules/ui-grammar.md`.
-18. **Layout variants are a config axis** (`brand.config.json` `layout`: header, hero, density, cards, motion; `hero: board` is FBC Auburn's inner-page grammar, card 188; `motion: flow` or `fade` is its flow layer, card 192, `docs/agent/animation.md`); a default emits nothing, so existing sites do not move. Sizes, corners, gaps and shadows come from the one scale at the top of the brand layer (`globals.css`, `docs/agent/design-tokens.md`); picture shapes are a PORTABLE class contract styled by brand tokens (`docs/agent/shapes.md`). Full text: `.claude/rules/brand-reskin.md`.
-19. **Internal page links end in a slash** (`/about/`), matching `trailingSlash: 'always'`, canonicals and the sitemap; a bare `/about` 307s and Search Console reports "Page with redirect". Hand-written hrefs carry it; hrefs built from data go through `withTrailingSlash()` (`src/lib/href.ts`, PORTABLE). Files, `#anchors`, `mailto:`/`tel:`, `/studio`, `/api` are left alone. Full text: PORTS.md card 89.
+1. **Never click "Remove field" in the Studio** (deletes that field's data everywhere). After a schema change: edit schema, `npm run typegen`, commit, deploy.
+2. **No em-dashes in public-facing site copy.** Code comments, commits and internal docs are exempt.
+3. **Light only** (decided 2026-11-18). No theme toggle, no dark styles (`docs/agent/theme-and-color.md`).
+4. **Desktop nav is server-rendered** in `Header.astro`; do not make it a client-only island.
+5. **Scrolling is the browser's own; no Lenis** and no scroll library (`docs/agent/animation.md`).
+6. **Content is statically built.** A Sanity edit goes live only after a rebuild.
+7. **After any schema change run `npm run typegen` before `npm run build`** (`build:full` runs both).
+8. **Astro, adapter, wrangler, React and Sanity versions are a MATCHED SET;** never bump one alone, never `npm audit fix --force`, never regenerate `package-lock.json` (`.claude/rules/dependencies.md`).
+   8b. A new logic-driving dropdown goes into `NON_STEGA_FIELDS` in `src/lib/cms-preview.ts`.
+9. **Blocks carry no colour/surface field** (`section-fields.test.ts`); `look` is the one exception.
+10. **The reserved-slug guard lives inside `getStaticPaths`** in `[slug].astro`.
+11. to 13. Fork residue, `apply-brand` font packages, build after `apply-brand` (`.claude/rules/brand-reskin.md`).
+12. **A capability is added with its scaffold markers in the same commit** (`.claude/rules/scaffold.md`).
+13. **Anything computable from data is derived at build time,** never an editable field.
+14. **Retiring data is a backup-then-delete script, run dry first.** A production write needs `--apply` AND `NCS_PRODUCTION_WRITE=yes` (`.claude/rules/data-scripts.md`).
+15. **One grammar per page** (`.claude/rules/ui-grammar.md`).
+16. **Layout variants are a config axis** in `brand.config.json` (`.claude/rules/brand-reskin.md`, `docs/agent/design-tokens.md`).
+17. **Internal page links end in a slash;** data-built hrefs go through `withTrailingSlash()`.
 
-## Design flow
+## Design flow and authoring kit
 
-A new brand goes **brief -> references -> design-directions -> reskin**, in that order, so a site does not come out as the last site in new colours. Brief: `docs/templates/design-brief.md` (becomes PRODUCT.md / DESIGN.md). References: `npm run references`. Directions: `/design-directions` (3 or 4 static mockups that must differ in layout, type, density and imagery; Nathan picks one and the pick is recorded as a dated entry). Reskin: the reskin skill, which reads that entry. `brand.config.json` carries colours, fonts, radius and five coarse layout slots only (card 72; motion added by card 192). Full rules: `.claude/rules/design-flow.md`.
-
-## Authoring kit
-
-Clients build their own pages (PORTS.md card 109): page templates (`src/sanity/pageTemplates.ts`, the site's own), a picture grid in the "+ Add item" menu (`npm run thumbnails` after a reskin or a new block), saved sections that can hold several sections and go in as a copy or SYNCED (`syncedSection`, resolved in `sectionsProjection()` and expanded by `SectionRenderer`), and page-builder WARNINGS (`pageRules` in `kit.config.ts`; never errors). The builder kit (card 173) adds twelve smaller blocks (columns, buttons, a wide photo, fold-outs, tabs, a countdown, a dated notice, a timeline, a letter, event details with an .ics link, a schedule, photo cards; `builderSections.ts`, `src/components/builder-blocks/`), templates in groups shown as "Group: Title", patterns kept as code in `sectionPatterns.ts` and seeded as drafts by `npm run seed:patterns`, and `withSiteGroups()` for a fork's own insert-menu groups. A new block needs a fixture on `/styleguide/sections/` and a thumbnail, or the `authoring` unit test fails. Full notes: `docs/agent/sanity.md`.
+Brief -> references -> design-directions -> reskin (`.claude/rules/design-flow.md`, `docs/claude/overview.md`). Clients build their own pages from templates and saved sections (`docs/agent/sanity.md`, "Authoring kit").
 
 ## Live draft preview
 
@@ -109,28 +98,4 @@ This repo owns `PORTS.md`, the registry of improvements shared across the site f
 
 ## Docs map
 
-Path-scoped rules (`.claude/rules/`, load when matching files are touched):
-
-- `preview-stack.md`: the live draft preview stack.
-- `dependencies.md`: rule 8, the matched dependency set.
-- `sanity-schema.md`: rules 1, 8b, 9, 10, 15.
-- `brand-reskin.md`: rules 11 to 13 and 18 (layout variants).
-- `scaffold.md`: rule 14, seeding, scaffold, modules and archive.
-- `data-scripts.md`: rule 16 and the production write gate.
-- `ui-grammar.md`: rule 17.
-- `foundation-files.md`: the edit-with-care file list.
-- `library-of-record.md`: PORTS.md, PORTABLE markers, sync-check.
-- `design-flow.md`: brief, references, design-directions, reskin.
-
-Reference (`docs/claude/`, read when the task needs it):
-
-- `family-conventions.md`: PORTABLE, imported above; the text shared by every site repo.
-- `overview.md`: full about and stack essentials.
-- `build-and-scripts.md`: every npm script and test suite.
-- `routes.md`: the routes table.
-- `safe-to-edit.md`: files safe to edit by hand, script accent opt-in.
-- `visual-verification.md`: the screenshot loop.
-- `communication-style.md`: style rules and site copy voice.
-- `topic-index.md`: index of the `docs/agent/` deep-dives (stack, theme, components, SEO, performance, Sanity, deployment).
-
-See `OPERATIONS.md` for the tactical playbook (deploy, patch content, run audits, common gotchas).
+Path-scoped rules are in `.claude/rules/`. Reference is in `docs/claude/` and `docs/agent/`. The full map: `docs/claude/topic-index.md`. Tactical playbook: `OPERATIONS.md`.
