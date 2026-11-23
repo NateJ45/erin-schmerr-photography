@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Direction D, The Album | Tate Fine Art Photography</title>
+<!-- Fonts: Libre Caslon Display and Text (transitional serif) + Courier Prime (typewriter, for the typed album labels). -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Libre+Caslon+Display&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* Direction D: Split-screen. Throwaway mockup, not site code. Light only. */
+:root{
+  --card:#DEDCCB; --mount:#FBF7EC; --ink:#1D1B16; --muted:#4F4B40; --rule:#B9B5A0; --corner:#1D1B16;
+  --gut:clamp(16px,3vw,44px);
+  --disp:"Libre Caslon Display",Georgia,serif; --text:"Libre Caslon Text",Georgia,serif; --type:"Courier Prime",ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0}
+html{background:var(--card);color:var(--ink);font:400 17px/1.6 var(--text);-webkit-text-size-adjust:100%}
+a{color:inherit}:focus-visible{outline:2px solid var(--ink);outline-offset:4px}
+img{display:block;max-width:100%;height:auto}
+.typed{font:400 14px/1.45 var(--type)}
+
+/* A mounted print: cream mount, four black photo corners, no shadow. */
+.mount{background:var(--mount);padding:clamp(14px,2vw,26px);position:relative;display:inline-block}
+.mount::before,.mount::after,.mount>.c1,.mount>.c2{content:"";position:absolute;width:30px;height:30px;background:var(--corner);z-index:1}
+.mount::before{left:clamp(6px,1vw,14px);top:clamp(6px,1vw,14px);clip-path:polygon(0 0,100% 0,0 100%)}
+.mount::after{right:clamp(6px,1vw,14px);bottom:clamp(6px,1vw,14px);clip-path:polygon(100% 0,100% 100%,0 100%)}
+.mount>.c1{right:clamp(6px,1vw,14px);top:clamp(6px,1vw,14px);clip-path:polygon(0 0,100% 0,100% 100%)}
+.mount>.c2{left:clamp(6px,1vw,14px);bottom:clamp(6px,1vw,14px);clip-path:polygon(0 0,0 100%,100% 100%)}
+.mount img{width:100%;object-fit:cover}
+
+/* Top: name left, Contents button right. The menu is an overlay sheet. */
+.bar{position:fixed;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:14px var(--gut);z-index:5;pointer-events:none}
+.bar>*{pointer-events:auto}
+.name{text-decoration:none;font:400 26px/1 var(--disp);background:var(--card);padding:6px 10px 6px 0}
+.name i{font:italic 400 16px/1 var(--text);margin-left:6px}
+.menu-btn{font:700 13px/1 var(--type);letter-spacing:.08em;text-transform:uppercase;background:var(--ink);color:var(--mount);border:0;padding:14px 16px;cursor:pointer;min-height:44px}
+.sheet{position:fixed;inset:0;background:var(--mount);z-index:6;display:none;padding:80px var(--gut) 40px;overflow:auto}
+.sheet[data-open=true]{display:block}
+.sheet ol{list-style:none;padding:0;max-width:900px;margin:0 auto;columns:2;column-gap:40px}
+.sheet li{break-inside:avoid;display:flex;gap:14px;align-items:baseline;border-bottom:1px dotted var(--rule);padding:12px 0}
+.sheet li a{font:400 clamp(22px,2.6vw,34px)/1.1 var(--disp);text-decoration:none}
+.sheet .close{position:absolute;right:var(--gut);top:14px}
+
+/* The split: the print stays put on the left while the album turns on the right. */
+.split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);min-height:100vh}
+.left{position:sticky;top:0;height:100vh;display:grid;place-items:center;padding:80px var(--gut) 40px;border-right:1px solid var(--rule)}
+.left .mount{width:min(100%,calc((100vh - 200px) * .8 + 52px))}
+.left .mount img{aspect-ratio:4/5}
+.left .label{position:absolute;left:var(--gut);bottom:22px;right:var(--gut);display:flex;justify-content:space-between;gap:12px}
+.right{padding:0 var(--gut)}
+.page{min-height:86vh;display:flex;flex-direction:column;justify-content:center;padding:100px 0 60px;border-bottom:1px solid var(--rule);max-width:560px}
+h1{font:400 clamp(44px,5.2vw,82px)/1.02 var(--disp);letter-spacing:-.005em}
+h1 em{font-family:var(--text);font-style:italic;font-size:.8em}
+.intro{margin-top:22px;font-size:19px;max-width:30em}
+.cta{display:flex;gap:22px;flex-wrap:wrap;margin-top:28px}
+.cta a{font:700 14px/1 var(--type);text-transform:uppercase;letter-spacing:.06em;text-decoration:none;border-bottom:2px solid var(--ink);padding:14px 0 6px}
+.entry .typed{display:block;color:var(--muted)}
+.entry h2{font:400 clamp(38px,4.2vw,64px)/1.02 var(--disp);margin-top:10px}
+.entry h2 a{text-decoration:none}
+.entry p.dek{margin-top:14px;font-size:19px;font-style:italic}
+.entry .inline{display:block;margin-top:22px;width:min(300px,60%)}
+.entry .inline img{aspect-ratio:4/5}
+.entry .more{margin-top:18px;font:700 14px/1 var(--type);text-transform:uppercase;letter-spacing:.06em;text-decoration:none;border-bottom:2px solid var(--ink);padding:14px 0 6px;align-self:start}
+.press{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;margin-top:16px}
+.press dt{color:var(--muted)}
+.press dd{margin:0;font-family:var(--text)}
+.dir{border-top:1px solid var(--ink);padding:18px 0 40px;display:grid;gap:12px;font-size:15px;max-width:560px}
+.dir b{font:700 12px/1 var(--type);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:3px}
+
+/* The print swap: a short cross-dissolve. Reduced motion swaps instantly. */
+@media (prefers-reduced-motion:no-preference){.left img{transition:opacity .45s cubic-bezier(.22,1,.36,1)}.left img.out{opacity:0}}
+
+@media (max-width:860px){
+  .split{grid-template-columns:minmax(0,1fr)}
+  .left{display:none}
+  .page{min-height:auto;padding:90px 0 48px;max-width:none}
+  .entry .inline{width:auto;max-width:420px}
+  .sheet ol{columns:1}
+}
+</style>
+</head>
+<body>
+<header class="bar">
+  <a class="name" href="direction-d.html">Tate<i>Fine Art Photography</i></a>
+  <button class="menu-btn" aria-expanded="false" aria-controls="sheet">Contents</button>
+</header>
+<nav class="sheet" id="sheet" aria-label="Contents" data-open="false">
+  <button class="menu-btn close">Close</button>
+  <ol class="typed">
+    <li>p. 1<a href="direction-d-story.html">A 1950s Halloween at home</a></li><li>p. 2<a href="#">Sleepy Hollow</a></li><li>p. 3<a href="#">A Midsummer Night's Dream</a></li><li>p. 4<a href="#">A 1970s Valentine</a></li><li>p. 5<a href="#">The vintage dress</a></li><li>p. 6<a href="#">Pink, 1960s</a></li><li>p. 7<a href="#">Press</a></li><li>p. 8<a href="#">About</a></li><li>p. 9<a href="#">Sessions</a></li>
+  </ol>
+</nav>
+
+<main class="split">
+  <div class="left" aria-hidden="true">
+    <div class="mount"><span class="c1"></span><span class="c2"></span><img id="print" src="https://cdn.sanity.io/images/feuqkbki/production/89e44fc497a5bc621c7c1666ab80a4fd51b83f4d-1080x1350.jpg?w=1000&amp;q=72&amp;auto=format" alt="" width="1000" height="1250"></div>
+    <p class="label typed"><span id="print-cap">A 1950s Halloween at home</span><span id="print-yr">Oct. 2023</span></p>
+  </div>
+  <div class="right">
+    <section class="page" data-src="https://cdn.sanity.io/images/feuqkbki/production/89e44fc497a5bc621c7c1666ab80a4fd51b83f4d-1080x1350.jpg?w=1000&amp;q=72&amp;auto=format" data-cap="A 1950s Halloween at home" data-yr="Oct. 2023">
+      <p class="typed">Cincinnati and West Chester, Ohio</p>
+      <h1>Portraits that look like they were <em>found in an old album.</em></h1>
+      <p class="intro">I'm Erin. I shoot vintage clothes, stories from books and films, and a lot of soft light, and I've spent years trying to perfect the look of an authentic vintage photograph. Turn the pages.</p>
+      <div class="cta"><a href="#sessions">Book a session</a><a href="#p1">Open the album</a></div>
+    </section>
+
+    <section class="page entry" id="p1" data-src="https://cdn.sanity.io/images/feuqkbki/production/ce858e4c6e05d280b40acaa3aedc0419d3487628-1080x1350.jpg?w=1000&amp;q=72&amp;auto=format" data-cap="Sleepy Hollow" data-yr="Oct. 2024">
+      <span class="typed">Page 2 · October 2024</span>
+      <h2><a href="#">Sleepy Hollow</a></h2>
+      <p class="dek">A Sleepy Hollow shoot with my favorite Tim Burton character, in a field at the end of the day.</p>
+      <div class="mount inline"><span class="c1"></span><span class="c2"></span><img src="https://cdn.sanity.io/images/feuqkbki/production/ce858e4c6e05d280b40acaa3aedc0419d3487628-1080x1350.jpg?w=700&amp;q=72&amp;auto=format" alt="A woman in black lace in a field at dusk, looking up" width="700" height="875"></div>
+      <a class="more" href="#">Turn to the story</a>
+    </section>
+
+    <section class="page entry" data-src="https://cdn.sanity.io/images/feuqkbki/production/898f65f91792769481299578c0a3a70e92ea2aa5-1080x1350.jpg?w=1000&amp;q=72&amp;auto=format" data-cap="A Midsummer Night's Dream" data-yr="Sept. 2023">
+      <span class="typed">Page 3 · September 2023</span>
+      <h2><a href="#">A Midsummer Night's Dream</a></h2>
+      <p class="dek">"Love looks not with the eyes, but with the mind." Lavender hair, pale wings and a lot of green leaves.</p>
+      <div class="mount inline"><span class="c1"></span><span class="c2"></span><img src="https://cdn.sanity.io/images/feuqkbki/production/898f65f91792769481299578c0a3a70e92ea2aa5-1080x1350.jpg?w=700&amp;q=72&amp;auto=format" alt="A fairy with lavender hair and pale wings, her back to the camera, among leaves" width="700" height="875"></div>
+      <a class="more" href="#">Turn to the story</a>
+    </section>
+
+    <section class="page entry" data-src="https://cdn.sanity.io/images/feuqkbki/production/e14d50acf5bb10164001a8ebfb71476d07ca4648-1440x1440.jpg?w=1000&amp;q=72&amp;auto=format" data-cap="A 1970s Valentine" data-yr="Jan. 2026">
+      <span class="typed">Page 4 · January 2026</span>
+      <h2><a href="#">A 1970s Valentine</a></h2>
+      <p class="dek">Valentines, a checkered rug and a lace mask.</p>
+      <div class="mount inline"><span class="c1"></span><span class="c2"></span><img src="https://cdn.sanity.io/images/feuqkbki/production/e14d50acf5bb10164001a8ebfb71476d07ca4648-1440x1440.jpg?w=700&amp;q=72&amp;auto=format" alt="A woman in red lace kneels on a checkered rug among paper hearts, 1970s colour" width="700" height="700"></div>
+      <a class="more" href="#">Turn to the story</a>
+    </section>
+
+    <section class="page entry" data-src="https://cdn.sanity.io/images/feuqkbki/production/d3c81f69d2edc61440c1081c35d7aa9ee5dbd220-1080x1350.jpg?w=1000&amp;q=72&amp;auto=format" data-cap="Erin, by way of her dad's camera" data-yr="About">
+      <span class="typed">Page 8 · About</span>
+      <h2>It started with my dad's camera.</h2>
+      <p class="dek" style="font-style:normal">My dad was a self-proclaimed picture nerd, never without a camera around his neck. Years after he died, I finally turned his camera on again and found the last photo he ever took: fall leaves, from our kitchen window. Through his lens I fell in love with photography.</p>
+      <dl class="press typed"><dt>2026</dt><dd>Cornerstone Press, the cover of Mouth</dd><dt>2025</dt><dd>BleachFilm, We All Look Good in Pink</dd><dt>2024</dt><dd>PhotoVogue</dd><dt>2023</dt><dd>Hollyway, Elysium, Fienfh, PhotoVogue</dd><dt>2022</dt><dd>CanvasRebel, Meet Erin Schmerr</dd></dl>
+    </section>
+
+    <section class="page entry" id="sessions" data-src="https://cdn.sanity.io/images/feuqkbki/production/1246e556127ba3cfc0bcde7cd1268d398a2b2196-1080x1350.jpg?w=1000&amp;q=72&amp;auto=format" data-cap="The vintage dress" data-yr="Aug. 2023">
+      <span class="typed">Page 9 · Sessions</span>
+      <h2>Bring me a decade, a character or a story.</h2>
+      <p class="dek">We'll build a session around it. I find the clothes and the place, and we take our time.</p>
+      <a class="more" href="#">Ask about a session</a>
+      <aside class="dir" aria-label="About this direction" style="margin-top:48px">
+        <div><b>Bet</b>The album is the brand: "found in an old album" said literally, one print at a time, and a visitor slows down to match.</div>
+        <div><b>Rejects</b>No grid, no thumbnails, no colour accent, no top nav links. One print on show, a typed label, a Contents sheet.</div>
+        <div><b>Costs</b>The split hides on phones, so it becomes a plain stack. Only a handful of stories fit on the home page. Photo corners are a strong prop that could tire.</div>
+      </aside>
+    </section>
+  </div>
+</main>
+<script>
+// Contents overlay.
+const btn=document.querySelector('.bar .menu-btn'),sheet=document.getElementById('sheet');
+const set=o=>{sheet.dataset.open=o;btn.setAttribute('aria-expanded',o);if(o)sheet.querySelector('a').focus();else btn.focus()};
+btn.addEventListener('click',()=>set(true));sheet.querySelector('.close').addEventListener('click',()=>set(false));
+addEventListener('keydown',e=>{if(e.key==='Escape'&&sheet.dataset.open==='true')set(false)});
+// Swap the print on the left as each page reaches the middle of the screen.
+const img=document.getElementById('print'),cap=document.getElementById('print-cap'),yr=document.getElementById('print-yr');
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;const p=e.target;if(img.src===p.dataset.src.replace(/&amp;/g,'&'))return;
+  const go=()=>{img.src=p.dataset.src;cap.textContent=p.dataset.cap;yr.textContent=p.dataset.yr;img.classList.remove('out')};
+  if(reduce)go();else{img.classList.add('out');setTimeout(go,300)}}),{rootMargin:'-45% 0px -50% 0px'});
+document.querySelectorAll('.page').forEach(p=>io.observe(p));
+</script>
+</body>
+</html>

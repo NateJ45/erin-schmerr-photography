@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A 1950s Halloween at home | Direction D, The Album</title>
+<!-- Fonts: Libre Caslon Display and Text + Courier Prime, same system as direction-d.html. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Libre+Caslon+Display&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--card:#DEDCCB;--mount:#FBF7EC;--ink:#1D1B16;--muted:#4F4B40;--rule:#B9B5A0;--corner:#1D1B16;--gut:clamp(16px,3vw,44px);--disp:"Libre Caslon Display",Georgia,serif;--text:"Libre Caslon Text",Georgia,serif;--type:"Courier Prime",ui-monospace,monospace}
+*{box-sizing:border-box;margin:0}
+html{background:var(--card);color:var(--ink);font:400 17px/1.6 var(--text);-webkit-text-size-adjust:100%}
+a{color:inherit}:focus-visible{outline:2px solid var(--ink);outline-offset:4px}
+img{display:block;max-width:100%;height:auto}
+.typed{font:400 14px/1.45 var(--type)}
+.mount{background:var(--mount);padding:clamp(12px,1.6vw,22px);position:relative;display:block}
+.mount::before,.mount::after,.mount>.c1,.mount>.c2{content:"";position:absolute;width:26px;height:26px;background:var(--corner);z-index:1}
+.mount::before{left:8px;top:8px;clip-path:polygon(0 0,100% 0,0 100%)}
+.mount::after{right:8px;bottom:8px;clip-path:polygon(100% 0,100% 100%,0 100%)}
+.mount>.c1{right:8px;top:8px;clip-path:polygon(0 0,100% 0,100% 100%)}
+.mount>.c2{left:8px;bottom:8px;clip-path:polygon(0 0,0 100%,100% 100%)}
+.mount img{width:100%;aspect-ratio:4/5;object-fit:cover}
+.bar{position:fixed;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:14px var(--gut);z-index:5;pointer-events:none}
+.bar>*{pointer-events:auto}
+.name{text-decoration:none;font:400 26px/1 var(--disp);background:var(--card);padding:6px 10px 6px 0}
+.name i{font:italic 400 16px/1 var(--text);margin-left:6px}
+.menu-btn{font:700 13px/1 var(--type);letter-spacing:.08em;text-transform:uppercase;background:var(--ink);color:var(--mount);border:0;padding:14px 16px;min-height:44px;text-decoration:none;display:inline-flex;align-items:center}
+.split{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr)}
+.left{position:sticky;top:0;height:100vh;display:grid;place-items:center;padding:80px var(--gut) 56px;border-right:1px solid var(--rule)}
+.left .mount{width:min(100%,calc((100vh - 200px) * .8 + 44px))}
+.left .label{position:absolute;left:var(--gut);right:var(--gut);bottom:20px}
+.right{padding:96px var(--gut) 60px}
+h1{font:400 clamp(40px,4.4vw,70px)/1.02 var(--disp)}
+.dek{margin-top:16px;font-size:19px;font-style:italic}
+/* The index card: credits typed on a ruled card. */
+.card{margin-top:28px;background:var(--mount);padding:18px 20px 16px;background-image:repeating-linear-gradient(transparent 0 27px,#E3D9C4 27px 28px);background-position:0 46px;border-top:3px solid #A5413A}
+.card h2{font:700 13px/1 var(--type);text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px}
+.card dl{display:grid;grid-template-columns:auto 1fr;gap:0 16px;font:400 15px/28px var(--type)}
+.card dt{color:var(--muted)}.card dd{margin:0}
+.note{margin-top:26px}
+.note p+p{margin-top:12px}
+.prints{margin-top:36px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 18px}
+.prints button{all:unset;cursor:pointer;display:block}
+.prints button:focus-visible{outline:2px solid var(--ink);outline-offset:4px}
+.prints figcaption{margin-top:8px}
+.ran{margin-top:36px;border-top:1px solid var(--ink);padding-top:14px}
+.next{margin-top:36px;display:flex;justify-content:space-between;align-items:end;gap:12px;border-top:1px solid var(--rule);padding-top:16px}
+.next a{font:400 clamp(30px,3vw,44px)/1 var(--disp);text-decoration:none}
+@media (prefers-reduced-motion:no-preference){.left img{transition:opacity .45s cubic-bezier(.22,1,.36,1)}.left img.out{opacity:0}}
+@media (max-width:860px){.split{grid-template-columns:minmax(0,1fr)}.left{position:static;height:auto;border-right:0;padding:80px var(--gut) 40px}.left .label{position:static;margin-top:10px}.right{padding-top:20px}}
+@media (max-width:420px){.prints{grid-template-columns:minmax(0,1fr)}}
+</style>
+</head>
+<body>
+<header class="bar"><a class="name" href="direction-d.html">Tate<i>Fine Art Photography</i></a><a class="menu-btn" href="direction-d.html">Contents</a></header>
+<main class="split">
+  <div class="left">
+    <div class="mount"><span class="c1"></span><span class="c2"></span><img id="print" src="https://cdn.sanity.io/images/feuqkbki/production/89e44fc497a5bc621c7c1666ab80a4fd51b83f4d-1080x1350.jpg?w=1100&amp;q=72&amp;auto=format" alt="A 1950s living room at Halloween, guests in costume around a glowing television" width="1100" height="1375"></div>
+    <p class="label typed" id="print-cap">The living room, with a glowing television.</p>
+  </div>
+  <article class="right">
+    <p class="typed">Page 1 · The 1950s, by way of 2023</p>
+    <h1>A 1950s Halloween at home</h1>
+    <p class="dek">Grainy, overexposed in places, a little chaotic: the party as dad's old camera would have caught it.</p>
+    <section class="card" aria-labelledby="cr"><h2 id="cr">Who was there</h2>
+      <dl><dt>Elvis</dt><dd><a href="#">Byron Hunnam</a></dd><dt>Pierrot</dt><dd><a href="#">the_lovely_luna__</a></dd><dt>The devil</dt><dd><a href="#">vampirebby</a></dd><dt>Beauty queen</dt><dd><a href="#">grep.schultz</a></dd><dt>The house</dt><dd><a href="#">Mid Century Modern Rescue</a></dd><dt>Taken</dt><dd>Cincinnati, October 2023</dd></dl>
+    </section>
+    <div class="note"><p>The set is intentionally grainy, the shutter speed is turned down, and the images are overexposed in places. I wanted them to look like photos you find in a shoebox years later.</p></div>
+    <div class="prints">
+      <figure><button data-cap="Elvis on the sofa, the beauty queen and Pierrot behind him."><span class="mount"><span class="c1"></span><span class="c2"></span><img src="https://cdn.sanity.io/images/feuqkbki/production/316a844610310cb55bbaf77237a371bef8d4ac56-1080x1350.jpg?w=600&amp;q=72&amp;auto=format" alt="Elvis on the sofa while a beauty queen and Pierrot sit behind him, in black and white" width="600" height="750"></span></button><figcaption class="typed">Elvis, holding court.</figcaption></figure>
+      <figure><button data-cap="The devil laughs on the floor in red tulle."><span class="mount"><span class="c1"></span><span class="c2"></span><img src="https://cdn.sanity.io/images/feuqkbki/production/c8e429012032c7a4d57524d415abbc2e35d3a39b-1080x1350.jpg?w=600&amp;q=72&amp;auto=format" alt="The devil in red tulle laughs on the floor beside a plate of spaghetti" width="600" height="750"></span></button><figcaption class="typed">The devil, laughing.</figcaption></figure>
+      <figure><button data-cap="The beauty queen in a tiara, her shadow on the wall."><span class="mount"><span class="c1"></span><span class="c2"></span><img src="https://cdn.sanity.io/images/feuqkbki/production/ffd25176ec74d142a015f1c52ea3eecae5c5681e-1080x1350.jpg?w=600&amp;q=72&amp;auto=format" alt="The beauty queen in a tiara, her shadow on the wall behind her" width="600" height="750"></span></button><figcaption class="typed">The beauty queen.</figcaption></figure>
+      <figure><button data-cap="Pierrot in a silver party hat."><span class="mount"><span class="c1"></span><span class="c2"></span><img src="https://cdn.sanity.io/images/feuqkbki/production/d5bf58ed97a778ec9aaf0be8a2e9a485ff8b6d3c-1080x1350.jpg?w=600&amp;q=72&amp;auto=format" alt="Pierrot in a silver party hat, holding a curl of hair" width="600" height="750"></span></button><figcaption class="typed">Pierrot.</figcaption></figure>
+      <figure><button data-cap="Elvis in warm lamplight."><span class="mount"><span class="c1"></span><span class="c2"></span><img src="https://cdn.sanity.io/images/feuqkbki/production/6802c2ad3e34e9570a72b2a0fd9802fa29b7cdd6-1080x1350.jpg?w=600&amp;q=72&amp;auto=format" alt="Elvis in warm lamplight, hair falling across his face" width="600" height="750"></span></button><figcaption class="typed">Lamplight.</figcaption></figure>
+      <figure><button data-cap="The devil twirls beside a pumpkin."><span class="mount"><span class="c1"></span><span class="c2"></span><img src="https://cdn.sanity.io/images/feuqkbki/production/a1b4c9ac82d25cd7f3828e7f4b12a3fc1f5d4879-1080x1350.jpg?w=600&amp;q=72&amp;auto=format" alt="The devil twirls her red tulle skirt beside a pumpkin" width="600" height="750"></span></button><figcaption class="typed">One more twirl.</figcaption></figure>
+    </div>
+    <p class="ran typed">Ran in Hollyway Magazine, Tokyo, as "Time Machine Halloween", November 2023. Always an honor.</p>
+    <nav class="next" aria-label="Next page"><span class="typed">Page 2</span><a href="direction-d.html#p1">Sleepy Hollow</a></nav>
+  </article>
+</main>
+<script>
+// Choose a print on the right to mount it large on the left.
+const img=document.getElementById('print'),cap=document.getElementById('print-cap');
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+document.querySelectorAll('.prints button').forEach(b=>b.addEventListener('click',()=>{
+  const s=b.querySelector('img');const go=()=>{img.src=s.src.replace('w=600','w=1100');img.alt=s.alt;cap.textContent=b.dataset.cap;img.classList.remove('out')};
+  if(reduce||innerWidth<860)go();else{img.classList.add('out');setTimeout(go,300)}
+  if(innerWidth<860)img.scrollIntoView({behavior:reduce?'instant':'smooth',block:'center'});
+}));
+</script>
+</body>
+</html>

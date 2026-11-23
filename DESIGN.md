@@ -49,6 +49,8 @@ Direction chosen 2026-11-17 for the build on placeholder content. The brand name
 
 **Creative North Star: everything comes into focus.** A fine-art portrait portfolio that feels like a printed art book: warm paper, a large editorial serif, photos given room, and motion that behaves like a lens pulling focus.
 
+**Picked 2026-11-18: photo-first and motion-led** (`docs/design-directions/2026-11-18-tate/README.md`, Decision; mockup `direction-i*.html`). Not built yet; `docs/PENDING.md` tracks it. The photographs become the page: the home is one story per screen, full-bleed, each slide racking into focus as it scrolls in (portraits whole over a blurred bleed of themselves); a story plays as a slideshow film with a film-burn between frames; `/stories/` is a pinned sideways reel by decade. Brand type and colour stay as below.
+
 - **Light only** (2026-11-18, rule 3). Warm paper is the one ground; there is no theme toggle and the system dark setting is ignored. The dark column below is kept for reference and for the shared dark test suites.
 - **No polish-layer chrome.** No brand stripe, no card lift, no tinted bands around photos.
 - **Jewel bands** (2026-11-20, Nathan: "I want my color, section transitions"). Paper alternates with full-bleed colour fields in four jewel tones taken from her own photographs (section 2), and the hand-off between bands is designed (section 6, "Colour and transitions"). Within a band, parts still separate by hairline rules.
@@ -143,10 +145,13 @@ Motion: slow optical easing `cubic-bezier(0.22, 1, 0.36, 1)`, 700 to 1200ms for 
 - Let photos run full bleed or with generous margins; keep captions small.
 - Credit every person on a story, linked where they have a page.
 - Use placeholder images that read as placeholders until originals arrive.
+- (Picked 2026-11-18) Give each story the whole screen; show a portrait whole over a blurred bleed of itself rather than cropping it.
+- (Picked 2026-11-18) Keep words to one line on a paper chip over a photograph.
 
 **Don't**
 
 - Don't frame photos in cards, shadows or rounded corners.
 - Don't use a script font, blush pink, or wedding-template copy.
-- Don't distort photos with shaders beyond the hero's one focus effect.
+- Don't distort photos with shaders beyond the hero's one focus effect and, once built, the film-burn between frames in the story film.
+- Don't take over the scroll: no scroll-hijack library, and no page that is one screen tall on desktop (the references that do this fall back to a plain stack on phones anyway).
 - Don't write an em-dash in public copy.

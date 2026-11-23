@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Direction C, Chapters by Decade | Tate Fine Art Photography</title>
+<!-- Fonts: Cormorant Garamond (old-style book serif, display and text) + Jost (geometric sans in the Futura line, for labels only). -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Direction C: Story / scroll chapter. Throwaway mockup, not site code. Light only. */
+:root{
+  --bone:#F1EADC; --ink:#2A2118; --muted:#5E5244; --rule:#CDBFA8;
+  --serif:"Cormorant Garamond",Garamond,Georgia,serif; --label:"Jost",system-ui,sans-serif;
+  --rail:clamp(170px,16vw,230px); --gut:clamp(18px,3vw,44px);
+}
+*{box-sizing:border-box;margin:0}
+html{background:var(--bone);color:var(--ink);font:400 20px/1.6 var(--serif);-webkit-text-size-adjust:100%}
+a{color:inherit}:focus-visible{outline:2px solid var(--ink);outline-offset:4px}
+img{display:block;max-width:100%;height:auto}
+.label{font:500 11px/1.3 var(--label);letter-spacing:.22em;text-transform:uppercase}
+
+/* Side rail: the name, the chapters and a thin progress line. Sticky on wide screens, a tab row on phones. */
+.rail{position:fixed;inset:0 auto 0 0;width:var(--rail);padding:28px 0 28px var(--gut);display:flex;flex-direction:column;gap:28px;z-index:2}
+.rail .name{text-decoration:none;font:500 28px/1 var(--serif)}
+.rail .name i{display:block;font-size:17px;margin-top:4px}
+.rail ol{list-style:none;padding:0 0 0 14px;border-left:1px solid var(--rule);display:flex;flex-direction:column;gap:2px;position:relative}
+.rail ol::before{content:"";position:absolute;left:-1px;top:0;width:1px;height:var(--p,0%);background:var(--ink);transition:height .3s}
+.rail li a{display:block;text-decoration:none;padding:6px 0;font:400 17px/1.15 var(--serif);color:var(--muted)}
+.rail li a span{font:500 10px/1 var(--label);letter-spacing:.2em;display:block;margin-bottom:2px}
+.rail li a[aria-current=true]{color:var(--ink)}
+.rail .book{margin-top:auto;text-decoration:none;border-top:1px solid var(--ink);padding-top:12px;font:italic 500 19px/1.2 var(--serif)}
+main{margin-left:var(--rail);padding:0 var(--gut)}
+
+/* The opening intertitle: type only, framed like a silent-film title card. */
+.title{min-height:100vh;display:grid;place-items:center;padding:40px 0}
+.card{border:1px solid var(--ink);outline:1px solid var(--ink);outline-offset:6px;padding:clamp(28px,6vw,80px) clamp(22px,6vw,90px);text-align:center;max-width:860px}
+.card .label{display:block}
+h1{font:400 clamp(46px,7.4vw,112px)/.95 var(--serif);letter-spacing:-.01em;margin:24px 0}
+h1 em{font-style:italic}
+.card p.sub{font-size:clamp(19px,1.8vw,24px);max-width:34ch;margin:0 auto;font-style:italic}
+.card .orn{display:block;margin:22px auto 0;font:400 22px/1 var(--serif);letter-spacing:.6em}
+
+/* Chapters: one narrow column, a big numeral, a long pause before the next. */
+.chapter{padding:clamp(80px,14vh,180px) 0;border-top:1px solid var(--rule)}
+.chapter header{max-width:760px;margin:0 auto}
+.num{font:400 clamp(90px,14vw,210px)/.8 var(--serif);font-style:italic;color:var(--rule)}
+h2{font:500 clamp(40px,5.4vw,80px)/1 var(--serif);margin-top:-.25em;position:relative}
+.chapter header p{margin-top:20px;max-width:34em}
+.plate{max-width:760px;margin:clamp(36px,6vw,64px) auto 0}
+.plate img{width:100%;aspect-ratio:4/5;object-fit:cover}
+.plate figcaption{display:flex;justify-content:space-between;gap:16px;margin-top:10px;font-size:17px;font-style:italic}
+.plate figcaption a{font:500 11px/1.6 var(--label);letter-spacing:.2em;text-transform:uppercase;font-style:normal;white-space:nowrap}
+.pair{max-width:760px;margin:clamp(20px,3vw,32px) auto 0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(14px,2vw,24px)}
+.pair img{width:100%;aspect-ratio:4/5;object-fit:cover}
+.pair figcaption{font-size:16px;font-style:italic;margin-top:6px}
+.also{max-width:760px;margin:24px auto 0;font-size:17px;color:var(--muted)}
+.also a{color:var(--ink)}
+
+/* Reviews, like the quotes on a theatre programme. */
+.notices{max-width:760px;margin:0 auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px 40px;margin-top:40px}
+.notices p{font:italic 400 24px/1.2 var(--serif)}
+.notices span{display:block;margin-top:6px}
+.end{text-align:center;max-width:760px;margin:0 auto}
+.end h2{margin-top:0}
+.end p{margin:18px auto 0;max-width:30em}
+.btn{display:inline-block;margin-top:28px;border:1px solid var(--ink);padding:15px 26px;text-decoration:none;font:500 12px/1 var(--label);letter-spacing:.22em;text-transform:uppercase}
+.btn:hover{background:var(--ink);color:var(--bone)}
+footer{margin-left:var(--rail);padding:28px var(--gut) 18px;border-top:1px solid var(--rule);font-size:16px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.dir{margin-left:var(--rail);padding:16px var(--gut) 40px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--gut);font-size:17px}
+.dir b{display:block;font:500 11px/1.4 var(--label);letter-spacing:.2em;text-transform:uppercase;margin-bottom:4px}
+
+/* Developing tray: pictures start sepia and come into colour as they reach the middle of the screen.
+   CSS scroll-driven, so the scroll stays the browser's own. Unsupported, touch-only or reduced motion: full colour. */
+@supports (animation-timeline: view()){
+  @media (prefers-reduced-motion:no-preference) and (hover:hover){
+    html.motion .develop img{animation:develop linear both;animation-timeline:view();animation-range:entry 10% cover 45%}
+    @keyframes develop{from{filter:sepia(.9) saturate(.6) contrast(.9) brightness(1.04)}to{filter:none}}
+  }
+}
+
+@media (max-width:900px){
+  .rail{position:sticky;top:0;inset:auto;width:auto;flex-direction:row;align-items:center;gap:14px;padding:10px var(--gut);background:var(--bone);border-bottom:1px solid var(--rule);overflow-x:auto}
+  .rail .name{font-size:20px;flex:none}.rail .name i{display:none}
+  .rail ol{flex-direction:row;border-left:0;padding:0;gap:14px;flex:none}
+  .rail ol::before{display:none}
+  .rail li a{font-size:16px;white-space:nowrap;padding:10px 0}.rail li a span{display:none}
+  .rail .book{display:none}
+  main,footer,.dir{margin-left:0}
+  .title{min-height:auto;padding:48px 0}
+  .dir,.notices{grid-template-columns:minmax(0,1fr)}
+}
+</style>
+<script>/* The developing effect runs for visitors; the screenshot script (navigator.webdriver) gets the developed, full-colour page. */ if(!navigator.webdriver)document.documentElement.classList.add('motion')</script>
+</head>
+<body>
+<nav class="rail" aria-label="Chapters">
+  <a class="name" href="direction-c.html">Tate<i>Fine Art Photography</i></a>
+  <ol>
+    <li><a href="#prologue"><span>Prologue</span>Dad's camera</a></li>
+    <li><a href="#fifties"><span>I</span>The 1950s</a></li>
+    <li><a href="#sixties"><span>II</span>The 1960s</a></li>
+    <li><a href="#seventies"><span>III</span>The 1970s</a></li>
+    <li><a href="#books"><span>IV</span>From the page</a></li>
+    <li><a href="#halloween"><span>V</span>Halloween, all year</a></li>
+    <li><a href="#yours"><span>Epilogue</span>Your chapter</a></li>
+  </ol>
+  <a class="book" href="#yours">Book a session</a>
+</nav>
+
+<main>
+  <section class="title" aria-label="Title">
+    <div class="card">
+      <span class="label">Erin Schmerr presents</span>
+      <h1>Portraits from <em>other decades</em></h1>
+      <p class="sub">Vintage clothes, stories from books and films, and a lot of soft light. In five chapters, made in Cincinnati.</p>
+      <span class="orn" aria-hidden="true">· · ·</span>
+    </div>
+  </section>
+
+  <section class="chapter" id="prologue" aria-labelledby="h0">
+    <header><p class="num" aria-hidden="true">0</p><h2 id="h0">It started with my dad's camera</h2>
+      <p>My dad was a self-proclaimed picture nerd, never without a camera around his neck. Years after he died, I finally turned his camera on again and found the last photo he ever took: fall leaves, from our kitchen window.</p>
+      <p>Through his lens I fell in love with photography. I've spent years trying to perfect the look of an authentic vintage photograph, and each decade asks for something different.</p></header>
+  </section>
+
+  <section class="chapter" id="fifties" aria-labelledby="h1c">
+    <header><p class="num" aria-hidden="true">I</p><h2 id="h1c">The 1950s</h2><p>A Halloween party in a living room that already looked the part. Grainy, overexposed in places, a little chaotic: the party as dad's old camera would have caught it.</p></header>
+    <figure class="plate develop"><img src="https://cdn.sanity.io/images/feuqkbki/production/89e44fc497a5bc621c7c1666ab80a4fd51b83f4d-1080x1350.jpg?w=1100&amp;q=72&amp;auto=format" alt="A 1950s living room at Halloween, guests in costume around a glowing television" width="1100" height="1375"><figcaption><span>A 1950s Halloween at home, October 2023</span><a href="direction-c-story.html">Read the story</a></figcaption></figure>
+    <div class="pair develop"><figure><img src="https://cdn.sanity.io/images/feuqkbki/production/c8e429012032c7a4d57524d415abbc2e35d3a39b-1080x1350.jpg?w=600&amp;q=72&amp;auto=format" alt="The devil in red tulle laughs on the floor beside a plate of spaghetti" width="600" height="750"><figcaption>The devil, in red tulle.</figcaption></figure><figure><img src="https://cdn.sanity.io/images/feuqkbki/production/316a844610310cb55bbaf77237a371bef8d4ac56-1080x1350.jpg?w=600&amp;q=72&amp;auto=format" alt="Elvis on the sofa while a beauty queen and Pierrot sit behind him, in black and white" width="600" height="750"><figcaption>Elvis on the sofa.</figcaption></figure></div>
+  </section>
+
+  <section class="chapter" id="sixties" aria-labelledby="h2c">
+    <header><p class="num" aria-hidden="true">II</p><h2 id="h2c">The 1960s</h2><p>A neon pink jumpsuit, a little old Hollywood, and a porch with a pink door. The '60s are where I go when I want color.</p></header>
+    <figure class="plate develop"><img src="https://cdn.sanity.io/images/feuqkbki/production/a707cb65592c05af9a3cb1e8d8fcbbfd8525d9cc-1440x1440.jpg?w=1100&amp;q=72&amp;auto=format" alt="A woman in a pink 1960s jumpsuit and glasses behind a dark glass door" width="1100" height="1100" style="aspect-ratio:1"><figcaption><span>Pink, 1960s, at Tupelo House</span><a href="#">Read the story</a></figcaption></figure>
+    <p class="also">Also in this chapter: <a href="#">A '60s look</a> and <a href="#">American Sign Museum</a>.</p>
+  </section>
+
+  <section class="chapter" id="seventies" aria-labelledby="h3c">
+    <header><p class="num" aria-hidden="true">III</p><h2 id="h3c">The 1970s</h2><p>Valentines, a checkered rug and a lace mask, in a sunny living room with a wall of records.</p></header>
+    <div class="pair develop"><figure><img src="https://cdn.sanity.io/images/feuqkbki/production/e14d50acf5bb10164001a8ebfb71476d07ca4648-1440x1440.jpg?w=600&amp;q=72&amp;auto=format" alt="A woman in red lace kneels on a checkered rug among paper hearts, 1970s colour" width="600" height="600" style="aspect-ratio:1"><figcaption>A 1970s Valentine.</figcaption></figure><figure><img src="https://cdn.sanity.io/images/feuqkbki/production/454025719c65ab13661ceaa06453f2d472dc5d79-1440x1440.jpg?w=600&amp;q=72&amp;auto=format" alt="Holding a record sleeve in front of her face, in black and white" width="600" height="600" style="aspect-ratio:1"><figcaption>Behind a record sleeve.</figcaption></figure></div>
+  </section>
+
+  <section class="chapter" id="books" aria-labelledby="h4c">
+    <header><p class="num" aria-hidden="true">IV</p><h2 id="h4c">From the page</h2><p>A lot of my shoots start from a book or a play. "Love looks not with the eyes, but with the mind." Shakespeare, Washington Irving, and a book of poems about Annie Oakley.</p></header>
+    <figure class="plate develop"><img src="https://cdn.sanity.io/images/feuqkbki/production/898f65f91792769481299578c0a3a70e92ea2aa5-1080x1350.jpg?w=1100&amp;q=72&amp;auto=format" alt="A fairy with lavender hair and pale wings, her back to the camera, among leaves" width="1100" height="1375"><figcaption><span>A Midsummer Night's Dream, 2023</span><a href="#">Read the story</a></figcaption></figure>
+    <div class="pair develop"><figure><img src="https://cdn.sanity.io/images/feuqkbki/production/ce858e4c6e05d280b40acaa3aedc0419d3487628-1080x1350.jpg?w=600&amp;q=72&amp;auto=format" alt="A woman in black lace in a field at dusk, looking up" width="600" height="750"><figcaption>Sleepy Hollow.</figcaption></figure><figure><img src="https://cdn.sanity.io/images/feuqkbki/production/76d888be6dc1bc1ea0b2c0fb2f17d2b100863682-1440x1440.jpg?w=600&amp;q=72&amp;auto=format" alt="A smiling woman with long fair hair and bangs, in warm light" width="600" height="750"><figcaption>Lady Wing Shot, Darke County.</figcaption></figure></div>
+  </section>
+
+  <section class="chapter" id="halloween" aria-labelledby="h5c">
+    <header><p class="num" aria-hidden="true">V</p><h2 id="h5c">Halloween, all year</h2><p>I will always say yes to Halloween, even in August. A glam killer clown, a cemetery at dusk, and the best decorated house in all the 'Nati.</p></header>
+    <div class="pair develop"><figure><img src="https://cdn.sanity.io/images/feuqkbki/production/4852a6d931b6d09a64829bb965c53db6dbc96f36-1080x1350.jpg?w=600&amp;q=72&amp;auto=format" alt="A woman in a white lace skirt holds a lantern at dusk" width="600" height="750"><figcaption>Spooky in August.</figcaption></figure><figure><img src="https://cdn.sanity.io/images/feuqkbki/production/4ec7facbf73640d370d3296dcf0b79f2f0e57ea8-1080x1350.jpg?w=600&amp;q=72&amp;auto=format" alt="A woman holds up a glowing jack-o-lantern on a porch strung with orange lights" width="600" height="750"><figcaption>Pink Halloween.</figcaption></figure></div>
+  </section>
+
+  <section class="chapter" aria-labelledby="hn">
+    <header><p class="label">Notices</p><h2 id="hn" style="margin-top:12px">As seen in</h2></header>
+    <div class="notices">
+      <p>"Time Machine Halloween"<span class="label">Hollyway Magazine, Tokyo, 2023</span></p>
+      <p>"We All Look Good in Pink"<span class="label">BleachFilm, 2025</span></p>
+      <p>"Just Ken"<span class="label">Elysium Magazine, 2023</span></p>
+      <p>"Taking Up Space"<span class="label">Fienfh Magazine, 2023</span></p>
+      <p>The cover of <i>Mouth</i><span class="label">Cornerstone Press, 2026</span></p>
+      <p>Selected portraits<span class="label">PhotoVogue, 2023 and 2024</span></p>
+    </div>
+  </section>
+
+  <section class="chapter end" id="yours" aria-labelledby="h6c">
+    <p class="label">Epilogue</p>
+    <h2 id="h6c" style="margin-top:14px">Your chapter</h2>
+    <p>Bring me a decade, a character or a story, and we'll build a session around it. I find the clothes and the place, and we take our time.</p>
+    <a class="btn" href="#">Book a session</a>
+  </section>
+</main>
+<footer><span>Tate Fine Art Photography · Erin Schmerr · Cincinnati and West Chester, Ohio</span><span>Instagram · Facebook</span></footer>
+<aside class="dir" aria-label="About this direction">
+  <div><b>Bet</b>She thinks in decades and stories, so the site should too: a visitor finds their era first and the photographer second.</div>
+  <div><b>Rejects</b>No grid of thumbnails, no top nav bar, no accent colour. One column, long pauses, the photos are the only colour.</div>
+  <div><b>Costs</b>Long scroll before the press and the booking. Every new story needs a chapter. Thin on a phone if the rail is lost.</div>
+</aside>
+<script>
+// Rail: mark the chapter in view and fill the progress line. Scrolling stays native.
+const links=[...document.querySelectorAll('.rail li a')];
+const secs=links.map(a=>document.querySelector(a.getAttribute('href')));
+const ol=document.querySelector('.rail ol');
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){const i=secs.indexOf(e.target);links.forEach((l,j)=>l.setAttribute('aria-current',j===i));ol.style.setProperty('--p',((i+1)/secs.length*100)+'%')}}),{rootMargin:'-45% 0px -50% 0px'});
+secs.forEach(s=>s&&io.observe(s));
+</script>
+</body>
+</html>

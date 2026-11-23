@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A 1950s Halloween at home | Direction A, The Contact Sheet</title>
+<!-- Fonts: Archivo (grotesque, width axis). Same system as direction-a.html. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,300..800;1,62..125,400&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#F6F5F1;--ink:#111110;--muted:#55534E;--rule:#D4D1C8;--film:#151514;--edge:#F2B24A;--pencil:#C2261C;--gut:clamp(16px,3vw,40px)}
+*{box-sizing:border-box;margin:0}
+html{background:var(--paper);color:var(--ink);font:400 15px/1.45 "Archivo",system-ui,sans-serif;-webkit-text-size-adjust:100%}
+a{color:inherit}:focus-visible{outline:2px solid var(--pencil);outline-offset:3px}
+img{display:block;max-width:100%;height:auto}
+.num{font-variant-numeric:tabular-nums}
+.edge{background:var(--film);color:var(--edge);font:500 11px/1 "Archivo";font-stretch:75%;letter-spacing:.18em;text-transform:uppercase;display:flex;gap:2.2em;padding:9px var(--gut);white-space:nowrap;overflow:hidden}
+.edge a{text-decoration:none;color:#fff}
+@media (max-width:560px){.edge span:nth-child(n+3){display:none}}
+.layout{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:var(--gut);padding:clamp(20px,3vw,36px) var(--gut) 0}
+h1{font-stretch:62%;font-weight:700;text-transform:uppercase;font-size:clamp(52px,7.4vw,112px);line-height:.84;letter-spacing:-.015em}
+.dek{margin-top:16px;font-size:18px;max-width:40ch}
+.data{margin-top:22px;width:100%;border-collapse:collapse;font-size:13.5px}
+.data th{width:9em;text-align:left;font:500 10.5px/1.4 "Archivo";font-stretch:80%;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding:8px 8px 8px 0;border-top:1px solid var(--rule);vertical-align:top}
+.data td{padding:7px 0;border-top:1px solid var(--rule)}
+.data .pub{color:var(--pencil);font-weight:600}
+.howto{margin-top:18px;font-size:13px;color:var(--muted)}
+/* The sheet: all 16 frames on film, picks circled. */
+.sheet{background:var(--film);padding:22px 12px 26px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px 8px;position:relative;margin-top:clamp(28px,4vw,44px)}
+.sheet figure{position:relative}
+.sheet img{aspect-ratio:4/5;object-fit:cover;width:100%}
+.sheet button{all:unset;display:block;cursor:zoom-in;width:100%}
+.sheet button:focus-visible{outline:2px solid var(--edge);outline-offset:3px}
+.sheet .no{position:absolute;left:0;bottom:-16px;color:var(--edge);font:500 10px/1 "Archivo";font-stretch:70%;letter-spacing:.1em}
+.sheet .pick::after{content:"";position:absolute;inset:-7px -6px;border:2.5px solid var(--pencil);border-radius:48% 52% 45% 55%/55% 45% 55% 45%;transform:rotate(-3deg);pointer-events:none}
+.sheet .x::before{content:"";position:absolute;inset:30% 30%;background:linear-gradient(45deg,transparent 47%,var(--pencil) 47% 53%,transparent 53%),linear-gradient(-45deg,transparent 47%,var(--pencil) 47% 53%,transparent 53%);z-index:1;pointer-events:none;opacity:.85}
+/* Loupe: a sticky enlargement of the frame under the pointer or in focus. */
+.loupe{position:sticky;top:16px;align-self:start}
+.loupe figure{background:#fff;border:1px solid var(--rule);padding:10px}
+.loupe img{width:100%;aspect-ratio:4/5;object-fit:cover}
+.loupe figcaption{font-size:13px;margin-top:8px;display:flex;gap:10px}
+.loupe figcaption span:first-child{color:var(--muted);flex:none}
+.selects{padding:clamp(40px,6vw,72px) var(--gut) 0}
+.sechead{display:flex;justify-content:space-between;align-items:end;border-bottom:1px solid var(--ink);padding-bottom:10px;margin-bottom:18px;gap:16px}
+h2{font-stretch:68%;font-weight:700;text-transform:uppercase;font-size:clamp(28px,3.6vw,44px);line-height:.95}
+.sechead p{font-size:13px;color:var(--muted)}
+.prints{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--gut)}
+.prints figcaption{font-size:13px;margin-top:8px}
+.prints figcaption b{font-stretch:75%;text-transform:uppercase;letter-spacing:.04em;margin-right:6px}
+.next{margin:clamp(40px,6vw,72px) var(--gut) 0;border-top:1px solid var(--ink);padding:16px 0 40px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:14px}
+.next a{font-stretch:68%;font-weight:700;text-transform:uppercase;font-size:clamp(28px,4vw,48px);line-height:1;text-decoration:none}
+.next a:hover{text-decoration:underline;text-decoration-color:var(--pencil)}
+@media (max-width:900px){.layout{grid-template-columns:minmax(0,1fr)}.prints{grid-template-columns:repeat(2,minmax(0,1fr))}.loupe{position:static;order:-1}.loupe figure{max-width:420px}.sheet{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:560px){.sheet{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+<div class="edge"><span><a href="direction-a.html">Tate Fine Art Photography</a></span><span class="num">Roll 01 of 16</span><span>Mid Century Modern Rescue, Cincinnati</span><span class="num">October 2023</span></div>
+<main>
+<div class="layout">
+  <div>
+    <h1>A 1950s Halloween at home</h1>
+    <p class="dek">Grainy, overexposed in places, a little chaotic: the party as dad's old camera would have caught it.</p>
+    <table class="data num">
+      <tr><th scope="row">Elvis</th><td><a href="#">Byron Hunnam</a></td></tr>
+      <tr><th scope="row">Pierrot</th><td><a href="#">the_lovely_luna__</a></td></tr>
+      <tr><th scope="row">The devil</th><td><a href="#">vampirebby</a></td></tr>
+      <tr><th scope="row">Beauty queen</th><td><a href="#">grep.schultz</a></td></tr>
+      <tr><th scope="row">The house</th><td><a href="#">Mid Century Modern Rescue</a></td></tr>
+      <tr><th scope="row">Ran in</th><td class="pub">Hollyway Magazine, Time Machine Halloween, November 2023</td></tr>
+      <tr><th scope="row">On the roll</th><td>16 frames, 4 printed. The set is intentionally grainy, the shutter speed is turned down, and some frames are overexposed on purpose.</td></tr>
+    </table>
+    <p class="howto">Point at a frame, or tab to it, to see it in the loupe. Circled frames are my picks; crossed frames didn't make the edit.</p>
+
+    <div class="sheet num" role="list" aria-label="All 16 frames">
+      <figure role="listitem"><button data-i="1"><img src="https://cdn.sanity.io/images/feuqkbki/production/89e44fc497a5bc621c7c1666ab80a4fd51b83f4d-1080x1350.jpg?w=360&amp;q=72&amp;auto=format" alt="A 1950s living room at Halloween, guests in costume around a glowing television" width="360" height="450"></button><span class="no">1</span></figure>
+      <figure role="listitem" class="pick"><button><img src="https://cdn.sanity.io/images/feuqkbki/production/316a844610310cb55bbaf77237a371bef8d4ac56-1080x1350.jpg?w=360&amp;q=72&amp;auto=format" alt="Elvis on the sofa while a beauty queen and Pierrot sit behind him, in black and white" width="360" height="450"></button><span class="no">2</span></figure>
+      <figure role="listitem"><button><img src="https://cdn.sanity.io/images/feuqkbki/production/c8e429012032c7a4d57524d415abbc2e35d3a39b-1080x1350.jpg?w=360&amp;q=72&amp;auto=format" alt="The devil in red tulle laughs on the floor beside a plate of spaghetti" width="360" height="450"></button><span class="no">3</span></figure>
+      <figure role="listitem" class="x"><button><img src="https://cdn.sanity.io/images/feuqkbki/production/fa85188661d64790efd4db36c1d36a0f3afe29b1-1080x1350.jpg?w=360&amp;q=72&amp;auto=format" alt="Elvis in an armchair, the beauty queen perched behind him" width="360" height="450"></button><span class="no">4</span></figure>
+      <figure role="listitem"><button><img src="https://cdn.sanity.io/images/feuqkbki/production/bff853de7ba99ea6305630981b85ebac984e55a7-1080x1350.jpg?w=360&amp;q=72&amp;auto=format" alt="The devil sits by a television showing an old horror film" width="360" height="450"></button><span class="no">5</span></figure>
+      <figure role="listitem" class="pick"><button><img src="https://cdn.sanity.io/images/feuqkbki/production/271b9bb7dbbc739e39329517eadcd1df91c0392b-1080x1350.jpg?w=360&amp;q=72&amp;auto=format" alt="Close portrait of the devil in red horns and dark curls, smiling" width="360" height="450"></button><span class="no">6</span></figure>
+      <figure role="listitem"><button><img src="https://cdn.sanity.io/images/feuqkbki/production/621d0ecdb08daf293ddfeb4e0522edc91d1641b0-1080x1350.jpg?w=360&amp;q=72&amp;auto=format" alt="The devil in black and white, looking off to one side" width="360" height="450"></button><span class="no">7</span></figure>
+      <figure role="listitem"><button><img src="https://cdn.sanity.io/images/feuqkbki/production/6802c2ad3e34e9570a72b2a0fd9802fa29b7cdd6-1080x1350.jpg?w=360&amp;q=72&amp;auto=format" alt="Elvis in warm lamplight, hair falling across his face" width="360" height="450"></button><span class="no">8</span></figure>
+      <figure role="listitem"><button><img src="https://cdn.sanity.io/images/feuqkbki/production/e965c4107713a6f6ba45fd50428c620df7304e0e-1080x1349.jpg?w=360&amp;q=72&amp;auto=format" alt="Elvis with a cigarette, glancing back over the sofa" width="360" height="450"></button><span class="no">9</span></figure>
+      <figure role="listitem"><button><img src="https://cdn.sanity.io/images/feuqkbki/production/faa52a4cc2d2b0bff3d1bd95da241c7e2285e3a7-1080x1350.jpg?w=360&amp;q=72&amp;auto=format" alt="Elvis and his shadow against a bare wall, in black and white" width="360" height="450"></button><span class="no">10</span></figure>
+      <figure role="listitem" class="x"><button><img src="https://cdn.sanity.io/images/feuqkbki/production/ffd25176ec74d142a015f1c52ea3eecae5c5681e-1080x1350.jpg?w=360&amp;q=72&amp;auto=format" alt="The beauty queen in a tiara, her shadow on the wall behind her" width="360" height="450"></button><span class="no">11</span></figure>
+      <figure role="listitem"><button><img src="https://cdn.sanity.io/images/feuqkbki/production/47d498e6af9e3a069880c303075d96a7a2e04ac2-1080x1350.jpg?w=360&amp;q=72&amp;auto=format" alt="The beauty queen looking over her shoulder in black and white" width="360" height="450"></button><span class="no">12</span></figure>
+      <figure role="listitem"><button><img src="https://cdn.sanity.io/images/feuqkbki/production/ef381fd6bb9f1643864410dd8a074f41fb9278fe-1080x1350.jpg?w=360&amp;q=72&amp;auto=format" alt="The beauty queen leaning on a jack-o-lantern" width="360" height="450"></button><span class="no">13</span></figure>
+      <figure role="listitem" class="pick"><button><img src="https://cdn.sanity.io/images/feuqkbki/production/d5bf58ed97a778ec9aaf0be8a2e9a485ff8b6d3c-1080x1350.jpg?w=360&amp;q=72&amp;auto=format" alt="Pierrot in a silver party hat, holding a curl of hair" width="360" height="450"></button><span class="no">14</span></figure>
+      <figure role="listitem"><button><img src="https://cdn.sanity.io/images/feuqkbki/production/fc763f2c23d66ab9bcb05c66e6424eef6003eb53-1080x1350.jpg?w=360&amp;q=72&amp;auto=format" alt="Pierrot resting her chin on her hand, in black and white" width="360" height="450"></button><span class="no">15</span></figure>
+      <figure role="listitem" class="pick"><button><img src="https://cdn.sanity.io/images/feuqkbki/production/a1b4c9ac82d25cd7f3828e7f4b12a3fc1f5d4879-1080x1350.jpg?w=360&amp;q=72&amp;auto=format" alt="The devil twirls her red tulle skirt beside a pumpkin" width="360" height="450"></button><span class="no">16</span></figure>
+    </div>
+  </div>
+  <aside class="loupe" aria-label="Loupe">
+    <figure><img id="loupe-img" src="https://cdn.sanity.io/images/feuqkbki/production/316a844610310cb55bbaf77237a371bef8d4ac56-1080x1350.jpg?w=900&amp;q=72&amp;auto=format" alt="Elvis on the sofa while a beauty queen and Pierrot sit behind him, in black and white" width="900" height="1125"><figcaption><span class="num" id="loupe-no">Frame 2</span><span id="loupe-cap" style="color:inherit">Elvis on the sofa while a beauty queen and Pierrot sit behind him, in black and white</span></figcaption></figure>
+  </aside>
+</div>
+
+<section class="selects" aria-labelledby="sel">
+  <div class="sechead"><h2 id="sel">The prints</h2><p class="num">4 of 16</p></div>
+  <div class="prints">
+    <figure><img src="https://cdn.sanity.io/images/feuqkbki/production/271b9bb7dbbc739e39329517eadcd1df91c0392b-1080x1350.jpg?w=700&amp;q=72&amp;auto=format" alt="Close portrait of the devil in red horns and dark curls, smiling" width="700" height="875"><figcaption><b>6</b>The devil, laughing at her own joke.</figcaption></figure>
+    <figure><img src="https://cdn.sanity.io/images/feuqkbki/production/d5bf58ed97a778ec9aaf0be8a2e9a485ff8b6d3c-1080x1350.jpg?w=700&amp;q=72&amp;auto=format" alt="Pierrot in a silver party hat, holding a curl of hair" width="700" height="875"><figcaption><b>14</b>Pierrot, mid-sentence, in a silver party hat.</figcaption></figure>
+    <figure><img src="https://cdn.sanity.io/images/feuqkbki/production/316a844610310cb55bbaf77237a371bef8d4ac56-1080x1350.jpg?w=700&amp;q=72&amp;auto=format" alt="Elvis on the sofa while a beauty queen and Pierrot sit behind him, in black and white" width="700" height="875"><figcaption><b>2</b>Elvis, making cool guy at the party look easy.</figcaption></figure>
+    <figure><img src="https://cdn.sanity.io/images/feuqkbki/production/a1b4c9ac82d25cd7f3828e7f4b12a3fc1f5d4879-1080x1350.jpg?w=700&amp;q=72&amp;auto=format" alt="The devil twirls her red tulle skirt beside a pumpkin" width="700" height="875"><figcaption><b>16</b>The devil twirls, and the pumpkin stays put.</figcaption></figure>
+  </div>
+</section>
+</main>
+<nav class="next" aria-label="Next roll"><span class="num">Next, roll 02 of 16</span><a href="direction-a.html">Sleepy Hollow</a><a href="direction-a.html" style="font-size:14px;font-stretch:100%;text-transform:none;font-weight:600;align-self:end">Back to the index</a></nav>
+<script>
+// Loupe: hover or focus a frame to enlarge it. Touch: a tap focuses the button, same result.
+const L=document.getElementById('loupe-img'),N=document.getElementById('loupe-no'),C=document.getElementById('loupe-cap');
+document.querySelectorAll('.sheet figure').forEach((f,i)=>{const b=f.querySelector('button'),im=f.querySelector('img');
+  const show=()=>{L.src=im.src.replace('w=360','w=900');L.alt=im.alt;N.textContent='Frame '+(i+1);C.textContent=im.alt};
+  b.addEventListener('mouseenter',show);b.addEventListener('focus',show);b.addEventListener('click',show);});
+</script>
+</body>
+</html>

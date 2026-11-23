@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A 1950s Halloween at home | Direction G, Darkroom</title>
+<!-- Fonts: Italiana + Manrope, same as direction-g.html. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Italiana&family=Manrope:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* The story develops as you scroll: one fixed screen, and each scroll step burns the current print into the next
+   (scrubbed by native scroll, so it runs backwards too). Without WebGL, JS, or with reduced motion it is a plain
+   run of full-bleed frames with their captions. */
+:root{--paper:#F5F1EA;--ink:#1C1915;--muted:#5C544A;--disp:"Italiana",Georgia,serif;--sans:"Manrope",system-ui,sans-serif}
+*{box-sizing:border-box;margin:0}
+html{background:var(--paper);color:var(--ink);font:400 15px/1.5 var(--sans)}
+a{color:inherit}:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+img{display:block}
+.chip{background:rgba(245,241,234,.94);padding:7px 12px;text-decoration:none;line-height:1.2}
+.label{font:600 11px/1.3 var(--sans);letter-spacing:.16em;text-transform:uppercase}
+.bar{position:fixed;inset:14px 14px auto 14px;display:flex;justify-content:space-between;z-index:10}
+.bar .name{font:400 22px/1 var(--disp)}
+.screen{position:sticky;top:0;height:100vh;height:100svh;display:none}
+.screen canvas{width:100%;height:100%;display:block}
+html.gl .screen{display:block}
+.steps{position:relative}
+html.gl .steps{margin-top:-100vh;margin-top:-100svh}
+.step{position:relative;height:100vh;height:100svh;overflow:hidden}
+.step img{width:100%;height:100%;object-fit:cover}
+html.gl.ready .step img{visibility:hidden}
+.step .cap{position:absolute;left:14px;bottom:14px;max-width:min(520px,calc(100% - 28px))}
+.open .cap{bottom:auto;top:50%;transform:translateY(-50%)}
+h1{font:400 clamp(40px,6vw,86px)/1 var(--disp)}
+.open p{margin-top:10px;font-size:17px}
+.credits{background:var(--paper);position:relative;padding:80px 20px;text-align:center}
+.credits h2{font:400 40px/1 var(--disp)}
+.credits dl{display:grid;grid-template-columns:1fr 1fr;gap:6px 20px;max-width:520px;margin:24px auto 0}
+.credits dt{text-align:right;color:var(--muted)}.credits dd{margin:0;text-align:left}
+.credits p{margin-top:24px;color:var(--muted)}
+.credits a.next{display:inline-block;margin-top:28px;font:400 34px/1 var(--disp);border-bottom:1px solid var(--ink);text-decoration:none}
+</style>
+<script>if(!navigator.webdriver&&!matchMedia('(prefers-reduced-motion: reduce)').matches&&!!document.createElement('canvas').getContext('webgl'))document.documentElement.classList.add('gl')</script>
+</head>
+<body>
+<header class="bar"><a class="chip name" href="direction-g.html">Tate</a><a class="chip label" href="direction-g.html#book">Book a session</a></header>
+<main>
+  <div class="screen" aria-hidden="true"><canvas id="gl"></canvas></div>
+  <div class="steps">
+    <section class="step open" data-src="https://cdn.sanity.io/images/feuqkbki/production/89e44fc497a5bc621c7c1666ab80a4fd51b83f4d-1080x1350.jpg?w=1600&amp;q=72&amp;auto=format"><img src="https://cdn.sanity.io/images/feuqkbki/production/89e44fc497a5bc621c7c1666ab80a4fd51b83f4d-1080x1350.jpg?w=1600&amp;q=72&amp;auto=format" alt="A 1950s living room at Halloween, guests in costume around a glowing television" fetchpriority="high"><div class="cap chip"><p class="label">The 1950s · October 2023</p><h1>A 1950s Halloween at home</h1><p>Grainy, overexposed in places, a little chaotic: the party as dad's old camera would have caught it.</p></div></section>
+    <section class="step" data-src="https://cdn.sanity.io/images/feuqkbki/production/316a844610310cb55bbaf77237a371bef8d4ac56-1080x1350.jpg?w=1600&amp;q=72&amp;auto=format"><img src="https://cdn.sanity.io/images/feuqkbki/production/316a844610310cb55bbaf77237a371bef8d4ac56-1080x1350.jpg?w=1600&amp;q=72&amp;auto=format" alt="Elvis on the sofa while a beauty queen and Pierrot sit behind him, in black and white"><p class="cap chip">Elvis, making cool guy at the party look easy.</p></section>
+    <section class="step" data-src="https://cdn.sanity.io/images/feuqkbki/production/c8e429012032c7a4d57524d415abbc2e35d3a39b-1080x1350.jpg?w=1600&amp;q=72&amp;auto=format"><img src="https://cdn.sanity.io/images/feuqkbki/production/c8e429012032c7a4d57524d415abbc2e35d3a39b-1080x1350.jpg?w=1600&amp;q=72&amp;auto=format" alt="The devil in red tulle laughs on the floor beside a plate of spaghetti"><p class="cap chip">The devil, laughing at her own joke.</p></section>
+    <section class="step" data-src="https://cdn.sanity.io/images/feuqkbki/production/271b9bb7dbbc739e39329517eadcd1df91c0392b-1080x1350.jpg?w=1600&amp;q=72&amp;auto=format"><img src="https://cdn.sanity.io/images/feuqkbki/production/271b9bb7dbbc739e39329517eadcd1df91c0392b-1080x1350.jpg?w=1600&amp;q=72&amp;auto=format" alt="Close portrait of the devil in red horns and dark curls, smiling"><p class="cap chip">Red horns and dark curls.</p></section>
+    <section class="step" data-src="https://cdn.sanity.io/images/feuqkbki/production/ffd25176ec74d142a015f1c52ea3eecae5c5681e-1080x1350.jpg?w=1600&amp;q=72&amp;auto=format"><img src="https://cdn.sanity.io/images/feuqkbki/production/ffd25176ec74d142a015f1c52ea3eecae5c5681e-1080x1350.jpg?w=1600&amp;q=72&amp;auto=format" alt="The beauty queen in a tiara, her shadow on the wall behind her"><p class="cap chip">The beauty queen and her shadow.</p></section>
+    <section class="step" data-src="https://cdn.sanity.io/images/feuqkbki/production/d5bf58ed97a778ec9aaf0be8a2e9a485ff8b6d3c-1080x1350.jpg?w=1600&amp;q=72&amp;auto=format"><img src="https://cdn.sanity.io/images/feuqkbki/production/d5bf58ed97a778ec9aaf0be8a2e9a485ff8b6d3c-1080x1350.jpg?w=1600&amp;q=72&amp;auto=format" alt="Pierrot in a silver party hat, holding a curl of hair"><p class="cap chip">Pierrot, in a silver party hat.</p></section>
+    <section class="step" data-src="https://cdn.sanity.io/images/feuqkbki/production/2693aa2f66f3c63a70d029a93d78381afbe02a12-1080x1343.jpg?w=1600&amp;q=72&amp;auto=format"><img src="https://cdn.sanity.io/images/feuqkbki/production/2693aa2f66f3c63a70d029a93d78381afbe02a12-1080x1343.jpg?w=1600&amp;q=72&amp;auto=format" alt="The whole party on the floor of the living room, cards and drinks between them"><p class="cap chip">The intentionally grainy part: shutter speed down, overexposed in places.</p></section>
+  </div>
+  <section class="credits" aria-labelledby="cast"><h2 id="cast">The cast</h2>
+    <dl><dt>Elvis</dt><dd><a href="#">Byron Hunnam</a></dd><dt>Pierrot</dt><dd><a href="#">the_lovely_luna__</a></dd><dt>The devil</dt><dd><a href="#">vampirebby</a></dd><dt>Beauty queen</dt><dd><a href="#">grep.schultz</a></dd><dt>The house</dt><dd><a href="#">Mid Century Modern Rescue</a></dd></dl>
+    <p>Ran in Hollyway Magazine, Tokyo, November 2023. Always an honor.</p><a class="next" href="direction-g.html">Next: Sleepy Hollow</a></section>
+</main>
+<script>
+(function(){
+  if(!document.documentElement.classList.contains('gl'))return;
+  const steps=[...document.querySelectorAll('.step')],urls=steps.map(s=>s.dataset.src);
+  const cv=document.getElementById('gl'),gl=cv.getContext('webgl');
+  const vs=`attribute vec2 p;varying vec2 v;void main(){v=p*.5+.5;v.y=1.-v.y;gl_Position=vec4(p,0,1);}`;
+  const fs=`precision mediump float;varying vec2 v;uniform sampler2D a,b;uniform float t,ra,rb,rs;
+  float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+  float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+vec2(1,1)),f.x),f.y);}
+  float fb(vec2 p){float s=0.,m=.5;for(int i=0;i<4;i++){s+=m*n(p);p*=2.;m*=.5;}return s;}
+  vec2 cover(vec2 uv,float ri){vec2 s=rs>ri?vec2(1.,ri/rs):vec2(rs/ri,1.);return (uv-.5)*s+.5;}
+  vec4 blur(sampler2D s,vec2 uv,float r){vec4 c=vec4(0);for(int x=-2;x<=2;x++)for(int y=-2;y<=2;y++)c+=texture2D(s,uv+vec2(x,y)*r);return c/25.;}
+  void main(){float bl=sin(t*3.14159)*.0035;vec4 A=blur(a,cover(v,ra),bl),B=blur(b,cover(v,rb),bl);
+    float g=fb(v*vec2(rs,1.)*3.)*.75+(1.-v.y)*.25;float e=t*1.3-.15;float m=smoothstep(e-.08,e,g);
+    float edge=smoothstep(e-.08,e-.02,g)*(1.-smoothstep(e-.02,e+.03,g));
+    gl_FragColor=vec4(mix(B.rgb,A.rgb,m)+vec3(1.,.55,.2)*edge*1.6,1.);}`;
+  const sh=(t,s)=>{const o=gl.createShader(t);gl.shaderSource(o,s);gl.compileShader(o);return o};
+  const pr=gl.createProgram();gl.attachShader(pr,sh(gl.VERTEX_SHADER,vs));gl.attachShader(pr,sh(gl.FRAGMENT_SHADER,fs));gl.linkProgram(pr);gl.useProgram(pr);
+  gl.bindBuffer(gl.ARRAY_BUFFER,gl.createBuffer());gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
+  const loc=gl.getAttribLocation(pr,'p');gl.enableVertexAttribArray(loc);gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
+  const U=k=>gl.getUniformLocation(pr,k);gl.uniform1i(U('a'),0);gl.uniform1i(U('b'),1);
+  const tex=[],ratio=[];
+  urls.forEach((u,i)=>{const im=new Image();im.crossOrigin='anonymous';im.onload=()=>{const t=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,t);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+    try{gl.texImage2D(gl.TEXTURE_2D,0,gl.RGB,gl.RGB,gl.UNSIGNED_BYTE,im)}catch(e){/* No CORS for this origin: keep the plain images. */return}tex[i]=t;ratio[i]=im.width/im.height;if(i===0)document.documentElement.classList.add('ready');draw()};im.src=u});
+  const size=()=>{const d=Math.min(devicePixelRatio,1.5);cv.width=cv.clientWidth*d;cv.height=cv.clientHeight*d;gl.viewport(0,0,cv.width,cv.height);draw()};
+  // Scroll position picks the pair and the burn progress. Each step holds still for its first 55%, then burns.
+  function draw(){const first=steps[0].getBoundingClientRect().top+scrollY,pos=(scrollY-first)/innerHeight;
+    const i=Math.max(0,Math.min(steps.length-1,Math.floor(pos))),j=Math.min(steps.length-1,i+1);let p=pos-i;p=Math.max(0,(p-.55)/.45);
+    const a=tex[i]?i:0,b=tex[j]?j:a;if(!tex[a])return;
+    gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,tex[a]);gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,tex[b]);
+    gl.uniform1f(U('t'),i===j?0:p);gl.uniform1f(U('ra'),ratio[a]);gl.uniform1f(U('rb'),ratio[b]);gl.uniform1f(U('rs'),cv.width/cv.height);gl.drawArrays(gl.TRIANGLE_STRIP,0,4)}
+  let tick=false;addEventListener('scroll',()=>{if(!tick){tick=true;requestAnimationFrame(()=>{tick=false;draw()})}},{passive:true});
+  addEventListener('resize',size);size();
+})();
+</script>
+</body>
+</html>

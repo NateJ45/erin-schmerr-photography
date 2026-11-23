@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Direction F, The Reel | Tate Fine Art Photography</title>
+<!-- Fonts: DM Serif Display (titles) + DM Mono (frame numbers, small labels). -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="https://cdn.sanity.io/images/feuqkbki/production/d3059f9d5ddfecdfa852e571da236b973a50997a-1440x1440.jpg?w=1800&amp;q=72&amp;auto=format" fetchpriority="high">
+<style>
+/* Direction F: one long horizontal reel, pinned to the screen while the page scrolls vertically (native scroll drives it).
+   Each frame's picture drifts inside its frame for depth. Measured from references: MORROW's 1s cubic-bezier(.22,1,.36,1),
+   HOLMCHROME's film-strip index with frame numbers and exposure data. CSS scroll-driven where supported, a small rAF
+   fallback elsewhere; touch, reduced motion and the still-screenshot browser get a native swipe strip with snap. */
+:root{--paper:#F2EEE6;--ink:#191714;--muted:#5D564C;--ease:cubic-bezier(.22,1,.36,1);--serif:"DM Serif Display",Georgia,serif;--mono:"DM Mono",ui-monospace,monospace;--frames:12}
+*{box-sizing:border-box;margin:0}
+html{background:var(--paper);color:var(--ink);font:400 14px/1.5 var(--mono)}
+a{color:inherit}:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+img{display:block}
+.label{font:400 12px/1.3 var(--mono);letter-spacing:.06em;text-transform:uppercase}
+.bar{position:fixed;inset:0 0 auto 0;display:flex;justify-content:space-between;align-items:center;padding:14px 18px;z-index:10;mix-blend-mode:normal}
+.bar a{text-decoration:none;background:var(--paper);padding:6px 10px}
+.bar .name{font:400 20px/1 var(--serif)}
+.bar .name i{font-style:italic}
+.bar nav{display:flex;gap:6px}
+
+/* Opening frame: one photograph, edge to edge, the name small on it. */
+.open{position:relative;height:100vh;height:100svh;overflow:hidden}
+.open img{width:100%;height:100%;object-fit:cover}
+.open .t{position:absolute;left:18px;right:18px;bottom:18px;display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap}
+.open h1{background:var(--paper);font:400 clamp(26px,4vw,54px)/1 var(--serif);padding:10px 14px;max-width:16ch}
+.open h1 em{font-style:italic}
+.open .t span{background:var(--paper);padding:6px 10px}
+
+/* The reel. The section is tall; the stage sticks; the track slides left as you scroll down. */
+.reel{position:relative;height:calc(var(--frames) * 70vh)}
+.stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;display:flex;flex-direction:column;justify-content:center}
+.track{display:flex;gap:14px;padding:0 18px;width:max-content;will-change:transform}
+.f{position:relative;flex:none;height:min(74vh,880px);overflow:hidden;background:#d8d0c4}
+.f.p{aspect-ratio:4/5}.f.s{aspect-ratio:1}.f.l{aspect-ratio:3/2}
+.f img{position:absolute;top:0;left:-8%;width:116%;height:100%;object-fit:cover}
+.f a{position:absolute;inset:0}
+.f-wrap figcaption{position:absolute;left:0;right:0;bottom:2px;display:flex;justify-content:space-between;gap:12px}
+.f-wrap{position:relative;padding-bottom:30px}
+.chapter{flex:none;width:min(46vw,520px);align-self:center;padding:0 2vw}
+.chapter h2{font:400 clamp(44px,6vw,92px)/.95 var(--serif)}
+.chapter h2 em{font-style:italic}
+.chapter p{margin-top:14px;max-width:34ch;font-size:14px}
+.counter{position:absolute;left:18px;bottom:16px;right:18px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.counter .rule{flex:1;height:1px;background:#cfc6b8;position:relative}
+.counter .rule b{position:absolute;inset:0;background:var(--ink);transform-origin:left;transform:scaleX(var(--p,0))}
+
+/* Scroll-driven: the reel's own view timeline moves the track and the pictures inside each frame. */
+@supports (animation-timeline: view()){
+  @media (prefers-reduced-motion:no-preference) and (hover:hover){
+    html.motion .reel{view-timeline:--reel block}
+    html.motion .track{animation:slide linear both;animation-timeline:--reel;animation-range:contain 0% contain 100%}
+    html.motion .f img{animation:drift linear both;animation-timeline:--reel;animation-range:contain 0% contain 100%}
+    html.motion .counter .rule b{animation:grow linear both;animation-timeline:--reel;animation-range:contain 0% contain 100%}
+    @keyframes slide{to{transform:translateX(calc(-100% + 100vw))}}
+    @keyframes drift{from{transform:translateX(6%)}to{transform:translateX(-6%)}}
+    @keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+  }
+}
+/* Fallback reel: a native horizontal strip with snap (touch, reduced motion, no JS, stills). */
+html:not(.motion) .reel,html.swipe .reel{height:auto}
+html:not(.motion) .stage,html.swipe .stage{position:relative;height:auto;padding:90px 0 40px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:18px}
+html:not(.motion) .f-wrap,html.swipe .f-wrap,html:not(.motion) .chapter,html.swipe .chapter{scroll-snap-align:start}
+html:not(.motion) .f img,html.swipe .f img{left:0;width:100%}
+html:not(.motion) .counter,html.swipe .counter{display:none}
+@media (hover:none),(prefers-reduced-motion:reduce){.reel{height:auto!important}.stage{position:relative!important;height:auto!important;padding:90px 0 40px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:18px}.f-wrap,.chapter{scroll-snap-align:start}.track{animation:none!important;transform:none!important}.f img{animation:none!important;left:0!important;width:100%!important}.counter{display:none}.f{height:62vh}}
+
+.closing{position:relative;height:100vh;height:100svh;overflow:hidden}
+.closing img{width:100%;height:100%;object-fit:cover}
+.closing .card{position:absolute;left:18px;bottom:18px;background:var(--paper);padding:18px 20px;max-width:min(460px,calc(100% - 36px))}
+.closing .card p{font:400 clamp(22px,2.4vw,30px)/1.15 var(--serif)}
+.closing .card p em{font-style:italic}
+.closing .card a{display:inline-block;margin-top:14px;border-bottom:1px solid var(--ink);text-decoration:none;padding:8px 0 2px}
+.closing .card small{display:block;margin-top:14px;color:var(--muted)}
+.dir{padding:22px 18px 40px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;font-size:13px}
+.dir b{display:block;font-weight:500;text-transform:uppercase;letter-spacing:.06em}
+@media (max-width:700px){.dir{grid-template-columns:minmax(0,1fr)}.bar nav a:nth-child(-n+2){display:none}.chapter{width:78vw}}
+</style>
+<script>/* Motion only with JS, a fine pointer, and not in the still-screenshot browser. */ if(!navigator.webdriver)document.documentElement.classList.add('motion')</script>
+</head>
+<body>
+<header class="bar"><a class="name" href="direction-f.html">Tate <i>Fine Art Photography</i></a><nav aria-label="Pages"><a class="label" href="#reel">Stories</a><a class="label" href="#close">About</a><a class="label" href="#close">Book</a></nav></header>
+<main>
+  <section class="open" aria-label="Opening">
+    <img src="https://cdn.sanity.io/images/feuqkbki/production/d3059f9d5ddfecdfa852e571da236b973a50997a-1440x1440.jpg?w=1800&amp;q=72&amp;auto=format" alt="Lying on the checkered rug among valentines, a sunny 1970s living room behind" width="1800" height="1800" fetchpriority="high">
+    <div class="t"><h1>Portraits from <em>other decades</em></h1><span class="label">Scroll, the reel runs sideways</span></div>
+  </section>
+
+  <section class="reel" id="reel" aria-label="The reel, every story in order">
+    <div class="stage">
+      <div class="track">
+        <div class="chapter"><p class="label">Reel one</p><h2>The <em>1950s</em></h2><p>A Halloween party in a living room that already looked the part.</p></div>
+        <figure class="f-wrap"><div class="f p"><img src="https://cdn.sanity.io/images/feuqkbki/production/89e44fc497a5bc621c7c1666ab80a4fd51b83f4d-1080x1350.jpg?w=1000&amp;q=72&amp;auto=format" alt="A 1950s living room at Halloween, guests in costume around a glowing television"><a href="direction-f-story.html" aria-label="A 1950s Halloween at home"></a></div><figcaption class="label"><span>01 · Halloween at home</span><span>Oct 2023</span></figcaption></figure>
+        <figure class="f-wrap"><div class="f p"><img src="https://cdn.sanity.io/images/feuqkbki/production/c8e429012032c7a4d57524d415abbc2e35d3a39b-1080x1350.jpg?w=1000&amp;q=72&amp;auto=format" alt="The devil in red tulle laughs on the floor beside a plate of spaghetti"></div><figcaption class="label"><span>02 · The devil</span><span>f/2 · 1/30</span></figcaption></figure>
+        <div class="chapter"><p class="label">Reel two</p><h2>The <em>1960s</em></h2><p>A neon pink jumpsuit, a porch with a pink door, and neon after dark.</p></div>
+        <figure class="f-wrap"><div class="f s"><img src="https://cdn.sanity.io/images/feuqkbki/production/a707cb65592c05af9a3cb1e8d8fcbbfd8525d9cc-1440x1440.jpg?w=1000&amp;q=72&amp;auto=format" alt="A woman in a pink 1960s jumpsuit and glasses behind a dark glass door"></div><figcaption class="label"><span>03 · Pink, 1960s</span><span>Tupelo House</span></figcaption></figure>
+        <figure class="f-wrap"><div class="f p"><img src="https://cdn.sanity.io/images/feuqkbki/production/a7c6c36e89b3cb74726f51548a29e66149eb0c1c-1080x1350.jpg?w=1000&amp;q=72&amp;auto=format" alt="A woman in a bright patterned maxi dress sits on a porch by a pink door"></div><figcaption class="label"><span>04 · A '60s look</span><span>2025</span></figcaption></figure>
+        <figure class="f-wrap"><div class="f p"><img src="https://cdn.sanity.io/images/feuqkbki/production/29cba897d6dec25210cb15085ef13ef589993a92-1080x1350.jpg?w=1000&amp;q=72&amp;auto=format" alt="A woman in profile against red and blue neon letters"></div><figcaption class="label"><span>05 · American Sign Museum</span><span>Cincinnati</span></figcaption></figure>
+        <div class="chapter"><p class="label">Reel three</p><h2>The <em>1970s</em></h2><p>Valentines, a checkered rug and a lace mask.</p></div>
+        <figure class="f-wrap"><div class="f s"><img src="https://cdn.sanity.io/images/feuqkbki/production/e14d50acf5bb10164001a8ebfb71476d07ca4648-1440x1440.jpg?w=1000&amp;q=72&amp;auto=format" alt="A woman in red lace kneels on a checkered rug among paper hearts, 1970s colour"></div><figcaption class="label"><span>06 · A 1970s Valentine</span><span>2026</span></figcaption></figure>
+        <div class="chapter"><p class="label">Reel four</p><h2>From <em>the page</em></h2><p>Shakespeare, Washington Irving and Annie Oakley.</p></div>
+        <figure class="f-wrap"><div class="f p"><img src="https://cdn.sanity.io/images/feuqkbki/production/898f65f91792769481299578c0a3a70e92ea2aa5-1080x1350.jpg?w=1000&amp;q=72&amp;auto=format" alt="A fairy with lavender hair and pale wings, her back to the camera, among leaves"></div><figcaption class="label"><span>07 · Midsummer</span><span>2023</span></figcaption></figure>
+        <figure class="f-wrap"><div class="f p"><img src="https://cdn.sanity.io/images/feuqkbki/production/ce858e4c6e05d280b40acaa3aedc0419d3487628-1080x1350.jpg?w=1000&amp;q=72&amp;auto=format" alt="A woman in black lace in a field at dusk, looking up"></div><figcaption class="label"><span>08 · Sleepy Hollow</span><span>2024</span></figcaption></figure>
+        <figure class="f-wrap"><div class="f s"><img src="https://cdn.sanity.io/images/feuqkbki/production/76d888be6dc1bc1ea0b2c0fb2f17d2b100863682-1440x1440.jpg?w=1000&amp;q=72&amp;auto=format" alt="A smiling woman with long fair hair and bangs, in warm light"></div><figcaption class="label"><span>09 · Lady Wing Shot</span><span>Darke County</span></figcaption></figure>
+        <div class="chapter"><p class="label">Reel five</p><h2>Halloween, <em>all year</em></h2><p>I will always say yes to Halloween, even in August.</p></div>
+        <figure class="f-wrap"><div class="f p"><img src="https://cdn.sanity.io/images/feuqkbki/production/4852a6d931b6d09a64829bb965c53db6dbc96f36-1080x1350.jpg?w=1000&amp;q=72&amp;auto=format" alt="A woman in a white lace skirt holds a lantern at dusk"></div><figcaption class="label"><span>10 · Spooky in August</span><span>2024</span></figcaption></figure>
+        <figure class="f-wrap"><div class="f p"><img src="https://cdn.sanity.io/images/feuqkbki/production/f02434aa2c751fc4dbab0b40ccba9aa0cdbb1560-1080x1350.jpg?w=1000&amp;q=72&amp;auto=format" alt="A laughing clown in white face, red curls and striped trousers against a graffiti wall"></div><figcaption class="label"><span>11 · Killer clown</span><span>Graffiti alley</span></figcaption></figure>
+        <figure class="f-wrap"><div class="f p"><img src="https://cdn.sanity.io/images/feuqkbki/production/4ec7facbf73640d370d3296dcf0b79f2f0e57ea8-1080x1350.jpg?w=1000&amp;q=72&amp;auto=format" alt="A woman holds up a glowing jack-o-lantern on a porch strung with orange lights"></div><figcaption class="label"><span>12 · Pink Halloween</span><span>The 'Nati</span></figcaption></figure>
+      </div>
+      <div class="counter label" aria-hidden="true"><span>Reel 1 to 5</span><span class="rule"><b></b></span><span>12 stories</span></div>
+    </div>
+  </section>
+
+  <section class="closing" id="close" aria-label="About and booking">
+    <img src="https://cdn.sanity.io/images/feuqkbki/production/d3c81f69d2edc61440c1081c35d7aa9ee5dbd220-1080x1350.jpg?w=1800&amp;q=72&amp;auto=format" alt="A woman in a long embroidered white dress holds wildflowers on a path through pines" width="1800" height="2250">
+    <div class="card"><p>My dad's camera started it. Now I chase the look of a real <em>vintage photograph</em>.</p><a class="label" href="#">Book a session</a><small class="label">Hollyway · Elysium · PhotoVogue · BleachFilm · Fienfh</small></div>
+  </section>
+</main>
+<aside class="dir" aria-label="About this direction">
+  <div><b>Bet</b>A reel you scroll through sideways feels like film moving through a camera, and every story gets the same full height.</div>
+  <div><b>Rejects</b>No vertical grid, no thumbnails, no paragraphs. Chapters are one line between frames.</div>
+  <div><b>Costs</b>Pinned sideways scrolling confuses some people; phones get a swipe strip instead. A long reel loads many images.</div>
+</aside>
+<script>
+// Fallback driver for browsers without scroll-driven animations: same effect from scroll position, still native scrolling.
+(function(){
+  const H=document.documentElement; if(!H.classList.contains('motion'))return;
+  if(matchMedia('(hover:none), (prefers-reduced-motion: reduce)').matches){H.classList.add('swipe');return}
+  if(CSS.supports('animation-timeline: view()'))return;
+  const reel=document.querySelector('.reel'),track=document.querySelector('.track'),imgs=[...document.querySelectorAll('.f img')],bar=document.querySelector('.counter .rule');
+  let tick=false;
+  const run=()=>{tick=false;const r=reel.getBoundingClientRect(),span=r.height-innerHeight,p=Math.min(1,Math.max(0,-r.top/span));
+    track.style.transform=`translateX(${-(track.scrollWidth-innerWidth)*p}px)`;imgs.forEach(i=>i.style.transform=`translateX(${6-12*p}%)`);bar.style.setProperty('--p',p)};
+  addEventListener('scroll',()=>{if(!tick){tick=true;requestAnimationFrame(run)}},{passive:true});run();
+})();
+</script>
+</body>
+</html>
